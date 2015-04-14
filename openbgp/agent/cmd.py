@@ -13,7 +13,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""version information"""
+"""start service"""
 
-version_info = (0, 1)
-version = '.'.join(map(str, version_info))
+from openbgp.agent import prepare_service
+
+
+def main():
+    prepare_service()
