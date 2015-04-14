@@ -1,0 +1,16 @@
+[DEFAULT]
+
+# log file name and location
+# log-file =
+
+# show debug output
+# verbose = False
+
+# log to standard error
+# use-stderr = True
+
+# log file directory
+# log-dir
+
+# log configuration file
+# log-config-file =
