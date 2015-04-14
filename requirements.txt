@@ -1,1 +1,2 @@
 oslo.config==1.6.0
+Twisted==15.0.0
