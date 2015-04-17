@@ -138,6 +138,7 @@ class FSM(object):
             elif self.allow_automatic_start:
                 LOG.info('Do not need Idle Hold, start right now.')
                 LOG.info('Connect retry counter: %s' % self.connect_retry_counter)
+                self.connect_retry_counter += 1
                 self.connect_retry_timer.reset(self.connect_retry_time)
                 LOG.info('Connect retry timer, time=%s' % self.connect_retry_time)
                 self.state = bgp_cons.ST_CONNECT
@@ -157,7 +158,6 @@ class FSM(object):
         LOG.info('Connect retry timer expires')
         if self.state in (bgp_cons.ST_CONNECT, bgp_cons.ST_ACTIVE):
             # State Connect, event 9
-            self.connect_retry_counter += 1
             self._close_connection()
             LOG.info('Reset connect retry timer, time=%s' % self.connect_retry_time)
             self.connect_retry_timer.reset(self.connect_retry_time)
@@ -298,7 +298,6 @@ class FSM(object):
             if self.bgp_peering:
                 # self.bgp_peering.releaseResources(self.protocol)
                 pass
-            self.connect_retry_counter += 1
             # TODO: osc damping
             self.state = bgp_cons.ST_IDLE
         elif self.state == bgp_cons.ST_OPENSENT:
@@ -329,6 +328,7 @@ class FSM(object):
                 # State Connect, event 20
                 self.connect_retry_timer.cancel()
                 self.delay_open_timer.cancel()
+                self.connect_retry_counter = 0
                 self.protocol.send_open()
                 self.protocol.send_keepalive()
                 if self.hold_time:
@@ -512,4 +512,5 @@ class FSM(object):
         """
         if self.protocol is not None:
             self.protocol.closeConnection()
+            self.connect_retry_counter = 0
             LOG.info('Closing protocol connection.')

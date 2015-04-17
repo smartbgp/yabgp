@@ -123,7 +123,6 @@ class BGP(protocol.Protocol):
             LOG.error(e)
             error_str = traceback.format_exc()
             LOG.debug(error_str)
-        self.init_rib(msg_type=0)
 
     def dataReceived(self, data):
 
@@ -350,7 +349,6 @@ class BGP(protocol.Protocol):
         """
         BGP notification message received.
         """
-        self.init_rib(msg_type=3)
         self.msg_recv_stat['Notifications'] += 1
         LOG.info('[%s]Notification message received, error=%s, sub error=%s, data=%s' % (self.factory.peer_addr,
                                                                                          msg[0], msg[1], msg[2]))
@@ -412,7 +410,7 @@ class BGP(protocol.Protocol):
         for key in self.fsm.my_capability:
             LOG.info("--%s = %s" % (key, self.fsm.my_capability[key]))
         # construct message
-        self.fsm.my_capability = self.fsm.neighbor_capability
+        # self.fsm.my_capability = self.fsm.neighbor_capability
         open_msg = Open(version=bgp_cons.VERSION, asn=self.factory.my_asn, hold_time=self.fsm.hold_time,
                         bgp_id=self.factory.bgp_id).construct(self.fsm.my_capability)
         # send message
@@ -458,7 +456,6 @@ class BGP(protocol.Protocol):
 
         self.negotiate_hold_time(open_msg.hold_time)
         self.fsm.open_received()
-        self.init_rib(msg_type=1)
 
     def send_route_refresh(self, afi=None, safi=None, res=None):
         """
