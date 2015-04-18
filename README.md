@@ -129,3 +129,11 @@ MSG_CISCOROUTEREFRESH = 128
 ### Support
 
 Send email to penxiao@cisco.com, or use GitHub issue system.
+
+### TODO
+
+* support more address family (IPv6, VPNv4, VPNv6, etc.)
+* support RESTful API
+* support sending BGP message through API
+* unittest
+* others
