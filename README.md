@@ -1,5 +1,7 @@
 # openbgp
 
+[![Build Status](https://travis-ci.org/openbgp/openbgp.svg?branch=master)](https://travis-ci.org/openbgp/openbgp)
+
 ### What is openbgp?
 
 OpenBGP is a Python implementation for BGP Protocol. It was born in Cisco around 2011, we use it to establish BGP connections with all kinds of
