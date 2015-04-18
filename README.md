@@ -83,6 +83,48 @@ For example:
 $ python openbgpd --bgp-local_addr=1.1.1.1 --bgp-local_as=65001 --bgp-remote_addr=1.1.1.2 --bgp-remote_as=65001 --bgp-md5=test --config-file=../etc/openbgp/openbgp.ini
 ```
 
+BGP message example:
+
+in `openbgp.ini`, you can point out if you want to store the parsing BGP message to local disk and where you want to put them in.
+
+```
+[message]
+# how to process parsed BGP message?
+
+# Whether the BGP message is written to disk
+# write_disk = True
+
+# the BGP messages storage path
+# write_dir = /home/bgpmon/data/bgp/
+write_dir = ./
+# The Max size of one BGP message file, the unit is MB
+# write_msg_max_size = 500
+```
+
+```
+$ more 1429257741.41.msg 
+[1429258235.343657, 1, 1, {'bgpID': '192.168.45.1', 'Version': 4, 'holdTime': 180, 'ASN': 23650, 'Capabilities': {'GracefulRestart': False, 'ciscoMultiSession': False, 'ciscoRouteRefresh': True, '4byteAS': True, 'AFI_SAFI': [(1, 1)], '7
+0': '', 'routeRefresh': True}}, (0, 0)]
+[1429258235.346803, 2, 4, None, (0, 0)]
+[1429258235.349598, 3, 4, None, (0, 0)]
+[1429258235.349837, 4, 2, {'ATTR': {1: 0, 2: [(2, [64639, 64660])], 3: '192.168.24.1', 4: 0, 5: 100}, 'WITHDRAW': [], 'NLRI': ['192.168.1.0/24']}, (1, 1)]
+```
+
+The structure of each line is:
+
+```
+[timestamp, sequence number, message type, message content, address family]
+```
+For message type:
+
+```
+MSG_OPEN = 1
+MSG_UPDATE = 2
+MSG_NOTIFICATION = 3
+MSG_KEEPALIVE = 4
+MSG_ROUTEREFRESH = 5
+MSG_CISCOROUTEREFRESH = 128
+```
 
 ### Support
 
