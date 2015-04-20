@@ -60,6 +60,3 @@
 
 # The MD5 string
 # md5 =
-
-# Whether maintain bgp rib table
-# rib = False
