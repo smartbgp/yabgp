@@ -28,8 +28,8 @@ This software can be used on Linux/Unix, Mac OS and Windows systems.
 We recommend run `openbgp` through python virtual-env from source code.
 
 ```bash
-$ virtualenv openbgp
-$ source openbgp/bin/activate
+$ virtualenv openbgp-virl
+$ source openbgp-virl/bin/activate
 $ git clone https://github.com/openbgp/openbgp
 $ cd openbgp
 $ pip install -r requirements.txt
