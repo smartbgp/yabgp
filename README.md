@@ -1,6 +1,7 @@
 # openbgp
 
-[![Build Status](https://travis-ci.org/openbgp/openbgp.svg?branch=master)](https://travis-ci.org/openbgp/openbgp)
+[![License](https://img.shields.io/hexpm/l/plug.svg)](https://github.com/Exa-Networks/exabgp/blob/master/COPYRIGHT)
+[![Build Status](https://travis-ci.org/openbgp/openbgp.svg?branch=master)](https://github.com/openbgp/openbgp/blob/master/LICENSE)
 
 ### What is openbgp?
 
