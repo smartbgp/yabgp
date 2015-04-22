@@ -141,3 +141,9 @@ Send email to penxiao@cisco.com, or use GitHub issue system.
 * support sending BGP message through API
 * unittest
 * others
+
+### Thanks
+
+for core files like fsm, protocol, we copy some of the code from https://github.com/wikimedia/PyBal/blob/master/pybal/bgp.py,
+
+and message parsing, we reference from https://github.com/Exa-Networks/exabgp
