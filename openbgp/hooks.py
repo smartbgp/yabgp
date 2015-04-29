@@ -13,10 +13,18 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import setuptools
+import sys
+
+from openbgp import version
 
 
-setuptools.setup(
-    name='openbgp',
-    setup_requires=['pbr'],
-    pbr=True)
+def setup_hook(config):
+    """Filter config parsed from a setup.cfg to inject our defaults."""
+    metadata = config['metadata']
+    requires = metadata.get('requires_dist', '').split('\n')
+    if sys.platform == 'win32':
+        requires.append('pywin32')
+        requires.append('wmi')
+    metadata['requires_dist'] = "\n".join(requires)
+    config['metadata'] = metadata
+    metadata['version'] = str(version)
