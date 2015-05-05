@@ -1,7 +1,7 @@
 # Copyright 2015 Cisco Systems, Inc.
 # All rights reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -23,7 +23,6 @@ from openbgp.common import exception as excep
 
 
 class AtomicAggregate(Attribute):
-    
     """
     ATOMIC_AGGREGATE is a well-known discretionary attribute of length 0.
     """
@@ -44,7 +43,7 @@ class AtomicAggregate(Attribute):
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_OPTIONAL_ATTR,
                 data=value)
-            
+
     def construct(self, value, flags=None):
         """construct a ATOMIC_AGGREGATE path attribute
         :param value:

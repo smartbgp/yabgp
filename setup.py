@@ -15,6 +15,9 @@
 
 import setuptools
 
+import openbgp.hooks
+
+openbgp.hooks.save_orig()
 
 setuptools.setup(
     name='openbgp',

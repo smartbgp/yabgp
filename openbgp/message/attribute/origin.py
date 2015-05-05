@@ -1,7 +1,7 @@
 # Copyright 2015 Cisco Systems, Inc.
 # All rights reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -22,8 +22,7 @@ from openbgp.common import constants as bgp_cons
 from openbgp.common import exception as excep
 
 
-class Origin (Attribute):
-    
+class Origin(Attribute):
     """
         ORIGIN is a well-known mandatory attribute that defines the
     origin of the path information. The data octet can assume
@@ -52,7 +51,7 @@ class Origin (Attribute):
         """
         Error process:
         (1) the falgs of the ORIGIN attribute must be "well-know,transitive"
-        (2) If the ORIGIN attribute has an undefined value, then the Error Sub-code 
+        (2) If the ORIGIN attribute has an undefined value, then the Error Sub-code
         MUST be set to Invalid Origin Attribute. The Data field MUST contain the
         unrecognized attribute (type,length, and vlaue)
         :param value: raw binary value

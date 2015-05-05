@@ -1,7 +1,7 @@
 # Copyright 2015 Cisco Systems, Inc.
 # All rights reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -23,20 +23,19 @@ from openbgp.common import exception as excep
 
 
 class LocalPreference(Attribute):
-    
     """LOCAL_PREF is a well-known attribute that is a four-octet
     unsigned integer. A BGP speaker uses it to inform its other
     internal peers of the advertising speaker's degree of
     preference for an advertised route.
     """
-    
+
     ID = AttributeID.LOCAL_PREF
     FLAG = AttributeFlag.TRANSITIVE
     MULTIPLE = False
 
     @staticmethod
     def parse(value):
-        
+
         """
         parse bgp local preference attribute
         :param value: raw binary value
@@ -47,7 +46,7 @@ class LocalPreference(Attribute):
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                 data=value)
-        
+
     def construct(self, value, flags=None):
         """
         encode bgp local preference attribute

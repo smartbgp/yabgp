@@ -1,8 +1,8 @@
 # Copyright 2015 Cisco Systems, Inc.
 # All rights reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
-#    not use this file except in compliance with the License. You may obtain
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
 #         http://www.apache.org/licenses/LICENSE-2.0
@@ -14,6 +14,7 @@
 #    under the License.
 
 import struct
+
 from ipaddr import IPv4Address
 
 from openbgp.message.attribute import Attribute
@@ -24,7 +25,6 @@ from openbgp.common import exception as excep
 
 
 class Aggregator(Attribute):
-    
     """
         AGGREGATOR is an optional transitive attribute of length 6.
     The attribute contains the last AS number that formed the
@@ -63,9 +63,9 @@ class Aggregator(Attribute):
                 raise excep.UpdateMessageError(
                     sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                     data=value)
-        
+
         return asn, aggregator
-        
+
     def construct(self, value, flags=None, asn4=False):
 
         """

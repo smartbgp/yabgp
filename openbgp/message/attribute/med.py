@@ -1,7 +1,7 @@
 # Copyright 2015 Cisco Systems, Inc.
 # All rights reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -24,7 +24,6 @@ from openbgp.common import exception as excep
 
 
 class MED(Attribute):
-
     """
     This is an optional non-transitive attribute that is a
     four-octet unsigned integer. The value of this attribute

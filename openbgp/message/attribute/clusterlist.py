@@ -1,7 +1,7 @@
 # Copyright 2015 Cisco Systems, Inc.
 # All rights reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -14,6 +14,7 @@
 #    under the License.
 
 import struct
+
 from ipaddr import IPv4Address
 
 from openbgp.message.attribute import Attribute
@@ -24,7 +25,6 @@ from openbgp.common import exception as excep
 
 
 class ClusterList(Attribute):
-    
     """
         CLUSTER_LIST is a new, optional, non-transitive BGP attribute of Type
     code 10. It is a sequence of CLUSTER_ID values representing the
@@ -37,14 +37,14 @@ class ClusterList(Attribute):
     CLUSTER_LIST, the advertisement received SHOULD be ignored.
     (RFC 4456 Page 7)
     """
-    
+
     ID = AttributeID.CLUSTER_LIST
     FLAG = AttributeFlag.OPTIONAL
     MULTIPLE = False
 
     @staticmethod
     def parse(value):
-        
+
         """
         Parse culster list
         :param value

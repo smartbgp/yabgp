@@ -1,7 +1,7 @@
 # Copyright 2015 Cisco Systems, Inc.
 # All rights reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -15,6 +15,7 @@
 
 import binascii
 import struct
+
 from ipaddr import IPv4Address
 
 from openbgp.message.attribute import Attribute
@@ -25,7 +26,6 @@ from openbgp.common import constants as bgp_cons
 
 
 class OriginatorID(Attribute):
-    
     """
         ORIGINATOR_ID is a new optional, non-transitive BGP attribute of Type
     code 9. This attribute is 4 bytes long and it will be created by an
@@ -58,7 +58,7 @@ class OriginatorID(Attribute):
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                 data=value)
-    
+
     def construct(self, value, flags=None):
 
         """

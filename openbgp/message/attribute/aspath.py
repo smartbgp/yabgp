@@ -1,7 +1,7 @@
 # Copyright 2015 Cisco Systems, Inc.
 # All rights reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -22,8 +22,7 @@ from openbgp.common import exception as excep
 from openbgp.common import constants as bgp_cons
 
 
-class ASPath (Attribute):
-    
+class ASPath(Attribute):
     """
         AS_PATH is a well-known mandatory attribute that is composed
     of a sequence of AS path segments. Each AS path segment is
@@ -76,7 +75,7 @@ class ASPath (Attribute):
                 if asn4:
                     segment = list(struct.unpack('!%dI' % length, value[2:2 + length * 4]))
                     value = value[2 + length * 4:]
-                
+
                 else:
                     segment = list(struct.unpack('!%dH' % length, value[2:2 + length * 2]))
                     value = value[2 + length * 2:]

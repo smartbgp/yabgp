@@ -91,7 +91,6 @@ def get_bgp_config():
                 'remote_addr': CONF.bgp.remote_addr,
                 'local_as': CONF.bgp.local_as,
                 'local_addr': CONF.bgp.local_addr,
-                'rib': CONF.bgp.rib,
                 'md5': CONF.bgp.md5,
                 'afi_safi': CONF.bgp.afi_safi
             }

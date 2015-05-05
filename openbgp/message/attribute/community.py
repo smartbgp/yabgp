@@ -1,7 +1,7 @@
 # Copyright 2015 Cisco Systems, Inc.
 # All rights reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -121,7 +121,7 @@ class Community(Attribute):
             return 0xFFFFFF03
         elif value == 'NOPEER':
             return 0xFFFFFF04
-        
+
     def construct(self, value, flags=None):
         """
         construct a COMMUNITY path attribute

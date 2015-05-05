@@ -1,7 +1,7 @@
 # Copyright 2015 Cisco Systems, Inc.
 # All rights reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -15,6 +15,7 @@
 
 import struct
 import binascii
+
 from ipaddr import IPv4Address
 
 from openbgp.message.attribute import Attribute
@@ -25,14 +26,13 @@ from openbgp.common import exception as excep
 
 
 class NextHop(Attribute):
-    
     """
         This is a well-known mandatory attribute that defines the
     (unicast) IP address of the router that SHOULD be used as
     the next hop to the destinations listed in the Network Layer
     Reachability Information field of the UPDATE message.
     """
-    
+
     ID = AttributeID.NEXT_HOP
     FLAG = AttributeFlag.TRANSITIVE
     MULTIPLE = False
