@@ -35,7 +35,9 @@ Quick Start
 ~~~~~~~~~~~
 
 We recommend run ``openbgp`` through python virtual-env from source
-code.
+code or pip install
+
+Use openbgp from source code:
 
 .. code:: bash
 
@@ -48,7 +50,7 @@ code.
     $ python openbgpd -h
     usage: openbgpd [-h] [--bgp-local_addr BGP_LOCAL_ADDR]
                     [--bgp-local_as BGP_LOCAL_AS] [--bgp-md5 BGP_MD5]
-                    [--bgp-norib] [--bgp-remote_addr BGP_REMOTE_ADDR] [--bgp-rib]
+                    [--bgp-remote_addr BGP_REMOTE_ADDR]
                     [--bgp-remote_as BGP_REMOTE_AS] [--config-dir DIR]
                     [--config-file PATH] [--log-config-file LOG_CONFIG_FILE]
                     [--log-dir LOG_DIR] [--log-file LOG_FILE]
@@ -84,10 +86,61 @@ code.
       --bgp-local_as BGP_LOCAL_AS
                             The Local BGP AS number
       --bgp-md5 BGP_MD5     The MD5 string use to auth
-      --bgp-norib           The inverse of --rib
       --bgp-remote_addr BGP_REMOTE_ADDR
                             The remote address of the peer
-      --bgp-rib             Whether maintain BGP rib table
+      --bgp-remote_as BGP_REMOTE_AS
+                            The remote BGP peer AS number
+
+Use pip install
+
+.. code:: bash
+
+    $ virtualenv openbgp-virl
+    $ source openbgp-virl/bin/activate
+    $ pip install openbgp
+    $ which openbgpd
+    /home/bgpmon/openbgp-virl/bin/openbgpd
+    $ openbgpd -h
+    usage: openbgpd [-h] [--bgp-local_addr BGP_LOCAL_ADDR]
+                    [--bgp-local_as BGP_LOCAL_AS] [--bgp-md5 BGP_MD5]
+                    [--bgp-remote_addr BGP_REMOTE_ADDR]
+                    [--bgp-remote_as BGP_REMOTE_AS] [--config-dir DIR]
+                    [--config-file PATH] [--log-config-file LOG_CONFIG_FILE]
+                    [--log-dir LOG_DIR] [--log-file LOG_FILE]
+                    [--log-file-mode LOG_FILE_MODE] [--nouse-stderr]
+                    [--use-stderr] [--verbose] [--version] [--noverbose]
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --config-dir DIR      Path to a config directory to pull *.conf files from.
+                            This file set is sorted, so as to provide a
+                            predictable parse order if individual options are
+                            over-ridden. The set is parsed after the file(s)
+                            specified via previous --config-file, arguments hence
+                            over-ridden options in the directory take precedence.
+      --config-file PATH    Path to a config file to use. Multiple config files
+                            can be specified, with values in later files taking
+                            precedence. The default files used are: None.
+      --log-config-file LOG_CONFIG_FILE
+                            Path to a logging config file to use
+      --log-dir LOG_DIR     log file directory
+      --log-file LOG_FILE   log file name
+      --log-file-mode LOG_FILE_MODE
+                            default log file permission
+      --nouse-stderr        The inverse of --use-stderr
+      --use-stderr          log to standard error
+      --verbose             show debug output
+      --version             show program's version number and exit
+      --noverbose           The inverse of --verbose
+
+    bgp options:
+      --bgp-local_addr BGP_LOCAL_ADDR
+                            The local address of the BGP
+      --bgp-local_as BGP_LOCAL_AS
+                            The Local BGP AS number
+      --bgp-md5 BGP_MD5     The MD5 string use to auth
+      --bgp-remote_addr BGP_REMOTE_ADDR
+                            The remote address of the peer
       --bgp-remote_as BGP_REMOTE_AS
                             The remote BGP peer AS number
 
@@ -95,7 +148,7 @@ For example:
 
 .. code:: bash
 
-    $ python openbgpd --bgp-local_addr=1.1.1.1 --bgp-local_as=65001 --bgp-remote_addr=1.1.1.2 --bgp-remote_as=65001 --bgp-md5=test --config-file=../etc/openbgp/openbgp.ini
+    $ openbgpd --bgp-local_addr=1.1.1.1 --bgp-local_as=65001 --bgp-remote_addr=1.1.1.2 --bgp-remote_as=65001 --bgp-md5=test --config-file=../etc/openbgp/openbgp.ini
 
 BGP message example:
 
