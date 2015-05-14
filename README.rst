@@ -1,7 +1,7 @@
 YABGP
 =====
 
-|License| |Build Status| |Code Climate|
+|Join Chat| |License| |Build Status| |Code Climate|
 
 What is yabgp?
 ~~~~~~~~~~~~~~
@@ -48,48 +48,6 @@ Use yabgp from source code:
     $ pip install -r requirements.txt
     $ cd bin
     $ python yabgpd -h
-    usage: yabgpd [-h] [--bgp-local_addr BGP_LOCAL_ADDR]
-                    [--bgp-local_as BGP_LOCAL_AS] [--bgp-md5 BGP_MD5]
-                    [--bgp-remote_addr BGP_REMOTE_ADDR]
-                    [--bgp-remote_as BGP_REMOTE_AS] [--config-dir DIR]
-                    [--config-file PATH] [--log-config-file LOG_CONFIG_FILE]
-                    [--log-dir LOG_DIR] [--log-file LOG_FILE]
-                    [--log-file-mode LOG_FILE_MODE] [--nouse-stderr]
-                    [--use-stderr] [--verbose] [--version] [--noverbose]
-
-    optional arguments:
-      -h, --help            show this help message and exit
-      --config-dir DIR      Path to a config directory to pull *.conf files from.
-                            This file set is sorted, so as to provide a
-                            predictable parse order if individual options are
-                            over-ridden. The set is parsed after the file(s)
-                            specified via previous --config-file, arguments hence
-                            over-ridden options in the directory take precedence.
-      --config-file PATH    Path to a config file to use. Multiple config files
-                            can be specified, with values in later files taking
-                            precedence. The default files used are: None.
-      --log-config-file LOG_CONFIG_FILE
-                            Path to a logging config file to use
-      --log-dir LOG_DIR     log file directory
-      --log-file LOG_FILE   log file name
-      --log-file-mode LOG_FILE_MODE
-                            default log file permission
-      --nouse-stderr        The inverse of --use-stderr
-      --use-stderr          log to standard error
-      --verbose             show debug output
-      --version             show program's version number and exit
-      --noverbose           The inverse of --verbose
-
-    bgp options:
-      --bgp-local_addr BGP_LOCAL_ADDR
-                            The local address of the BGP
-      --bgp-local_as BGP_LOCAL_AS
-                            The Local BGP AS number
-      --bgp-md5 BGP_MD5     The MD5 string use to auth
-      --bgp-remote_addr BGP_REMOTE_ADDR
-                            The remote address of the peer
-      --bgp-remote_as BGP_REMOTE_AS
-                            The remote BGP peer AS number
 
 Use pip install
 
@@ -101,48 +59,6 @@ Use pip install
     $ which yabgpd
     /home/bgpmon/yabgp-virl/bin/yabgpd
     $ yabgpd -h
-    usage: yabgpd [-h] [--bgp-local_addr BGP_LOCAL_ADDR]
-                    [--bgp-local_as BGP_LOCAL_AS] [--bgp-md5 BGP_MD5]
-                    [--bgp-remote_addr BGP_REMOTE_ADDR]
-                    [--bgp-remote_as BGP_REMOTE_AS] [--config-dir DIR]
-                    [--config-file PATH] [--log-config-file LOG_CONFIG_FILE]
-                    [--log-dir LOG_DIR] [--log-file LOG_FILE]
-                    [--log-file-mode LOG_FILE_MODE] [--nouse-stderr]
-                    [--use-stderr] [--verbose] [--version] [--noverbose]
-
-    optional arguments:
-      -h, --help            show this help message and exit
-      --config-dir DIR      Path to a config directory to pull *.conf files from.
-                            This file set is sorted, so as to provide a
-                            predictable parse order if individual options are
-                            over-ridden. The set is parsed after the file(s)
-                            specified via previous --config-file, arguments hence
-                            over-ridden options in the directory take precedence.
-      --config-file PATH    Path to a config file to use. Multiple config files
-                            can be specified, with values in later files taking
-                            precedence. The default files used are: None.
-      --log-config-file LOG_CONFIG_FILE
-                            Path to a logging config file to use
-      --log-dir LOG_DIR     log file directory
-      --log-file LOG_FILE   log file name
-      --log-file-mode LOG_FILE_MODE
-                            default log file permission
-      --nouse-stderr        The inverse of --use-stderr
-      --use-stderr          log to standard error
-      --verbose             show debug output
-      --version             show program's version number and exit
-      --noverbose           The inverse of --verbose
-
-    bgp options:
-      --bgp-local_addr BGP_LOCAL_ADDR
-                            The local address of the BGP
-      --bgp-local_as BGP_LOCAL_AS
-                            The Local BGP AS number
-      --bgp-md5 BGP_MD5     The MD5 string use to auth
-      --bgp-remote_addr BGP_REMOTE_ADDR
-                            The remote address of the peer
-      --bgp-remote_as BGP_REMOTE_AS
-                            The remote BGP peer AS number
 
 For example:
 
@@ -205,10 +121,17 @@ TODO
 ~~~~
 
 -  support more address family (IPv6, VPNv4, VPNv6, etc.)
--  support RESTful API
--  support sending BGP message through API
+-  support RESTful API, send message/control peer state, etc.
+-  documentation
 -  unittest
 -  others
+
+Contribute
+~~~~~~~~~~
+
+Please create Github Pull Request https://github.com/smartbgp/yabgp/pulls
+
+More details please read HACKING.rst.
 
 Thanks
 ~~~~~~
@@ -225,3 +148,7 @@ https://github.com/Exa-Networks/exabgp
    :target: https://travis-ci.org/smartbgp/yabgp
 .. |Code Climate| image:: https://codeclimate.com/github/smartbgp/yabgp/badges/gpa.svg
    :target: https://codeclimate.com/github/smartbgp/yabgp
+
+.. |Join Chat| image:: https://badges.gitter.im/Join%20Chat.svg
+   :alt: Join the chat at https://gitter.im/smartbgp/yabgp
+   :target: https://gitter.im/smartbgp/yabgp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
