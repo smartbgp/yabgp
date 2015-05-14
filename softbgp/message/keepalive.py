@@ -17,8 +17,8 @@
 
 import struct
 
-from openbgp.common.exception import MessageHeaderError
-from openbgp.common.constants import ERR_MSG_HDR_BAD_MSG_LEN
+from softbgp.common.exception import MessageHeaderError
+from softbgp.common.constants import ERR_MSG_HDR_BAD_MSG_LEN
 
 
 class KeepAlive(object):

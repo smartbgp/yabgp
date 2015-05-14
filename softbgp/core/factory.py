@@ -29,10 +29,10 @@ from twisted.internet import protocol
 from twisted.internet import reactor
 from oslo.config import cfg
 
-from openbgp.core.protocol import BGP
-from openbgp.core.fsm import FSM
-from openbgp.common import constants as bgp_cons
-from openbgp.common.afn import AFNUM_INET
+from softbgp.core.protocol import BGP
+from softbgp.core.fsm import FSM
+from softbgp.common import constants as bgp_cons
+from softbgp.common.afn import AFNUM_INET
 
 LOG = logging.getLogger(__name__)
 

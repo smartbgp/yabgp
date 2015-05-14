@@ -21,19 +21,19 @@ import logging
 
 from ipaddr import IPv4Network
 
-from openbgp.common import exception as excep
-from openbgp.common import constants as bgp_cons
-from openbgp.message.attribute import AttributeFlag
-from openbgp.message.attribute.origin import Origin
-from openbgp.message.attribute.aspath import ASPath
-from openbgp.message.attribute.nexthop import NextHop
-from openbgp.message.attribute.med import MED
-from openbgp.message.attribute.localpref import LocalPreference
-from openbgp.message.attribute.atomicaggregate import AtomicAggregate
-from openbgp.message.attribute.aggregator import Aggregator
-from openbgp.message.attribute.community import Community
-from openbgp.message.attribute.originatorid import OriginatorID
-from openbgp.message.attribute.clusterlist import ClusterList
+from softbgp.common import exception as excep
+from softbgp.common import constants as bgp_cons
+from softbgp.message.attribute import AttributeFlag
+from softbgp.message.attribute.origin import Origin
+from softbgp.message.attribute.aspath import ASPath
+from softbgp.message.attribute.nexthop import NextHop
+from softbgp.message.attribute.med import MED
+from softbgp.message.attribute.localpref import LocalPreference
+from softbgp.message.attribute.atomicaggregate import AtomicAggregate
+from softbgp.message.attribute.aggregator import Aggregator
+from softbgp.message.attribute.community import Community
+from softbgp.message.attribute.originatorid import OriginatorID
+from softbgp.message.attribute.clusterlist import ClusterList
 
 LOG = logging.getLogger()
 

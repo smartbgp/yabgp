@@ -15,7 +15,7 @@
 
 """start service"""
 
-from openbgp.agent import prepare_service
+from softbgp.agent import prepare_service
 
 
 def main():

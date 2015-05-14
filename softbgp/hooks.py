@@ -17,7 +17,7 @@
 import sys
 from setuptools.command import easy_install
 
-from openbgp import version
+from softbgp import version
 
 
 # Global variables in this module doesn't work as we expect
@@ -63,7 +63,7 @@ def setup_hook(config):
     orig_get_version = packaging.get_version
 
     def my_get_version(package_name, pre_version=None):
-        if package_name == 'openbgp':
+        if package_name == 'softbgp':
             return str(version)
         return orig_get_version(package_name, pre_version)
 

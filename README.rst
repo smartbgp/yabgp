@@ -1,16 +1,16 @@
-openbgp
+softbgp
 =======
 
 |License| |Build Status| |Code Climate|
 
-What is openbgp?
+What is softbgp?
 ~~~~~~~~~~~~~~~~
 
-OpenBGP is a Python implementation for BGP Protocol. It was born in
+SoftBGP is a Python implementation for BGP Protocol. It was born in
 Cisco around 2011, we use it to establish BGP connections with all kinds
 of routers (include real Cisco/HuaWei/Juniper routers and some router
 simulators in Cisco like IOL/IOU) and receive/parse BGP messages for
-future analysis.
+future analysis. Now we open sourced it.
 
 We write it in strict accordance with the specifications of RFCs.
 
@@ -34,21 +34,21 @@ Features
 Quick Start
 ~~~~~~~~~~~
 
-We recommend run ``openbgp`` through python virtual-env from source
+We recommend run ``softbgp`` through python virtual-env from source
 code or pip install
 
-Use openbgp from source code:
+Use softbgp from source code:
 
 .. code:: bash
 
-    $ virtualenv openbgp-virl
-    $ source openbgp-virl/bin/activate
-    $ git clone https://github.com/openbgp/openbgp
-    $ cd openbgp
+    $ virtualenv softbgp-virl
+    $ source softbgp-virl/bin/activate
+    $ git clone https://github.com/softbgp/softbgp
+    $ cd softbgp
     $ pip install -r requirements.txt
     $ cd bin
-    $ python openbgpd -h
-    usage: openbgpd [-h] [--bgp-local_addr BGP_LOCAL_ADDR]
+    $ python softbgpd -h
+    usage: softbgpd [-h] [--bgp-local_addr BGP_LOCAL_ADDR]
                     [--bgp-local_as BGP_LOCAL_AS] [--bgp-md5 BGP_MD5]
                     [--bgp-remote_addr BGP_REMOTE_ADDR]
                     [--bgp-remote_as BGP_REMOTE_AS] [--config-dir DIR]
@@ -95,13 +95,13 @@ Use pip install
 
 .. code:: bash
 
-    $ virtualenv openbgp-virl
-    $ source openbgp-virl/bin/activate
-    $ pip install openbgp
-    $ which openbgpd
-    /home/bgpmon/openbgp-virl/bin/openbgpd
-    $ openbgpd -h
-    usage: openbgpd [-h] [--bgp-local_addr BGP_LOCAL_ADDR]
+    $ virtualenv softbgp-virl
+    $ source softbgp-virl/bin/activate
+    $ pip install softbgp
+    $ which softbgpd
+    /home/bgpmon/softbgp-virl/bin/softbgpd
+    $ softbgpd -h
+    usage: softbgpd [-h] [--bgp-local_addr BGP_LOCAL_ADDR]
                     [--bgp-local_as BGP_LOCAL_AS] [--bgp-md5 BGP_MD5]
                     [--bgp-remote_addr BGP_REMOTE_ADDR]
                     [--bgp-remote_as BGP_REMOTE_AS] [--config-dir DIR]
@@ -148,11 +148,11 @@ For example:
 
 .. code:: bash
 
-    $ openbgpd --bgp-local_addr=1.1.1.1 --bgp-local_as=65001 --bgp-remote_addr=1.1.1.2 --bgp-remote_as=65001 --bgp-md5=test --config-file=../etc/openbgp/openbgp.ini
+    $ softbgpd --bgp-local_addr=1.1.1.1 --bgp-local_as=65001 --bgp-remote_addr=1.1.1.2 --bgp-remote_as=65001 --bgp-md5=test --config-file=../etc/softbgp/softbgp.ini
 
 BGP message example:
 
-in ``openbgp.ini``, you can point out if you want to store the parsing
+in ``softbgp.ini``, you can point out if you want to store the parsing
 BGP message to local disk and where you want to put them in.
 
 ::
@@ -213,15 +213,15 @@ TODO
 Thanks
 ~~~~~~
 
-for core files like fsm, protocol, we copy some of the code from
+For core files like fsm, protocol, we copy some of the code from
 https://github.com/wikimedia/PyBal/blob/master/pybal/bgp.py,
 
 and message parsing, we reference from
 https://github.com/Exa-Networks/exabgp
 
 .. |License| image:: https://img.shields.io/hexpm/l/plug.svg
-   :target: https://github.com/openbgp/openbgp/blob/master/LICENSE
-.. |Build Status| image:: https://travis-ci.org/openbgp/openbgp.svg?branch=master
-   :target: https://travis-ci.org/openbgp/openbgp
-.. |Code Climate| image:: https://codeclimate.com/github/openbgp/openbgp/badges/gpa.svg
-   :target: https://codeclimate.com/github/openbgp/openbgp
+   :target: https://github.com/softbgp/softbgp/blob/master/LICENSE
+.. |Build Status| image:: https://travis-ci.org/softbgp/softbgp.svg?branch=master
+   :target: https://travis-ci.org/softbgp/softbgp
+.. |Code Climate| image:: https://codeclimate.com/github/softbgp/softbgp/badges/gpa.svg
+   :target: https://codeclimate.com/github/softbgp/softbgp

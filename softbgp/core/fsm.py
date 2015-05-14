@@ -17,8 +17,8 @@
 import time
 import logging
 
-from openbgp.core.timer import BGPTimer
-from openbgp.common import constants as bgp_cons
+from softbgp.core.timer import BGPTimer
+from softbgp.common import constants as bgp_cons
 
 LOG = logging.getLogger(__name__)
 

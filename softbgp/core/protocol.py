@@ -24,14 +24,14 @@ from ipaddr import IPv4Address
 from oslo.config import cfg
 from twisted.internet import protocol
 
-from openbgp.core.timer import BGPTimer
-from openbgp.common import constants as bgp_cons
-from openbgp.message.open import Open
-from openbgp.message.keepalive import KeepAlive
-from openbgp.message.update import Update
-from openbgp.message.notification import Notification
-from openbgp.message.route_refresh import RouteRefresh
-from openbgp.common import exception as excep
+from softbgp.core.timer import BGPTimer
+from softbgp.common import constants as bgp_cons
+from softbgp.message.open import Open
+from softbgp.message.keepalive import KeepAlive
+from softbgp.message.update import Update
+from softbgp.message.notification import Notification
+from softbgp.message.route_refresh import RouteRefresh
+from softbgp.common import exception as excep
 
 LOG = logging.getLogger(__name__)
 

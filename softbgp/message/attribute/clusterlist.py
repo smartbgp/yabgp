@@ -17,11 +17,11 @@ import struct
 
 from ipaddr import IPv4Address
 
-from openbgp.message.attribute import Attribute
-from openbgp.message.attribute import AttributeID
-from openbgp.message.attribute import AttributeFlag
-from openbgp.common import constants as bgp_cons
-from openbgp.common import exception as excep
+from softbgp.message.attribute import Attribute
+from softbgp.message.attribute import AttributeID
+from softbgp.message.attribute import AttributeFlag
+from softbgp.common import constants as bgp_cons
+from softbgp.common import exception as excep
 
 
 class ClusterList(Attribute):

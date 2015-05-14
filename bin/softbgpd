@@ -25,14 +25,14 @@ possible_topdir = os.path.normpath(os.path.join(os.path.abspath(__file__),
                                                 os.pardir,
                                                 os.pardir))
 if os.path.exists(os.path.join(possible_topdir,
-                               'openbgp',
+                               'softbgp',
                                '__init__.py')):
     sys.path.insert(0, possible_topdir)
 
 else:
     possible_topdir = '/'
 
-from openbgp.agent.cmd import main
+from softbgp.agent.cmd import main
 
 if __name__ == '__main__':
     sys.exit(main())
