@@ -18,8 +18,8 @@
 import struct
 from ipaddr import IPv4Address
 
-from softbgp.common import exception as excp
-from softbgp.common import constants as bgp_cons
+from yabgp.common import exception as excp
+from yabgp.common import constants as bgp_cons
 
 
 class Open(object):

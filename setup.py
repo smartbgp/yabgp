@@ -15,11 +15,11 @@
 
 import setuptools
 
-import softbgp.hooks
+import yabgp.hooks
 
-softbgp.hooks.save_orig()
+yabgp.hooks.save_orig()
 
 setuptools.setup(
-    name='softbgp',
+    name='yabgp',
     setup_requires=['pbr'],
     pbr=True)

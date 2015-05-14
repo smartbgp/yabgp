@@ -29,10 +29,10 @@ from twisted.internet import protocol
 from twisted.internet import reactor
 from oslo.config import cfg
 
-from softbgp.core.protocol import BGP
-from softbgp.core.fsm import FSM
-from softbgp.common import constants as bgp_cons
-from softbgp.common.afn import AFNUM_INET
+from yabgp.core.protocol import BGP
+from yabgp.core.fsm import FSM
+from yabgp.common import constants as bgp_cons
+from yabgp.common.afn import AFNUM_INET
 
 LOG = logging.getLogger(__name__)
 
@@ -340,7 +340,7 @@ class BGPPeering(BGPFactory):
 
         os_type = platform.system()
         if os_type != 'Linux':
-            LOG.error('OpenBGP has no MD5 support for %s' % os_type)
+            LOG.error('YABGP has no MD5 support for %s' % os_type)
             return None
 
         # address family

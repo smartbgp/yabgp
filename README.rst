@@ -1,12 +1,12 @@
-softbgp
-=======
+YABGP
+=====
 
 |License| |Build Status| |Code Climate|
 
-What is softbgp?
-~~~~~~~~~~~~~~~~
+What is yabgp?
+~~~~~~~~~~~~~~
 
-SoftBGP is a Python implementation for BGP Protocol. It was born in
+YABGP is a yet another Python implementation for BGP Protocol. It was born in
 Cisco around 2011, we use it to establish BGP connections with all kinds
 of routers (include real Cisco/HuaWei/Juniper routers and some router
 simulators in Cisco like IOL/IOU) and receive/parse BGP messages for
@@ -34,21 +34,21 @@ Features
 Quick Start
 ~~~~~~~~~~~
 
-We recommend run ``softbgp`` through python virtual-env from source
+We recommend run ``yabgp`` through python virtual-env from source
 code or pip install
 
-Use softbgp from source code:
+Use yabgp from source code:
 
 .. code:: bash
 
-    $ virtualenv softbgp-virl
-    $ source softbgp-virl/bin/activate
-    $ git clone https://github.com/softbgp/softbgp
-    $ cd softbgp
+    $ virtualenv yabgp-virl
+    $ source yabgp-virl/bin/activate
+    $ git clone https://github.com/yabgp/yabgp
+    $ cd yabgp
     $ pip install -r requirements.txt
     $ cd bin
-    $ python softbgpd -h
-    usage: softbgpd [-h] [--bgp-local_addr BGP_LOCAL_ADDR]
+    $ python yabgpd -h
+    usage: yabgpd [-h] [--bgp-local_addr BGP_LOCAL_ADDR]
                     [--bgp-local_as BGP_LOCAL_AS] [--bgp-md5 BGP_MD5]
                     [--bgp-remote_addr BGP_REMOTE_ADDR]
                     [--bgp-remote_as BGP_REMOTE_AS] [--config-dir DIR]
@@ -95,13 +95,13 @@ Use pip install
 
 .. code:: bash
 
-    $ virtualenv softbgp-virl
-    $ source softbgp-virl/bin/activate
-    $ pip install softbgp
-    $ which softbgpd
-    /home/bgpmon/softbgp-virl/bin/softbgpd
-    $ softbgpd -h
-    usage: softbgpd [-h] [--bgp-local_addr BGP_LOCAL_ADDR]
+    $ virtualenv yabgp-virl
+    $ source yabgp-virl/bin/activate
+    $ pip install yabgp
+    $ which yabgpd
+    /home/bgpmon/yabgp-virl/bin/yabgpd
+    $ yabgpd -h
+    usage: yabgpd [-h] [--bgp-local_addr BGP_LOCAL_ADDR]
                     [--bgp-local_as BGP_LOCAL_AS] [--bgp-md5 BGP_MD5]
                     [--bgp-remote_addr BGP_REMOTE_ADDR]
                     [--bgp-remote_as BGP_REMOTE_AS] [--config-dir DIR]
@@ -148,11 +148,11 @@ For example:
 
 .. code:: bash
 
-    $ softbgpd --bgp-local_addr=1.1.1.1 --bgp-local_as=65001 --bgp-remote_addr=1.1.1.2 --bgp-remote_as=65001 --bgp-md5=test --config-file=../etc/softbgp/softbgp.ini
+    $ yabgpd --bgp-local_addr=1.1.1.1 --bgp-local_as=65001 --bgp-remote_addr=1.1.1.2 --bgp-remote_as=65001 --bgp-md5=test --config-file=../etc/yabgp/yabgp.ini
 
 BGP message example:
 
-in ``softbgp.ini``, you can point out if you want to store the parsing
+in ``yabgp.ini``, you can point out if you want to store the parsing
 BGP message to local disk and where you want to put them in.
 
 ::
@@ -220,8 +220,8 @@ and message parsing, we reference from
 https://github.com/Exa-Networks/exabgp
 
 .. |License| image:: https://img.shields.io/hexpm/l/plug.svg
-   :target: https://github.com/softbgp/softbgp/blob/master/LICENSE
-.. |Build Status| image:: https://travis-ci.org/ctrlbgp/softbgp.svg?branch=master
-   :target: https://travis-ci.org/ctrlbgp/softbgp
-.. |Code Climate| image:: https://codeclimate.com/github/ctrlbgp/softbgp/badges/gpa.svg
-   :target: https://codeclimate.com/github/ctrlbgp/softbgp
+   :target: https://github.com/yabgp/yabgp/blob/master/LICENSE
+.. |Build Status| image:: https://travis-ci.org/smartbgp/yabgp.svg?branch=master
+   :target: https://travis-ci.org/smartbgp/yabgp
+.. |Code Climate| image:: https://codeclimate.com/github/smartbgp/yabgp/badges/gpa.svg
+   :target: https://codeclimate.com/github/smartbgp/yabgp

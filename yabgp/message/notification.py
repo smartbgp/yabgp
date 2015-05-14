@@ -17,8 +17,8 @@
 
 import struct
 
-from softbgp.common import exception as excep
-from softbgp.common import constants as bgp_cons
+from yabgp.common import exception as excep
+from yabgp.common import constants as bgp_cons
 
 
 class Notification(object):

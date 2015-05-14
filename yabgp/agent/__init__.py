@@ -20,11 +20,11 @@ import logging
 from oslo.config import cfg
 from twisted.internet import reactor
 
-from softbgp import version
-from softbgp.core.factory import BGPPeering
-from softbgp.common.config import get_bgp_config
-from softbgp.common import constants as bgp_cons
-from softbgp.common import log
+from yabgp import version
+from yabgp.core.factory import BGPPeering
+from yabgp.common.config import get_bgp_config
+from yabgp.common import constants as bgp_cons
+from yabgp.common import log
 log.early_init_log(logging.DEBUG)
 
 CONF = cfg.CONF
@@ -82,10 +82,10 @@ def prepare_twisted_service():
 
 def prepare_service(args=None):
     try:
-        CONF(args=args, project='softbgp', version=version,
-             default_config_files=['/etc/softbgp/softbgp.ini'])
+        CONF(args=args, project='yabgp', version=version,
+             default_config_files=['/etc/yabgp/yabgp.ini'])
     except cfg.ConfigFilesNotFoundError:
-        CONF(args=args, project='softbgp', version=version)
+        CONF(args=args, project='yabgp', version=version)
 
     log.init_log()
     LOG.info('Log (Re)opened.')

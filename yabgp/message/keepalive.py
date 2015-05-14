@@ -17,8 +17,8 @@
 
 import struct
 
-from softbgp.common.exception import MessageHeaderError
-from softbgp.common.constants import ERR_MSG_HDR_BAD_MSG_LEN
+from yabgp.common.exception import MessageHeaderError
+from yabgp.common.constants import ERR_MSG_HDR_BAD_MSG_LEN
 
 
 class KeepAlive(object):

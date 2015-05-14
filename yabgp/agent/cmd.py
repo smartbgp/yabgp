@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding:utf-8 -*-
-
 # Copyright 2015 Cisco Systems, Inc.
 # All rights reserved.
 #
@@ -16,23 +13,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-""" BGP daemon """
+"""start service"""
 
-import os
-import sys
+from yabgp.agent import prepare_service
 
-possible_topdir = os.path.normpath(os.path.join(os.path.abspath(__file__),
-                                                os.pardir,
-                                                os.pardir))
-if os.path.exists(os.path.join(possible_topdir,
-                               'softbgp',
-                               '__init__.py')):
-    sys.path.insert(0, possible_topdir)
 
-else:
-    possible_topdir = '/'
-
-from softbgp.agent.cmd import main
-
-if __name__ == '__main__':
-    sys.exit(main())
+def main():
+    prepare_service()

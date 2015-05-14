@@ -56,4 +56,4 @@ docs/_build/
 # PyBuilder
 target/
 .idea/
-etc/softbgp/softbgp.ini
+etc/yabgp/yabgp.ini

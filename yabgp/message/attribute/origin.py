@@ -15,11 +15,11 @@
 
 import struct
 
-from softbgp.message.attribute import Attribute
-from softbgp.message.attribute import AttributeFlag
-from softbgp.message.attribute import AttributeID
-from softbgp.common import constants as bgp_cons
-from softbgp.common import exception as excep
+from yabgp.message.attribute import Attribute
+from yabgp.message.attribute import AttributeFlag
+from yabgp.message.attribute import AttributeID
+from yabgp.common import constants as bgp_cons
+from yabgp.common import exception as excep
 
 
 class Origin(Attribute):
