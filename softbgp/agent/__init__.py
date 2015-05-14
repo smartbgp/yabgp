@@ -82,10 +82,10 @@ def prepare_twisted_service():
 
 def prepare_service(args=None):
     try:
-        CONF(args=args, project='openbgp', version=version,
-             default_config_files=['/etc/openbgp/openbgp.ini'])
+        CONF(args=args, project='softbgp', version=version,
+             default_config_files=['/etc/softbgp/softbgp.ini'])
     except cfg.ConfigFilesNotFoundError:
-        CONF(args=args, project='openbgp', version=version)
+        CONF(args=args, project='softbgp', version=version)
 
     log.init_log()
     LOG.info('Log (Re)opened.')

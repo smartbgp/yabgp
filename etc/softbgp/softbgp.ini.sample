@@ -44,7 +44,7 @@
 # ===================== items for peer configuration ================================
 # the following parameters will be ignored if conf_file is configured
 # and this configuration only support one bgp peer, if you need start more peers in
-# one openbgp process, please use conf_file to configure them.
+# one softbgp process, please use conf_file to configure them.
 
 # remote as number
 # remote_as =

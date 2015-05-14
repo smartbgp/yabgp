@@ -15,11 +15,11 @@
 
 import setuptools
 
-import openbgp.hooks
+import softbgp.hooks
 
-openbgp.hooks.save_orig()
+softbgp.hooks.save_orig()
 
 setuptools.setup(
-    name='openbgp',
+    name='softbgp',
     setup_requires=['pbr'],
     pbr=True)
