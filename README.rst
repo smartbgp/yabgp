@@ -221,7 +221,7 @@ https://github.com/Exa-Networks/exabgp
 
 .. |License| image:: https://img.shields.io/hexpm/l/plug.svg
    :target: https://github.com/softbgp/softbgp/blob/master/LICENSE
-.. |Build Status| image:: https://travis-ci.org/softbgp/softbgp.svg?branch=master
-   :target: https://travis-ci.org/softbgp/softbgp
-.. |Code Climate| image:: https://codeclimate.com/github/softbgp/softbgp/badges/gpa.svg
-   :target: https://codeclimate.com/github/softbgp/softbgp
+.. |Build Status| image:: https://travis-ci.org/ctrlbgp/softbgp.svg?branch=master
+   :target: https://travis-ci.org/ctrlbgp/softbgp
+.. |Code Climate| image:: https://codeclimate.com/github/ctrlbgp/softbgp/badges/gpa.svg
+   :target: https://codeclimate.com/github/ctrlbgp/softbgp
