@@ -3,15 +3,25 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to yabgp's documentation!
-=================================
+YABGP Project
+=============
 
-Contents:
+YABGP is a yet another Python implementation for BGP Protocol. It was born in
+Cisco around 2011, we use it to establish BGP connections with all kinds
+of routers (include real Cisco/HuaWei/Juniper routers and some router
+simulators in Cisco like IOL/IOU) and receive/parse BGP messages for
+future analysis. Now we open sourced it.
+
+We write it in strict accordance with the specifications of RFCs.
+
+This software can be used on Linux/Unix, Mac OS and Windows systems.
+
+
+Quickstarts
+===========
 
 .. toctree::
-   :maxdepth: 2
-
-
+   :maxdepth: 1
 
 Indices and tables
 ==================
