@@ -122,7 +122,6 @@ TODO
 
 -  support more address family (IPv6, VPNv4, VPNv6, etc.)
 -  support RESTful API, send message/control peer state, etc.
--  documentation
 -  unittest
 -  others
 

@@ -12,16 +12,48 @@ of routers (include real Cisco/HuaWei/Juniper routers and some router
 simulators in Cisco like IOL/IOU) and receive/parse BGP messages for
 future analysis. Now we open sourced it.
 
-We write it in strict accordance with the specifications of RFCs.
+We write it accordance with the specifications of RFCs.
 
 This software can be used on Linux/Unix, Mac OS and Windows systems.
 
+Features
+========
+
+-  It can establish BGP session based on IPv4 address (TCP Layer) in
+   active mode(as TCP client);
+
+-  Support TCP MD5 authentication(IPv4 and does not support Windows
+   now);
+
+-  BGP capabilities support: 4 Bytes ASN, IPv4 address family, Route
+   Refresh(Cisco Route Refresh);
+
+-  Decode all BGP messages to human readable strings and write files to
+   disk(configurable);
+
+.. note::
+
+  yabgp is a light weight BGP agent used for connecting network devices. It only can be
+  TCP client in one BGP peering connection, and we recommend that each yabgp process connect
+  only one BGP neighbor, so each process is independent with each other, we can start many yabgp
+  processes within the same machine or in different machines.
 
 Quickstarts
 ===========
 
 .. toctree::
    :maxdepth: 1
+
+   install
+   tutorial
+   msg_format
+   reference
+
+Support
+=======
+
+Please use GitHub issue system or submit pull request.
+
 
 Indices and tables
 ==================
