@@ -65,7 +65,7 @@ class BGPFactory(protocol.Factory):
         :param connector : Twisted connector
         :param reason : connection faied reason.
         """
-        LOG.info("Client connection lost:%s" % reason.getErrorMessage())
+        LOG.info("Client connection lost:%s", reason.getErrorMessage())
 
 
 class BGPPeering(BGPFactory):
@@ -85,7 +85,7 @@ class BGPPeering(BGPFactory):
         :param afisafi: afi and safi
         :param md5: TCP md5 string
         """
-        LOG.info('Init BGPPeering for peer %s' % peeraddr)
+        LOG.info('Init BGPPeering for peer %s', peeraddr)
         self.my_asn = myasn
         self.my_addr = myaddr
         self.peer_addr = peeraddr
@@ -109,8 +109,8 @@ class BGPPeering(BGPFactory):
             self.msg_seq = self.get_last_seq()
             self.msg_file = open(os.path.join(self.msg_path, self.msg_file_name), 'a')
             self.msg_file.flush()
-            LOG.info('BGP message file %s' % self.msg_file_name)
-            LOG.info('The last bgp message seq number is %s' % self.msg_seq)
+            LOG.info('BGP message file %s', self.msg_file_name)
+            LOG.info('The last bgp message seq number is %s', self.msg_seq)
 
     def buildProtocol(self, addr):
 
@@ -118,7 +118,7 @@ class BGPPeering(BGPFactory):
 
         :param addr: IP address used for building protocol.
         """
-        LOG.info("[%s]Building a new BGP protocol instance" % self.peer_addr)
+        LOG.info("[%s]Building a new BGP protocol instance", self.peer_addr)
 
         p = BGPFactory.buildProtocol(self, addr)
         if p is not None:
@@ -152,7 +152,7 @@ class BGPPeering(BGPFactory):
         :param reason: connection failed reason
         """
 
-        error_msg = "[%s]Client connection failed: " % self.peer_addr, reason.getErrorMessage()
+        error_msg = "[%s]Client connection failed: ", self.peer_addr, reason.getErrorMessage()
         if self.msg_path:
             self.write_msg(
                 timestamp=time.time(),
@@ -167,8 +167,7 @@ class BGPPeering(BGPFactory):
         try:
             self.fsm.connection_failed()
         except Exception as e:
-            msg = "[%s]Client connection failed: %s" % (self.peer_addr, e)
-            LOG.info(msg)
+            LOG.info("[%s]Client connection failed: %s", self.peer_addr, e)
 
     def get_last_seq(self):
 
@@ -235,8 +234,8 @@ class BGPPeering(BGPFactory):
                     CONF.message.write_msg_max_size:
                 self.msg_file.close()
 
-                self.msg_file_name = "%s.msg" % time.time()
-                LOG.info('Open a new message file %s' % self.msg_file_name)
+                self.msg_file_name = "%s.msg", time.time()
+                LOG.info('Open a new message file %s', self.msg_file_name)
                 self.msg_file = open(self.msg_path + self.msg_file_name, 'ab')
                 return True
         return False
@@ -273,7 +272,7 @@ class BGPPeering(BGPFactory):
         :param disconnect: the status of connection
         """
 
-        LOG.info("[%s]Connection closed" % self.peer_addr)
+        LOG.info("[%s]Connection closed", self.peer_addr)
         if pro is not None:
             # Connection succeeded previously, protocol exists
             # Remove the protocol, if it exists
@@ -302,7 +301,7 @@ class BGPPeering(BGPFactory):
 
         if self.peer_id is None:
             self.peer_id = bgp_id
-            LOG.info('Set BGP peer id %s' % bgp_id)
+            LOG.info('Set BGP peer id %s', bgp_id)
         elif self.peer_id != bgp_id:
             # Ouch, schizophrenia. The BGP id of the peer is unequal to
             # the ids of current and/or previous sessions. Close all
@@ -315,7 +314,7 @@ class BGPPeering(BGPFactory):
         BGPPeering or FSM, otherwise use manualStart() instead.
         """
         # DEBUG
-        LOG.info("(Re)connect to %s" % self.peer_addr)
+        LOG.info("(Re)connect to %s", self.peer_addr)
 
         if self.fsm.state != bgp_cons.ST_ESTABLISHED:
 
@@ -340,7 +339,7 @@ class BGPPeering(BGPFactory):
 
         os_type = platform.system()
         if os_type != 'Linux':
-            LOG.error('YABGP has no MD5 support for %s' % os_type)
+            LOG.error('YABGP has no MD5 support for %s', os_type)
             return None
 
         # address family
@@ -365,5 +364,5 @@ class BGPPeering(BGPFactory):
             else:
                 return None
         except socket.error, e:
-            LOG.error('This linux machine does not support TCP_MD5SIG, you can not use MD5 (%s)' % str(e))
+            LOG.error('This linux machine does not support TCP_MD5SIG, you can not use MD5 (%s)', str(e))
             return None

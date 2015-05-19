@@ -83,7 +83,7 @@ class BGP(protocol.Protocol):
         # set tcp option if you want
         #  self.transport.getHandle().setsockopt(socket.IPPROTO_TCP, TCP_MD5SIG, md5sig)
 
-        LOG.info("[%s]TCP Connection established" % self.factory.peer_addr)
+        LOG.info("[%s]TCP Connection established", self.factory.peer_addr)
 
         # Set the local BGP id from the local IP address if it's not set
         if self.factory.bgp_id is None:
@@ -114,7 +114,7 @@ class BGP(protocol.Protocol):
             LOG.info('Connection lost return and do nothing')
             return
 
-        LOG.info("[%s]Connection lost:%s" % (self.factory.peer_addr, reason.getErrorMessage()))
+        LOG.info("[%s]Connection lost:%s", self.factory.peer_addr, reason.getErrorMessage())
 
         try:
             # tell FSM that TCP connection is lost.
@@ -178,8 +178,7 @@ class BGP(protocol.Protocol):
                         },
                         afi_safi=afi_safi
                     )
-                    LOG.error('[%s] Update message error: sub error=%s' % (
-                        self.factory.peer_addr, result['SubError']))
+                    LOG.error('[%s] Update message error: sub error=%s', self.factory.peer_addr, result['SubError'])
                 else:
                     # no error
                     # get address family
@@ -336,8 +335,9 @@ class BGP(protocol.Protocol):
         :return:
         """
         self.msg_sent_stat['Notifications'] += 1
-        LOG.info("[%s]Send a BGP Notification message to the peer [Error: %s, Suberror: %s, Error data: %s ]"
-                 % (self.factory.peer_addr, error, sub_error, [ord(d) for d in data]))
+        LOG.info(
+            "[%s]Send a BGP Notification message to the peer [Error: %s, Suberror: %s, Error data: %s ]",
+            self.factory.peer_addr, error, sub_error, [ord(d) for d in data])
         # message statistic
         self.msg_sent_stat['Notifications'] += 1
         # construct message
@@ -350,8 +350,9 @@ class BGP(protocol.Protocol):
         BGP notification message received.
         """
         self.msg_recv_stat['Notifications'] += 1
-        LOG.info('[%s]Notification message received, error=%s, sub error=%s, data=%s' % (self.factory.peer_addr,
-                                                                                         msg[0], msg[1], msg[2]))
+        LOG.info(
+            '[%s]Notification message received, error=%s, sub error=%s, data=%s',
+            self.factory.peer_addr, msg[0], msg[1], msg[2])
         nofi_msg = {'Error': msg[0], 'Suberror': msg[1], 'Error data': [ord(d) for d in msg[2]]}
         self.factory.write_msg(
             timestamp=time.time(),
@@ -368,7 +369,7 @@ class BGP(protocol.Protocol):
         send BGP keepalive message.
         """
         self.msg_sent_stat['Keepalives'] += 1
-        LOG.info("[%s]Send a BGP KeepAlive message to the peer." % self.factory.peer_addr)
+        LOG.info("[%s]Send a BGP KeepAlive message to the peer.", self.factory.peer_addr)
         # message statistci
         # self.msg_sent_stat['Keepalives'] += 1
         # construct message
@@ -385,7 +386,7 @@ class BGP(protocol.Protocol):
         :return:
         """
         self.msg_recv_stat['Keepalives'] += 1
-        LOG.info("[%s]A BGP KeepAlive message was received from peer." % self.factory.peer_addr)
+        LOG.info("[%s]A BGP KeepAlive message was received from peer.", self.factory.peer_addr)
         KeepAlive().parse(msg)
 
         # write bgp message
@@ -405,10 +406,10 @@ class BGP(protocol.Protocol):
         :return:
         """
         self.msg_sent_stat['Opens'] += 1
-        LOG.info("[%s]Send a BGP Open message to the peer." % self.factory.peer_addr)
-        LOG.info("[%s]Probe's Capabilities:" % self.factory.peer_addr)
+        LOG.info("[%s]Send a BGP Open message to the peer.", self.factory.peer_addr)
+        LOG.info("[%s]Probe's Capabilities:", self.factory.peer_addr)
         for key in self.fsm.my_capability:
-            LOG.info("--%s = %s" % (key, self.fsm.my_capability[key]))
+            LOG.info("--%s = %s", key, self.fsm.my_capability[key])
         # construct message
         # self.fsm.my_capability = self.fsm.neighbor_capability
         open_msg = Open(version=bgp_cons.VERSION, asn=self.factory.my_asn, hold_time=self.fsm.hold_time,
@@ -434,14 +435,14 @@ class BGP(protocol.Protocol):
         # Open message Capabilities negotiation
         self.fsm.neighbor_capability = open_msg.capa_dict
 
-        LOG.info("[%s]A BGP Open message was received" % self.factory.peer_addr)
-        LOG.info('--version = %s' % open_msg.version)
-        LOG.info('--ASN = %s' % open_msg.asn)
-        LOG.info('--hold time = %s' % open_msg.hold_time)
-        LOG.info('--id = %s' % open_msg.bgp_id)
-        LOG.info("[%s]Neighbor's Capabilities:" % self.factory.peer_addr)
+        LOG.info("[%s]A BGP Open message was received", self.factory.peer_addr)
+        LOG.info('--version = %s', open_msg.version)
+        LOG.info('--ASN = %s', open_msg.asn)
+        LOG.info('--hold time = %s', open_msg.hold_time)
+        LOG.info('--id = %s', open_msg.bgp_id)
+        LOG.info("[%s]Neighbor's Capabilities:", self.factory.peer_addr)
         for key in self.fsm.neighbor_capability:
-            LOG.info("--%s = %s" % (key, self.fsm.neighbor_capability[key]))
+            LOG.info("--%s = %s", key, self.fsm.neighbor_capability[key])
 
         # write bgp message
         self.factory.write_msg(
@@ -465,7 +466,7 @@ class BGP(protocol.Protocol):
         :param safi:
         :param res:
         """
-        LOG.info("[%s]Send BGP RouteRefresh message to the peer." % self.factory.peer_addr)
+        LOG.info("[%s]Send BGP RouteRefresh message to the peer.", self.factory.peer_addr)
         if afi and safi and res is not None:
             if self.fsm.neighbor_capability["ciscoRouteRefresh"]:
                 msg_routerefresh = RouteRefresh(afi, safi, res).construct(bgp_cons.MSG_CISCOROUTEREFRESH)
@@ -495,8 +496,9 @@ class BGP(protocol.Protocol):
 
         :param msg: msg content
         """
-        LOG.info('[%s]Route Refresh message received, afi=%s, res=%s, safi=%s' %
-                 (self.factory.peer_addr, msg[0], msg[1], msg[2]))
+        LOG.info(
+            '[%s]Route Refresh message received, afi=%s, res=%s, safi=%s',
+            self.factory.peer_addr, msg[0], msg[1], msg[2])
 
     def negotiate_hold_time(self, hold_time):
 
@@ -507,5 +509,6 @@ class BGP(protocol.Protocol):
             self.fsm.open_message_error(bgp_cons.ERR_MSG_OPEN_UNACCPT_HOLD_TIME)
             # Derived times
         self.fsm.keep_alive_time = self.fsm.hold_time / 3
-        LOG.info("[%s]Hold time:%s,Keepalive time:%s" % (self.factory.peer_addr,
-                                                         self.fsm.hold_time, self.fsm.keep_alive_time))
+        LOG.info(
+            "[%s]Hold time:%s,Keepalive time:%s", self.factory.peer_addr,
+            self.fsm.hold_time, self.fsm.keep_alive_time)

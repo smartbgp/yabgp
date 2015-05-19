@@ -38,7 +38,7 @@ def check_msg_config():
     if CONF.message.write_disk:
         if not os.path.exists(CONF.message.write_dir):
             os.makedirs(CONF.message.write_dir)
-            LOG.info('Create dir %s' % CONF.message.write_dir)
+            LOG.info('Create dir %s', CONF.message.write_dir)
         CONF.message.write_msg_max_size = CONF.message.write_msg_max_size * 1024 * 1024
 
 
@@ -47,7 +47,7 @@ def prepare_twisted_service():
     # check all peers
     all_peers = {}
     for peer in CONF.bgp.running_config:
-        LOG.info('Get peer %s configuration' % peer)
+        LOG.info('Get peer %s configuration', peer)
         if CONF.message.write_disk:
             msg_file_path_for_peer = os.path.join(
                 CONF.message.write_dir,
@@ -55,8 +55,8 @@ def prepare_twisted_service():
             )
             if not os.path.exists(msg_file_path_for_peer):
                 os.makedirs(msg_file_path_for_peer)
-                LOG.info('Create dir %s for peer %s' % (msg_file_path_for_peer, peer))
-            LOG.info('BGP message file path is %s' % msg_file_path_for_peer)
+                LOG.info('Create dir %s for peer %s', msg_file_path_for_peer, peer)
+            LOG.info('BGP message file path is %s', msg_file_path_for_peer)
         else:
             msg_file_path_for_peer = None
         LOG.info('Create BGPPeering instance')
@@ -75,7 +75,7 @@ def prepare_twisted_service():
         all_peers[peer] = bgp_peering
 
     for peer in all_peers:
-        LOG.info('start peer, peer address=%s' % peer)
+        LOG.info('start peer, peer address=%s', peer)
         all_peers[peer].automatic_start()
     reactor.run()
 
