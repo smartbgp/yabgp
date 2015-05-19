@@ -77,7 +77,7 @@ def get_bgp_config():
     """
     # check bgp_conf_file
     if CONF.bgp.config_file:
-        LOG.info('Try to load BGP configuration from %s' % CONF.bgp.config_file)
+        LOG.info('Try to load BGP configuration from %s', CONF.bgp.config_file)
         LOG.error('Failed to load BGP configuration')
         # TODO parse xml config file to get multi bgp config
         # will be supported in future
@@ -94,9 +94,9 @@ def get_bgp_config():
                 'md5': CONF.bgp.md5,
                 'afi_safi': CONF.bgp.afi_safi
             }
-            LOG.info('Get BGP running configuration for peer %s' % CONF.bgp.remote_addr)
+            LOG.info('Get BGP running configuration for peer %s', CONF.bgp.remote_addr)
             for item in CONF.bgp.running_config[CONF.bgp.remote_addr]:
-                LOG.info("%s = %s" % (item, CONF.bgp.running_config[CONF.bgp.remote_addr][item]))
+                LOG.info("%s = %s", item, CONF.bgp.running_config[CONF.bgp.remote_addr][item])
             return
         else:
             LOG.error('Please provide enough parameters!')

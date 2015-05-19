@@ -1,7 +1,7 @@
 YABGP
 =====
 
-|Join Chat| |License| |Build Status| |Code Climate|
+|Join Chat| |License| |Build Status| |Code Climate| |Code Health|
 
 What is yabgp?
 ~~~~~~~~~~~~~~
@@ -142,12 +142,14 @@ and message parsing, we reference from
 https://github.com/Exa-Networks/exabgp
 
 .. |License| image:: https://img.shields.io/hexpm/l/plug.svg
-   :target: https://github.com/yabgp/yabgp/blob/master/LICENSE
+   :target: https://github.com/smartbgp/yabgp/blob/master/LICENSE
 .. |Build Status| image:: https://travis-ci.org/smartbgp/yabgp.svg?branch=master
    :target: https://travis-ci.org/smartbgp/yabgp
 .. |Code Climate| image:: https://codeclimate.com/github/smartbgp/yabgp/badges/gpa.svg
    :target: https://codeclimate.com/github/smartbgp/yabgp
 
 .. |Join Chat| image:: https://badges.gitter.im/Join%20Chat.svg
-   :alt: Join the chat at https://gitter.im/smartbgp/yabgp
    :target: https://gitter.im/smartbgp/yabgp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
+.. |Code Health| image:: https://landscape.io/github/smartbgp/yabgp/master/landscape.svg?style=flat
+   :target: https://landscape.io/github/smartbgp/yabgp/master

@@ -76,7 +76,7 @@ class FSM(object):
     def __setattr__(self, name, value):
 
         if name == 'state' and value != getattr(self, name):
-            LOG.info("[%s]State is now:%s" % (self.bgp_peering.peer_addr, bgp_cons.stateDescr[value]))
+            LOG.info("[%s]State is now:%s", self.bgp_peering.peer_addr, bgp_cons.stateDescr[value])
             if value == bgp_cons.ST_ESTABLISHED:
                 self.uptime = time.time()
         super(FSM, self).__setattr__(name, value)
@@ -111,7 +111,7 @@ class FSM(object):
             for timer in (self.connect_retry_timer, self.hold_timer, self.keep_alive_timer,
                           self.delay_open_timer, self.idle_hold_timer):
                 timer.cancel()
-                LOG.info('-- Stop timer %s' % timer)
+                LOG.info('-- Stop timer %s', timer)
             self._close_connection()
             self.connect_retry_counter = 0
             self.allow_automatic_start = False
@@ -131,15 +131,15 @@ class FSM(object):
         LOG.info('Automatic start')
         if self.state in [bgp_cons.ST_IDLE, bgp_cons.ST_CONNECT]:
             if idle_hold:
-                LOG.info('Idle Hold, please wait time=%s' % self.idle_hold_time)
+                LOG.info('Idle Hold, please wait time=%s', self.idle_hold_time)
                 self.idle_hold_timer.reset(self.idle_hold_time)
                 return False
             elif self.allow_automatic_start:
                 LOG.info('Do not need Idle Hold, start right now.')
-                LOG.info('Connect retry counter: %s' % self.connect_retry_counter)
+                LOG.info('Connect retry counter: %s', self.connect_retry_counter)
                 self.connect_retry_counter += 1
                 self.connect_retry_timer.reset(self.connect_retry_time)
-                LOG.info('Connect retry timer, time=%s' % self.connect_retry_time)
+                LOG.info('Connect retry timer, time=%s', self.connect_retry_time)
                 self.state = bgp_cons.ST_CONNECT
                 return True
             else:
@@ -158,7 +158,7 @@ class FSM(object):
         if self.state in (bgp_cons.ST_CONNECT, bgp_cons.ST_ACTIVE):
             # State Connect, event 9
             self._close_connection()
-            LOG.info('Reset connect retry timer, time=%s' % self.connect_retry_time)
+            LOG.info('Reset connect retry timer, time=%s', self.connect_retry_time)
             self.connect_retry_timer.reset(self.connect_retry_time)
             self.delay_open_timer.cancel()
             LOG.info('Cancel delay open timer')

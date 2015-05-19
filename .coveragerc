@@ -1,0 +1,7 @@
+[run]
+branch = True
+source = yabgp
+omit = yabgp/tests/*
+
+[report]
+ignore-errors = True

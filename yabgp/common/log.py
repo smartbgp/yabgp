@@ -102,12 +102,12 @@ def init_log():
         mode = int(CONF.log_file_mode, 8)
         os.chmod(log_file, mode)
         for handler in log.handlers:
-                    handler.setFormatter(logging.Formatter(INFOR_LOG_FORMAT))
+            handler.setFormatter(logging.Formatter(INFOR_LOG_FORMAT))
 
     if CONF.verbose:
         log.setLevel(logging.DEBUG)
         for handler in log.handlers:
-                    handler.setFormatter(logging.Formatter(DEBUG_LOG_FORMAT))
+            handler.setFormatter(logging.Formatter(DEBUG_LOG_FORMAT))
     else:
         log.setLevel(logging.INFO)
         _set_log_format(log.handlers, INFOR_LOG_FORMAT)
