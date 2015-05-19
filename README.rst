@@ -43,7 +43,7 @@ Use yabgp from source code:
 
     $ virtualenv yabgp-virl
     $ source yabgp-virl/bin/activate
-    $ git clone https://github.com/yabgp/yabgp
+    $ git clone https://github.com/smartbgp/yabgp
     $ cd yabgp
     $ pip install -r requirements.txt
     $ cd bin
