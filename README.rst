@@ -153,3 +153,6 @@ https://github.com/Exa-Networks/exabgp
 
 .. |Code Health| image:: https://landscape.io/github/smartbgp/yabgp/master/landscape.svg?style=flat
    :target: https://landscape.io/github/smartbgp/yabgp/master
+
+.. |Coverage| image:: https://coveralls.io/repos/smartbgp/yabgp/badge.svg
+   :target: https://coveralls.io/r/smartbgp/yabgp
