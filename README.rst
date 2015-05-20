@@ -1,7 +1,7 @@
 YABGP
 =====
 
-|Join Chat| |License| |Build Status| |Code Climate| |Code Health|
+|Join Chat| |License| |Build Status| |Code Climate| |Code Health| |Documentation Status|
 
 What is yabgp?
 ~~~~~~~~~~~~~~
@@ -153,6 +153,9 @@ https://github.com/Exa-Networks/exabgp
 
 .. |Code Health| image:: https://landscape.io/github/smartbgp/yabgp/master/landscape.svg?style=flat
    :target: https://landscape.io/github/smartbgp/yabgp/master
+
+.. |Documentation Status| image:: https://readthedocs.org/projects/yabgp/badge/?version=latest
+   :target: https://readthedocs.org/projects/yabgp/?badge=latest
 
 .. |Coverage| image:: https://coveralls.io/repos/smartbgp/yabgp/badge.svg
    :target: https://coveralls.io/r/smartbgp/yabgp
