@@ -25,11 +25,23 @@ from yabgp.message.attribute.origin import Origin
 
 class TestOrigin(unittest.TestCase):
 
-    def test_parse(self):
+    def setUp(self):
+        self.origin = Origin()
 
-        parsed_value = Origin().parse(value='\x01')
-        self.assertEqual(1, parsed_value)
-        # unkonwn Origin value 3
+    def tearDown(self):
+        del self.origin
+
+    def test_origin_igp(self):
+        self.assertEqual(Origin.IGP, self.origin.parse(value='\x00'))
+
+    def test_origin_egp(self):
+        self.assertEqual(Origin.EGP, self.origin.parse(value='\x01'))
+
+    def test_origin_incomplete(self):
+        self.assertEqual(Origin.INCOMPLETE, self.origin.parse(value='\x02'))
+
+    def test_invalid_origin(self):
+
         self.assertRaises(UpdateMessageError, Origin().parse, '\x03')
         try:
             Origin().parse('\x03')
