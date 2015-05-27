@@ -157,5 +157,5 @@ https://github.com/Exa-Networks/exabgp
 .. |Documentation Status| image:: https://readthedocs.org/projects/yabgp/badge/?version=latest
    :target: https://readthedocs.org/projects/yabgp/?badge=latest
 
-.. |Test Coverage| image:: https://coveralls.io/repos/smartbgp/yabgp/badge.svg
+.. |Test Coverage| image:: https://coveralls.io/repos/smartbgp/yabgp/badge.svg?branch=master 
    :target: https://coveralls.io/r/smartbgp/yabgp
