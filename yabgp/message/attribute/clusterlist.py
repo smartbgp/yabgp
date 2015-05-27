@@ -54,32 +54,24 @@ class ClusterList(Attribute):
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                 data=repr(value))
-        try:
-            while value:
-                cluster_list.append(IPv4Address(struct.unpack('!I', value[0:4])[0]).__str__())
-                value = value[4:]
-        except Exception:
-            raise excep.UpdateMessageError(
-                sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
-                data=repr(value))
+        while value:
+            cluster_list.append(IPv4Address(struct.unpack('!I', value[0:4])[0]).__str__())
+            value = value[4:]
         return cluster_list
 
-    def construct(self, value, flags=None):
+    def construct(self, value):
 
         """
         construct a CLUSTER_LIST path attribute
         :param value:
-        :param flags:
         """
         cluster_raw = ''
-        if not flags:
-            flags = self.FLAG
         try:
             for cluster in value:
                 cluster_raw += IPv4Address(cluster).packed
-            return struct.pack("!B", flags) + struct.pack('!B', self.ID) \
+            return struct.pack("!B", self.FLAG) + struct.pack('!B', self.ID) \
                 + struct.pack("!B", len(cluster_raw)) + cluster_raw
         except Exception:
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
-                data=struct.pack('B', flags))
+                data=struct.pack('B', self.FLAG))

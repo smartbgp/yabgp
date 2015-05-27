@@ -17,9 +17,6 @@
 
 import struct
 
-from yabgp.common import exception as excep
-from yabgp.common import constants as bgp_cons
-
 
 class Notification(object):
 
@@ -35,13 +32,8 @@ class Notification(object):
 
         :param message: input raw binary message data
         """
-        try:
-            error, suberror = struct.unpack('!BB', message[:2])
-            data = message[2:]
-        except:
-            raise excep.UpdateMessageError(
-                sub_error=bgp_cons.ERR_MSG_HDR_BAD_MSG_LEN,
-                data=repr(message))
+        error, suberror = struct.unpack('!BB', message[:2])
+        data = message[2:]
         return error, suberror, data
 
     def construct_header(self, message):

@@ -32,17 +32,6 @@ class Community(Attribute):
         The COMMUNITIES attribute has Type Code 8.
         http://www.iana.org/assignments/bgp-well-known-communities/bgp-well-known-communities.xml
     """
-    # Reserved = range(0x00000000,0xFFFEFFFF)
-    PLANNED_SHUT = 0xFFFF0000
-    ACCEPT_OWN = 0xFFFF0001
-    ROUTE_FILTER_TRANSLATED_v4 = 0xFFFF0002
-    ROUTE_FILTER_v4 = 0xFFFF0003
-    ROUTE_FILTER_TRANSLATED_v6 = 0xFFFF0004
-    ROUTE_FILTER_v6 = 0xFFFF0005
-    NO_EXPORT = 0xFFFFFF01
-    NO_ADVERTISE = 0xFFFFFF02
-    NO_EXPORT_SUBCONFED = 0xFFFFFF03
-    NOPEER = 0xFFFFFF04
 
     ID = AttributeID.COMMUNITY
     FLAG = AttributeFlag.OPTIONAL + AttributeFlag.TRANSITIVE
@@ -59,8 +48,8 @@ class Community(Attribute):
                 value_list = list(struct.unpack('!%dH' % length, value))
                 while value_list:
                     value_type = value_list[0] * 16 * 16 * 16 * 16 + value_list[1]
-                    if 'UNKNOW' != self.to_string(value_type):
-                        community.append(self.to_string(value_type))
+                    if value_type in bgp_cons.WELL_KNOW_COMMUNITY_INT_2_STR:
+                        community.append(bgp_cons.WELL_KNOW_COMMUNITY_INT_2_STR[value_type])
                     else:
                         community.append("%s:%s" % (value_list[0], value_list[1]))
                     value_list = value_list[2:]
@@ -70,75 +59,20 @@ class Community(Attribute):
                     data=value)
         return community
 
-    @staticmethod
-    def to_string(community_type):
-
-        if community_type == 0xFFFF0000:
-            return 'PLANNED_SHUT'
-        elif community_type == 0xFFFF0001:
-            return 'ACCEPT_OWN'
-        elif community_type == 0xFFFF0002:
-            return 'ROUTE_FILTER_TRANSLATED_v4'
-        elif community_type == 0xFFFF0003:
-            return 'ROUTE_FILTER_v4'
-        elif community_type == 0xFFFF0004:
-            return 'ROUTE_FILTER_TRANSLATED_v6'
-        elif community_type == 0xFFFF0005:
-            return 'ROUTE_FILTER_v6'
-        elif community_type == 0xFFFFFF01:
-            return 'NO_EXPORT'
-        elif community_type == 0xFFFFFF02:
-            return 'NO_ADVERTISE'
-        elif community_type == 0xFFFFFF03:
-            return 'NO_EXPORT_SUBCONFED'
-        elif community_type == 0xFFFFFF04:
-            return 'NOPEER'
-        # elif community_typeCode == 317000132:
-        #    return "TEST"
-        else:
-            return 'UNKNOW'
-
-    @staticmethod
-    def to_int(value):
-
-        if value == 'PLANNED_SHUT':
-            return 0xFFFF0000
-        elif value == 'ACCEPT_OWN':
-            return 0xFFFF0001
-        elif value == 'ROUTE_FILTER_TRANSLATED_v4':
-            return 0xFFFF0002
-        elif value == 'ROUTE_FILTER_v4':
-            return 0xFFFF0003
-        elif value == 'ROUTE_FILTER_TRANSLATED_v6':
-            return 0xFFFF0004
-        elif value == 'ROUTE_FILTER_v6':
-            return 0xFFFF0005
-        elif value == 'NO_EXPORT':
-            return 0xFFFFFF01
-        elif value == 'NO_ADVERTISE':
-            return 0xFFFFFF02
-        elif value == 'NO_EXPORT_SUBCONFED':
-            return 0xFFFFFF03
-        elif value == 'NOPEER':
-            return 0xFFFFFF04
-
-    def construct(self, value, flags=None):
+    def construct(self, value):
         """
         construct a COMMUNITY path attribute
         :param value:
-        :param flags
         """
         community_hex = ''
         for community in value:
-            try:
-                value = self.to_int(community.upper())
+            if community.upper() in bgp_cons.WELL_KNOW_COMMUNITY_STR_2_INT:
+                value = bgp_cons.WELL_KNOW_COMMUNITY_STR_2_INT[community.upper()]
                 community_hex += struct.pack('!I', value)
-            except Exception:
+            else:
                 value = community.split(':')
                 value = int(value[0]) * 16 * 16 * 16 * 16 + int(value[1])
                 community_hex += struct.pack('!I', value)
 
-        if not flags:
-            flags = self.FLAG
-        return struct.pack('!B', flags) + struct.pack('!B', self.ID) \
+        return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
             + struct.pack('!B', len(community_hex)) + community_hex

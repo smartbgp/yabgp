@@ -120,9 +120,9 @@ Send email to penxiao@cisco.com, or use GitHub issue system.
 TODO
 ~~~~
 
--  support more address family (IPv6, VPNv4, VPNv6, etc.)
+-  support more address family (flowspec, IPv6, VPNv4, VPNv6, etc.)
 -  support RESTful API, send message/control peer state, etc.
--  unittest
+-  more unittest
 -  others
 
 Contribute
