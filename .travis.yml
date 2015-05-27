@@ -1,8 +1,14 @@
 language: python
-install:
-  - pip install tox
-script:
-  - tox
 env:
   - TOXENV=py27
-  - TOXENV=flake8
+  - TOXENV=pep8
+  - TOXENV=cover
+  - TOXENV=docs
+install:
+  - pip install tox
+  - pip install coveralls
+script:
+  - tox
+
+after_success:
+  - if [ "x$TOX_ENV" = 'xcover' ]; then coveralls; fi
