@@ -1,13 +1,14 @@
 language: python
+env:
+  - TOXENV=py27
+  - TOXENV=pep8
+  - TOXENV=cover
+  - TOXENV=docs
 install:
   - pip install tox
   - pip install coveralls
 script:
-  - tox
+  - tox -e $TOX_ENV
 
 after_success:
-  - coveralls
-
-env:
-  - TOXENV=py27
-  - TOXENV=flake8
+  - if [ "x$TOX_ENV" = 'xcover' ]; then coveralls; fi
