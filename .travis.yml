@@ -11,4 +11,4 @@ script:
   - tox
 
 after_success:
-  - if [ "x$TOX_ENV" = 'xcover' ]; then coveralls; fi
+  coveralls --verbose
