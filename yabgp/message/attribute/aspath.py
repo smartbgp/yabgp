@@ -86,13 +86,12 @@ class ASPath(Attribute):
             aspath.append((seg_type, segment))
         return aspath
 
-    def construct(self, value, flags=None, asn4=False):
+    def construct(self, value, asn4=False):
 
         """
         Construct AS PATH.
         :param asn4: 4byte asn
         :param value:
-        :param flags:
         """
         # value example
         # [(2, [3257, 31027, 34848, 21465])], or [(3, [64606]), (2, [64624, 65515])]
@@ -122,8 +121,7 @@ class ASPath(Attribute):
 
             as_path_raw += struct.pack('!B', seg_type) + struct.pack('!B', as_count) + as_seg_raw
 
-        if not flags:
-            flags = self.FLAG
+        flags = self.FLAG
         if len(as_path_raw) > 255:
             flags += AttributeFlag.EXTENDED_LENGTH
             return struct.pack('!B', flags) + struct.pack('!B', self.ID) \

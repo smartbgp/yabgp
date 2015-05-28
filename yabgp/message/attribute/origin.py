@@ -63,17 +63,16 @@ class Origin(Attribute):
                 data=value)
         return orgin
 
-    def construct(self, value, flags=None):
+    def construct(self, value):
 
         """
         construct a origin attribute
+        :param value: 0,1,2
         """
         if value not in [self.IGP, self.EGP, self.INCOMPLETE]:
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_INVALID_ORIGIN,
                 data='')
         length = 1
-        if not flags:
-            flags = self.FLAG
-        return struct.pack('!B', flags) + struct.pack('!B', self.ID) \
+        return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
             + struct.pack('!B', length) + struct.pack('!B', value)

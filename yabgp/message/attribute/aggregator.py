@@ -66,23 +66,20 @@ class Aggregator(Attribute):
 
         return asn, aggregator
 
-    def construct(self, value, flags=None, asn4=False):
+    def construct(self, value, asn4=False):
 
         """
         Construct aggregator.
         :param value:
-        :param flags:
         :param asn4:
         """
-        if not flags:
-            flags = self.FLAG
         try:
             if asn4:
                 agg_raw = struct.pack('!I', value[0]) + IPv4Address(value[1]).packed
             else:
                 agg_raw = struct.pack('!H', value[0]) + IPv4Address(value[1]).packed
 
-            return struct.pack('!B', flags) + struct.pack('!B', self.ID) \
+            return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
                 + struct.pack('!B', len(agg_raw)) + agg_raw
         except Exception:
             raise excep.UpdateMessageError(

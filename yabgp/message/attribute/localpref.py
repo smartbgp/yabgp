@@ -47,16 +47,13 @@ class LocalPreference(Attribute):
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                 data=value)
 
-    def construct(self, value, flags=None):
+    def construct(self, value):
         """
         encode bgp local preference attribute
-        :param value:
-        :param flags:
+        :param value: interger value
         """
-        if not flags:
-            flags = self.FLAG
         try:
-            return struct.pack('!B', flags) + struct.pack('!B', self.ID) \
+            return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
                 + struct.pack('!B', 4) + struct.pack('!I', value)
         except Exception:
             raise excep.UpdateMessageError(

@@ -19,7 +19,6 @@ import unittest
 
 from yabgp.common.exception import UpdateMessageError
 from yabgp.common.constants import ERR_MSG_UPDATE_INVALID_ORIGIN
-from yabgp.message.attribute import AttributeFlag
 from yabgp.message.attribute.origin import Origin
 
 
@@ -51,8 +50,7 @@ class TestOrigin(unittest.TestCase):
     def test_construct(self):
 
         self.assertEqual('\x40\x01\x01\x00', Origin().construct(value=0))
-        self.assertEqual('\x40\x01\x01\x00', Origin().construct(value=0,
-                                                                flags=AttributeFlag.TRANSITIVE))
+        self.assertEqual('\x40\x01\x01\x00', Origin().construct(value=0))
         self.assertEqual('\x40\x01\x01\x01', Origin().construct(value=1))
         self.assertEqual('\x40\x01\x01\x02', Origin().construct(value=2))
 

@@ -15,7 +15,6 @@
 
 import struct
 
-# bgp import
 from yabgp.message.attribute import Attribute
 from yabgp.message.attribute import AttributeID
 from yabgp.message.attribute import AttributeFlag
@@ -49,16 +48,13 @@ class MED(Attribute):
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                 data=value)
 
-    def construct(self, value, flags=None):
+    def construct(self, value):
         """
         encode BGP med attributes
         :param value:
-        :param flags: bgp attribute flags
         """
-        if not flags:
-            flags = self.FLAG
         try:
-            return struct.pack('!B', flags) + struct.pack('!B', self.ID) \
+            return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
                 + struct.pack('!B', 4) + struct.pack('!I', value)
         except Exception:
             raise excep.UpdateMessageError(

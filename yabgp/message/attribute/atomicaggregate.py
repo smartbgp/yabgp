@@ -44,19 +44,16 @@ class AtomicAggregate(Attribute):
                 sub_error=bgp_cons.ERR_MSG_UPDATE_OPTIONAL_ATTR,
                 data=value)
 
-    def construct(self, value, flags=None):
+    def construct(self, value):
         """construct a ATOMIC_AGGREGATE path attribute
         :param value:
-        :param flags:
         """
 
-        if not flags:
-            flags = self.FLAG
         if value:
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_OPTIONAL_ATTR,
                 data='')
         else:
             value = 0
-        return struct.pack('!B', flags) + struct.pack('!B', self.ID) \
+        return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
             + struct.pack('!B', value)

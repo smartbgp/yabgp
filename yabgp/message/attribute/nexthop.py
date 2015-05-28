@@ -44,28 +44,19 @@ class NextHop(Attribute):
         Parse BGP nexthop.
         :param value: raw binary value
         """
-        next_hop = '0.0.0.0'
         if len(value) % 4 == 0:
-
-            while value:
-                try:
-                    next_hop = IPv4Address(int(binascii.b2a_hex(value[0:4]), 16)).__str__()
-                except Exception:
-                    # Error process
-                    raise excep.UpdateMessageError(
-                        sub_error=bgp_cons.ERR_MSG_UPDATE_INVALID_NEXTHOP,
-                        data=value[0:4])
-                value = value[4:]
+            next_hop = IPv4Address(int(binascii.b2a_hex(value[0:4]), 16)).__str__()
+            return next_hop
         else:
             # Error process
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                 data=value)
-        return next_hop
 
-    def construct(self, value, flags=None):
+    def construct(self, value):
         """
         encode BGP nexthop attribute.
+        :param value: ipv4 format string like 1.1.1.1
         """
         try:
             ipv4_addr = IPv4Address(value)
@@ -74,7 +65,5 @@ class NextHop(Attribute):
                 sub_error=bgp_cons.ERR_MSG_UPDATE_INVALID_NEXTHOP,
                 data=value)
         ip_addr_raw = ipv4_addr.packed
-        if not flags:
-            flags = self.FLAG
-        return struct.pack('!B', flags) + struct.pack('!B', self.ID) \
+        return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
             + struct.pack('!B', len(ip_addr_raw)) + ip_addr_raw

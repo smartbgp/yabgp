@@ -47,29 +47,20 @@ class OriginatorID(Attribute):
         Parse originator id
         :param value:
         """
-        if len(value) > 4:
+        if len(value) != 4:
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                 data=value)
-        try:
-            return IPv4Address(int(binascii.b2a_hex(value[0:4]), 16)).__str__()
+        return IPv4Address(int(binascii.b2a_hex(value[0:4]), 16)).__str__()
 
-        except Exception:
-            raise excep.UpdateMessageError(
-                sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
-                data=value)
-
-    def construct(self, value, flags=None):
+    def construct(self, value):
 
         """
         construct a ORIGINATOR_ID path attribute
-        :param value:
-        :param flags:
+        :param value: ipv4 format string
         """
-        if not flags:
-            flags = self.FLAG
         try:
-            return struct.pack('!B', flags) + struct.pack('!B', self.ID) \
+            return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
                 + struct.pack('!B', 4) + IPv4Address(value).packed
         except Exception:
             raise excep.UpdateMessageError(
