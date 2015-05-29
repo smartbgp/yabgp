@@ -209,6 +209,10 @@ class Update(object):
             prefix_len = ord(postfix[0])
             if prefix_len > 32:
                 LOG.warning('Prefix Length larger than 32')
+                raise excep.UpdateMessageError(
+                    sub_error=bgp_cons.ERR_MSG_UPDATE_INVALID_NETWORK_FIELD,
+                    data=repr(data)
+                )
             octet_len, remainder = prefix_len / 8, prefix_len % 8
             if remainder > 0:
                 # prefix length doesn't fall on octet boundary
@@ -338,7 +342,7 @@ class Update(object):
         """
         nlri_raw_hex = ''
         for prefix in prefix_list:
-            ip, masklen = prefix.split('/')
+            masklen = prefix.split('/')[1]
             ip_hex = IPv4Network(prefix).packed
             masklen = int(masklen)
             if 16 < masklen <= 24:

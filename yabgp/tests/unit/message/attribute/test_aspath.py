@@ -48,6 +48,10 @@ class TestASPATH(unittest.TestCase):
         except UpdateMessageError as e:
             self.assertEqual(e.sub_error, ERR_MSG_UPDATE_MALFORMED_ASPATH)
 
+    def test_parse_as_set_as_federate(self):
+        as_path = ASPath().parse(value='\x04\x02\x03\xe9\x03\xea\x03\x02\x03\xeb\x03\xec')
+        self.assertEqual(as_path, [(4, [1001, 1002]), (3, [1003, 1004])])
+
     def test_construct(self):
 
         # 2 bytes ASN
@@ -61,6 +65,10 @@ class TestASPATH(unittest.TestCase):
     def test_construct_as_set(self):
         as_path = ASPath().construct(asn4=False, value=[(2, [1001, 1002]), (1, [1003, 1004])])
         self.assertEqual(as_path, '@\x02\x0c\x02\x02\x03\xe9\x03\xea\x01\x02\x03\xeb\x03\xec')
+
+    def test_construct_as_set_as_federate(self):
+        as_path = ASPath().construct(asn4=False, value=[(4, [1001, 1002]), (3, [1003, 1004])])
+        self.assertEqual(as_path, '@\x02\x0c\x04\x02\x03\xe9\x03\xea\x03\x02\x03\xeb\x03\xec')
 
 if __name__ == '__main__':
     unittest.main()
