@@ -18,6 +18,7 @@
 import unittest
 
 from yabgp.message.update import Update
+from yabgp.common.exception import UpdateMessageError
 
 
 class TestUpdate(unittest.TestCase):
@@ -27,6 +28,10 @@ class TestUpdate(unittest.TestCase):
         nlri = ['184.157.224.0/19', '69.179.221.0/24', '69.179.220.0/24',
                 '209.102.178.0/24', '66.112.100.0/22', '208.54.194.0/24']
         self.assertEqual(nlri, Update().parse_prefix_list(prefix_hex))
+
+    def test_parse_prefix_mask_larger_than_32(self):
+        prefix_hex = '\x21\xb8\x9d\xe0\x18E\xb3\xdd\x18E\xb3\xdc\x18\xd1f\xb2\x16Bpd\x18\xd06\xc2'
+        self.assertRaises(UpdateMessageError, Update().parse_prefix_list, prefix_hex)
 
     def test_construct_prefix_v4(self):
         nlri = ['184.157.224.0/19', '69.179.221.0/24', '69.179.220.0/24',

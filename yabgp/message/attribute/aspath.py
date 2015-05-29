@@ -70,7 +70,7 @@ class ASPath(Attribute):
             if seg_type not in [self.AS_SET, self.AS_SEQUENCE, self.AS_CONFED_SEQUENCE, self.AS_CONFED_SET]:
                 raise excep.UpdateMessageError(
                     sub_error=bgp_cons.ERR_MSG_UPDATE_MALFORMED_ASPATH,
-                    data=value[0])
+                    data=repr(value))
             try:
                 if asn4:
                     segment = list(struct.unpack('!%dI' % length, value[2:2 + length * 4]))

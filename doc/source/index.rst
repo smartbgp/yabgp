@@ -38,6 +38,26 @@ Features
   only one BGP neighbor, so each process is independent with each other, we can start many yabgp
   processes within the same machine or in different machines.
 
+Application
+===========
+
+There are many jobs need to do in future.
+
+We want to use our `yabgp` agent in a large scale system like the picture below. We can start many yabgp instances in
+the same machine or in different machines, each yabgp instance maintain one BGP peer connection.
+
+In order to control the traffic in the customer's network, through the controller, we can decide which yabgp instance should send what kind of prefixs with different BGP attributes.
+For example we can get the attributes of prefix A.B.0.0/16 through the yabgp instance `10.75.44.10:8801` who connected with router `10.124.1.245`, change some of the attributes,
+then send one update with the new attribute to router `10.124.1.242` through yabgp instance `10.75.44.10:8802`.
+
+We hope we can do all these kinds of jobs in future, So we need a powerful controller program and some kinds of interfaces(like REST) in yabgp code which can
+be used to communicate with controller.
+
+We are working hardly on that. So any of your ideas is welcome.
+
+.. image:: _static/topo.png
+
+
 Quickstarts
 ===========
 
@@ -48,6 +68,7 @@ Quickstarts
    tutorial
    msg_format
    reference
+   restapi
 
 Support
 =======
@@ -61,4 +82,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
