@@ -18,13 +18,14 @@ import os
 import logging
 
 from oslo.config import cfg
-from twisted.internet import reactor
 
-from yabgp import version
+from twisted.internet import reactor
+from yabgp import version, log
 from yabgp.core.factory import BGPPeering
 from yabgp.common.config import get_bgp_config
 from yabgp.common import constants as bgp_cons
-from yabgp.common import log
+
+
 log.early_init_log(logging.DEBUG)
 
 CONF = cfg.CONF
