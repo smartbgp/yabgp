@@ -13,25 +13,25 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""Blueprint for version 1 of API
-"""
-import logging
+"""Test v1 api"""
 
-from flask import Blueprint
-import flask
-
-LOG = logging.getLogger(__name__)
-blueprint = Blueprint('v1', __name__)
+import unittest
+from yabgp.api.app import app
 
 
-@blueprint.route('/')
-def root():
-    """
-    v1 api root
-    :return:
-    """
-    intro = {
-        "status": "stable",
-        "updated": "2015-01-22T00:00:00Z",
-        "version": "v1"}
-    return flask.jsonify(intro)
+class FlaskrTestCase(unittest.TestCase):
+
+    def setUp(self):
+        # prepare some peers
+        self.app = app.test_client()
+
+    def tearDown(self):
+        """"""
+        pass
+
+    def test_v1_root(self):
+        result = self.app.get('/v1')
+        self.assertTrue(result)
+
+if __name__ == '__main__':
+    unittest.main()

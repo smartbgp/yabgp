@@ -2,7 +2,6 @@ language: python
 env:
   - TOXENV=py27
   - TOXENV=pep8
-  - TOXENV=cover
   - TOXENV=docs
 install:
   - pip install tox
