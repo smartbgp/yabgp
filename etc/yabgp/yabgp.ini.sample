@@ -60,3 +60,14 @@
 
 # The MD5 string
 # md5 =
+
+[rest]
+# Address to bind the API server to.
+# bind_host = 0.0.0.0
+
+# Port the bind the API server to.
+# bind_port = 8801
+
+# username and password for api server
+# username = admin
+# password = admin

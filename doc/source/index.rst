@@ -67,8 +67,8 @@ Quickstarts
    install
    tutorial
    msg_format
-   reference
    restapi
+   reference
 
 Support
 =======

@@ -30,13 +30,42 @@ cfg.CONF.register_cli_opts(config.rest_server_ops, group='rest')
 
 @app.route('/')
 def index():
+    """API Root. Get the API version information.
 
+    **Example request**:
+
+    .. sourcecode:: http
+
+      GET / HTTP/1.1
+      Host: example.com
+      Accept: application/json, text/javascript
+
+    **Example response**:
+
+    .. sourcecode:: http
+
+      HTTP/1.1 200 OK
+      Vary: Accept
+      Content-Type: text/json
+      {
+        "versions": {
+        "values": [
+            {
+                "id": "v1",
+                "links": "http://10.75.44.11:8801//v1",
+                "status": "stable"
+            }
+        ]
+       }
+     }
+
+    :status 200: the api can work.
+    """
     base_url = flask.request.base_url
     available = [
         {'tag': 'v1'}]
     collected = [version_descriptor(base_url, v['tag']) for v in available]
     versions = {'versions': {'values': collected}}
-    print versions
     return flask.jsonify(versions)
 
 
