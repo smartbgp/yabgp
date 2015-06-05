@@ -27,8 +27,30 @@ blueprint = Blueprint('v1', __name__)
 @blueprint.route('/')
 def root():
     """
-    v1 api root
-    :return:
+    v1 api root. Get the api status.
+
+    **Example request**:
+
+    .. sourcecode:: http
+
+      GET /v1 HTTP/1.1
+      Host: example.com
+      Accept: application/json, text/javascript
+
+    **Example response**:
+
+    .. sourcecode:: http
+
+      HTTP/1.1 200 OK
+      Vary: Accept
+      Content-Type: text/json
+      {
+        "status": "stable",
+        "updated": "2015-01-22T00:00:00Z",
+        "version": "v1"
+      }
+
+    :status 200: the api can work.
     """
     intro = {
         "status": "stable",

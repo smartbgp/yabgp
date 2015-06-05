@@ -25,8 +25,17 @@
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+import sys
+import os
+
+possible_topdir = os.path.normpath(
+    os.path.join(os.path.abspath(__file__), os.pardir, os.pardir, os.pardir))
+sys.path.insert(0, possible_topdir)
+
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.intersphinx',
+    'sphinxcontrib.autohttp.flask',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
