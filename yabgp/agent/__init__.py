@@ -84,8 +84,7 @@ def prepare_twisted_service():
     site = Site(resource)
     try:
         reactor.listenTCP(CONF.rest.bind_port, site, interface=CONF.rest.bind_host)
-        LOG.info("serving RESTAPI on http://%(host)s:%(port)s" % (
-                 {'host': CONF.rest.bind_host, 'port': CONF.rest.bind_port}))
+        LOG.info("serving RESTAPI on http://%s:%s", CONF.rest.bind_host, CONF.rest.bind_port)
     except Exception as e:
         LOG.error(e, exc_info=True)
         sys.exit()
