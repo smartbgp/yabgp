@@ -33,5 +33,11 @@ class FlaskrTestCase(unittest.TestCase):
         result = self.app.get('/v1')
         self.assertTrue(result)
 
+    def test_v1_peers(self):
+        self.assertTrue(self.app.get('/v1/peers'))
+
+    def test_v1_peer(self):
+        self.assertTrue(self.app.get('/v1/peer'))
+
 if __name__ == '__main__':
     unittest.main()
