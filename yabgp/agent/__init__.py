@@ -77,6 +77,7 @@ def prepare_twisted_service():
             md5=CONF.bgp.running_config[peer]['md5']
         )
         all_peers[peer] = bgp_peering
+        CONF.bgp.running_config[peer]['factory'] = bgp_peering
 
         # Starting api server
     LOG.info("Prepare RESTAPI service")

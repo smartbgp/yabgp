@@ -20,6 +20,8 @@ import logging
 from flask import Blueprint
 import flask
 
+from yabgp.api import utils as api_utils
+
 LOG = logging.getLogger(__name__)
 blueprint = Blueprint('v1', __name__)
 
@@ -59,7 +61,7 @@ def root():
     return flask.jsonify(intro)
 
 
-@blueprint.route('/peers')
+@blueprint.route('/peers',  methods=['GET'])
 def peers():
     """
     Get all peers realtime running information.
@@ -84,20 +86,18 @@ def peers():
           "peers": [
               {
                   "fsm": "ESTABLISHED",
-                  "my_addr": "100.100.0.1",
-                  "my_asn": 65022,
-                  "peer_addr": "100.100.9.1",
-                  "peer_asn": 65022,
-                  "status": "activate",
+                  "local_addr": "100.100.0.1",
+                  "local_as": 65022,
+                  "remote_addr": "100.100.9.1",
+                  "remote_as": 65022,
                   "uptime": 106810.47324299812
               },
               {
                   "fsm": "ESTABLISHED",
-                  "my_addr": "100.100.0.1",
-                  "my_asn": 65022,
-                  "peer_addr": "100.100.9.1",
-                  "peer_asn": 65022,
-                  "status": "activate",
+                  "local_addr": "100.100.0.1",
+                  "local_as": 65022,
+                  "remote_addr": "100.100.9.1",
+                  "remote_as": 65022,
                   "uptime": 106810.47324299812
               }
           ]
@@ -105,7 +105,7 @@ def peers():
 
     :status 200: the api can work.
     """
-    pass
+    return flask.jsonify(api_utils.get_peer_conf_and_state())
 
 
 @blueprint.route('/peer/<peer_ip>')
