@@ -41,6 +41,16 @@ We can use ``yabgpd`` help.
       --version             show program's version number and exit
       --noverbose           The inverse of --verbose
 
+    rest options:
+      --rest-bind_port REST_BIND_PORT
+                            Port the bind the API server to
+      --rest-password REST_PASSWORD
+                            Password for api server
+      --rest-username REST_USERNAME
+                            Username for api server
+      --rest-bind_host REST_BIND_HOST
+                            Address to bind the API server to
+
     bgp options:
       --bgp-local_addr BGP_LOCAL_ADDR
                             The local address of the BGP
