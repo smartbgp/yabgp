@@ -6,10 +6,9 @@
 YABGP Project
 =============
 
-YABGP is a yet another Python implementation for BGP Protocol. It was born in
-Cisco around 2011, we use it to establish BGP connections with all kinds
+YABGP is a yet another Python implementation for BGP Protocol. It can be used to establish BGP connections with all kinds
 of routers (include real Cisco/HuaWei/Juniper routers and some router
-simulators in Cisco like IOL/IOU) and receive/parse BGP messages for
+simulators like Cisco's IOL/IOU, Junipers' JUOS, and GNS3) and receive/parse BGP messages for
 future analysis. Now we open sourced it.
 
 We write it accordance with the specifications of RFCs.
@@ -43,20 +42,7 @@ Application
 
 There are many jobs need to do in future.
 
-We want to use our `yabgp` agent in a large scale system like the picture below. We can start many yabgp instances in
-the same machine or in different machines, each yabgp instance maintain one BGP peer connection.
-
-In order to control the traffic in the customer's network, through the controller, we can decide which yabgp instance should send what kind of prefixs with different BGP attributes.
-For example we can get the attributes of prefix A.B.0.0/16 through the yabgp instance `10.75.44.10:8801` who connected with router `10.124.1.245`, change some of the attributes,
-then send one update with the new attribute to router `10.124.1.242` through yabgp instance `10.75.44.10:8802`.
-
-We hope we can do all these kinds of jobs in future, So we need a powerful controller program and some kinds of interfaces(like REST) in yabgp code which can
-be used to communicate with controller.
-
 We are working hardly on that. So any of your ideas is welcome.
-
-.. image:: _static/topo.png
-
 
 Quickstarts
 ===========
