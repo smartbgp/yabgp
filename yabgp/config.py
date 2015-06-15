@@ -43,6 +43,18 @@ bgp_config_opts = [
     cfg.ListOpt('afi_safi',
                 default=['ipv4'],
                 help='The Global config for address family and sub address family'),
+    cfg.BoolOpt('four_bytes_as',
+                default=True,
+                help='If support 4bytes AS'),
+    cfg.BoolOpt('route_refresh',
+                default=True,
+                help='If support sending and receiving route refresh message'),
+    cfg.BoolOpt('cisco_route_refresh',
+                default=True,
+                help='If support sending and receiving cisco route refresh message'),
+    cfg.IntOpt('add_path',
+               default=1,
+               help='BGP additional path feature'),
     cfg.DictOpt('running_config',
                 default={},
                 help='The running configuration for BGP'),
@@ -92,8 +104,15 @@ def get_bgp_config():
                 'local_as': CONF.bgp.local_as,
                 'local_addr': CONF.bgp.local_addr,
                 'md5': CONF.bgp.md5,
-                'afi_safi': CONF.bgp.afi_safi
+                'afi_safi': CONF.bgp.afi_safi,
+                'capability': {
+                    'four_bytes_as': CONF.bgp.four_bytes_as,
+                    'route_refresh': CONF.bgp.route_refresh,
+                    'cisco_route_refresh': CONF.bgp.cisco_route_refresh,
+                    'add_path': CONF.bgp.add_path
+                }
             }
+
             LOG.info('Get BGP running configuration for peer %s', CONF.bgp.remote_addr)
             for item in CONF.bgp.running_config[CONF.bgp.remote_addr]:
                 LOG.info("%s = %s", item, CONF.bgp.running_config[CONF.bgp.remote_addr][item])
