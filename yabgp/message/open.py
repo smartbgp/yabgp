@@ -62,14 +62,7 @@ class Open(object):
         self.opt_para_len = opt_para_len
         self.opt_paras = opt_paras
 
-        self.capa_dict = {
-            'AFI_SAFI': [],
-            '4byteAS': False,
-            'routeRefresh': False,
-            'ciscoRouteRefresh': False,
-            'GracefulRestart': False,
-            'ciscoMultiSession': False
-        }
+        self.capa_dict = {}
         # used to store Capabilities {code: value}
 
     def parse(self, message):
@@ -145,29 +138,34 @@ class Open(object):
                     if capability.capa_code == capability.FOUR_BYTES_ASN:
                         asn = struct.unpack('!I', capability.capa_value)[0]
                         self.asn = asn
-                        self.capa_dict['4byteAS'] = True
+                        self.capa_dict['four_bytes_as'] = True
 
                     # (2) Multiprotocol Extensions for BGP-4
                     elif capability.capa_code == capability.MULTIPROTOCOL_EXTENSIONS:
+                        if 'afi_safi' not in self.capa_dict:
+                            self.capa_dict['afi_safi'] = []
                         afi, res, safi = struct.unpack('!HBB', capability.capa_value)
-                        self.capa_dict['AFI_SAFI'].append((afi, safi))
+                        self.capa_dict['afi_safi'].append((afi, safi))
 
                     # (3) Route Refresh
                     elif capability.capa_code == capability.ROUTE_REFRESH:
-                        self.capa_dict['routeRefresh'] = True
+                        self.capa_dict['route_refresh'] = True
 
                     # (4) Cisco Route Refresh
                     elif capability.capa_code == capability.CISCO_ROUTE_REFRESH:
-                        self.capa_dict['ciscoRouteRefresh'] = True
+                        self.capa_dict['cisco_route_refresh'] = True
 
                     # (5) Graceful Restart
                     elif capability.capa_code == capability.GRACEFUL_RESTART:
-                        self.capa_dict['GracefulRestart'] = True
+                        self.capa_dict['graceful_restart'] = True
 
                     # (6) Cisco MultiSession
                     elif capability.capa_code == capability.CISCO_MULTISESSION_BGP:
-                        self.capa_dict['ciscoMultiSession'] = True
+                        self.capa_dict['cisco_multi_session'] = True
 
+                    # (7) enhanced route refresh
+                    elif capability.capa_code == capability.ENHANCED_ROUTE_REFRESH:
+                        self.capa_dict['enhanced_route_refresh'] = True
                     else:
                         self.capa_dict[str(capability.capa_code)] = capability.capa_value
 
@@ -203,14 +201,14 @@ class Open(object):
         """ Construct a BGP Open message """
         capas = ''
         # Construct Capabilities Optional Parameter (Parameter Type 2)
-        if 'AFI_SAFI' in my_capability:
+        if 'afi_safi' in my_capability:
             # Multiprotocol extentions capability
             capas += Capability(capa_code=1, capa_length=4).construct(my_capability)
 
-        if my_capability['ciscoRouteRefresh']:
+        if my_capability.get('cisco_route_refresh'):
             # Cisco Route refresh capability
             capas += Capability(capa_code=128, capa_length=0).construct(my_capability)
-        if my_capability['routeRefresh']:
+        if my_capability.get('route_refresh'):
             # Route Refresh capability
             capas += Capability(capa_code=2, capa_length=0).construct(my_capability)
 
@@ -219,8 +217,14 @@ class Open(object):
             capas += Capability(capa_code=65, capa_length=4, capa_value=self.asn).construct(my_capability)
             self.asn = 23456
         else:
-            if my_capability['4byteAS']:
+            if my_capability.get('four_bytes_as'):
                 capas += Capability(capa_code=65, capa_length=4, capa_value=self.asn).construct(my_capability)
+        # for add path
+        if my_capability.get('add_path'):
+            capas += Capability(capa_code=69, capa_length=4, capa_value=my_capability['add_path']).construct()
+
+        if my_capability.get('enhanced_route_refresh'):
+            capas += Capability(capa_code=70, capa_length=0).construct()
 
         open_header = struct.pack('!BHHIB', self.version, self.asn, self.hold_time,
                                   self.bgp_id, len(capas))
@@ -307,6 +311,7 @@ class Capability(object):
     DYNAMIC_CAPABILITY = 0x43  # [Chen]
     MULTISESSION_BGP = 0x44  # [Appanna]
     ADD_PATH = 0x45  # [draft-ietf-idr-add-paths]
+    ENHANCED_ROUTE_REFRESH = 0x46
     # 70-127    Unassigned
     CISCO_ROUTE_REFRESH = 0x80  # I Can only find reference to this in the router logs
     # 128-255   Reserved for Private Use [RFC5492]
@@ -345,7 +350,7 @@ class Capability(object):
                 data=message[:2])
         self.capa_value = message[2:self.capa_length + 2]
 
-    def construct(self, my_capability):
+    def construct(self, my_capability=None):
 
         """ Construct a capability PDU """
 
@@ -354,21 +359,28 @@ class Capability(object):
             return struct.pack('!BBBBI', 2, 6, self.FOUR_BYTES_ASN, self.capa_length, self.capa_value)
 
         # for route refresh
-        if self.capa_code == self.ROUTE_REFRESH:
+        elif self.capa_code == self.ROUTE_REFRESH:
             return struct.pack('!BBBB', 2, 2, self.ROUTE_REFRESH, 0)
 
         # for cisco route refresh
-        if self.capa_code == self.CISCO_ROUTE_REFRESH:
+        elif self.capa_code == self.CISCO_ROUTE_REFRESH:
             return struct.pack('!BBBB', 2, 2, self.CISCO_ROUTE_REFRESH, 0)
 
         # graceful restart
-        if self.capa_code == self.GRACEFUL_RESTART:
+        elif self.capa_code == self.GRACEFUL_RESTART:
             return struct.pack('!BBBB', 2, 2, self.GRACEFUL_RESTART, 0)
 
         # for multiprotocol extentions
-        if self.capa_code == self.MULTIPROTOCOL_EXTENSIONS:
+        elif self.capa_code == self.MULTIPROTOCOL_EXTENSIONS:
             # <ipv4,unicast> and <ipv4,mplsvpn>
             afisafi = ''
-            for (afi, safi) in my_capability['AFI_SAFI']:
+            for (afi, safi) in my_capability['afi_safi']:
                 afisafi += struct.pack('!BBBBHBB', 2, 6, self.MULTIPROTOCOL_EXTENSIONS, 4, afi, 0, safi)
             return afisafi
+        # for add path
+        elif self.capa_code == self.ADD_PATH:
+            add_path = struct.pack('!BBBBHBB', 2, 6, self.ADD_PATH, self.capa_length, 1, 1, self.capa_value)
+            return add_path
+
+        elif self.capa_code == self.ENHANCED_ROUTE_REFRESH:
+            return struct.pack('!BBBB', 2, 2, self.ENHANCED_ROUTE_REFRESH, 0)

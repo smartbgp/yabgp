@@ -67,6 +67,7 @@ def prepare_twisted_service():
         afi_safi_list = [bgp_cons.AFI_SAFI_STR_DICT[afi_safi]
                          for afi_safi in CONF.bgp.running_config[peer]['afi_safi']]
         CONF.bgp.running_config[peer]['afi_safi'] = afi_safi_list
+        CONF.bgp.running_config[peer]['capability']['local']['afi_safi'] = afi_safi_list
         bgp_peering = BGPPeering(
             myasn=CONF.bgp.running_config[peer]['local_as'],
             myaddr=CONF.bgp.running_config[peer]['local_addr'],

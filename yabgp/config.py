@@ -43,13 +43,34 @@ bgp_config_opts = [
     cfg.ListOpt('afi_safi',
                 default=['ipv4'],
                 help='The Global config for address family and sub address family'),
+    cfg.BoolOpt('four_bytes_as',
+                default=True,
+                help='If support 4bytes AS'),
+    cfg.BoolOpt('route_refresh',
+                default=True,
+                help='If support sending and receiving route refresh message'),
+    cfg.BoolOpt('cisco_route_refresh',
+                default=True,
+                help='If support sending and receiving cisco route refresh message'),
+    cfg.BoolOpt('enhanced_route_refresh',
+                default=True,
+                help='If support enhanced route refresh'),
+    cfg.IntOpt('add_path',
+               default=1,
+               help='BGP additional path feature'),
+    cfg.BoolOpt('graceful_restart',
+                default=True,
+                help='if support graceful restart'),
+    cfg.BoolOpt('cisco_multi_session',
+                default=True,
+                help='if support cisco multi session'),
     cfg.DictOpt('running_config',
                 default={},
                 help='The running configuration for BGP'),
     cfg.StrOpt('config_file',
                help='BGP peers configuration file')
-
 ]
+
 CONF.register_opts(bgp_config_opts, group='bgp')
 
 bgp_peer_conf_cli_opts = [
@@ -92,8 +113,20 @@ def get_bgp_config():
                 'local_as': CONF.bgp.local_as,
                 'local_addr': CONF.bgp.local_addr,
                 'md5': CONF.bgp.md5,
-                'afi_safi': CONF.bgp.afi_safi
+                'afi_safi': CONF.bgp.afi_safi,
+                'capability': {
+                    'local': {
+                        'four_bytes_as': CONF.bgp.four_bytes_as,
+                        'route_refresh': CONF.bgp.route_refresh,
+                        'cisco_route_refresh': CONF.bgp.cisco_route_refresh,
+                        'enhanced_route_refresh': CONF.bgp.enhanced_route_refresh,
+                        'graceful_restart': CONF.bgp.graceful_restart,
+                        'cisco_multi_session': CONF.bgp.cisco_multi_session,
+                        'add_path': CONF.bgp.add_path},
+                    'remote': {}
+                }
             }
+
             LOG.info('Get BGP running configuration for peer %s', CONF.bgp.remote_addr)
             for item in CONF.bgp.running_config[CONF.bgp.remote_addr]:
                 LOG.info("%s = %s", item, CONF.bgp.running_config[CONF.bgp.remote_addr][item])

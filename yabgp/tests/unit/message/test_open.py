@@ -27,6 +27,7 @@ class TestOpen(unittest.TestCase):
 
     def setUp(self):
         self.open = Open()
+        self.maxDiff = None
 
     def test_parse(self):
         msg_hex = '\x04\x5b\xa0\x00\xb4\x03\x03\x03\x09\x25\x02\x06\x01\x04\x00\x01\x00\x80' \
@@ -35,12 +36,11 @@ class TestOpen(unittest.TestCase):
         open_msg = self.open.parse(msg_hex)
         results = {'bgpID': '3.3.3.9', 'Version': 4, 'holdTime': 180, 'ASN': 66666,
                    'Capabilities': {
-                       'GracefulRestart': False,
-                       'ciscoMultiSession': True,
-                       'ciscoRouteRefresh': True,
-                       '4byteAS': True,
-                       'AFI_SAFI': [(1, 128), (1, 1)],
-                       'routeRefresh': True}}
+                       'cisco_multi_session': True,
+                       'cisco_route_refresh': True,
+                       'four_bytes_as': True,
+                       'afi_safi': [(1, 128), (1, 1)],
+                       'route_refresh': True}}
         self.assertEqual(results, open_msg)
 
     def test_construct(self):
@@ -50,12 +50,12 @@ class TestOpen(unittest.TestCase):
         self.open.hold_time = 180
         self.open.bgp_id = int(ipaddr.IPv4Address('1.1.1.1'))
         my_capa = {
-            'GracefulRestart': False,
-            'ciscoMultiSession': True,
-            'ciscoRouteRefresh': True,
-            '4byteAS': True,
-            'AFI_SAFI': [(1, 128), (1, 1)],
-            'routeRefresh': True}
+            'graceful_restart': False,
+            'cisco_multi_session': True,
+            'cisco_route_refresh': True,
+            'four_bytes_as': True,
+            'afi_safi': [(1, 128), (1, 1)],
+            'route_refresh': True}
         msg_hex = self.open.construct(my_capa)
         hope_hex = '\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00=\x01\x04[\xa0\x00\xb4\x01' \
                    '\x01\x01\x01 \x02\x06\x01\x04\x00\x01\x00\x80\x02\x06\x01\x04\x00\x01\x00\x01\x02\x02\x80\x00' \

@@ -264,7 +264,10 @@ class BGP(protocol.Protocol):
                     self.process_queue_timer.reset(self.process_queue_time)
                     self.start_process_queue = True
                     # save message to the Queue
-                    self.update_msg_queue.append([t, self.fsm.neighbor_capability['4byteAS'], msg])
+                    self.update_msg_queue.append([
+                        t,
+                        cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']['four_bytes_as'],
+                        msg])
                     self.update_received()
 
                     # Parse Update Message Queue
@@ -399,23 +402,37 @@ class BGP(protocol.Protocol):
         )
         self.fsm.keep_alive_received()
 
+    def capability_negotiate(self):
+        """
+        Open message capability negotiation
+        :return:
+        """
+        # if received open message from remote peer firstly
+        # then copy peer's capability to local according to the
+        # local support. best effort support.
+        if cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']:
+            for capability in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']:
+                if capability not in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']:
+                    cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local'].pop(capability)
+
     def send_open(self):
         """
         send open message
 
         :return:
         """
+        # construct Open message
+        self.capability_negotiate()
+        open_msg = Open(version=bgp_cons.VERSION, asn=self.factory.my_asn, hold_time=self.fsm.hold_time,
+                        bgp_id=self.factory.bgp_id).\
+            construct(cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local'])
+        # send message
+        self.transport.write(open_msg)
         self.msg_sent_stat['Opens'] += 1
         LOG.info("[%s]Send a BGP Open message to the peer.", self.factory.peer_addr)
         LOG.info("[%s]Probe's Capabilities:", self.factory.peer_addr)
-        for key in self.fsm.my_capability:
-            LOG.info("--%s = %s", key, self.fsm.my_capability[key])
-        # construct message
-        # self.fsm.my_capability = self.fsm.neighbor_capability
-        open_msg = Open(version=bgp_cons.VERSION, asn=self.factory.my_asn, hold_time=self.fsm.hold_time,
-                        bgp_id=self.factory.bgp_id).construct(self.fsm.my_capability)
-        # send message
-        self.transport.write(open_msg)
+        for key in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']:
+            LOG.info("--%s = %s", key, cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local'][key])
 
     def open_received(self, timestamp, msg):
         """
@@ -433,7 +450,7 @@ class BGP(protocol.Protocol):
             raise excep.OpenMessageError(sub_error=bgp_cons.ERR_MSG_OPEN_BAD_PEER_AS)
 
         # Open message Capabilities negotiation
-        self.fsm.neighbor_capability = open_msg.capa_dict
+        cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote'] = open_msg.capa_dict
 
         LOG.info("[%s]A BGP Open message was received", self.factory.peer_addr)
         LOG.info('--version = %s', open_msg.version)
@@ -441,8 +458,8 @@ class BGP(protocol.Protocol):
         LOG.info('--hold time = %s', open_msg.hold_time)
         LOG.info('--id = %s', open_msg.bgp_id)
         LOG.info("[%s]Neighbor's Capabilities:", self.factory.peer_addr)
-        for key in self.fsm.neighbor_capability:
-            LOG.info("--%s = %s", key, self.fsm.neighbor_capability[key])
+        for key in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']:
+            LOG.info("--%s = %s", key, cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote'][key])
 
         # write bgp message
         self.factory.write_msg(

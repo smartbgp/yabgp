@@ -64,15 +64,6 @@ class FSM(object):
 
         self.uptime = None
 
-        self.my_capability = {'AFI_SAFI': self.bgp_peering.afi_safi,
-                              '4byteAS': True,
-                              'routeRefresh': True,
-                              'ciscoRouteRefresh': True,
-                              'GracefulRestart': True,
-                              'ciscoMultiSession': True}
-        # neighbor capability
-        self.neighbor_capability = {}
-
     def __setattr__(self, name, value):
 
         if name == 'state' and value != getattr(self, name):
