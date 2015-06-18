@@ -151,18 +151,14 @@ GRACEFUL_RESTART = False
 
 AFI_SAFI_DICT = {
     (1, 1): 'ipv4',
-    (1, 4): 'label_ipv4',
-    (1, 128): 'vpnv4',
     (2, 1): 'ipv6',
-    (2, 4): 'label_ipv6',
-    (2, 128): 'vpnv6'
+    (1, 133): 'flowspec'
 }
-
 AFI_SAFI_STR_DICT = {
+    'ipv6': (2, 1),
     'ipv4': (1, 1),
-    'ipv6': (1, 2)
+    'flowspec': (1, 133)
 }
-
 # BGP FSM State
 ST_IDLE = 1
 ST_CONNECT = 2

@@ -39,7 +39,8 @@
 # peer_start_interval = 10
 
 # The Global config for address family and sub address family
-# afi_safi = ['ipv4']
+# if you want to support more than one address family, you can set afi_safi = ipv4, ipv6, ....
+# afi_safi = ipv4
 
 # ===================== items for peer configuration ================================
 # the following parameters will be ignored if conf_file is configured
@@ -77,6 +78,15 @@
 # multiple paths to its peer (value 2), or (c) both (value 3) for
 # the <AFI, SAFI>.
 # add_path = 1
+
+# suport graceful restart or not
+# graceful_restart = True
+
+# support cisco multi session or not
+# cisco_multi_session = True
+
+# support enhanced route refresh or not
+# enhanced_route_refresh = True
 
 [rest]
 # Address to bind the API server to.

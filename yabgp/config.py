@@ -52,16 +52,25 @@ bgp_config_opts = [
     cfg.BoolOpt('cisco_route_refresh',
                 default=True,
                 help='If support sending and receiving cisco route refresh message'),
+    cfg.BoolOpt('enhanced_route_refresh',
+                default=True,
+                help='If support enhanced route refresh'),
     cfg.IntOpt('add_path',
                default=1,
                help='BGP additional path feature'),
+    cfg.BoolOpt('graceful_restart',
+                default=True,
+                help='if support graceful restart'),
+    cfg.BoolOpt('cisco_multi_session',
+                default=True,
+                help='if support cisco multi session'),
     cfg.DictOpt('running_config',
                 default={},
                 help='The running configuration for BGP'),
     cfg.StrOpt('config_file',
                help='BGP peers configuration file')
-
 ]
+
 CONF.register_opts(bgp_config_opts, group='bgp')
 
 bgp_peer_conf_cli_opts = [
@@ -106,10 +115,15 @@ def get_bgp_config():
                 'md5': CONF.bgp.md5,
                 'afi_safi': CONF.bgp.afi_safi,
                 'capability': {
-                    'four_bytes_as': CONF.bgp.four_bytes_as,
-                    'route_refresh': CONF.bgp.route_refresh,
-                    'cisco_route_refresh': CONF.bgp.cisco_route_refresh,
-                    'add_path': CONF.bgp.add_path
+                    'local': {
+                        'four_bytes_as': CONF.bgp.four_bytes_as,
+                        'route_refresh': CONF.bgp.route_refresh,
+                        'cisco_route_refresh': CONF.bgp.cisco_route_refresh,
+                        'enhanced_route_refresh': CONF.bgp.enhanced_route_refresh,
+                        'graceful_restart': CONF.bgp.graceful_restart,
+                        'cisco_multi_session': CONF.bgp.cisco_multi_session,
+                        'add_path': CONF.bgp.add_path},
+                    'remote': {}
                 }
             }
 
