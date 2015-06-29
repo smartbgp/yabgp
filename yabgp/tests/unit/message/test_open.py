@@ -24,7 +24,6 @@ from yabgp.common.constants import VERSION
 
 
 class TestOpen(unittest.TestCase):
-
     def setUp(self):
         self.open = Open()
         self.maxDiff = None
@@ -44,7 +43,6 @@ class TestOpen(unittest.TestCase):
         self.assertEqual(results, open_msg)
 
     def test_construct(self):
-
         self.open.version = VERSION
         self.open.asn = 66666
         self.open.hold_time = 180
@@ -61,6 +59,44 @@ class TestOpen(unittest.TestCase):
                    '\x01\x01\x01 \x02\x06\x01\x04\x00\x01\x00\x80\x02\x06\x01\x04\x00\x01\x00\x01\x02\x02\x80\x00' \
                    '\x02\x02\x02\x00\x02\x06A\x04\x00\x01\x04j'
         self.assertEqual(hope_hex, msg_hex)
+
+    def test_construct_add_path(self):
+        self.open.version = VERSION
+        self.open.asn = 64512
+        self.open.hold_time = 180
+        self.open.bgp_id = int(ipaddr.IPv4Address('10.0.0.6'))
+        my_capa = {
+            'cisco_route_refresh': True,
+            'route_refresh': True,
+            'add_path': True,
+            'four_bytes_as': True,
+            'afi_safi': [(1, 1)],
+            'enhanced_route_refresh': True}
+        msg_hex = self.open.construct(my_capa)
+        hope_hex = '\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00A\x01\x04' \
+                   '\xfc\x00\x00\xb4\n\x00\x00\x06$\x02\x06\x01\x04\x00\x01\x00\x01\x02\x02\x80' \
+                   '\x00\x02\x02\x02\x00\x02\x06A\x04\x00\x00\xfc\x00\x02\x06E\x04\x00\x01\x01\x01\x02\x02F\x00'
+
+        self.assertEqual(hope_hex, msg_hex)
+
+    def test_parser_add_path(self):
+        msg_hex = '\x04\xfc\x00\x00\xb4\x0a\x00\x00\x06\x24\x02\x06\x01\x04\x00\x01\x00\x01\x02\x02\x80\x00\x02' \
+                  '\x02\x02\x00\x02\x02\x46\x00\x02\x06\x45\x04\x00\x01\x01\x03\x02\x06\x41\x04\x00\x00\xfc\x00'
+        open_msg = self.open.parse(msg_hex)
+        results = {
+            'bgpID': '10.0.0.6',
+            'Version': 4,
+            'holdTime': 180,
+            'ASN': 64512,
+            'Capabilities': {
+                'cisco_route_refresh': True,
+                'route_refresh': True,
+                'add_path': True,
+                'four_bytes_as': True,
+                'afi_safi': [(1, 1)],
+                'enhanced_route_refresh': True}}
+        self.assertEqual(results, open_msg)
+
 
 if __name__ == '__main__':
     unittest.main()

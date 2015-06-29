@@ -166,6 +166,9 @@ class Open(object):
                     # (7) enhanced route refresh
                     elif capability.capa_code == capability.ENHANCED_ROUTE_REFRESH:
                         self.capa_dict['enhanced_route_refresh'] = True
+                    # (8) add path
+                    elif capability.capa_code == capability.ADD_PATH:
+                        self.capa_dict['add_path'] = True
                     else:
                         self.capa_dict[str(capability.capa_code)] = capability.capa_value
 
