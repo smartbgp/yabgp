@@ -53,6 +53,6 @@ class BGPTimer(object):
         """Returns True if the timer was running, False otherwise."""
 
         try:
-            return self.delayedCall.active()
+            return self.delayed_call.active()
         except AttributeError:
             return False

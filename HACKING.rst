@@ -15,11 +15,19 @@ Step 3: Read on
 Running Tests
 -------------
 
-TODO
+Run tox
 
-
+.. code:: bash
+  
+  $ cd yabgp
+  $ tox
 
 Building Docs
 -------------
 
-TODO
+Run tox
+
+.. code:: bash
+  
+  $ cd yabgp
+  $ tox

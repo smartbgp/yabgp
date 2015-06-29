@@ -1,7 +1,7 @@
 YABGP
 =====
 
-|Join Chat| |License| |Build Status| |Code Climate| |Code Health| |Documentation Status| |Test Coverage|
+|Join Chat| |License| |Build Status| |Code Health| |Documentation Status| |Test Coverage|
 
 What is yabgp?
 ~~~~~~~~~~~~~~
@@ -9,7 +9,7 @@ What is yabgp?
 YABGP is a yet another Python implementation for BGP Protocol. It can be used to establish BGP connections with all kinds
 of routers (include real Cisco/HuaWei/Juniper routers and some router
 simulators like GNS3) and receive/parse BGP messages for
-future analysis. Now we open sourced it.
+future analysis.
 
 We write it in strict accordance with the specifications of RFCs.
 
@@ -144,8 +144,6 @@ https://github.com/Exa-Networks/exabgp
    :target: https://github.com/smartbgp/yabgp/blob/master/LICENSE
 .. |Build Status| image:: https://travis-ci.org/smartbgp/yabgp.svg?branch=master
    :target: https://travis-ci.org/smartbgp/yabgp
-.. |Code Climate| image:: https://codeclimate.com/github/smartbgp/yabgp/badges/gpa.svg
-   :target: https://codeclimate.com/github/smartbgp/yabgp
 
 .. |Join Chat| image:: https://badges.gitter.im/Join%20Chat.svg
    :target: https://gitter.im/smartbgp/yabgp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
