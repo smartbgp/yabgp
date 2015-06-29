@@ -15,7 +15,7 @@
 
 import struct
 
-from ipaddr import IPv4Address
+import netaddr
 
 from yabgp.message.attribute import Attribute
 from yabgp.message.attribute import AttributeID
@@ -49,7 +49,7 @@ class Aggregator(Attribute):
         if not asn4:
             try:
                 asn = struct.unpack('!H', value[:2])[0]
-                aggregator = IPv4Address(struct.unpack('!I', value[2:])[0]).__str__()
+                aggregator = str(netaddr.IPAddress(struct.unpack('!I', value[2:])[0]))
             except Exception:
                 raise excep.UpdateMessageError(
                     sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
@@ -58,7 +58,7 @@ class Aggregator(Attribute):
             # 4 bytes ASN
             try:
                 asn = struct.unpack('!I', value[:4])[0]
-                aggregator = IPv4Address(struct.unpack('!I', value[4:])[0]).__str__()
+                aggregator = str(netaddr.IPAddress(struct.unpack('!I', value[4:])[0]))
             except Exception:
                 raise excep.UpdateMessageError(
                     sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
@@ -75,9 +75,9 @@ class Aggregator(Attribute):
         """
         try:
             if asn4:
-                agg_raw = struct.pack('!I', value[0]) + IPv4Address(value[1]).packed
+                agg_raw = struct.pack('!I', value[0]) + netaddr.IPAddress(value[1]).packed
             else:
-                agg_raw = struct.pack('!H', value[0]) + IPv4Address(value[1]).packed
+                agg_raw = struct.pack('!H', value[0]) + netaddr.IPAddress(value[1]).packed
 
             return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
                 + struct.pack('!B', len(agg_raw)) + agg_raw

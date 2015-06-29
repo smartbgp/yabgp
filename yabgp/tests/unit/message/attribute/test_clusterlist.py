@@ -46,7 +46,7 @@ class TestClusterList(unittest.TestCase):
     def test_construct_invalid_length(self):
         # invalid length
         self.assertRaises(excep.UpdateMessageError, ClusterList().construct,
-                          [1, 2, '3'])
+                          ['a', 2, '3'])
 
 if __name__ == '__main__':
     unittest.main()

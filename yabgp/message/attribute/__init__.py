@@ -109,7 +109,7 @@ class AttributeID(int):
 
     ATTR_SET = 0x80  # 128 [RFC6368]
 
-    Unassigned = range(27, 127) + range(129, 254)
+    Unassigned = list(range(27, 127)) + list(range(129, 254))
     Reserved_For_Development = 255
 
     def __str__(self):

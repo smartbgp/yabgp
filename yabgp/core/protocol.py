@@ -20,7 +20,7 @@ import traceback
 import struct
 import time
 
-from ipaddr import IPv4Address
+import netaddr
 from oslo.config import cfg
 from twisted.internet import protocol
 
@@ -88,12 +88,12 @@ class BGP(protocol.Protocol):
         # Set the local BGP id from the local IP address if it's not set
         if self.factory.bgp_id is None:
             try:
-                self.factory.bgp_id = int(IPv4Address(self.transport.getHost().host))
+                self.factory.bgp_id = int(netaddr.IPAddress(self.transport.getHost().host))
             except Exception as e:
                 LOG.error(e)
                 error_str = traceback.format_exc()
                 LOG.debug(error_str)
-                self.factory.bgp_id = int(IPv4Address('127.0.0.1'))
+                self.factory.bgp_id = int(netaddr.IPAddress('127.0.0.1'))
         try:
             self.fsm.connection_made()
         except Exception as e:

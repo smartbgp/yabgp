@@ -16,7 +16,7 @@
 """ BGP Open message"""
 
 import struct
-from ipaddr import IPv4Address
+import netaddr
 
 from yabgp.common import exception as excp
 from yabgp.common import constants as bgp_cons
@@ -78,7 +78,7 @@ class Open(object):
                 sub_error=bgp_cons.ERR_MSG_HDR_BAD_MSG_LEN,
                 data=message[:10])
 
-        self.bgp_id = IPv4Address(self.bgp_id).__str__()
+        self.bgp_id = str(netaddr.IPAddress(self.bgp_id))
 
         if self.version != 4:
             # Here we just support BGP-4

@@ -24,7 +24,7 @@ import platform
 import struct
 import sys
 
-import ipaddr
+import netaddr
 from twisted.internet import protocol
 from twisted.internet import reactor
 from oslo.config import cfg
@@ -343,10 +343,10 @@ class BGPPeering(BGPFactory):
             return None
 
         # address family
-        if isinstance(ipaddr.IPAddress(host), ipaddr.IPv4Address):
+        if netaddr.IPAddress(host).version == 4:
             # ipv4 address
             afi = AFNUM_INET
-        elif isinstance(ipaddr.IPAddress(host), ipaddr.IPv6Address):
+        elif netaddr.IPAddress(host).version == 6:
             # ipv6 address
             # TODO support IPv6
             LOG.error("Does not support ipv6 address family")

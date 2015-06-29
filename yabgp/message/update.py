@@ -19,7 +19,7 @@ import struct
 import traceback
 import logging
 
-from ipaddr import IPv4Network
+import netaddr
 
 from yabgp.common import exception as excep
 from yabgp.common import constants as bgp_cons
@@ -343,7 +343,7 @@ class Update(object):
         nlri_raw_hex = ''
         for prefix in prefix_list:
             masklen = prefix.split('/')[1]
-            ip_hex = IPv4Network(prefix).packed
+            ip_hex = struct.pack('!I', netaddr.IPNetwork(prefix).value)
             masklen = int(masklen)
             if 16 < masklen <= 24:
                 ip_hex = ip_hex[0:3]

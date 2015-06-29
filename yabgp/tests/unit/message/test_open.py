@@ -17,7 +17,7 @@
 
 import unittest
 
-import ipaddr
+import netaddr
 
 from yabgp.message.open import Open
 from yabgp.common.constants import VERSION
@@ -46,7 +46,7 @@ class TestOpen(unittest.TestCase):
         self.open.version = VERSION
         self.open.asn = 66666
         self.open.hold_time = 180
-        self.open.bgp_id = int(ipaddr.IPv4Address('1.1.1.1'))
+        self.open.bgp_id = int(netaddr.IPAddress('1.1.1.1'))
         my_capa = {
             'graceful_restart': False,
             'cisco_multi_session': True,
@@ -64,7 +64,7 @@ class TestOpen(unittest.TestCase):
         self.open.version = VERSION
         self.open.asn = 64512
         self.open.hold_time = 180
-        self.open.bgp_id = int(ipaddr.IPv4Address('10.0.0.6'))
+        self.open.bgp_id = int(netaddr.IPAddress('10.0.0.6'))
         my_capa = {
             'cisco_route_refresh': True,
             'route_refresh': True,

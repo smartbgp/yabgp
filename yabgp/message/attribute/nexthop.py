@@ -16,7 +16,7 @@
 import struct
 import binascii
 
-from ipaddr import IPv4Address
+import netaddr
 
 from yabgp.message.attribute import Attribute
 from yabgp.message.attribute import AttributeID
@@ -45,7 +45,7 @@ class NextHop(Attribute):
         :param value: raw binary value
         """
         if len(value) % 4 == 0:
-            next_hop = IPv4Address(int(binascii.b2a_hex(value[0:4]), 16)).__str__()
+            next_hop = str(netaddr.IPAddress(int(binascii.b2a_hex(value[0:4]), 16)))
             return next_hop
         else:
             # Error process
@@ -59,11 +59,15 @@ class NextHop(Attribute):
         :param value: ipv4 format string like 1.1.1.1
         """
         try:
-            ipv4_addr = IPv4Address(value)
-        except:
-            raise excep.UpdateMessageError(
-                sub_error=bgp_cons.ERR_MSG_UPDATE_INVALID_NEXTHOP,
-                data=value)
-        ip_addr_raw = ipv4_addr.packed
-        return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
-            + struct.pack('!B', len(ip_addr_raw)) + ip_addr_raw
+            if netaddr.IPAddress(value).version == 4:
+                ip_addr_raw = netaddr.IPAddress(value).packed
+                return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
+                    + struct.pack('!B', len(ip_addr_raw)) + ip_addr_raw
+            else:
+                raise excep.UpdateMessageError(
+                    sub_error=bgp_cons.ERR_MSG_UPDATE_INVALID_NEXTHOP,
+                    data=value)
+        except Exception:
+                raise excep.UpdateMessageError(
+                    sub_error=bgp_cons.ERR_MSG_UPDATE_INVALID_NEXTHOP,
+                    data=value)
