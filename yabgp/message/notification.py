@@ -48,7 +48,7 @@ class Notification(object):
         # ---------------+--------+---------+------+
         return b'\xff'*16 + struct.pack('!HB', len(message) + 19, self.MSG_NOTIFICATION) + message
 
-    def construct(self, error, suberror=0, data=''):
+    def construct(self, error, suberror=0, data=b''):
 
         """Constructs a BGP Notification message
 
@@ -57,5 +57,5 @@ class Notification(object):
         :param data:
         """
 
-        msg = struct.pack('!BB', error, suberror) + data.encode('ascii')
+        msg = struct.pack('!BB', error, suberror) + data
         return self.construct_header(msg)

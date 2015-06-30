@@ -206,7 +206,7 @@ class Update(object):
         prefixes = []
         postfix = data
         while len(postfix) > 0:
-            prefix_len = ord(postfix[0])
+            prefix_len = struct.unpack('B', postfix[0])[0]
             if prefix_len > 32:
                 LOG.warning('Prefix Length larger than 32')
                 raise excep.UpdateMessageError(
@@ -252,7 +252,7 @@ class Update(object):
                     attr_value = postfix[4:4 + attr_len]
                     postfix = postfix[4 + attr_len:]    # Next attribute
                 else:    # standard 1-octet length
-                    attr_len = ord(postfix[2])
+                    attr_len = postfix[2]
                     attr_value = postfix[3:3 + attr_len]
                     postfix = postfix[3 + attr_len:]    # Next attribute
             except Exception as e:
@@ -340,7 +340,7 @@ class Update(object):
 
         :param prefix_list: prefix list
         """
-        nlri_raw_hex = ''
+        nlri_raw_hex = b''
         for prefix in prefix_list:
             masklen = prefix.split('/')[1]
             ip_hex = struct.pack('!I', netaddr.IPNetwork(prefix).value)
@@ -360,7 +360,7 @@ class Update(object):
 
         :param prefixes: prefix list"""
 
-        prefix_data = ""
+        prefix_data = b''
         for prefix in prefixes:
             octet_len, remainder = len(prefix) / 8, len(prefix) % 8
             if remainder > 0:

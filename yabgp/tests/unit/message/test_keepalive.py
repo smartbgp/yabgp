@@ -29,12 +29,12 @@ class TestKeepAlive(unittest.TestCase):
         self.assertEqual(None, keepalive_msg)
 
     def test_parse_msg_header_error(self):
-        self.assertRaises(MessageHeaderError, KeepAlive().parse, '\x00')
+        self.assertRaises(MessageHeaderError, KeepAlive().parse, b'\x00')
 
     def test_construct(self):
 
         msg_hex = KeepAlive().construct()
-        hope_msg = '\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x13\x04'
+        hope_msg = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x13\x04'
         self.assertEqual(hope_msg, msg_hex)
 
 if __name__ == '__main__':
