@@ -206,19 +206,27 @@ class Update(object):
         prefixes = []
         postfix = data
         while len(postfix) > 0:
-            prefix_len = struct.unpack('B', postfix[0])[0]
+            # for python2 and python3
+            if isinstance(postfix[0], int):
+                prefix_len = postfix[0]
+            else:
+                prefix_len = ord(postfix[0])
             if prefix_len > 32:
                 LOG.warning('Prefix Length larger than 32')
                 raise excep.UpdateMessageError(
                     sub_error=bgp_cons.ERR_MSG_UPDATE_INVALID_NETWORK_FIELD,
                     data=repr(data)
                 )
-            octet_len, remainder = prefix_len / 8, prefix_len % 8
+            octet_len, remainder = int(prefix_len / 8), prefix_len % 8
             if remainder > 0:
                 # prefix length doesn't fall on octet boundary
                 octet_len += 1
             tmp = postfix[1:octet_len + 1]
-            prefix_data = [ord(i) for i in tmp]
+            # for python2 and python3
+            if isinstance(postfix[0], int):
+                prefix_data = [i for i in tmp]
+            else:
+                prefix_data = [ord(i) for i in tmp]
             # Zero the remaining bits in the last octet if it didn't fall
             # on an octet boundary
             if remainder > 0:
