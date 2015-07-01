@@ -15,7 +15,7 @@
 
 import struct
 
-from ipaddr import IPv4Address
+import netaddr
 
 from yabgp.message.attribute import Attribute
 from yabgp.message.attribute import AttributeID
@@ -55,7 +55,7 @@ class ClusterList(Attribute):
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                 data=repr(value))
         while value:
-            cluster_list.append(IPv4Address(struct.unpack('!I', value[0:4])[0]).__str__())
+            cluster_list.append(str(netaddr.IPAddress(struct.unpack('!I', value[0:4])[0])))
             value = value[4:]
         return cluster_list
 
@@ -65,10 +65,10 @@ class ClusterList(Attribute):
         construct a CLUSTER_LIST path attribute
         :param value:
         """
-        cluster_raw = ''
+        cluster_raw = b''
         try:
             for cluster in value:
-                cluster_raw += IPv4Address(cluster).packed
+                cluster_raw += netaddr.IPAddress(cluster).packed
             return struct.pack("!B", self.FLAG) + struct.pack('!B', self.ID) \
                 + struct.pack("!B", len(cluster_raw)) + cluster_raw
         except Exception:

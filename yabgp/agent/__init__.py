@@ -20,7 +20,6 @@ import logging
 from oslo.config import cfg
 from twisted.internet import reactor
 from twisted.web.server import Site
-from twisted.web.wsgi import WSGIResource
 
 from yabgp import version, log
 from yabgp.core.factory import BGPPeering
@@ -80,16 +79,18 @@ def prepare_twisted_service():
         all_peers[peer] = bgp_peering
         CONF.bgp.running_config[peer]['factory'] = bgp_peering
 
-        # Starting api server
-    LOG.info("Prepare RESTAPI service")
-    resource = WSGIResource(reactor, reactor.getThreadPool(), app)
-    site = Site(resource)
-    try:
-        reactor.listenTCP(CONF.rest.bind_port, site, interface=CONF.rest.bind_host)
-        LOG.info("serving RESTAPI on http://%s:%s", CONF.rest.bind_host, CONF.rest.bind_port)
-    except Exception as e:
-        LOG.error(e, exc_info=True)
-        sys.exit()
+    # Starting api server
+    if sys.version_info[0] == 2:
+        from twisted.web.wsgi import WSGIResource
+        LOG.info("Prepare RESTAPI service")
+        resource = WSGIResource(reactor, reactor.getThreadPool(), app)
+        site = Site(resource)
+        try:
+            reactor.listenTCP(CONF.rest.bind_port, site, interface=CONF.rest.bind_host)
+            LOG.info("serving RESTAPI on http://%s:%s", CONF.rest.bind_host, CONF.rest.bind_port)
+        except Exception as e:
+            LOG.error(e, exc_info=True)
+            sys.exit()
 
     for peer in all_peers:
         LOG.info('start peer, peer address=%s', peer)

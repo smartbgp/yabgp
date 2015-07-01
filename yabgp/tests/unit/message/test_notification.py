@@ -17,20 +17,22 @@
 
 import unittest
 
+
 from yabgp.message.notification import Notification
 
 
 class TestNotification(unittest.TestCase):
 
     def test_parse(self):
-        msg_hex = '\x03\x05\x00\x00'
+        msg_hex = b'\x03\x05\x00\x00'
         noti_msg = Notification().parse(msg_hex)
-        self.assertEqual((3, 5, '\x00\x00'), noti_msg)
+        self.assertEqual((3, 5, b'\x00\x00'), noti_msg)
 
     def test_construct(self):
 
-        msg_hex = Notification().construct(error=3, suberror=5, data='\x00\x00')
-        hope_msg = '\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x17\x03\x03\x05\x00\x00'
+        msg_hex = Notification().construct(error=3, suberror=5, data=b'\x00\x00')
+        hope_msg = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff' \
+                   b'\xff\xff\x00\x17\x03\x03\x05\x00\x00'
         self.assertEqual(hope_msg, msg_hex)
 
 if __name__ == '__main__':

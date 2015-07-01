@@ -16,7 +16,7 @@
 """ BGP Open message"""
 
 import struct
-from ipaddr import IPv4Address
+import netaddr
 
 from yabgp.common import exception as excp
 from yabgp.common import constants as bgp_cons
@@ -78,7 +78,7 @@ class Open(object):
                 sub_error=bgp_cons.ERR_MSG_HDR_BAD_MSG_LEN,
                 data=message[:10])
 
-        self.bgp_id = IPv4Address(self.bgp_id).__str__()
+        self.bgp_id = str(netaddr.IPAddress(self.bgp_id))
 
         if self.version != 4:
             # Here we just support BGP-4
@@ -194,15 +194,14 @@ class Open(object):
         #    Maker      | Length |  Type   |  msg |
         #---------------+--------+---------+------+
         """
-        return struct.pack('!16sHB',
-                           chr(255) * 16,
-                           len(msg) + 19,
-                           1) + msg
+        return b'\xff'*16 + struct.pack('!HB',
+                                        len(msg) + 19,
+                                        1) + msg
 
     def construct(self, my_capability):
 
         """ Construct a BGP Open message """
-        capas = ''
+        capas = b''
         # Construct Capabilities Optional Parameter (Parameter Type 2)
         if 'afi_safi' in my_capability:
             # Multiprotocol extentions capability
@@ -376,7 +375,7 @@ class Capability(object):
         # for multiprotocol extentions
         elif self.capa_code == self.MULTIPROTOCOL_EXTENSIONS:
             # <ipv4,unicast> and <ipv4,mplsvpn>
-            afisafi = ''
+            afisafi = b''
             for (afi, safi) in my_capability['afi_safi']:
                 afisafi += struct.pack('!BBBBHBB', 2, 6, self.MULTIPROTOCOL_EXTENSIONS, 4, afi, 0, safi)
             return afisafi

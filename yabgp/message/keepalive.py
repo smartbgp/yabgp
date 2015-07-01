@@ -50,9 +50,7 @@ class KeepAlive(object):
         # ---------------+--------+---------+------+
         #    Maker      | Length |  Type   |  msg |
         # ---------------+--------+---------+------+
-        return struct.pack('!16sHB',
-                           chr(255) * 16,
-                           19, 4)
+        return b'\xff'*16 + struct.pack('!HB', 19, 4)
 
     def construct(self):
         """

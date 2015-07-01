@@ -46,12 +46,9 @@ class Notification(object):
         # ---------------+--------+---------+------+
         #    Maker      | Length |  Type   |  msg |
         # ---------------+--------+---------+------+
-        return struct.pack('!16sHB',
-                           chr(255) * 16,
-                           len(message) + 19,
-                           self.MSG_NOTIFICATION) + message
+        return b'\xff'*16 + struct.pack('!HB', len(message) + 19, self.MSG_NOTIFICATION) + message
 
-    def construct(self, error, suberror=0, data=''):
+    def construct(self, error, suberror=0, data=b''):
 
         """Constructs a BGP Notification message
 

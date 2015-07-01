@@ -20,7 +20,7 @@ import traceback
 import struct
 import time
 
-from ipaddr import IPv4Address
+import netaddr
 from oslo.config import cfg
 from twisted.internet import protocol
 
@@ -49,7 +49,7 @@ class BGP(protocol.Protocol):
         self.peer_id = None
 
         self.disconnected = False
-        self.receive_buffer = ''
+        self.receive_buffer = b''
 
         self.process_queue_time = 0.5
         self.process_queue_timer = BGPTimer(self.process_queue)
@@ -88,12 +88,12 @@ class BGP(protocol.Protocol):
         # Set the local BGP id from the local IP address if it's not set
         if self.factory.bgp_id is None:
             try:
-                self.factory.bgp_id = int(IPv4Address(self.transport.getHost().host))
+                self.factory.bgp_id = int(netaddr.IPAddress(self.transport.getHost().host))
             except Exception as e:
                 LOG.error(e)
                 error_str = traceback.format_exc()
                 LOG.debug(error_str)
-                self.factory.bgp_id = int(IPv4Address('127.0.0.1'))
+                self.factory.bgp_id = int(netaddr.IPAddress('127.0.0.1'))
         try:
             self.fsm.connection_made()
         except Exception as e:
@@ -226,7 +226,7 @@ class BGP(protocol.Protocol):
 
         # Check whether the first 16 octets of the buffer consist of
         # the BGP marker (all bits one)
-        if buf[:16] != chr(255) * 16:
+        if buf[:16] != 16 * b'\xff':
             self.fsm.header_error(bgp_cons.ERR_MSG_HDR_CONN_NOT_SYNC)
             return False
             # Parse the BGP header
@@ -328,7 +328,7 @@ class BGP(protocol.Protocol):
             self.msg_sent_stat['Updates'] += 1
         return True
 
-    def send_notification(self, error, sub_error, data=''):
+    def send_notification(self, error, sub_error, data=b''):
         """
         send BGP notification message
 
@@ -340,7 +340,7 @@ class BGP(protocol.Protocol):
         self.msg_sent_stat['Notifications'] += 1
         LOG.info(
             "[%s]Send a BGP Notification message to the peer [Error: %s, Suberror: %s, Error data: %s ]",
-            self.factory.peer_addr, error, sub_error, [ord(d) for d in data])
+            self.factory.peer_addr, error, sub_error, repr(data))
         # message statistic
         self.msg_sent_stat['Notifications'] += 1
         # construct message
@@ -356,7 +356,7 @@ class BGP(protocol.Protocol):
         LOG.info(
             '[%s]Notification message received, error=%s, sub error=%s, data=%s',
             self.factory.peer_addr, msg[0], msg[1], msg[2])
-        nofi_msg = {'Error': msg[0], 'Suberror': msg[1], 'Error data': [ord(d) for d in msg[2]]}
+        nofi_msg = {'Error': msg[0], 'Suberror': msg[1], 'Error data': repr(msg[2])}
         self.factory.write_msg(
             timestamp=time.time(),
             msg_type=3,

@@ -24,7 +24,7 @@ import platform
 import struct
 import sys
 
-import ipaddr
+import netaddr
 from twisted.internet import protocol
 from twisted.internet import reactor
 from oslo.config import cfg
@@ -182,28 +182,11 @@ class BGPPeering(BGPFactory):
             return last_seq
         file_list.sort()
         self.msg_file_name = file_list[-1]
-        lines_2find = 1
-        f = open(self.msg_path + self.msg_file_name)
-        f.seek(0, 2)  # go to the end of the file
-        bytes_in_file = f.tell()
-        if bytes_in_file <= 0:
-            return last_seq
-        lines_found, total_bytes_scanned = 0, 0
-        while (lines_2find + 1 > lines_found and
-                bytes_in_file > total_bytes_scanned):
-            byte_block = min(1024, bytes_in_file - total_bytes_scanned)
-            f.seek(-(byte_block + total_bytes_scanned), 2)
-            total_bytes_scanned += byte_block
-            lines_found += f.read(1024).count('\n')
-        f.seek(-total_bytes_scanned, 2)
-        line_list = list(f.readlines())
-        last_line = line_list[-lines_2find:][0]
-        try:
-            last_line = eval(last_line)
-            last_seq = last_line[1] + 1
-        except Exception as e:
-            LOG.error(e)
-            return last_seq
+        with open(self.msg_path + self.msg_file_name, 'rb') as fh:
+            for line in fh:
+                pass
+            last = line
+            last_seq = eval(last)[1]
         return last_seq
 
     def write_msg(self, timestamp, msg_type, msg, afi_safi, flush=False):
@@ -324,7 +307,7 @@ class BGPPeering(BGPFactory):
                 factory=self,
                 timeout=30,
                 bindAddress=(self.my_addr, 0))
-            if isinstance(self.md5, basestring) and self.md5:
+            if isinstance(self.md5, str) and self.md5:
                 md5sig = self.get_tcp_md5sig(self.md5, self.peer_addr, bgp_cons.PORT)
                 if md5sig:
                     connector.transport.getHandle().setsockopt(socket.IPPROTO_TCP, bgp_cons.TCP_MD5SIG, md5sig)
@@ -343,10 +326,10 @@ class BGPPeering(BGPFactory):
             return None
 
         # address family
-        if isinstance(ipaddr.IPAddress(host), ipaddr.IPv4Address):
+        if netaddr.IPAddress(host).version == 4:
             # ipv4 address
             afi = AFNUM_INET
-        elif isinstance(ipaddr.IPAddress(host), ipaddr.IPv6Address):
+        elif netaddr.IPAddress(host).version == 6:
             # ipv6 address
             # TODO support IPv6
             LOG.error("Does not support ipv6 address family")
@@ -359,10 +342,10 @@ class BGPPeering(BGPFactory):
             if afi == AFNUM_INET:
                 n_addr = socket.inet_pton(socket.AF_INET, host)
                 tcp_md5sig = 'HH4s%dx2xH4x%ds' % (bgp_cons.SS_PADSIZE_IPV4, bgp_cons.TCP_MD5SIG_MAXKEYLEN)
-                md5sig = struct.pack(tcp_md5sig, socket.AF_INET, n_port, n_addr, len(md5_str), md5_str)
+                md5sig = struct.pack(tcp_md5sig, socket.AF_INET, n_port, n_addr, len(md5_str), md5_str.encode())
                 return md5sig
             else:
                 return None
-        except socket.error, e:
+        except socket.error as e:
             LOG.error('This linux machine does not support TCP_MD5SIG, you can not use MD5 (%s)', str(e))
             return None

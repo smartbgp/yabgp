@@ -96,9 +96,9 @@ class ASPath(Attribute):
         # value example
         # [(2, [3257, 31027, 34848, 21465])], or [(3, [64606]), (2, [64624, 65515])]
 
-        as_path_raw = ''
+        as_path_raw = b''
         for segment in value:
-            as_seg_raw = ''
+            as_seg_raw = b''
             seg_type = segment[0]
             as_path_list = segment[1]
             if seg_type not in [self.AS_SET, self.AS_SEQUENCE, self.AS_CONFED_SET, self.AS_CONFED_SEQUENCE]:

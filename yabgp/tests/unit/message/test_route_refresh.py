@@ -25,7 +25,7 @@ class TestRouteRefresh(unittest.TestCase):
 
     def test_parse(self):
 
-        msg_hex = '\x00\x01\x00\x80'
+        msg_hex = b'\x00\x01\x00\x80'
         msg_parsed = RouteRefresh().parse(msg_hex)
         msg_hoped = (1, 0, 128)
         self.assertEqual(msg_hoped, msg_parsed)
@@ -34,14 +34,14 @@ class TestRouteRefresh(unittest.TestCase):
 
         msg = (1, 0, 128)
         msg_hex = RouteRefresh(afi=msg[0], res=msg[1], safi=msg[2]).construct(MSG_ROUTEREFRESH)
-        msg_hoped = '\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x17\x05\x00\x01\x00\x80'
+        msg_hoped = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x17\x05\x00\x01\x00\x80'
         self.assertEqual(msg_hoped, msg_hex)
 
     def test_construct_cisco_route_refresh(self):
 
         msg = (1, 0, 128)
         msg_hex = RouteRefresh(afi=msg[0], res=msg[1], safi=msg[2]).construct(MSG_CISCOROUTEREFRESH)
-        msg_hoped = '\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x17\x80\x00\x01\x00\x80'
+        msg_hoped = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x17\x80\x00\x01\x00\x80'
         self.assertEqual(msg_hoped, msg_hex)
 
 if __name__ == '__main__':

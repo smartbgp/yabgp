@@ -24,13 +24,13 @@ from yabgp.common.exception import UpdateMessageError
 class TestUpdate(unittest.TestCase):
     def test_parse_prefix_list(self):
 
-        prefix_hex = '\x13\xb8\x9d\xe0\x18E\xb3\xdd\x18E\xb3\xdc\x18\xd1f\xb2\x16Bpd\x18\xd06\xc2'
+        prefix_hex = b'\x13\xb8\x9d\xe0\x18E\xb3\xdd\x18E\xb3\xdc\x18\xd1f\xb2\x16Bpd\x18\xd06\xc2'
         nlri = ['184.157.224.0/19', '69.179.221.0/24', '69.179.220.0/24',
                 '209.102.178.0/24', '66.112.100.0/22', '208.54.194.0/24']
         self.assertEqual(nlri, Update().parse_prefix_list(prefix_hex))
 
     def test_parse_prefix_mask_larger_than_32(self):
-        prefix_hex = '\x21\xb8\x9d\xe0\x18E\xb3\xdd\x18E\xb3\xdc\x18\xd1f\xb2\x16Bpd\x18\xd06\xc2'
+        prefix_hex = b'\x21\xb8\x9d\xe0\x18E\xb3\xdd\x18E\xb3\xdc\x18\xd1f\xb2\x16Bpd\x18\xd06\xc2'
         self.assertRaises(UpdateMessageError, Update().parse_prefix_list, prefix_hex)
 
     def test_construct_prefix_v4(self):
@@ -41,8 +41,8 @@ class TestUpdate(unittest.TestCase):
 
     def test_parse_attributes_ipv4(self):
 
-        attr_hex = '@\x01\x01\x00@\x02\x08\x02\x03\x00\x01\x00\x02\x00\x03@\x03\x04\xac\x10\x01\x0e\x80\x04\x04' \
-                   '\x00\x00\x00\x00@\x05\x04\x00\x00\x00d\x80\t\x04\xac\x10\x01\x0e\x80\n\x08\x02\x02\x02\x02dddd'
+        attr_hex = b'@\x01\x01\x00@\x02\x08\x02\x03\x00\x01\x00\x02\x00\x03@\x03\x04\xac\x10\x01\x0e\x80\x04\x04' \
+                   b'\x00\x00\x00\x00@\x05\x04\x00\x00\x00d\x80\t\x04\xac\x10\x01\x0e\x80\n\x08\x02\x02\x02\x02dddd'
         attributes = {1: 0,
                       2: [(2, [1, 2, 3])],
                       3: '172.16.1.14',

@@ -62,10 +62,9 @@ class RouteRefresh(object):
         # ---------------+--------+---------+------+
         #    Maker      | Length |  Type   |  msg |
         # ---------------+--------+---------+------+
-        return struct.pack('!16sHB',
-                           chr(255) * 16,
-                           len(message) + 19,
-                           msg_type) + message
+        return b'\xff'*16 + struct.pack('!HB',
+                                        len(message) + 19,
+                                        msg_type) + message
 
     def construct(self, msg_type):
 

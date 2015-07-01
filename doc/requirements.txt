@@ -4,6 +4,6 @@ sphinxcontrib-httpdomain
 pbr>=0.5.21,<1.0
 oslo.config==1.6.0
 Twisted==15.0.0
-ipaddr==2.1.11
 Flask==0.10.1
 Flask-HTTPAuth==2.5.0
+netaddr>=0.7.12

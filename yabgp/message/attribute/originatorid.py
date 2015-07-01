@@ -16,7 +16,7 @@
 import binascii
 import struct
 
-from ipaddr import IPv4Address
+import netaddr
 
 from yabgp.message.attribute import Attribute
 from yabgp.message.attribute import AttributeFlag
@@ -51,7 +51,7 @@ class OriginatorID(Attribute):
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                 data=value)
-        return IPv4Address(int(binascii.b2a_hex(value[0:4]), 16)).__str__()
+        return str(netaddr.IPAddress(int(binascii.b2a_hex(value[0:4]), 16)))
 
     def construct(self, value):
 
@@ -61,7 +61,7 @@ class OriginatorID(Attribute):
         """
         try:
             return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
-                + struct.pack('!B', 4) + IPv4Address(value).packed
+                + struct.pack('!B', 4) + netaddr.IPAddress(value).packed
         except Exception:
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,

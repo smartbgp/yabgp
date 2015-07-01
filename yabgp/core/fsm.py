@@ -353,7 +353,7 @@ class FSM(object):
             self.protocol.send_notification(bgp_cons.ERR_FSM, 0)
             self._error_close()
 
-    def header_error(self, suberror, data=''):
+    def header_error(self, suberror, data=b''):
 
         """
         Event 21: BGPHeaderErr
@@ -370,7 +370,7 @@ class FSM(object):
         # Established state, which contradicts earlier statements.
         self._error_close()
 
-    def open_message_error(self, suberror, data=''):
+    def open_message_error(self, suberror, data=b''):
 
         """
         Event 22: BGPOpenMsgErr
