@@ -64,7 +64,7 @@ class Community(Attribute):
         construct a COMMUNITY path attribute
         :param value:
         """
-        community_hex = ''
+        community_hex = b''
         for community in value:
             if community.upper() in bgp_cons.WELL_KNOW_COMMUNITY_STR_2_INT:
                 value = bgp_cons.WELL_KNOW_COMMUNITY_STR_2_INT[community.upper()]

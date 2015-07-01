@@ -28,21 +28,21 @@ class TestAggregator(unittest.TestCase):
     def test_parse(self):
 
         # 4 bytes asn
-        aggregator = Aggregator().parse(value='\x00\x00\x70\xd5\x3e\xe7\xff\x79',
+        aggregator = Aggregator().parse(value=b'\x00\x00\x70\xd5\x3e\xe7\xff\x79',
                                         asn4=True)
         self.assertEqual((28885, '62.231.255.121'), aggregator)
 
         # 2 bytes asn
-        aggregator = Aggregator().parse(value='\x70\xd5\x3e\xe7\xff\x79',
+        aggregator = Aggregator().parse(value=b'\x70\xd5\x3e\xe7\xff\x79',
                                         asn4=False)
         self.assertEqual((28885, '62.231.255.121'), aggregator)
 
         # invalid attr len
         self.assertRaises(excep.UpdateMessageError, Aggregator().parse,
-                          '\x70\xd5\x3e\xe7\xff\x79',
+                          b'\x70\xd5\x3e\xe7\xff\x79',
                           True)
         try:
-            Aggregator().parse(value='\x70\xd5\x3e\xe7\xff\x79',
+            Aggregator().parse(value=b'\x70\xd5\x3e\xe7\xff\x79',
                                asn4=True)
         except excep.UpdateMessageError as e:
             self.assertEqual(ERR_MSG_UPDATE_ATTR_LEN, e.sub_error)
@@ -50,7 +50,7 @@ class TestAggregator(unittest.TestCase):
     def test_construct(self):
 
         aggregator = Aggregator().construct(value=(28885, '62.231.255.121'))
-        self.assertEqual('\xc0\x07\x06\x70\xd5\x3e\xe7\xff\x79', aggregator)
+        self.assertEqual(b'\xc0\x07\x06\x70\xd5\x3e\xe7\xff\x79', aggregator)
 
 if __name__ == '__main__':
     unittest.main()

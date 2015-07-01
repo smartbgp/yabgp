@@ -65,7 +65,7 @@ class ClusterList(Attribute):
         construct a CLUSTER_LIST path attribute
         :param value:
         """
-        cluster_raw = ''
+        cluster_raw = b''
         try:
             for cluster in value:
                 cluster_raw += netaddr.IPAddress(cluster).packed

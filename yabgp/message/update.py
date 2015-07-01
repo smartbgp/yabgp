@@ -260,7 +260,10 @@ class Update(object):
                     attr_value = postfix[4:4 + attr_len]
                     postfix = postfix[4 + attr_len:]    # Next attribute
                 else:    # standard 1-octet length
-                    attr_len = postfix[2]
+                    if isinstance(postfix[2], int):
+                        attr_len = postfix[2]
+                    else:
+                        attr_len = ord(postfix[2])
                     attr_value = postfix[3:3 + attr_len]
                     postfix = postfix[3 + attr_len:]    # Next attribute
             except Exception as e:

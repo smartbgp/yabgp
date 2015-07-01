@@ -36,25 +36,25 @@ class TestNextHop(unittest.TestCase):
 
     def test_parse(self):
 
-        next_hop = self.nexthop.parse(value='\x0a\x0a\x0a\x01')
+        next_hop = self.nexthop.parse(value=b'\x0a\x0a\x0a\x01')
         self.assertEqual(next_hop, '10.10.10.1')
-        self.assertEqual(self.nexthop.parse(value='\x00\x00\x00\x00'), '0.0.0.0')
-        self.assertEqual(self.nexthop.parse(value='\xff\xff\xff\xff'), '255.255.255.255')
+        self.assertEqual(self.nexthop.parse(value=b'\x00\x00\x00\x00'), '0.0.0.0')
+        self.assertEqual(self.nexthop.parse(value=b'\xff\xff\xff\xff'), '255.255.255.255')
 
     def test_parse_invalid_length(self):
         # invalid length
         self.assertRaises(UpdateMessageError, self.nexthop.parse,
-                          '\x0a\x0a\x0a\x01\x01')
+                          b'\x0a\x0a\x0a\x01\x01')
         try:
-            self.nexthop.parse('\x0a\x0a\x0a\x01\x01')
+            self.nexthop.parse(b'\x0a\x0a\x0a\x01\x01')
         except UpdateMessageError as e:
             self.assertEqual(e.sub_error, ERR_MSG_UPDATE_ATTR_LEN)
 
     def test_construct(self):
 
         next_hop = self.nexthop.construct(value='10.10.10.1')
-        self.assertEqual(next_hop, '\x40\x03\x04\x0a\x0a\x0a\x01')
-        self.assertEqual(self.nexthop.construct('0.0.0.0'), '\x40\x03\x04\x00\x00\x00\x00')
+        self.assertEqual(next_hop, b'\x40\x03\x04\x0a\x0a\x0a\x01')
+        self.assertEqual(self.nexthop.construct('0.0.0.0'), b'\x40\x03\x04\x00\x00\x00\x00')
 
     def test_construct_invalid_nexthop(self):
         # invalid next hop
@@ -66,6 +66,6 @@ class TestNextHop(unittest.TestCase):
 
     def test_construct_with_flags(self):
         nexthop = self.nexthop.construct(value='10.10.10.10')
-        self.assertEqual(nexthop, '\x40\x03\x04\x0a\x0a\x0a\x0a')
+        self.assertEqual(nexthop, b'\x40\x03\x04\x0a\x0a\x0a\x0a')
 if __name__ == '__main__':
     unittest.main()

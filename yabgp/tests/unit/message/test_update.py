@@ -39,18 +39,18 @@ class TestUpdate(unittest.TestCase):
         nlri_hex = Update().construct_prefix_v4(nlri)
         self.assertEqual(nlri, Update.parse_prefix_list(nlri_hex))
 
-    # def test_parse_attributes_ipv4(self):
-    #
-    #     attr_hex = b'@\x01\x01\x00@\x02\x08\x02\x03\x00\x01\x00\x02\x00\x03@\x03\x04\xac\x10\x01\x0e\x80\x04\x04' \
-    #                b'\x00\x00\x00\x00@\x05\x04\x00\x00\x00d\x80\t\x04\xac\x10\x01\x0e\x80\n\x08\x02\x02\x02\x02dddd'
-    #     attributes = {1: 0,
-    #                   2: [(2, [1, 2, 3])],
-    #                   3: '172.16.1.14',
-    #                   4: 0,
-    #                   5: 100,
-    #                   9: '172.16.1.14',
-    #                   10: ['2.2.2.2', '100.100.100.100']}
-    #     self.assertEqual(attributes, Update().parse_attributes(attr_hex, False))
+    def test_parse_attributes_ipv4(self):
+
+        attr_hex = b'@\x01\x01\x00@\x02\x08\x02\x03\x00\x01\x00\x02\x00\x03@\x03\x04\xac\x10\x01\x0e\x80\x04\x04' \
+                   b'\x00\x00\x00\x00@\x05\x04\x00\x00\x00d\x80\t\x04\xac\x10\x01\x0e\x80\n\x08\x02\x02\x02\x02dddd'
+        attributes = {1: 0,
+                      2: [(2, [1, 2, 3])],
+                      3: '172.16.1.14',
+                      4: 0,
+                      5: 100,
+                      9: '172.16.1.14',
+                      10: ['2.2.2.2', '100.100.100.100']}
+        self.assertEqual(attributes, Update().parse_attributes(attr_hex, False))
 
 
 if __name__ == '__main__':
