@@ -176,34 +176,17 @@ class BGPPeering(BGPFactory):
         """
         LOG.info('get the last bgp message seq for this peer')
         last_seq = 1
-        # # first get the last file
-        # file_list = os.listdir(self.msg_path)
-        # if not file_list:
-        #     return last_seq
-        # file_list.sort()
-        # self.msg_file_name = file_list[-1]
-        # lines_2find = 1
-        # f = open(self.msg_path + self.msg_file_name)
-        # f.seek(0, 2)  # go to the end of the file
-        # bytes_in_file = f.tell()
-        # if bytes_in_file <= 0:
-        #     return last_seq
-        # lines_found, total_bytes_scanned = 0, 0
-        # while (lines_2find + 1 > lines_found and
-        #         bytes_in_file > total_bytes_scanned):
-        #     byte_block = min(1024, bytes_in_file - total_bytes_scanned)
-        #     f.seek(-(byte_block + total_bytes_scanned), 2)
-        #     total_bytes_scanned += byte_block
-        #     lines_found += f.read(1024).count('\n')
-        # f.seek(-total_bytes_scanned, 2)
-        # line_list = list(f.readlines())
-        # last_line = line_list[-lines_2find:][0]
-        # try:
-        #     last_line = eval(last_line)
-        #     last_seq = last_line[1] + 1
-        # except Exception as e:
-        #     LOG.error(e)
-        #     return last_seq
+        # first get the last file
+        file_list = os.listdir(self.msg_path)
+        if not file_list:
+            return last_seq
+        file_list.sort()
+        self.msg_file_name = file_list[-1]
+        with open(self.msg_path + self.msg_file_name, 'rb') as fh:
+            for line in fh:
+                pass
+            last = line
+            last_seq = eval(last)[1]
         return last_seq
 
     def write_msg(self, timestamp, msg_type, msg, afi_safi, flush=False):
