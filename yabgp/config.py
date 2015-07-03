@@ -22,6 +22,9 @@ from oslo.config import cfg
 
 CONF = cfg.CONF
 
+CONF.register_cli_opt(
+    cfg.BoolOpt('standalone', default=True, help='The BGP Agent running mode'))
+
 msg_process_opts = [
     cfg.BoolOpt('write_disk',
                 default=True,

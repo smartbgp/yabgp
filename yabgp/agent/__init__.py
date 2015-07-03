@@ -26,6 +26,7 @@ from yabgp.core.factory import BGPPeering
 from yabgp.config import get_bgp_config
 from yabgp.common import constants as bgp_cons
 from yabgp.api.app import app
+from yabgp.channel.config import rabbit_mq
 
 
 log.early_init_log(logging.DEBUG)
@@ -33,6 +34,12 @@ log.early_init_log(logging.DEBUG)
 CONF = cfg.CONF
 
 LOG = logging.getLogger(__name__)
+
+
+def check_running_mode():
+    if not CONF.standalone:
+        # not standalone?
+        CONF.register_opts(rabbit_mq)
 
 
 def check_msg_config():
@@ -105,6 +112,7 @@ def prepare_service(args=None):
     except cfg.ConfigFilesNotFoundError:
         CONF(args=args, project='yabgp', version=version)
 
+    check_running_mode()
     log.init_log()
     LOG.info('Log (Re)opened.')
     LOG.info("Configuration:")
