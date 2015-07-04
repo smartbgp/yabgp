@@ -21,6 +21,7 @@ import logging
 
 import pika
 from twisted.internet import protocol
+from twisted.internet import reactor
 
 from yabgp.channel.protocol import PikaProtocol
 
@@ -51,11 +52,11 @@ class PikaFactory(protocol.ReconnectingClientFactory):
 
     def clientConnectionLost(self, connector, reason):
         LOG.info('Lost connection.  Reason: %s', reason)
-        protocol.ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
+        protocol.ReconnectingClientFactory.clientConnectionLost(self, connector, reason.getErrorMessage())
 
     def clientConnectionFailed(self, connector, reason):
         LOG.info('Connection failed. Reason: %s', reason)
-        protocol.ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
+        protocol.ReconnectingClientFactory.clientConnectionFailed(self, connector, reason.getErrorMessage())
 
     def send_message(self, exchange=None, routing_key=None, message=None):
         self.queued_messages.append((exchange, routing_key, message))
@@ -67,3 +68,13 @@ class PikaFactory(protocol.ReconnectingClientFactory):
         self.read_list.append((exchange, routing_key, callback))
         if self.client is not None:
             self.client.read(exchange, routing_key, callback)
+
+    def connect(self):
+
+        try:
+            reactor.connectTCP(
+                host=self.parameters.host,
+                port=self.parameters.port,
+                factory=self)
+        except Exception as e:
+            LOG.error(e)

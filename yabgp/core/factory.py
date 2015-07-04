@@ -74,7 +74,7 @@ class BGPPeering(BGPFactory):
     """
 
     def __init__(self, myasn=None, myaddr=None, peerasn=None, peeraddr=None,
-                 msgpath=None, afisafi=None, md5=None):
+                 msgpath=None, afisafi=None, md5=None, channel=None):
         """Initial a BGPPeering instance.
 
         :param myasn: local bgp as number.
@@ -84,6 +84,7 @@ class BGPPeering(BGPFactory):
         :param msgpath: the path to store bgp message file.
         :param afisafi: afi and safi
         :param md5: TCP md5 string
+        :param channel: rabbitmq channel
         """
         LOG.info('Init BGPPeering for peer %s', peeraddr)
         self.my_asn = myasn
@@ -94,6 +95,7 @@ class BGPPeering(BGPFactory):
         self.peer_asn = peerasn
         self.afi_safi = afisafi
         self.md5 = md5
+        self.channel = channel
 
         self.status = False
         self.fsm = BGPFactory.FSM(self)
