@@ -26,6 +26,8 @@ from yabgp.core.factory import BGPPeering
 from yabgp.config import get_bgp_config
 from yabgp.common import constants as bgp_cons
 from yabgp.api.app import app
+from yabgp.channel.config import rabbit_mq
+from yabgp.channel.factory import PikaFactory
 
 
 log.early_init_log(logging.DEBUG)
@@ -33,6 +35,12 @@ log.early_init_log(logging.DEBUG)
 CONF = cfg.CONF
 
 LOG = logging.getLogger(__name__)
+
+
+def check_running_mode():
+    if not CONF.standalone:
+        # not standalone?
+        CONF.register_opts(rabbit_mq, group='rabbit_mq')
 
 
 def check_msg_config():
@@ -49,6 +57,17 @@ def prepare_twisted_service():
     LOG.info('Prepare twisted services')
     # check all peers
     all_peers = {}
+    # try to connect to rabbitmq channel
+    if not CONF.standalone:
+        rabbit_mq_factory = PikaFactory(
+            host=CONF.rabbit_mq.rabbit_host,
+            port=CONF.rabbit_mq.rabbit_port,
+            userid=CONF.rabbit_mq.rabbit_userid,
+            password=CONF.rabbit_mq.rabbit_password
+        )
+        rabbit_mq_factory.connect()
+    else:
+        rabbit_mq_factory = None
     for peer in CONF.bgp.running_config:
         LOG.info('Get peer %s configuration', peer)
         if CONF.message.write_disk:
@@ -74,7 +93,8 @@ def prepare_twisted_service():
             peeraddr=CONF.bgp.running_config[peer]['remote_addr'],
             afisafi=CONF.bgp.running_config[peer]['afi_safi'],
             msgpath=msg_file_path_for_peer,
-            md5=CONF.bgp.running_config[peer]['md5']
+            md5=CONF.bgp.running_config[peer]['md5'],
+            channel=rabbit_mq_factory
         )
         all_peers[peer] = bgp_peering
         CONF.bgp.running_config[peer]['factory'] = bgp_peering
@@ -105,6 +125,7 @@ def prepare_service(args=None):
     except cfg.ConfigFilesNotFoundError:
         CONF(args=args, project='yabgp', version=version)
 
+    check_running_mode()
     log.init_log()
     LOG.info('Log (Re)opened.')
     LOG.info("Configuration:")
