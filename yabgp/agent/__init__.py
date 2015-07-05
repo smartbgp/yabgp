@@ -28,6 +28,7 @@ from yabgp.common import constants as bgp_cons
 from yabgp.api.app import app
 from yabgp.channel.config import rabbit_mq
 from yabgp.channel.factory import PikaFactory
+from yabgp.db.config import database_options
 
 
 log.early_init_log(logging.DEBUG)
@@ -38,9 +39,11 @@ LOG = logging.getLogger(__name__)
 
 
 def check_running_mode():
+
     if not CONF.standalone:
         # not standalone?
         CONF.register_opts(rabbit_mq, group='rabbit_mq')
+        CONF.register_opts(database_options, group='database')
 
 
 def check_msg_config():
