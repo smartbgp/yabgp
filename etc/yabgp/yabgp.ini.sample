@@ -118,3 +118,39 @@
 
 # The RabbitMQ password. (string value)
 # rabbit_password = guest
+
+[database]
+
+# database configuration
+
+# connection url
+# eg: mongodb://10.75.44.10:27017,10.75.44.11:27017,10.75.44.12:27017
+# connection = mongodb://127.0.0.1:27017'
+
+# database name
+# dbname = bgpmon
+
+# if use replica set
+# use_replica = True
+
+# replica set name
+# replica_name = rs1
+
+# Read preference if use replica set
+# PRIMARY = 0  Queries are sent to the primary of the replica set.
+# PRIMARY_PREFERRED = 1 Queries are sent to the primary if available, otherwise a secondary.
+# SECONDARY = 2 Queries are distributed among secondaries. An error is raised if no secondaries are available.
+# SECONDARY_PREFERRED = 3  Queries are distributed among secondaries, or the primary if no secondary is available.
+# NEAREST = 4 Queries are distributed among all members.
+# read_preference = 3
+
+# write concern (integer or string)If this is a replica set, write operations will block until
+# they have been replicated to the specified number or tagged set of servers. w= always includes
+# the replica set primary (e.g. w=3 means write to the primary and wait until replicated to two
+# secondaries). Setting w=0 disables write acknowledgement and all other write concern options.
+# write_concern = -1
+
+# write concern timeout (integer) Used in conjunction with w. Specify a value in milliseconds to
+# control how long to wait for write propagation to complete. If replication does not complete
+# in the given timeframe, a timeout exception is raised.
+# write_concern_timeout = 5000
