@@ -30,7 +30,7 @@ msg_process_opts = [
                 default=True,
                 help='Whether the BGP message is written to disk'),
     cfg.StrOpt('write_dir',
-               default='/home/bgpmon/data/bgp/',
+               default='/home/yabgp/data/bgp/',
                help='The BGP messages storage path'),
     cfg.IntOpt('write_msg_max_size',
                default=500,

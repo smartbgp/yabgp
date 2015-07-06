@@ -56,7 +56,7 @@ Use pip install
     $ source yabgp-virl/bin/activate
     $ pip install yabgp
     $ which yabgpd
-    /home/bgpmon/yabgp-virl/bin/yabgpd
+    /home/yabgp/yabgp-virl/bin/yabgpd
     $ yabgpd -h
 
 For example:

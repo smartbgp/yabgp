@@ -24,7 +24,7 @@ database_options = [
                default='mongodb://127.0.0.1:27017',
                help='Database connection'),
     cfg.StrOpt('dbname',
-               default='bgpmon',
+               default='yabgp',
                help='database name'),
     cfg.BoolOpt('use_replica',
                 default=True,

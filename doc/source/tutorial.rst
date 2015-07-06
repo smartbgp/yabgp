@@ -96,12 +96,12 @@ The log output sample:
     2015-05-15 13:13:36,585.585 10338 INFO yabgp.agent [-] bgp.remote_addr                = 10.124.1.245
     2015-05-15 13:13:36,585.585 10338 INFO yabgp.agent [-] bgp.remote_as                  = 23650
     2015-05-15 13:13:36,585.585 10338 INFO yabgp.agent [-] bgp.running_config             = {}
-    2015-05-15 13:13:36,586.586 10338 INFO yabgp.agent [-] message.write_dir              = /home/bgpmon/data/bgp/
+    2015-05-15 13:13:36,586.586 10338 INFO yabgp.agent [-] message.write_dir              = /home/yabgp/data/bgp/
     2015-05-15 13:13:36,586.586 10338 INFO yabgp.agent [-] message.write_disk             = True
     2015-05-15 13:13:36,586.586 10338 INFO yabgp.agent [-] message.write_msg_max_size     = 500
     2015-05-15 13:13:36,586.586 10338 INFO yabgp.agent [-] ********************************************************************************
 
-You can see that the default path to write BGP message is ``/home/bgpmon/data/bgp``, if you can't write to this path, please change the path in ``yabgp.ini`` file.
+You can see that the default path to write BGP message is ``/home/yabgp/data/bgp``, if you can't write to this path, please change the path in ``yabgp.ini`` file.
 
 Configuration
 ~~~~~~~~~~~~~
@@ -135,7 +135,7 @@ The configuration sample is:
     # write_disk = True
 
     # the BGP messages storage path
-    # write_dir = /home/bgpmon/data/bgp/
+    # write_dir = /home/yabgp/data/bgp/
     write_dir = your_own_path
     # The Max size of one BGP message file, the unit is MB
     # write_msg_max_size = 500
