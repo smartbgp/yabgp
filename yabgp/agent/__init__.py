@@ -29,6 +29,7 @@ from yabgp.api.app import app
 from yabgp.channel.config import rabbit_mq
 from yabgp.channel.factory import PikaFactory
 from yabgp.db.config import database_options
+from yabgp.db.mongodb import MongoApi
 
 
 log.early_init_log(logging.DEBUG)
@@ -60,8 +61,10 @@ def prepare_twisted_service():
     LOG.info('Prepare twisted services')
     # check all peers
     all_peers = {}
-    # try to connect to rabbitmq channel
+
+    # check running mode
     if not CONF.standalone:
+        # rabbitmq factory
         rabbit_mq_factory = PikaFactory(
             host=CONF.rabbit_mq.rabbit_host,
             port=CONF.rabbit_mq.rabbit_port,
@@ -69,8 +72,19 @@ def prepare_twisted_service():
             password=CONF.rabbit_mq.rabbit_password
         )
         rabbit_mq_factory.connect()
+        # mongodb connection
+        mongo_connection = MongoApi(
+            connection_url=CONF.database.connection,
+            db_name=CONF.database.dbname,
+            use_replica=CONF.database.use_replica,
+            replica_name=CONF.database.replica_name,
+            read_preference=CONF.database.read_preference,
+            write_concern=CONF.database.write_concern,
+            w_timeout=CONF.database.write_concern_timeout
+        )
     else:
         rabbit_mq_factory = None
+        mongo_connection = None
     for peer in CONF.bgp.running_config:
         LOG.info('Get peer %s configuration', peer)
         if CONF.message.write_disk:
@@ -97,7 +111,8 @@ def prepare_twisted_service():
             afisafi=CONF.bgp.running_config[peer]['afi_safi'],
             msgpath=msg_file_path_for_peer,
             md5=CONF.bgp.running_config[peer]['md5'],
-            channel=rabbit_mq_factory
+            channel=rabbit_mq_factory,
+            mongo_conn=mongo_connection
         )
         all_peers[peer] = bgp_peering
         CONF.bgp.running_config[peer]['factory'] = bgp_peering
