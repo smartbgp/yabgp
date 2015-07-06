@@ -10,7 +10,7 @@ REST API has basic http auth, through usename and password. The usename and pass
 
 .. code:: bash
 
-   (yabgp)bgpmon@demo:~$ curl -i -X GET http://127.0.0.1:8801/v1/peers
+   (yabgp)yabgp@demo:~$ curl -i -X GET http://127.0.0.1:8801/v1/peers
    HTTP/1.1 401 UNAUTHORIZED
    Date: Fri, 12 Jun 2015 09:33:55 GMT
    Content-Length: 19
@@ -18,7 +18,7 @@ REST API has basic http auth, through usename and password. The usename and pass
    WWW-Authenticate: Basic realm="Authentication Required"
    Server: TwistedWeb/15.0.0
 
-   Unauthorized Access(yabgp)bgpmon@demo:~$ curl -u admin:admin -i -X GET http://127.0.0.1:8801/v1/peers
+   Unauthorized Access(yabgp)yabgp@demo:~$ curl -u admin:admin -i -X GET http://127.0.0.1:8801/v1/peers
    HTTP/1.1 200 OK
    Date: Fri, 12 Jun 2015 09:34:03 GMT
    Content-Length: 222
@@ -36,7 +36,7 @@ REST API has basic http auth, through usename and password. The usename and pass
          "uptime": 55.64501404762268
        }
      ]
-   }(yabgp)bgpmon@demo:~$
+   }(yabgp)yabgp@demo:~$
 
 .. autoflask:: yabgp.api.app:app
    :undoc-static:

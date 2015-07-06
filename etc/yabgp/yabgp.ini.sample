@@ -26,7 +26,7 @@
 # write_disk = True
 
 # the BGP messages storage path
-# write_dir = /home/bgpmon/data/bgp/
+# write_dir = /home/yabgp/data/bgp/
 
 # The Max size of one BGP message file, the unit is MB
 # write_msg_max_size = 500
@@ -128,7 +128,7 @@
 # connection = mongodb://127.0.0.1:27017'
 
 # database name
-# dbname = bgpmon
+# dbname = yabgp
 
 # if use replica set
 # use_replica = True
