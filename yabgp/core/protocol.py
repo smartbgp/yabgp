@@ -57,14 +57,14 @@ class BGP(protocol.Protocol):
             'Notifications': 0,
             'Updates': 0,
             'Keepalives': 0,
-            'Route Refresh': 0
+            'RouteRefresh': 0
         }
         self.msg_recv_stat = {
             'Opens': 0,
             'Notifications': 0,
             'Updates': 0,
             'Keepalives': 0,
-            'Route Refresh': 0
+            'RouteRefresh': 0
         }
 
     def connectionMade(self):
@@ -416,37 +416,30 @@ class BGP(protocol.Protocol):
         self.negotiate_hold_time(open_msg.hold_time)
         self.fsm.open_received()
 
-    def send_route_refresh(self, afi=None, safi=None, res=None):
+    def send_route_refresh(self, afi, safi, res=0):
         """
         Send bgp route refresh message
-
-        :param afi:
-        :param safi:
-        :param res:
+        :param afi: address family
+        :param safi: sub address family
+        :param res: reserve, default is 0
         """
+        # check if the peer support route refresh
+        if cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']['cisco_route_refresh']:
+            type_code = bgp_cons.MSG_CISCOROUTEREFRESH
+        elif cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']['route_refresh']:
+            type_code = bgp_cons.MSG_ROUTEREFRESH
+        else:
+            return False
+        # check if the peer support this address family
+        if (afi, safi) not in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']['afi_safi']:
+            return False
+        # construct message
+        msg_routerefresh = RouteRefresh(afi, safi, res).construct(type_code)
+        # send message
+        self.transport.write(msg_routerefresh)
+        self.msg_sent_stat['RouteRefresh'] += 1
         LOG.info("[%s]Send BGP RouteRefresh message to the peer.", self.factory.peer_addr)
-        if afi and safi and res is not None:
-            if self.fsm.neighbor_capability["ciscoRouteRefresh"]:
-                msg_routerefresh = RouteRefresh(afi, safi, res).construct(bgp_cons.MSG_CISCOROUTEREFRESH)
-                self.transport.write(msg_routerefresh)
-                self.msg_sent_stat['Route Refresh'] += 1
-            elif self.fsm.neighbor_capability["routeRefresh"]:
-                msg_routerefresh = RouteRefresh(afi, safi, res).construct(bgp_cons.MSG_ROUTEREFRESH)
-                # send message
-                self.transport.write(msg_routerefresh)
-                self.msg_sent_stat['Route Refresh'] += 1
-            return
-            # construct message
-        for (afi, safi) in self.fsm.neighbor_capability['AFI_SAFI']:
-            if self.fsm.neighbor_capability["ciscoRouteRefresh"]:
-                msg_routerefresh = RouteRefresh(afi, safi).construct(bgp_cons.MSG_CISCOROUTEREFRESH)
-                self.transport.write(msg_routerefresh)
-                self.msg_sent_stat['Route Refresh'] += 1
-            elif self.fsm.neighbor_capability["routeRefresh"]:
-                msg_routerefresh = RouteRefresh(afi, safi).construct(bgp_cons.MSG_ROUTEREFRESH)
-                # send message
-                self.transport.write(msg_routerefresh)
-                self.msg_sent_stat['Route Refresh'] += 1
+        return True
 
     def route_refresh_received(self, msg):
         """
