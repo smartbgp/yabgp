@@ -14,10 +14,13 @@
 #    under the License.
 
 import time
+import logging
 
 from oslo.config import cfg
 
 from yabgp.common import constants as common_cons
+
+LOG = logging.getLogger(__name__)
 
 
 def get_peer_conf_and_state(peer_ip=None):
@@ -26,6 +29,7 @@ def get_peer_conf_and_state(peer_ip=None):
     :param peer_ip: peer ip address
     :return:
     """
+
     def get_peer_state(peer):
         one_peer_state = {key: cfg.CONF.bgp.running_config[peer][key] for key in [
             'remote_as', 'remote_addr', 'local_as', 'local_addr']}
@@ -63,3 +67,44 @@ def get_peer_msg_statistic(peer_ip=None):
         }
     else:
         return {}
+
+
+def _ready_to_send_msg(peer_ip):
+    """
+    check if the peer is ready to send message
+    :param peer_ip:  peer ip address
+    :return: if is ready, return is True, or False
+    """
+    if peer_ip and peer_ip in cfg.CONF.bgp.running_config:
+        # check if the peer is established
+        peer_state = get_peer_conf_and_state(peer_ip)
+        if peer_state.get('peer').get('fsm') == common_cons.stateDescr[common_cons.ST_ESTABLISHED]:
+            return True
+    return False
+
+
+def send_route_refresh(peer_ip, afi, safi, res):
+    """
+    send route refresh messages
+    :param peer_ip: peer ip address
+    :return: the sending results
+    """
+    if _ready_to_send_msg(peer_ip):
+        LOG.debug('peer %s is ready to send route refresh', peer_ip)
+        try:
+            if cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.send_route_refresh(
+                    afi=afi, safi=safi, res=res):
+                return {
+                    'status': True
+                }
+        except Exception as e:
+            LOG.error(e)
+            return {
+                'status': False,
+                'code': 'failed when send this message out'
+            }
+    else:
+        return {
+            'status': False,
+            'code': "Please check the peer's state"
+        }

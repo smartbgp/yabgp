@@ -201,3 +201,64 @@ def get_peer_statistic(peer_ip):
 
     """
     return flask.jsonify(api_utils.get_peer_msg_statistic(peer_ip))
+
+
+@blueprint.route('/peer/<peer_ip>/send/route-refresh', methods=['POST'])
+@auth.login_required
+def send_bgp_message(peer_ip):
+    """
+    Try to send BGP Route Refresh message to a peer
+
+    **Example request**
+
+    .. sourcecode:: http
+
+      POST /v1/peer/10.124.1.245/route-refresh HTTP/1.1
+      Host: example.com
+      Accept: application/json
+      POST Data:
+      {
+        "afi": 1,
+        "safi": 1,
+        "res": 0
+      }
+      `res` is optional, the default value is 0.
+
+    **Example response**:
+
+    .. sourcecode:: http
+
+      HTTP/1.1 200 OK
+      Vary: Accept
+      Content-Type: text/json
+      {
+        "status": True
+      }
+
+    Success f the status is `True` in the reponse, otherwise, the status is `False`. If the status is
+    Flase, there will be a code tell you why. like:
+
+    .. sourcecode:: http
+
+        {
+            "status": False,
+            "code": "please check your post data"
+        }
+
+    :param peer_ip: peer ip address
+    :status 200: the api can work.
+    """
+    LOG.debug('Try to send route refresh')
+    json_request = flask.request.get_json()
+    if 'afi' in json_request and 'safi' in json_request:
+        if 'res' not in json_request:
+            res = 0
+        else:
+            res = json_request['res']
+        result = api_utils.send_route_refresh(
+            peer_ip=peer_ip, afi=json_request['afi'], safi=json_request['safi'], res=res)
+        return flask.jsonify(result)
+    return flask.jsonify({
+        'status': False,
+        'code': 'please check your post data'
+    })
