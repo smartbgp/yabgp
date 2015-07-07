@@ -180,9 +180,9 @@ class BGP(protocol.Protocol):
                     LOG.error(e)
                     self.fsm.open_message_error(suberror=e.sub_error)
                     return False
-            elif msg_type == bgp_cons.MSG_UPDATE:
 
-                    self.update_received(timestamp=t, msg=msg)
+            elif msg_type == bgp_cons.MSG_UPDATE:
+                self.update_received(timestamp=t, msg=msg)
 
             elif msg_type == bgp_cons.MSG_NOTIFICATION:
                 self.notification_received(Notification().parse(msg))
