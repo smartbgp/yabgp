@@ -24,7 +24,6 @@ import netaddr
 from oslo.config import cfg
 from twisted.internet import protocol
 
-from yabgp.core.timer import BGPTimer
 from yabgp.common import constants as bgp_cons
 from yabgp.message.open import Open
 from yabgp.message.keepalive import KeepAlive
@@ -50,11 +49,7 @@ class BGP(protocol.Protocol):
 
         self.disconnected = False
         self.receive_buffer = b''
-
-        self.process_queue_time = 0.5
-        self.process_queue_timer = BGPTimer(self.process_queue)
-        self.start_process_queue = False
-        self.update_msg_queue = []
+        self.fourbytesas = False
 
         # statistic
         self.msg_sent_stat = {
@@ -138,79 +133,6 @@ class BGP(protocol.Protocol):
         while self.parse_buffer():
             pass
 
-    # noinspection PyTypeChecker
-    def process_queue(self):
-        """
-        Process update message queue
-
-        :return:
-        """
-        try:
-            self.process_queue_timer.cancel()
-        except Exception as e:
-            LOG.error(e)
-            error_str = traceback.format_exc()
-            LOG.debug(error_str)
-
-        # if start process queue is True and the queue is not empty
-        if self.start_process_queue and self.update_msg_queue:
-
-            results = map(Update().parse, self.update_msg_queue)
-
-            # check results
-            for result in results:
-
-                # if the result has error.
-                if result['SubError']:
-                    # Get address family
-                    if result['NLRI'] or result['Withdraw']:
-                        afi_safi = (1, 1)
-                    else:
-                        afi_safi = (0, 0)
-                    # write message to file
-                    self.factory.write_msg(
-                        timestamp=result['Time'],
-                        msg_type=6,
-                        msg={
-                            'ATTR': result['Attributes'],
-                            'NLRI': result['NLRI'],
-                            'WITHDRAW': result['Withdraw']
-                        },
-                        afi_safi=afi_safi
-                    )
-                    LOG.error('[%s] Update message error: sub error=%s', self.factory.peer_addr, result['SubError'])
-                else:
-                    # no error
-                    # get address family
-                    if result['NLRI'] or result['Withdraw']:
-                        afi_safi = (1, 1)
-                    elif 14 in result['Attributes']:
-                        afi_safi = result['Attributes'][14]['afi_safi']
-                    elif 15 in result['Attributes']:
-                        afi_safi = result['Attributes'][15]['afi_safi']
-                    else:
-                        afi_safi = (0, 0)
-                    self.factory.write_msg(
-                        timestamp=result['Time'],
-                        msg_type=2,
-                        msg={
-                            'ATTR': result['Attributes'],
-                            'NLRI': result['NLRI'],
-                            'WITHDRAW': result['Withdraw']
-                        },
-                        afi_safi=afi_safi
-                    )
-            if self.factory.flush_and_check_file_size():
-                # send route fresh if open a new file
-                self.send_route_refresh()
-
-            self.update_msg_queue = []
-            self.process_queue_timer.reset(self.process_queue_time)
-
-        # else the Queue is empty, just go on and reset the timer
-        elif self.start_process_queue and not self.update_msg_queue:
-            self.process_queue_timer.reset(self.process_queue_time)
-
     def parse_buffer(self):
         """
         Parse TCP buffer data.
@@ -260,19 +182,7 @@ class BGP(protocol.Protocol):
                     return False
             elif msg_type == bgp_cons.MSG_UPDATE:
 
-                if not self.process_queue_timer.active():
-                    self.process_queue_timer.reset(self.process_queue_time)
-                    self.start_process_queue = True
-                    # save message to the Queue
-                    self.update_msg_queue.append([
-                        t,
-                        cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']['four_bytes_as'],
-                        msg])
-                    self.update_received()
-
-                    # Parse Update Message Queue
-                    if len(self.update_msg_queue) > 5000:
-                        self.process_queue()
+                    self.update_received(timestamp=t, msg=msg)
 
             elif msg_type == bgp_cons.MSG_NOTIFICATION:
                 self.notification_received(Notification().parse(msg))
@@ -308,25 +218,53 @@ class BGP(protocol.Protocol):
             self.transport.loseConnection()
             self.disconnected = True
 
-    def update_received(self):
+    def update_received(self, timestamp, msg):
 
         """Called when a BGP Update message was received."""
-        # LOG.debug('[%s] A Update message was received.' % self.factory.peer_addr)
+        result = Update().parse([timestamp, self.fourbytesas, msg])
+        if result['SubError']:
+            # Get address family
+            if result['NLRI'] or result['Withdraw']:
+                afi_safi = bgp_cons.AFI_SAFI_STR_DICT['ipv4']
+            else:
+                afi_safi = (0, 0)
+                # write message to file
+            self.factory.write_msg(
+                timestamp=result['Time'],
+                msg_type=6,
+                msg={
+                    'ATTR': result['Attributes'],
+                    'NLRI': result['NLRI'],
+                    'WITHDRAW': result['Withdraw']
+                },
+                afi_safi=afi_safi,
+                flush=True
+            )
+            LOG.error('[%s] Update message error: sub error=%s', self.factory.peer_addr, result['SubError'])
+        else:
+            # no error
+            # get address family
+            if result['NLRI'] or result['Withdraw']:
+                afi_safi = bgp_cons.AFI_SAFI_STR_DICT['ipv4']
+            elif 14 in result['Attributes']:
+                afi_safi = result['Attributes'][14]['afi_safi']
+            elif 15 in result['Attributes']:
+                afi_safi = result['Attributes'][15]['afi_safi']
+            else:
+                afi_safi = (0, 0)
+            self.factory.write_msg(
+                timestamp=result['Time'],
+                msg_type=bgp_cons.MSG_UPDATE,
+                msg={
+                    'ATTR': result['Attributes'],
+                    'NLRI': result['NLRI'],
+                    'WITHDRAW': result['Withdraw']
+                },
+                afi_safi=afi_safi,
+                flush=True
+            )
         self.msg_recv_stat['Updates'] += 1
         self.fsm.update_received()
-
-    def send_update_file(self, update_record):
-
-        """ send update message from the input file to peer
-
-        :param update_record: message hex string
-        """
-        while update_record:
-            marker, length, msg_type = struct.unpack('!16sHB', update_record[:bgp_cons.HDR_LEN])
-            self.transport.write(update_record[:length])
-            update_record = update_record[length:]
-            self.msg_sent_stat['Updates'] += 1
-        return True
 
     def send_notification(self, error, sub_error, data=b''):
         """
@@ -361,7 +299,8 @@ class BGP(protocol.Protocol):
             timestamp=time.time(),
             msg_type=3,
             msg=nofi_msg,
-            afi_safi=(0, 0)
+            afi_safi=(0, 0),
+            flush=True
         )
         self.fsm.notification_received(msg[0], msg[1])
 
@@ -459,6 +398,8 @@ class BGP(protocol.Protocol):
         LOG.info('--id = %s', open_msg.bgp_id)
         LOG.info("[%s]Neighbor's Capabilities:", self.factory.peer_addr)
         for key in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']:
+            if key == 'four_bytes_as':
+                self.fourbytesas = True
             LOG.info("--%s = %s", key, cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote'][key])
 
         # write bgp message
