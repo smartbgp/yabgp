@@ -222,43 +222,43 @@ class BGP(protocol.Protocol):
 
         """Called when a BGP Update message was received."""
         result = Update().parse([timestamp, self.fourbytesas, msg])
-        if result['SubError']:
+        if result['sub_error']:
             # Get address family
-            if result['NLRI'] or result['Withdraw']:
+            if result['nlri'] or result['withdraw']:
                 afi_safi = bgp_cons.AFI_SAFI_STR_DICT['ipv4']
             else:
                 afi_safi = (0, 0)
                 # write message to file
             self.factory.write_msg(
-                timestamp=result['Time'],
+                timestamp=result['time'],
                 msg_type=6,
                 msg={
-                    'ATTR': result['Attributes'],
-                    'NLRI': result['NLRI'],
-                    'WITHDRAW': result['Withdraw']
+                    'attr': result['attr'],
+                    'nlri': result['nlri'],
+                    'withdraw': result['withdraw']
                 },
                 afi_safi=afi_safi,
                 flush=True
             )
-            LOG.error('[%s] Update message error: sub error=%s', self.factory.peer_addr, result['SubError'])
+            LOG.error('[%s] Update message error: sub error=%s', self.factory.peer_addr, result['sub_error'])
         else:
             # no error
             # get address family
-            if result['NLRI'] or result['Withdraw']:
+            if result['nlri'] or result['withdraw']:
                 afi_safi = bgp_cons.AFI_SAFI_STR_DICT['ipv4']
-            elif 14 in result['Attributes']:
-                afi_safi = result['Attributes'][14]['afi_safi']
-            elif 15 in result['Attributes']:
-                afi_safi = result['Attributes'][15]['afi_safi']
+            elif 14 in result['attr']:
+                afi_safi = result['attr'][14]['afi_safi']
+            elif 15 in result['attr']:
+                afi_safi = result['attr'][15]['afi_safi']
             else:
                 afi_safi = (0, 0)
             self.factory.write_msg(
-                timestamp=result['Time'],
+                timestamp=result['time'],
                 msg_type=bgp_cons.MSG_UPDATE,
                 msg={
-                    'ATTR': result['Attributes'],
-                    'NLRI': result['NLRI'],
-                    'WITHDRAW': result['Withdraw']
+                    'attr': result['attr'],
+                    'nlri': result['nlri'],
+                    'withdraw': result['withdraw']
                 },
                 afi_safi=afi_safi,
                 flush=True

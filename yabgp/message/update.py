@@ -152,13 +152,13 @@ class Update(object):
         msg_hex = msg[2]
 
         results = {
-            "Withdraw": None,
-            "Attributes": None,
-            "NLRI": None,
-            'Time': t,
-            'RawData': msg_hex,
-            'SubError': None,
-            'ErrorData': None}
+            "withdraw": None,
+            "attr": None,
+            "nlri": None,
+            'time': t,
+            'hex': msg_hex,
+            'sub_error': None,
+            'err_data': None}
 
         # get every part of the update message
         withdraw_len = struct.unpack('!H', msg_hex[:2])[0]
@@ -169,31 +169,55 @@ class Update(object):
 
         try:
             # parse withdraw prefixes
-            results['Withdraw'] = self.parse_prefix_list(withdraw_prefix_data)
+            results['withdraw'] = self.parse_prefix_list(withdraw_prefix_data)
 
             # parse nlri
-            results['NLRI'] = self.parse_prefix_list(nlri_data)
+            results['nlri'] = self.parse_prefix_list(nlri_data)
         except Exception as e:
             LOG.error(e)
             error_str = traceback.format_exc()
             LOG.debug(error_str)
-            results['SubError'] = bgp_cons.ERR_MSG_UPDATE_INVALID_NETWORK_FIELD
-            results['ErrorData'] = ''
+            results['sub_error'] = bgp_cons.ERR_MSG_UPDATE_INVALID_NETWORK_FIELD
+            results['err_data'] = ''
         try:
             # parse attributes
-            results['Attributes'] = self.parse_attributes(attribute_data, asn4)
+            results['attr'] = self.parse_attributes(attribute_data, asn4)
         except excep.UpdateMessageError as e:
             LOG.error(e)
-            results['SubError'] = e.sub_error
-            results['ErrorData'] = e.data
+            results['sub_error'] = e.sub_error
+            results['err_data'] = e.data
         except Exception as e:
             LOG.error(e)
             error_str = traceback.format_exc()
             LOG.debug(error_str)
-            results['SubError'] = e
-            results['ErrorData'] = e
+            results['sub_error'] = e
+            results['err_data'] = e
 
         return results
+
+    def construct(self, msg_dict, asn4=False):
+        """construct BGP update message
+
+        :param msg_dict: update message string
+        :param asn4: support 4 bytes asn or not"""
+        attr_hex = b''
+        nlri_hex = b''
+        withdraw_hex = b''
+        if msg_dict['attr']:
+            attr_hex = self.construct_attributes(msg_dict['attr'], asn4)
+        if msg_dict['nlri']:
+            nlri_hex = self.construct_prefix_v4(msg_dict['nlri'])
+        if msg_dict['withdraw']:
+            withdraw_hex = self.construct_prefix_v4(msg_dict['withdraw'])
+        if nlri_hex and attr_hex:
+            msg_body = struct.pack('!H', 0) + struct.pack('!H', len(attr_hex)) + attr_hex + nlri_hex
+            return self.construct_header(msg_body)
+        elif attr_hex and not nlri_hex:
+            msg_body = struct.pack('!H', 0) + struct.pack('!H', len(attr_hex)) + attr_hex + nlri_hex
+            return self.construct_header(msg_body)
+        elif withdraw_hex:
+            msg_body = struct.pack('!H', len(withdraw_hex)) + withdraw_hex + struct.pack('!H', 0)
+            return self.construct_header(msg_body)
 
     @staticmethod
     def parse_prefix_list(data):
@@ -328,6 +352,60 @@ class Update(object):
         return attributes
 
     @staticmethod
+    def construct_attributes(attr_dict, asn4=False):
+
+        """
+        construts BGP Update attirubte.
+
+        :param attr_dict: bgp attribute dictionary
+        :param asn4: support 4 bytes asn or not
+        """
+        attr_raw_hex = b''
+        for type_code, value in attr_dict.items():
+
+            if type_code == bgp_cons.BGPTYPE_ORIGIN:
+                origin_hex = Origin().construct(value=value)
+                attr_raw_hex += origin_hex
+
+            elif type_code == bgp_cons.BGPTYPE_AS_PATH:
+                aspath_hex = ASPath().construct(value=value, asn4=asn4)
+                attr_raw_hex += aspath_hex
+
+            elif type_code == bgp_cons.BGPTYPE_NEXT_HOP:
+                nexthop_hex = NextHop().construct(value=value)
+                attr_raw_hex += nexthop_hex
+
+            elif type_code == bgp_cons.BGPTYPE_MULTI_EXIT_DISC:
+                med_hex = MED().construct(value=value)
+                attr_raw_hex += med_hex
+
+            elif type_code == bgp_cons.BGPTYPE_LOCAL_PREF:
+                localpre_hex = LocalPreference().construct(value=value)
+                attr_raw_hex += localpre_hex
+
+            elif type_code == bgp_cons.BGPTYPE_ATOMIC_AGGREGATE:
+                atomicaggregate_hex = AtomicAggregate().construct(value=value)
+                attr_raw_hex += atomicaggregate_hex
+
+            elif type_code == bgp_cons.BGPTYPE_AGGREGATOR:
+                aggregator_hex = Aggregator().construct(value=value, asn4=asn4)
+                attr_raw_hex += aggregator_hex
+
+            elif type_code == bgp_cons.BGPTYPE_COMMUNITIES:
+                community_hex = Community().construct(value=value)
+                attr_raw_hex += community_hex
+
+            elif type_code == bgp_cons.BGPTYPE_ORIGINATOR_ID:
+                originatorid_hex = OriginatorID().construct(value=value)
+                attr_raw_hex += originatorid_hex
+
+            elif type_code == bgp_cons.BGPTYPE_CLUSTER_LIST:
+                clusterlist_hex = ClusterList().construct(value=value)
+                attr_raw_hex += clusterlist_hex
+
+        return attr_raw_hex
+
+    @staticmethod
     def construct_header(msg):
         """
         Prepends the mandatory header to a constructed BGP message
@@ -339,10 +417,7 @@ class Update(object):
         # ---------------+--------+---------+------+
         #    Maker      | Length |  Type   |  msg |
         # ---------------+--------+---------+------+
-        return struct.pack('!16sHB',
-                           chr(255) * 16,
-                           len(msg) + 19,
-                           2) + msg
+        return b'\xff'*16 + struct.pack('!HB', len(msg) + 19, 2) + msg
 
     @staticmethod
     def construct_prefix_v4(prefix_list):
@@ -364,18 +439,3 @@ class Update(object):
                 ip_hex = ip_hex[0:1]
             nlri_raw_hex += struct.pack('!B', masklen) + ip_hex
         return nlri_raw_hex
-
-    @staticmethod
-    def encode_prefixes(prefixes):
-        """Encodes a list of IPPrefix
-
-        :param prefixes: prefix list"""
-
-        prefix_data = b''
-        for prefix in prefixes:
-            octet_len, remainder = len(prefix) / 8, len(prefix) % 8
-            if remainder > 0:
-                # prefix length doesn't fall on octet boundary
-                octet_len += 1
-            prefix_data += struct.pack('!B', len(prefix)) + prefix.packed()[:octet_len]
-        return prefix_data
