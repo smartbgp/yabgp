@@ -136,7 +136,8 @@ class Update(object):
             irrelevant.
         """
 
-    def parse(self, msg):
+    @classmethod
+    def parse(cls, msg):
 
         """
         Parse BGP Update message
@@ -169,10 +170,10 @@ class Update(object):
 
         try:
             # parse withdraw prefixes
-            results['withdraw'] = self.parse_prefix_list(withdraw_prefix_data)
+            results['withdraw'] = cls.parse_prefix_list(withdraw_prefix_data)
 
             # parse nlri
-            results['nlri'] = self.parse_prefix_list(nlri_data)
+            results['nlri'] = cls.parse_prefix_list(nlri_data)
         except Exception as e:
             LOG.error(e)
             error_str = traceback.format_exc()
@@ -181,7 +182,7 @@ class Update(object):
             results['err_data'] = ''
         try:
             # parse attributes
-            results['attr'] = self.parse_attributes(attribute_data, asn4)
+            results['attr'] = cls.parse_attributes(attribute_data, asn4)
         except excep.UpdateMessageError as e:
             LOG.error(e)
             results['sub_error'] = e.sub_error
@@ -195,7 +196,8 @@ class Update(object):
 
         return results
 
-    def construct(self, msg_dict, asn4=False):
+    @classmethod
+    def construct(cls, msg_dict, asn4=False):
         """construct BGP update message
 
         :param msg_dict: update message string
@@ -204,20 +206,20 @@ class Update(object):
         nlri_hex = b''
         withdraw_hex = b''
         if msg_dict['attr']:
-            attr_hex = self.construct_attributes(msg_dict['attr'], asn4)
+            attr_hex = cls.construct_attributes(msg_dict['attr'], asn4)
         if msg_dict['nlri']:
-            nlri_hex = self.construct_prefix_v4(msg_dict['nlri'])
+            nlri_hex = cls.construct_prefix_v4(msg_dict['nlri'])
         if msg_dict['withdraw']:
-            withdraw_hex = self.construct_prefix_v4(msg_dict['withdraw'])
+            withdraw_hex = cls.construct_prefix_v4(msg_dict['withdraw'])
         if nlri_hex and attr_hex:
             msg_body = struct.pack('!H', 0) + struct.pack('!H', len(attr_hex)) + attr_hex + nlri_hex
-            return self.construct_header(msg_body)
+            return cls.construct_header(msg_body)
         elif attr_hex and not nlri_hex:
             msg_body = struct.pack('!H', 0) + struct.pack('!H', len(attr_hex)) + attr_hex + nlri_hex
-            return self.construct_header(msg_body)
+            return cls.construct_header(msg_body)
         elif withdraw_hex:
             msg_body = struct.pack('!H', len(withdraw_hex)) + withdraw_hex + struct.pack('!H', 0)
-            return self.construct_header(msg_body)
+            return cls.construct_header(msg_body)
 
     @staticmethod
     def parse_prefix_list(data):
@@ -300,51 +302,51 @@ class Update(object):
 
             if type_code == bgp_cons.BGPTYPE_ORIGIN:
 
-                decode_value = Origin().parse(value=attr_value)
+                decode_value = Origin.parse(value=attr_value)
 
             elif type_code == bgp_cons.BGPTYPE_AS_PATH:
 
-                decode_value = ASPath().parse(value=attr_value, asn4=asn4)
+                decode_value = ASPath.parse(value=attr_value, asn4=asn4)
 
             elif type_code == bgp_cons.BGPTYPE_NEXT_HOP:
 
-                decode_value = NextHop().parse(value=attr_value)
+                decode_value = NextHop.parse(value=attr_value)
 
             elif type_code == bgp_cons.BGPTYPE_MULTI_EXIT_DISC:
 
-                decode_value = MED().parse(value=attr_value)
+                decode_value = MED.parse(value=attr_value)
 
             elif type_code == bgp_cons.BGPTYPE_LOCAL_PREF:
 
-                decode_value = LocalPreference().parse(value=attr_value)
+                decode_value = LocalPreference.parse(value=attr_value)
 
             elif type_code == bgp_cons.BGPTYPE_ATOMIC_AGGREGATE:
 
-                decode_value = AtomicAggregate().parse(value=attr_value)
+                decode_value = AtomicAggregate.parse(value=attr_value)
 
             elif type_code == bgp_cons.BGPTYPE_AGGREGATOR:
 
-                decode_value = Aggregator().parse(value=attr_value, asn4=asn4)
+                decode_value = Aggregator.parse(value=attr_value, asn4=asn4)
 
             elif type_code == bgp_cons.BGPTYPE_COMMUNITIES:
 
-                decode_value = Community().parse(value=attr_value)
+                decode_value = Community.parse(value=attr_value)
 
             elif type_code == bgp_cons.BGPTYPE_ORIGINATOR_ID:
 
-                decode_value = OriginatorID().parse(value=attr_value)
+                decode_value = OriginatorID.parse(value=attr_value)
 
             elif type_code == bgp_cons.BGPTYPE_CLUSTER_LIST:
 
-                decode_value = ClusterList().parse(value=attr_value)
+                decode_value = ClusterList.parse(value=attr_value)
 
             elif type_code == bgp_cons.BGPTYPE_NEW_AS_PATH:
 
-                decode_value = ASPath().parse(value=attr_value, asn4=True)
+                decode_value = ASPath.parse(value=attr_value, asn4=True)
 
             elif type_code == bgp_cons.BGPTYPE_NEW_AGGREGATOR:
 
-                decode_value = Aggregator().parse(value=attr_value, asn4=True)
+                decode_value = Aggregator.parse(value=attr_value, asn4=True)
             else:
                 decode_value = repr(attr_value)
             attributes[type_code] = decode_value
@@ -364,43 +366,43 @@ class Update(object):
         for type_code, value in attr_dict.items():
 
             if type_code == bgp_cons.BGPTYPE_ORIGIN:
-                origin_hex = Origin().construct(value=value)
+                origin_hex = Origin.construct(value=value)
                 attr_raw_hex += origin_hex
 
             elif type_code == bgp_cons.BGPTYPE_AS_PATH:
-                aspath_hex = ASPath().construct(value=value, asn4=asn4)
+                aspath_hex = ASPath.construct(value=value, asn4=asn4)
                 attr_raw_hex += aspath_hex
 
             elif type_code == bgp_cons.BGPTYPE_NEXT_HOP:
-                nexthop_hex = NextHop().construct(value=value)
+                nexthop_hex = NextHop.construct(value=value)
                 attr_raw_hex += nexthop_hex
 
             elif type_code == bgp_cons.BGPTYPE_MULTI_EXIT_DISC:
-                med_hex = MED().construct(value=value)
+                med_hex = MED.construct(value=value)
                 attr_raw_hex += med_hex
 
             elif type_code == bgp_cons.BGPTYPE_LOCAL_PREF:
-                localpre_hex = LocalPreference().construct(value=value)
+                localpre_hex = LocalPreference.construct(value=value)
                 attr_raw_hex += localpre_hex
 
             elif type_code == bgp_cons.BGPTYPE_ATOMIC_AGGREGATE:
-                atomicaggregate_hex = AtomicAggregate().construct(value=value)
+                atomicaggregate_hex = AtomicAggregate.construct(value=value)
                 attr_raw_hex += atomicaggregate_hex
 
             elif type_code == bgp_cons.BGPTYPE_AGGREGATOR:
-                aggregator_hex = Aggregator().construct(value=value, asn4=asn4)
+                aggregator_hex = Aggregator.construct(value=value, asn4=asn4)
                 attr_raw_hex += aggregator_hex
 
             elif type_code == bgp_cons.BGPTYPE_COMMUNITIES:
-                community_hex = Community().construct(value=value)
+                community_hex = Community.construct(value=value)
                 attr_raw_hex += community_hex
 
             elif type_code == bgp_cons.BGPTYPE_ORIGINATOR_ID:
-                originatorid_hex = OriginatorID().construct(value=value)
+                originatorid_hex = OriginatorID.construct(value=value)
                 attr_raw_hex += originatorid_hex
 
             elif type_code == bgp_cons.BGPTYPE_CLUSTER_LIST:
-                clusterlist_hex = ClusterList().construct(value=value)
+                clusterlist_hex = ClusterList.construct(value=value)
                 attr_raw_hex += clusterlist_hex
 
         return attr_raw_hex

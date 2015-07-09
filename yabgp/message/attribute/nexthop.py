@@ -37,8 +37,8 @@ class NextHop(Attribute):
     FLAG = AttributeFlag.TRANSITIVE
     MULTIPLE = False
 
-    @staticmethod
-    def parse(value):
+    @classmethod
+    def parse(cls, value):
 
         """
         Parse BGP nexthop.
@@ -52,8 +52,9 @@ class NextHop(Attribute):
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                 data=value)
-
-    def construct(self, value):
+    
+    @classmethod
+    def construct(cls, value):
         """
         encode BGP nexthop attribute.
         :param value: ipv4 format string like 1.1.1.1
@@ -61,7 +62,7 @@ class NextHop(Attribute):
         try:
             if netaddr.IPAddress(value).version == 4:
                 ip_addr_raw = netaddr.IPAddress(value).packed
-                return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
+                return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
                     + struct.pack('!B', len(ip_addr_raw)) + ip_addr_raw
             else:
                 raise excep.UpdateMessageError(

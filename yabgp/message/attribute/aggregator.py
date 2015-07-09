@@ -37,8 +37,8 @@ class Aggregator(Attribute):
     ID = AttributeID.AGGREGATOR
     FLAG = AttributeFlag.OPTIONAL + AttributeFlag.TRANSITIVE
 
-    @staticmethod
-    def parse(value, asn4=False):
+    @classmethod
+    def parse(cls, value, asn4=False):
 
         """
         Parse Aggregator attributes.
@@ -66,7 +66,8 @@ class Aggregator(Attribute):
 
         return asn, aggregator
 
-    def construct(self, value, asn4=False):
+    @classmethod
+    def construct(cls, value, asn4=False):
 
         """
         Construct aggregator.
@@ -79,7 +80,7 @@ class Aggregator(Attribute):
             else:
                 agg_raw = struct.pack('!H', value[0]) + netaddr.IPAddress(value[1]).packed
 
-            return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
+            return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
                 + struct.pack('!B', len(agg_raw)) + agg_raw
         except Exception:
             raise excep.UpdateMessageError(

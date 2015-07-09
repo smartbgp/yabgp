@@ -28,27 +28,27 @@ class TestOriginatorID(unittest.TestCase):
     def test_parse(self):
 
         # normal
-        originator_id = OriginatorID().parse(value=b'\xc0\xa8\x01\x01')
+        originator_id = OriginatorID.parse(value=b'\xc0\xa8\x01\x01')
         self.assertEqual('192.168.1.1', originator_id)
 
         # invalid attribute length
-        self.assertRaises(excep.UpdateMessageError, OriginatorID().parse,
+        self.assertRaises(excep.UpdateMessageError, OriginatorID.parse,
                           b'\xc0\xa8\x01\x01\x01')
         try:
-            OriginatorID().parse(value=b'\xc0\xa8\x01\x01\x01')
+            OriginatorID.parse(value=b'\xc0\xa8\x01\x01\x01')
         except excep.UpdateMessageError as e:
             self.assertEqual(ERR_MSG_UPDATE_ATTR_LEN, e.sub_error)
 
     def test_construct(self):
 
-        originator_id = OriginatorID().construct(value='192.168.1.1')
+        originator_id = OriginatorID.construct(value='192.168.1.1')
         self.assertEqual(b'\x80\x09\x04\xc0\xa8\x01\x01', originator_id)
 
         # invalid value
-        self.assertRaises(excep.UpdateMessageError, OriginatorID().construct,
+        self.assertRaises(excep.UpdateMessageError, OriginatorID.construct,
                           b'\xc0\xa8\x01\x01\x01')
         try:
-            OriginatorID().construct(value=b'\xc0\xa8\x01\x01\x01')
+            OriginatorID.construct(value=b'\xc0\xa8\x01\x01\x01')
         except excep.UpdateMessageError as e:
             self.assertEqual(ERR_MSG_UPDATE_ATTR_LEN, e.sub_error)
 

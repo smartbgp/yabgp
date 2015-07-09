@@ -42,8 +42,8 @@ class ClusterList(Attribute):
     FLAG = AttributeFlag.OPTIONAL
     MULTIPLE = False
 
-    @staticmethod
-    def parse(value):
+    @classmethod
+    def parse(cls, value):
 
         """
         Parse culster list
@@ -58,8 +58,9 @@ class ClusterList(Attribute):
             cluster_list.append(str(netaddr.IPAddress(struct.unpack('!I', value[0:4])[0])))
             value = value[4:]
         return cluster_list
-
-    def construct(self, value):
+    
+    @classmethod
+    def construct(cls, value):
 
         """
         construct a CLUSTER_LIST path attribute
@@ -69,9 +70,9 @@ class ClusterList(Attribute):
         try:
             for cluster in value:
                 cluster_raw += netaddr.IPAddress(cluster).packed
-            return struct.pack("!B", self.FLAG) + struct.pack('!B', self.ID) \
+            return struct.pack("!B", cls.FLAG) + struct.pack('!B', cls.ID) \
                 + struct.pack("!B", len(cluster_raw)) + cluster_raw
         except Exception:
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
-                data=struct.pack('B', self.FLAG))
+                data=struct.pack('B', cls.FLAG))

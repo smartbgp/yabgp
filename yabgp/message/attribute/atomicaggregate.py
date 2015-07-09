@@ -30,8 +30,8 @@ class AtomicAggregate(Attribute):
     ID = AttributeID.ATOMIC_AGGREGATE
     FLAG = AttributeFlag.OPTIONAL + AttributeFlag.TRANSITIVE
 
-    @staticmethod
-    def parse(value):
+    @classmethod
+    def parse(cls, value):
 
         """
         parse bgp ATOMIC_AGGREGATE attribute
@@ -44,7 +44,8 @@ class AtomicAggregate(Attribute):
                 sub_error=bgp_cons.ERR_MSG_UPDATE_OPTIONAL_ATTR,
                 data=value)
 
-    def construct(self, value):
+    @classmethod
+    def construct(cls, value):
         """construct a ATOMIC_AGGREGATE path attribute
         :param value:
         """
@@ -55,5 +56,5 @@ class AtomicAggregate(Attribute):
                 data='')
         else:
             value = 0
-        return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
+        return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
             + struct.pack('!B', value)

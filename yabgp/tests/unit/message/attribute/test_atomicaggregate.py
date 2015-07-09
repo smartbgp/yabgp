@@ -26,24 +26,24 @@ class TestAtomicAggregate(unittest.TestCase):
 
     def test_parse(self):
 
-        atomicaggregate = AtomicAggregate().parse(value=b'')
+        atomicaggregate = AtomicAggregate.parse(value=b'')
         self.assertEqual(atomicaggregate, b'')
 
         # invalid value
-        self.assertRaises(UpdateMessageError, AtomicAggregate().parse,
+        self.assertRaises(UpdateMessageError, AtomicAggregate.parse,
                           b'\x01')
         try:
-            AtomicAggregate().parse(b'\x01')
+            AtomicAggregate.parse(b'\x01')
         except UpdateMessageError as e:
             self.assertEqual(e.sub_error, ERR_MSG_UPDATE_OPTIONAL_ATTR)
 
     def test_construct(self):
 
-        atomicaggregate = AtomicAggregate().construct(value=b'')
+        atomicaggregate = AtomicAggregate.construct(value=b'')
         self.assertEqual(b'\xc0\x06\x00', atomicaggregate)
 
     def test_construct_exception(self):
-        self.assertRaises(UpdateMessageError, AtomicAggregate().construct, b'\x00')
+        self.assertRaises(UpdateMessageError, AtomicAggregate.construct, b'\x00')
 
 if __name__ == '__main__':
     unittest.main()

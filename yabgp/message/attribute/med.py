@@ -35,8 +35,8 @@ class MED(Attribute):
     FLAG = AttributeFlag.OPTIONAL
     MULTIPLE = False
 
-    @staticmethod
-    def parse(value):
+    @classmethod
+    def parse(cls, value):
         """
         parse BGP med attributes
         :param value: raw binary value
@@ -48,13 +48,14 @@ class MED(Attribute):
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                 data=value)
 
-    def construct(self, value):
+    @classmethod
+    def construct(cls, value):
         """
         encode BGP med attributes
         :param value:
         """
         try:
-            return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
+            return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
                 + struct.pack('!B', 4) + struct.pack('!I', value)
         except Exception:
             raise excep.UpdateMessageError(

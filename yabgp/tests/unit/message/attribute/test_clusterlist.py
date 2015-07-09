@@ -26,26 +26,26 @@ class TestClusterList(unittest.TestCase):
 
     def test_parse(self):
 
-        cluster_list = ClusterList().parse(value=b'\x01\x01\x01\x01\x02\x02\x02\x02\x03\x03\x03\x03')
+        cluster_list = ClusterList.parse(value=b'\x01\x01\x01\x01\x02\x02\x02\x02\x03\x03\x03\x03')
         self.assertEqual(['1.1.1.1', '2.2.2.2', '3.3.3.3'], cluster_list)
 
     def test_parse_invalid_length(self):
         # invalid length
-        self.assertRaises(excep.UpdateMessageError, ClusterList().parse,
+        self.assertRaises(excep.UpdateMessageError, ClusterList.parse,
                           b'\x01\x01\x01\x01\x01\x02\x02\x02\x02\x03\x03\x03\x03')
         try:
-            ClusterList().parse(value=b'\x01\x01\x01\x01\x01\x02\x02\x02\x02\x03\x03\x03\x03')
+            ClusterList.parse(value=b'\x01\x01\x01\x01\x01\x02\x02\x02\x02\x03\x03\x03\x03')
         except excep.UpdateMessageError as e:
             self.assertEqual(ERR_MSG_UPDATE_ATTR_LEN, e.sub_error)
 
     def test_construct(self):
 
-        cluster_list = ClusterList().construct(value=['1.1.1.1', '2.2.2.2', '3.3.3.3'])
+        cluster_list = ClusterList.construct(value=['1.1.1.1', '2.2.2.2', '3.3.3.3'])
         self.assertEqual(b'\x80\n\x0c\x01\x01\x01\x01\x02\x02\x02\x02\x03\x03\x03\x03', cluster_list)
 
     def test_construct_invalid_length(self):
         # invalid length
-        self.assertRaises(excep.UpdateMessageError, ClusterList().construct,
+        self.assertRaises(excep.UpdateMessageError, ClusterList.construct,
                           ['a', 2, '3'])
 
 if __name__ == '__main__':

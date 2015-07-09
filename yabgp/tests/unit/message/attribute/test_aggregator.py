@@ -17,40 +17,39 @@
 
 import unittest
 
-
 from yabgp.common import exception as excep
 from yabgp.common.constants import ERR_MSG_UPDATE_ATTR_LEN
 from yabgp.message.attribute.aggregator import Aggregator
 
 
 class TestAggregator(unittest.TestCase):
-
     def test_parse(self):
 
         # 4 bytes asn
-        aggregator = Aggregator().parse(value=b'\x00\x00\x70\xd5\x3e\xe7\xff\x79',
-                                        asn4=True)
+        aggregator = Aggregator.parse(value=b'\x00\x00\x70\xd5\x3e\xe7\xff\x79',
+                                      asn4=True)
         self.assertEqual((28885, '62.231.255.121'), aggregator)
 
         # 2 bytes asn
-        aggregator = Aggregator().parse(value=b'\x70\xd5\x3e\xe7\xff\x79',
-                                        asn4=False)
+        aggregator = Aggregator.parse(value=b'\x70\xd5\x3e\xe7\xff\x79',
+                                      asn4=False)
         self.assertEqual((28885, '62.231.255.121'), aggregator)
 
         # invalid attr len
-        self.assertRaises(excep.UpdateMessageError, Aggregator().parse,
+        self.assertRaises(excep.UpdateMessageError, Aggregator.parse,
                           b'\x70\xd5\x3e\xe7\xff\x79',
                           True)
         try:
-            Aggregator().parse(value=b'\x70\xd5\x3e\xe7\xff\x79',
-                               asn4=True)
+            Aggregator.parse(value=b'\x70\xd5\x3e\xe7\xff\x79',
+                             asn4=True)
         except excep.UpdateMessageError as e:
             self.assertEqual(ERR_MSG_UPDATE_ATTR_LEN, e.sub_error)
 
     def test_construct(self):
 
-        aggregator = Aggregator().construct(value=(28885, '62.231.255.121'))
+        aggregator = Aggregator.construct(value=(28885, '62.231.255.121'))
         self.assertEqual(b'\xc0\x07\x06\x70\xd5\x3e\xe7\xff\x79', aggregator)
+
 
 if __name__ == '__main__':
     unittest.main()

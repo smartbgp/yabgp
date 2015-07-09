@@ -43,11 +43,8 @@ class Origin(Attribute):
     EGP = 0x01
     INCOMPLETE = 0x02
 
-    def __init__(self):
-
-        pass
-
-    def parse(self, value):
+    @classmethod
+    def parse(cls, value):
         """
         Error process:
         (1) the falgs of the ORIGIN attribute must be "well-know,transitive"
@@ -57,22 +54,23 @@ class Origin(Attribute):
         :param value: raw binary value
         """
         orgin = struct.unpack('!B', value)[0]
-        if orgin not in [self.IGP, self.EGP, self.INCOMPLETE]:
+        if orgin not in [cls.IGP, cls.EGP, cls.INCOMPLETE]:
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_INVALID_ORIGIN,
                 data=value)
         return orgin
-
-    def construct(self, value):
+    
+    @classmethod
+    def construct(cls, value):
 
         """
         construct a origin attribute
         :param value: 0,1,2
         """
-        if value not in [self.IGP, self.EGP, self.INCOMPLETE]:
+        if value not in [cls.IGP, cls.EGP, cls.INCOMPLETE]:
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_INVALID_ORIGIN,
                 data='')
         length = 1
-        return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
+        return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
             + struct.pack('!B', length) + struct.pack('!B', value)

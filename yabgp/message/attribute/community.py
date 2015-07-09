@@ -36,7 +36,8 @@ class Community(Attribute):
     ID = AttributeID.COMMUNITY
     FLAG = AttributeFlag.OPTIONAL + AttributeFlag.TRANSITIVE
 
-    def parse(self, value):
+    @classmethod
+    def parse(cls, value):
         """
         parse BGP community.
         :param value:
@@ -59,7 +60,8 @@ class Community(Attribute):
                     data=value)
         return community
 
-    def construct(self, value):
+    @classmethod
+    def construct(cls, value):
         """
         construct a COMMUNITY path attribute
         :param value:
@@ -74,5 +76,5 @@ class Community(Attribute):
                 value = int(value[0]) * 16 * 16 * 16 * 16 + int(value[1])
                 community_hex += struct.pack('!I', value)
 
-        return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
+        return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
             + struct.pack('!B', len(community_hex)) + community_hex

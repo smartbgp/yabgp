@@ -23,52 +23,52 @@ from yabgp.message.attribute.aspath import ASPath
 
 
 class TestASPATH(unittest.TestCase):
-
     def test_parse(self):
 
-        as_path = ASPath().parse(value=b'')
+        as_path = ASPath.parse(value=b'')
         self.assertEqual(as_path, [])
 
         # 2bytes ASN
-        as_path = ASPath().parse(value=b'\x02\x04\x0c\xb9y3\x88 S\xd9')
+        as_path = ASPath.parse(value=b'\x02\x04\x0c\xb9y3\x88 S\xd9')
         self.assertEqual(as_path, [(2, [3257, 31027, 34848, 21465])])
 
         # 4bytes ASN
-        as_path = ASPath().parse(value=b'\x02\x04\x00\x00\x0c\xb9\x00\x00y3\x00\x00\x88 \x00\x00S\xd9',
-                                 asn4=True)
+        as_path = ASPath.parse(value=b'\x02\x04\x00\x00\x0c\xb9\x00\x00y3\x00\x00\x88 \x00\x00S\xd9',
+                               asn4=True)
         self.assertEqual(as_path, [(2, [3257, 31027, 34848, 21465])])
 
         # MALFORMED_ASPATH
         try:
-            ASPath().parse(value=b'\x02\x04\x00\x00\x0c\xb9\x00\x00y3\x00\x00\x88 \x00\x00S\xd9')
+            ASPath.parse(value=b'\x02\x04\x00\x00\x0c\xb9\x00\x00y3\x00\x00\x88 \x00\x00S\xd9')
         except UpdateMessageError as e:
             self.assertEqual(e.sub_error, ERR_MSG_UPDATE_MALFORMED_ASPATH)
         try:
-            ASPath().parse(value=b'\x05\x04\x0c\xb9y3\x88 S\xd9')
+            ASPath.parse(value=b'\x05\x04\x0c\xb9y3\x88 S\xd9')
         except UpdateMessageError as e:
             self.assertEqual(e.sub_error, ERR_MSG_UPDATE_MALFORMED_ASPATH)
 
     def test_parse_as_set_as_federate(self):
-        as_path = ASPath().parse(value=b'\x04\x02\x03\xe9\x03\xea\x03\x02\x03\xeb\x03\xec')
+        as_path = ASPath.parse(value=b'\x04\x02\x03\xe9\x03\xea\x03\x02\x03\xeb\x03\xec')
         self.assertEqual(as_path, [(4, [1001, 1002]), (3, [1003, 1004])])
 
     def test_construct(self):
 
         # 2 bytes ASN
-        as_path = ASPath().construct(asn4=False, value=[(2, [3257, 31027, 34848, 21465])])
+        as_path = ASPath.construct(asn4=False, value=[(2, [3257, 31027, 34848, 21465])])
         self.assertEqual(as_path, b'@\x02\n\x02\x04\x0c\xb9y3\x88 S\xd9')
 
         # 4 bytes ASN
-        as_path = ASPath().construct(asn4=True, value=[(2, [3257, 31027, 34848, 21465])])
+        as_path = ASPath.construct(asn4=True, value=[(2, [3257, 31027, 34848, 21465])])
         self.assertEqual(as_path, b'@\x02\x12\x02\x04\x00\x00\x0c\xb9\x00\x00y3\x00\x00\x88 \x00\x00S\xd9')
 
     def test_construct_as_set(self):
-        as_path = ASPath().construct(asn4=False, value=[(2, [1001, 1002]), (1, [1003, 1004])])
+        as_path = ASPath.construct(asn4=False, value=[(2, [1001, 1002]), (1, [1003, 1004])])
         self.assertEqual(as_path, b'@\x02\x0c\x02\x02\x03\xe9\x03\xea\x01\x02\x03\xeb\x03\xec')
 
     def test_construct_as_set_as_federate(self):
-        as_path = ASPath().construct(asn4=False, value=[(4, [1001, 1002]), (3, [1003, 1004])])
+        as_path = ASPath.construct(asn4=False, value=[(4, [1001, 1002]), (3, [1003, 1004])])
         self.assertEqual(as_path, b'@\x02\x0c\x04\x02\x03\xe9\x03\xea\x03\x02\x03\xeb\x03\xec')
+
 
 if __name__ == '__main__':
     unittest.main()

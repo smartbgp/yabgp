@@ -27,30 +27,30 @@ class TestMED(unittest.TestCase):
 
     def test_parse(self):
 
-        med = MED().parse(value=b'\x00\x00\x00\xa0')
+        med = MED.parse(value=b'\x00\x00\x00\xa0')
         self.assertEqual(med, 160)
 
         # invalid length
-        self.assertRaises(UpdateMessageError, MED().parse,
+        self.assertRaises(UpdateMessageError, MED.parse,
                           b'\x0a\x0a\x0a\x01\x01')
 
     def test_parse_exception_attr_len(self):
         try:
-            MED().parse(b'\x0a\x0a\x0a\x01\x01')
+            MED.parse(b'\x0a\x0a\x0a\x01\x01')
         except UpdateMessageError as e:
             self.assertEqual(e.sub_error, ERR_MSG_UPDATE_ATTR_LEN)
 
     def test_construct(self):
 
-        med = MED().construct(value=100)
+        med = MED.construct(value=100)
         self.assertEqual(med, b'\x80\x04\x04\x00\x00\x00d')
 
     def test_construct_exception_attr_len(self):
 
         # invalid med value
-        self.assertRaises(UpdateMessageError, MED().construct, 4294967296)
+        self.assertRaises(UpdateMessageError, MED.construct, 4294967296)
         try:
-            MED().construct(value=4294967296)
+            MED.construct(value=4294967296)
         except UpdateMessageError as e:
             self.assertEqual(e.sub_error, ERR_MSG_UPDATE_ATTR_LEN)
 

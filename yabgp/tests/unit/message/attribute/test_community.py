@@ -26,31 +26,31 @@ class TestCommunity(unittest.TestCase):
 
     def test_parse(self):
 
-        community = Community().parse(value=b'\xff\xff\xff\x01')
+        community = Community.parse(value=b'\xff\xff\xff\x01')
         self.assertEqual(['NO_EXPORT'], community)
 
-        community = Community().parse(value=b'\xff\xff\xff\x01\x12\xe5&\xc9')
+        community = Community.parse(value=b'\xff\xff\xff\x01\x12\xe5&\xc9')
         self.assertEqual(['NO_EXPORT', '4837:9929'], community)
 
-        community = Community().parse(value=b'\x12\xe5\x04\xd7\x12\xe5&\xc9')
+        community = Community.parse(value=b'\x12\xe5\x04\xd7\x12\xe5&\xc9')
         self.assertEqual(['4837:1239', '4837:9929'], community)
 
-        self.assertRaises(excep.UpdateMessageError, Community().parse,
+        self.assertRaises(excep.UpdateMessageError, Community.parse,
                           value=b'\xff\xff\xff\x01\x01')
         try:
-            Community().parse(value=b'\xff\xff\xff\x01\x01')
+            Community.parse(value=b'\xff\xff\xff\x01\x01')
         except excep.UpdateMessageError as e:
             self.assertEqual(ERR_MSG_UPDATE_ATTR_LEN, e.sub_error)
 
     def test_construct(self):
 
-        community = Community().construct(value=['NO_EXPORT'])
+        community = Community.construct(value=['NO_EXPORT'])
         self.assertEqual(b'\xc0\x08\x04\xff\xff\xff\x01', community)
 
-        community = Community().construct(value=['NO_EXPORT', '4837:9929'])
+        community = Community.construct(value=['NO_EXPORT', '4837:9929'])
         self.assertEqual(b'\xc0\x08\x08\xff\xff\xff\x01\x12\xe5&\xc9', community)
 
-        community = Community().construct(value=['4837:1239', '4837:9929'])
+        community = Community.construct(value=['4837:1239', '4837:9929'])
         self.assertEqual(b'\xc0\x08\x08\x12\xe5\x04\xd7\x12\xe5&\xc9', community)
 
 if __name__ == '__main__':

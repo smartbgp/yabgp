@@ -40,8 +40,8 @@ class OriginatorID(Attribute):
     ID = AttributeID.ORIGINATOR_ID
     FLAG = AttributeFlag.OPTIONAL
 
-    @staticmethod
-    def parse(value):
+    @classmethod
+    def parse(cls, value):
 
         """
         Parse originator id
@@ -53,14 +53,15 @@ class OriginatorID(Attribute):
                 data=value)
         return str(netaddr.IPAddress(int(binascii.b2a_hex(value[0:4]), 16)))
 
-    def construct(self, value):
+    @classmethod
+    def construct(cls, value):
 
         """
         construct a ORIGINATOR_ID path attribute
         :param value: ipv4 format string
         """
         try:
-            return struct.pack('!B', self.FLAG) + struct.pack('!B', self.ID) \
+            return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
                 + struct.pack('!B', 4) + netaddr.IPAddress(value).packed
         except Exception:
             raise excep.UpdateMessageError(

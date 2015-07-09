@@ -24,39 +24,33 @@ from yabgp.message.attribute.origin import Origin
 
 class TestOrigin(unittest.TestCase):
 
-    def setUp(self):
-        self.origin = Origin()
-
-    def tearDown(self):
-        del self.origin
-
     def test_origin_igp(self):
-        self.assertEqual(Origin.IGP, self.origin.parse(value=b'\x00'))
+        self.assertEqual(Origin.IGP, Origin.parse(value=b'\x00'))
 
     def test_origin_egp(self):
-        self.assertEqual(Origin.EGP, self.origin.parse(value=b'\x01'))
+        self.assertEqual(Origin.EGP, Origin.parse(value=b'\x01'))
 
     def test_origin_incomplete(self):
-        self.assertEqual(Origin.INCOMPLETE, self.origin.parse(value=b'\x02'))
+        self.assertEqual(Origin.INCOMPLETE, Origin.parse(value=b'\x02'))
 
     def test_invalid_origin(self):
 
-        self.assertRaises(UpdateMessageError, Origin().parse, b'\x03')
+        self.assertRaises(UpdateMessageError, Origin.parse, b'\x03')
         try:
-            Origin().parse(b'\x03')
+            Origin.parse(b'\x03')
         except UpdateMessageError as e:
             self.assertEqual(e.sub_error, ERR_MSG_UPDATE_INVALID_ORIGIN)
 
     def test_construct(self):
 
-        self.assertEqual(b'\x40\x01\x01\x00', Origin().construct(value=0))
-        self.assertEqual(b'\x40\x01\x01\x00', Origin().construct(value=0))
-        self.assertEqual(b'\x40\x01\x01\x01', Origin().construct(value=1))
-        self.assertEqual(b'\x40\x01\x01\x02', Origin().construct(value=2))
+        self.assertEqual(b'\x40\x01\x01\x00', Origin.construct(value=0))
+        self.assertEqual(b'\x40\x01\x01\x00', Origin.construct(value=0))
+        self.assertEqual(b'\x40\x01\x01\x01', Origin.construct(value=1))
+        self.assertEqual(b'\x40\x01\x01\x02', Origin.construct(value=2))
 
-        self.assertRaises(UpdateMessageError, Origin().construct, 3)
+        self.assertRaises(UpdateMessageError, Origin.construct, 3)
         try:
-            Origin().construct(3)
+            Origin.construct(3)
         except UpdateMessageError as e:
             self.assertEqual(e.sub_error, ERR_MSG_UPDATE_INVALID_ORIGIN)
 

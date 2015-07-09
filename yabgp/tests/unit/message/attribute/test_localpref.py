@@ -25,34 +25,30 @@ from yabgp.message.attribute.localpref import LocalPreference
 
 class TestLocalPreference(unittest.TestCase):
 
-    def setUp(self):
-
-        self.localpref = LocalPreference()
-
     def test_parse(self):
 
-        local_pre = self.localpref.parse(value=b'\x00\x00\x00\xa0')
+        local_pre = LocalPreference.parse(value=b'\x00\x00\x00\xa0')
         self.assertEqual(local_pre, 160)
 
     def test_parse_invalid_length(self):
         # invalid length
-        self.assertRaises(UpdateMessageError, self.localpref.parse,
+        self.assertRaises(UpdateMessageError, LocalPreference.parse,
                           b'\x0a\x0a\x0a\x01\x01')
         try:
-            self.localpref.parse(b'\x0a\x0a\x0a\x01\x01')
+            LocalPreference.parse(b'\x0a\x0a\x0a\x01\x01')
         except UpdateMessageError as e:
             self.assertEqual(e.sub_error, ERR_MSG_UPDATE_ATTR_LEN)
 
     def test_construct(self):
 
-        local_pre = self.localpref.construct(value=100)
+        local_pre = LocalPreference.construct(value=100)
         self.assertEqual(b'\x40\x05\x04\x00\x00\x00\x64', local_pre)
 
     def test_construct_excetion_attr_len(self):
         # invalid med value
-        self.assertRaises(UpdateMessageError, self.localpref.construct, 4294967296)
+        self.assertRaises(UpdateMessageError, LocalPreference.construct, 4294967296)
         try:
-            self.localpref.construct(value=4294967296)
+            LocalPreference.construct(value=4294967296)
         except UpdateMessageError as e:
             self.assertEqual(e.sub_error, ERR_MSG_UPDATE_ATTR_LEN)
 

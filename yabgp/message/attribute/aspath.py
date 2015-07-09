@@ -56,7 +56,8 @@ class ASPath(Attribute):
     FLAG = AttributeFlag.TRANSITIVE
     MULTIPLE = False
 
-    def parse(self, value, asn4=False):
+    @classmethod
+    def parse(cls, value, asn4=False):
 
         """
         Parse AS PATH attributes.
@@ -67,7 +68,7 @@ class ASPath(Attribute):
         aspath = []
         while len(value) > 0:
             seg_type, length = struct.unpack('!BB', value[:2])
-            if seg_type not in [self.AS_SET, self.AS_SEQUENCE, self.AS_CONFED_SEQUENCE, self.AS_CONFED_SET]:
+            if seg_type not in [cls.AS_SET, cls.AS_SEQUENCE, cls.AS_CONFED_SEQUENCE, cls.AS_CONFED_SET]:
                 raise excep.UpdateMessageError(
                     sub_error=bgp_cons.ERR_MSG_UPDATE_MALFORMED_ASPATH,
                     data=repr(value))
@@ -86,7 +87,8 @@ class ASPath(Attribute):
             aspath.append((seg_type, segment))
         return aspath
 
-    def construct(self, value, asn4=False):
+    @classmethod
+    def construct(cls, value, asn4=False):
 
         """
         Construct AS PATH.
@@ -101,7 +103,7 @@ class ASPath(Attribute):
             as_seg_raw = b''
             seg_type = segment[0]
             as_path_list = segment[1]
-            if seg_type not in [self.AS_SET, self.AS_SEQUENCE, self.AS_CONFED_SET, self.AS_CONFED_SEQUENCE]:
+            if seg_type not in [cls.AS_SET, cls.AS_SEQUENCE, cls.AS_CONFED_SET, cls.AS_CONFED_SEQUENCE]:
                 assert excep.UpdateMessageError(
                     sub_error=bgp_cons.ERR_MSG_UPDATE_MALFORMED_ASPATH,
                     data='')
@@ -121,11 +123,11 @@ class ASPath(Attribute):
 
             as_path_raw += struct.pack('!B', seg_type) + struct.pack('!B', as_count) + as_seg_raw
 
-        flags = self.FLAG
+        flags = cls.FLAG
         if len(as_path_raw) > 255:
             flags += AttributeFlag.EXTENDED_LENGTH
-            return struct.pack('!B', flags) + struct.pack('!B', self.ID) \
+            return struct.pack('!B', flags) + struct.pack('!B', cls.ID) \
                 + struct.pack('!H', len(as_path_raw)) + as_path_raw
         else:
-            return struct.pack('!B', flags) + struct.pack('!B', self.ID) \
+            return struct.pack('!B', flags) + struct.pack('!B', cls.ID) \
                 + struct.pack('!B', len(as_path_raw)) + as_path_raw
