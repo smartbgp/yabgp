@@ -127,6 +127,9 @@ The configuration sample is:
     # log configuration file
     # log-config-file =
 
+    # run mode
+    # standalone = True
+
     [message]
 
     # how to process parsed BGP message?
@@ -136,9 +139,12 @@ The configuration sample is:
 
     # the BGP messages storage path
     # write_dir = /home/yabgp/data/bgp/
-    write_dir = your_own_path
+
     # The Max size of one BGP message file, the unit is MB
     # write_msg_max_size = 500
+
+    # Whether write keepalive message to disk
+    # write_keepalive = True
 
     [bgp]
 
@@ -151,7 +157,8 @@ The configuration sample is:
     # peer_start_interval = 10
 
     # The Global config for address family and sub address family
-    # afi_safi = ['ipv4']
+    # if you want to support more than one address family, you can set afi_safi = ipv4, ipv6, ....
+    # afi_safi = ipv4
 
     # ===================== items for peer configuration ================================
     # the following parameters will be ignored if conf_file is configured
@@ -172,6 +179,96 @@ The configuration sample is:
 
     # The MD5 string
     # md5 =
+
+    # ======================= BGP capacity =============================
+
+    # support 4 bytes AS
+    # four_bytes_as = True
+
+    # support route refresh
+    # route_refresh = True
+
+    # support cisco route refresh
+    # cisco_route_refresh = True
+
+    # BGP add path feature.This field indicates whether the sender is (a) able to receive
+    # multiple paths from its peer (value 1), (b) able to send
+    # multiple paths to its peer (value 2), or (c) both (value 3) for
+    # the <AFI, SAFI>.
+    # add_path = 1
+
+    # suport graceful restart or not
+    # graceful_restart = True
+
+    # support cisco multi session or not
+    # cisco_multi_session = True
+
+    # support enhanced route refresh or not
+    # enhanced_route_refresh = True
+
+    [rest]
+    # Address to bind the API server to.
+    # bind_host = 0.0.0.0
+
+    # Port the bind the API server to.
+    # bind_port = 8801
+
+    # username and password for api server
+    # username = admin
+    # password = admin
+
+    [rabbit_mq]
+
+    # The RabbitMQ broker address where a single node is used. (string value)
+    # rabbit_host = localhost
+
+    # The RabbitMQ broker port where a single node is used. (integer value)
+    # rabbit_port = 5672
+
+    # Connect over SSL for RabbitMQ. (boolean value)
+    # rabbit_use_ssl = false
+
+    # The RabbitMQ userid. (string value)
+    # rabbit_userid = guest
+
+    # The RabbitMQ password. (string value)
+    # rabbit_password = guest
+
+    [database]
+
+    # database configuration
+
+    # connection url
+    # eg: mongodb://10.75.44.10:27017,10.75.44.11:27017,10.75.44.12:27017
+    # connection = mongodb://127.0.0.1:27017'
+
+    # database name
+    # dbname = yabgp
+
+    # if use replica set
+    # use_replica = True
+
+    # replica set name
+    # replica_name = rs1
+
+    # Read preference if use replica set
+    # PRIMARY = 0  Queries are sent to the primary of the replica set.
+    # PRIMARY_PREFERRED = 1 Queries are sent to the primary if available, otherwise a secondary.
+    # SECONDARY = 2 Queries are distributed among secondaries. An error is raised if no secondaries are available.
+    # SECONDARY_PREFERRED = 3  Queries are distributed among secondaries, or the primary if no secondary is available.
+    # NEAREST = 4 Queries are distributed among all members.
+    # read_preference = 3
+
+    # write concern (integer or string)If this is a replica set, write operations will block until
+    # they have been replicated to the specified number or tagged set of servers. w= always includes
+    # the replica set primary (e.g. w=3 means write to the primary and wait until replicated to two
+    # secondaries). Setting w=0 disables write acknowledgement and all other write concern options.
+    # write_concern = -1
+
+    # write concern timeout (integer) Used in conjunction with w. Specify a value in milliseconds to
+    # control how long to wait for write propagation to complete. If replication does not complete
+    # in the given timeframe, a timeout exception is raised.
+    # write_concern_timeout = 5000
 
 If you change the default setting (like change the ``write_dir``), please start the ``yabgp`` use the configuration file:
 

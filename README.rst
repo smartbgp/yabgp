@@ -30,6 +30,8 @@ Features
 -  Decode all BGP messages to human readable strings and write files to
    disk(configurable);
 
+-  Support basic RESTFUL API.
+
 Quick Start
 ~~~~~~~~~~~
 
@@ -81,7 +83,6 @@ TODO
 ~~~~
 
 -  support more address family (flowspec, IPv6, VPNv4, VPNv6, etc.)
--  support RESTful API, send message/control peer state, etc.
 -  more unittest
 -  others
 

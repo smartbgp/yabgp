@@ -30,6 +30,8 @@ Features
 -  Decode all BGP messages to human readable strings and write files to
    disk(configurable);
 
+-  Support basic RESTFUL API.
+
 .. note::
 
   yabgp is a light weight BGP agent used for connecting network devices. It only can be
