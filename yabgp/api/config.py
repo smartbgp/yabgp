@@ -30,5 +30,6 @@ rest_server_ops = [
                help='Username for api server'),
     cfg.StrOpt('password',
                default='admin',
-               help='Password for api server')
+               help='Password for api server',
+               secret=True)
 ]
