@@ -266,6 +266,21 @@ class BGP(protocol.Protocol):
         self.msg_recv_stat['Updates'] += 1
         self.fsm.update_received()
 
+    def send_update(self, msg):
+        """
+        send update message to the peer
+        :param msg: message dictionary
+        :return:
+        """
+        try:
+            msg_update = Update().construct(msg, self.fourbytesas)
+            self.transport.write(msg_update)
+            self.msg_sent_stat['Updates'] += 1
+            return True
+        except Exception as e:
+            LOG.error(e)
+            return False
+
     def send_notification(self, error, sub_error, data=b''):
         """
         send BGP notification message

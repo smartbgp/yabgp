@@ -108,3 +108,28 @@ def send_route_refresh(peer_ip, afi, safi, res):
             'status': False,
             'code': "Please check the peer's state"
         }
+
+
+def send_update(peer_ip, attr, nlri, withdraw):
+    """
+    send update message
+    :param peer_ip: peer ip address
+    :return:
+    """
+    if not _ready_to_send_msg(peer_ip):
+        return {
+            'status': False,
+            'code': "Please check the peer's state"
+        }
+    # TODO check RIB out policy
+    # TODO update RIB out table
+    if cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.send_update({
+            'attr': attr, 'nlri': nlri, 'withdraw': withdraw}):
+        return {
+            'status': True
+        }
+    else:
+        return {
+            'status': False,
+            'code': 'failed when send this message out'
+        }

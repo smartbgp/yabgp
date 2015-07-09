@@ -71,7 +71,7 @@ def root():
     return flask.jsonify(intro)
 
 
-@blueprint.route('/peers',  methods=['GET'])
+@blueprint.route('/peers', methods=['GET'])
 @auth.login_required
 def peers():
     """
@@ -205,7 +205,7 @@ def get_peer_statistic(peer_ip):
 
 @blueprint.route('/peer/<peer_ip>/send/route-refresh', methods=['POST'])
 @auth.login_required
-def send_bgp_message(peer_ip):
+def send_route_refresh(peer_ip):
     """
     Try to send BGP Route Refresh message to a peer
 
@@ -213,7 +213,7 @@ def send_bgp_message(peer_ip):
 
     .. sourcecode:: http
 
-      POST /v1/peer/10.124.1.245/route-refresh HTTP/1.1
+      POST /v1/peer/10.124.1.245/send/route-refresh HTTP/1.1
       Host: example.com
       Accept: application/json
       POST Data:
@@ -248,7 +248,7 @@ def send_bgp_message(peer_ip):
     :param peer_ip: peer ip address
     :status 200: the api can work.
     """
-    LOG.debug('Try to send route refresh')
+    LOG.debug('Try to send route refresh to peer %s', peer_ip)
     json_request = flask.request.get_json()
     if 'afi' in json_request and 'safi' in json_request:
         if 'res' not in json_request:
@@ -262,3 +262,79 @@ def send_bgp_message(peer_ip):
         'status': False,
         'code': 'please check your post data'
     })
+
+
+@blueprint.route('/peer/<peer_ip>/send/update', methods=['POST'])
+@auth.login_required
+def send_update_message(peer_ip):
+    """
+    Try to send BGP update message to the peer. Both update nlri and withdraw nlri treated as Update.
+
+    **Example request**
+
+    .. sourcecode:: http
+
+      POST /v1/peer/10.124.1.245/send/update HTTP/1.1
+      Host: example.com
+      Accept: application/json
+
+    Post data example for IPv4 update and withdraw
+
+    .. sourcecode:: http
+
+        # update
+        {
+            "attr":{
+                "1": 0,
+                "2": [],
+                "3": "192.0.2.1",
+                "5": 100,
+                "8": ["NO_EXPORT"]
+        },
+            "nlri": ["172.20.1.0/24", "172.20.2.0/24"]
+        }
+        # withdraw
+        {
+            "withdraw": ["172.20.1.0/24", "172.20.2.0/24"]
+        }
+
+
+    **Example response**:
+
+    .. sourcecode:: http
+
+      HTTP/1.1 200 OK
+      Vary: Accept
+      Content-Type: text/json
+      {
+        "status": True
+      }
+
+    Success f the status is `True` in the reponse, otherwise, the status is `False`. If the status is
+    Flase, there will be a code tell you why. like:
+
+    .. sourcecode:: http
+
+        {
+            "status": False,
+            "code": "please check your post data"
+        }
+
+    :param peer_ip: peer ip address
+    :status 200: the api can work.
+
+    """
+    LOG.debug('Try to send update message to peer %s', peer_ip)
+    json_request = flask.request.get_json()
+    attr = json_request.get('attr')
+    nlri = json_request.get('nlri')
+    withdraw = json_request.get('withdraw')
+    if attr:
+        attr = {int(k): v for k, v in attr.items()}
+    if (attr and nlri) or withdraw:
+        return flask.jsonify(api_utils.send_update(peer_ip, attr, nlri, withdraw))
+    else:
+        return flask.jsonify({
+            'status': False,
+            'code': 'please check your post data'
+        })
