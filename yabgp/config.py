@@ -35,6 +35,9 @@ msg_process_opts = [
     cfg.IntOpt('write_msg_max_size',
                default=500,
                help='The Max size of one BGP message file, the unit is MB'),
+    cfg.BoolOpt('write_keepalive',
+                default=True,
+                help='Whether write keepalive message to disk')
 ]
 
 CONF.register_opts(msg_process_opts, group='message')

@@ -31,6 +31,9 @@
 # The Max size of one BGP message file, the unit is MB
 # write_msg_max_size = 500
 
+# Whether write keepalive message to disk
+# write_keepalive = True
+
 [bgp]
 
 # BGP global configuration items

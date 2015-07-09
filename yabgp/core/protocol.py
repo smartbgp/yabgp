@@ -346,14 +346,15 @@ class BGP(protocol.Protocol):
         LOG.info("[%s]A BGP KeepAlive message was received from peer.", self.factory.peer_addr)
         KeepAlive().parse(msg)
 
-        # write bgp message
-        self.factory.write_msg(
-            timestamp=timestamp,
-            msg_type=4,
-            msg=None,
-            afi_safi=(0, 0),
-            flush=True
-        )
+        if CONF.message.write_keepalive:
+            # write bgp message
+            self.factory.write_msg(
+                timestamp=timestamp,
+                msg_type=4,
+                msg=None,
+                afi_safi=(0, 0),
+                flush=True
+            )
         self.fsm.keep_alive_received()
 
     def capability_negotiate(self):
