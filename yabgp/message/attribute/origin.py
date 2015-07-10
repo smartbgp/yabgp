@@ -59,7 +59,7 @@ class Origin(Attribute):
                 sub_error=bgp_cons.ERR_MSG_UPDATE_INVALID_ORIGIN,
                 data=value)
         return orgin
-    
+
     @classmethod
     def construct(cls, value):
 

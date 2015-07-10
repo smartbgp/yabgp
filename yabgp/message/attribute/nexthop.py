@@ -52,7 +52,7 @@ class NextHop(Attribute):
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                 data=value)
-    
+
     @classmethod
     def construct(cls, value):
         """

@@ -58,7 +58,7 @@ class ClusterList(Attribute):
             cluster_list.append(str(netaddr.IPAddress(struct.unpack('!I', value[0:4])[0])))
             value = value[4:]
         return cluster_list
-    
+
     @classmethod
     def construct(cls, value):
 
