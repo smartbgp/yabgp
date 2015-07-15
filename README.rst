@@ -72,6 +72,9 @@ BGP message example:
 in ``yabgp.ini``, you can point out if you want to store the parsing
 BGP message to local disk and where you want to put them in.
 
+Documentation
+~~~~~~~~~~~~~
+
 More information please see the documentation http://yabgp.readthedocs.org
 
 Support
