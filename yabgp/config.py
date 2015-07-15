@@ -17,6 +17,7 @@
 
 import logging
 import sys
+import os
 
 from oslo.config import cfg
 
@@ -30,7 +31,7 @@ msg_process_opts = [
                 default=True,
                 help='Whether the BGP message is written to disk'),
     cfg.StrOpt('write_dir',
-               default='/home/yabgp/data/bgp/',
+               default=os.path.join(os.environ['HOME'], 'data/bgp/'),
                help='The BGP messages storage path'),
     cfg.IntOpt('write_msg_max_size',
                default=500,
@@ -87,6 +88,7 @@ bgp_peer_conf_cli_opts = [
     cfg.StrOpt('remote_addr',
                help='The remote address of the peer'),
     cfg.StrOpt('local_addr',
+               default='0.0.0.0',
                help='The local address of the BGP'),
     cfg.StrOpt('md5',
                help='The MD5 string use to auth')
