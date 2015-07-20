@@ -1,0 +1,11 @@
+[Unit]
+Description=YABGP
+After=network.target
+
+[Service]
+ConditionPathExists=/etc/yabgp/yabgp.ini
+ExecStart=/usr/sbin/yabgp /etc/yabgp/yabgp.ini
+ExecReload=/bin/kill -USR1 $MAINPID
+
+[Install]
+WantedBy=multi-user.target
