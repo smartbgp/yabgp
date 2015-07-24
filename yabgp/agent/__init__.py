@@ -39,6 +39,22 @@ CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
 
+def load_channel_filter_from_db():
+    """
+    load rabbitmq channle filter from mongodb
+    :return:
+    """
+    pass
+
+
+def load_bgp_policy_from_db():
+    """
+    load bgp policy from mongodb
+    :return:
+    """
+    pass
+
+
 def check_running_mode():
 
     if not CONF.standalone:
@@ -71,6 +87,7 @@ def prepare_twisted_service():
             userid=CONF.rabbit_mq.rabbit_userid,
             password=CONF.rabbit_mq.rabbit_password
         )
+        rabbit_mq_factory.peer_list = CONF.bgp.running_config.keys()
         rabbit_mq_factory.connect()
         # mongodb connection
         mongo_connection = MongoApi(

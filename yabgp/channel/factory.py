@@ -37,7 +37,7 @@ class PikaFactory(protocol.ReconnectingClientFactory):
         )
         self.client = None
         self.queued_messages = []
-        self.read_list = []
+        self.peer_list = []
 
     def startedConnecting(self, connector):
         LOG.info('Started to connect to AMQP')
@@ -51,23 +51,17 @@ class PikaFactory(protocol.ReconnectingClientFactory):
         return self.client
 
     def clientConnectionLost(self, connector, reason):
-        LOG.info('Lost connection.  Reason: %s', reason)
+        LOG.info('Lost connection.  Reason: %s', reason.getErrorMessage())
         protocol.ReconnectingClientFactory.clientConnectionLost(self, connector, reason.getErrorMessage())
 
     def clientConnectionFailed(self, connector, reason):
-        LOG.info('Connection failed. Reason: %s', reason)
+        LOG.info('Connection failed. Reason: %s', reason.getErrorMessage())
         protocol.ReconnectingClientFactory.clientConnectionFailed(self, connector, reason.getErrorMessage())
 
     def send_message(self, exchange=None, routing_key=None, message=None):
         self.queued_messages.append((exchange, routing_key, message))
         if self.client is not None:
             self.client.send()
-
-    def read_messages(self, exchange, routing_key, callback):
-        """Configure an exchange to be read from."""
-        self.read_list.append((exchange, routing_key, callback))
-        if self.client is not None:
-            self.client.read(exchange, routing_key, callback)
 
     def connect(self):
 

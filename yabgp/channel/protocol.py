@@ -28,57 +28,36 @@ LOG = logging.getLogger(__name__)
 
 
 class PikaProtocol(twisted_connection.TwistedProtocolConnection):
-    connected = False
+    is_connected = False
     name = 'AMQP:Protocol'
+    factory = None
 
     @inlineCallbacks
     def connected(self, connection):
+
         self.channel = yield connection.channel()
         yield self.channel.basic_qos(prefetch_count=PREFETCH_COUNT)
-        self.connected = True
-        for (exchange, routing_key, callback,) in self.factory.read_list:
-            yield self.setup_read(exchange, routing_key, callback)
+        self.is_connected = True
+        for routing_key in self.factory.peer_list:
+            LOG.info('routing key %s', routing_key)
+            yield self.setup('', routing_key)
 
+        # try to send all waiting messages
+        LOG.info('connected, try to send all waiting message')
         self.send()
 
     @inlineCallbacks
-    def read(self, exchange, routing_key, callback):
-        """Add an exchange to the list of exchanges to read from."""
-        if self.connected:
-            yield self.setup_read(exchange, routing_key, callback)
-
-    @inlineCallbacks
-    def setup_read(self, exchange, routing_key, callback):
+    def setup(self, exchange, routing_key):
         """This function does the work to read from an exchange."""
+        LOG.info("setup rabbitmq exchange or queue")
         if not exchange == '':
             yield self.channel.exchange_declare(exchange=exchange, type='topic', durable=True, auto_delete=False)
-        if not exchange == '':
-            queue = yield self.channel.queue_declare(durable=False, exclusive=True, auto_delete=True)
-            queue_name = queue.method.queue
-            yield self.channel.queue_bind(queue=queue_name, exchange=exchange, routing_key=routing_key)
         else:
-            queue = yield self.channel.queue_declare(queue=routing_key, durable=False, exclusive=True, auto_delete=True)
-            queue_name = queue.fields[0]
-        (queue, consumer_tag,) = yield self.channel.basic_consume(queue=queue_name, no_ack=True)
-        d = queue.get()
-        d.addCallback(self._read_item, queue, callback)
-        d.addErrback(self._read_item_err)
-
-    def _read_item(self, item, queue, callback):
-        """Callback function which is called when an item is read."""
-        d = queue.get()
-        d.addCallback(self._read_item, queue, callback)
-        d.addErrback(self._read_item_err)
-        (channel, deliver, props, msg,) = item
-        LOG.debug('%s (%s): %s', deliver.exchange, deliver.routing_key, repr(msg))
-        callback(item)
-
-    def _read_item_err(self, error):
-        LOG.error(error)
+            yield self.channel.queue_declare(queue=routing_key, durable=True, auto_delete=True)
 
     def send(self):
         """If connected, send all waiting messages."""
-        if self.connected:
+        if self.is_connected:
             while len(self.factory.queued_messages) > 0:
                 (exchange, r_key, message,) = self.factory.queued_messages.pop(0)
                 self.send_message(exchange, r_key, message)
@@ -87,9 +66,19 @@ class PikaProtocol(twisted_connection.TwistedProtocolConnection):
     def send_message(self, exchange, routing_key, msg):
         """Send a single message."""
         LOG.debug('%s (%s): %s', exchange, routing_key, repr(msg))
-        yield self.channel.exchange_declare(exchange=exchange, type='topic', durable=True, auto_delete=False)
+        # yield self.channel.exchange_declare(exchange=exchange, type='topic', durable=True, auto_delete=False)
         prop = spec.BasicProperties(delivery_mode=2)
         try:
             yield self.channel.basic_publish(exchange=exchange, routing_key=routing_key, body=msg, properties=prop)
         except Exception as error:
             LOG.error('Error while sending message: %s', error)
+
+    def connectionLost(self, reason):
+
+        """Called when the associated connection was lost.
+
+        :param reason: the reason of lost connection.
+        """
+        LOG.debug('Called connectionLost')
+        self.is_connected = False
+        LOG.info("Connection lost:%s", reason.getErrorMessage())

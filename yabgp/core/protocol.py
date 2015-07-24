@@ -246,23 +246,27 @@ class BGP(protocol.Protocol):
             # get address family
             if result['nlri'] or result['withdraw']:
                 afi_safi = bgp_cons.AFI_SAFI_STR_DICT['ipv4']
-            elif 14 in result['attr']:
-                afi_safi = result['attr'][14]['afi_safi']
-            elif 15 in result['attr']:
-                afi_safi = result['attr'][15]['afi_safi']
+            elif bgp_cons.BGPTYPE_MP_REACH_NLRI in result['attr']:
+                afi_safi = result['attr'][bgp_cons.BGPTYPE_MP_REACH_NLRI]['afi_safi']
+            elif bgp_cons.BGPTYPE_MP_UNREACH_NLRI in result['attr']:
+                afi_safi = result['attr'][bgp_cons.BGPTYPE_MP_UNREACH_NLRI]['afi_safi']
             else:
                 afi_safi = (0, 0)
+            msg = {
+                'attr': result['attr'],
+                'nlri': result['nlri'],
+                'withdraw': result['withdraw']
+            }
             self.factory.write_msg(
                 timestamp=result['time'],
                 msg_type=bgp_cons.MSG_UPDATE,
-                msg={
-                    'attr': result['attr'],
-                    'nlri': result['nlri'],
-                    'withdraw': result['withdraw']
-                },
+                msg=msg,
                 afi_safi=afi_safi,
                 flush=True
             )
+            if not CONF.standalone:
+                self.factory.channel.send_message(exchange='', routing_key=self.factory.peer_addr, message=str(msg))
+
         self.msg_recv_stat['Updates'] += 1
         self.fsm.update_received()
 
@@ -379,7 +383,7 @@ class BGP(protocol.Protocol):
         # construct Open message
         self.capability_negotiate()
         open_msg = Open(version=bgp_cons.VERSION, asn=self.factory.my_asn, hold_time=self.fsm.hold_time,
-                        bgp_id=self.factory.bgp_id).\
+                        bgp_id=self.factory.bgp_id). \
             construct(cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local'])
         # send message
         self.transport.write(open_msg)
