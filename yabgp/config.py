@@ -91,7 +91,8 @@ bgp_peer_conf_cli_opts = [
                default='0.0.0.0',
                help='The local address of the BGP'),
     cfg.StrOpt('md5',
-               help='The MD5 string use to auth')
+               help='The MD5 string use to auth',
+               secret=True)
 ]
 
 CONF.register_cli_opts(bgp_peer_conf_cli_opts, group='bgp')
