@@ -186,11 +186,19 @@ class BGPPeering(BGPFactory):
             return last_seq
         file_list.sort()
         self.msg_file_name = file_list[-1]
-        with open(self.msg_path + self.msg_file_name, 'rb') as fh:
-            for line in fh:
-                pass
-            last = line
-            last_seq = eval(last)[1]
+        try:
+            with open(self.msg_path + self.msg_file_name, 'rb') as fh:
+                line = None
+                for line in fh:
+                    pass
+                last = line
+                if line:
+                    last_seq = eval(last)[1]
+        except OSError:
+            LOG.error('Error when reading bgp message files')
+        else:
+            LOG.error('Error when eval bgp message')
+
         return last_seq
 
     def write_msg(self, timestamp, msg_type, msg, afi_safi, flush=False):
