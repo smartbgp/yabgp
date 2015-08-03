@@ -16,6 +16,71 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+""" BGP Route injector
+"""
+
+import urllib2
+import json
+
+from oslo.config import cfg
+
+CONF = cfg.CONF
+
+CONF.register_cli_opt(
+    cfg.BoolOpt('peerip', help='The BGP peer address'))
+
+rest_server_ops = [
+    cfg.StrOpt('bind_host',
+               default='0.0.0.0',
+               help='Address to bind the API server to'),
+    cfg.IntOpt('bind_port',
+               default=8801,
+               help='Port the bind the API server to'),
+    cfg.StrOpt('username',
+               default='admin',
+               help='Username for api server'),
+    cfg.StrOpt('password',
+               default='admin',
+               help='Password for api server',
+               secret=True)
+]
+
+URL = 'http://%s:%s/v1/peer/%s/send/update'
+
+def get_api_opener_v1(url, username, password):
+    """
+    get the http api opener with base url and username,password
+
+    :param url: http url
+    :param username: username for api auth
+    :param password: password for api auth
+    """
+    # create a password manager
+    password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+
+    # Add the username and password.
+    password_mgr.add_password(None, url, username, password)
+
+    handler = urllib2.HTTPBasicAuthHandler(password_mgr)
+    opener = urllib2.build_opener(handler)
+    return opener
 
 
-
+def get_data_from_agent(url, username, password, method='GET', data=None):
+    """
+    HTTP interaction with yabgp rest api
+    :return:
+    """
+    # build request
+    if data:
+        data = json.dumps(data)
+    request = urllib2.Request(url, data)
+    request.add_header("Content-Type", 'application/json')
+    request.get_method = lambda: method
+    opener_v1 = get_api_opener_v1(url, username, password)
+    try:
+        res = json.loads(opener_v1.open(request).read())
+        return res
+    except Exception as e:
+        print(e)
+    return None
