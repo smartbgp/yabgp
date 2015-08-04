@@ -72,9 +72,15 @@ class Community(Attribute):
                 value = bgp_cons.WELL_KNOW_COMMUNITY_STR_2_INT[community.upper()]
                 community_hex += struct.pack('!I', value)
             else:
-                value = community.split(':')
-                value = int(value[0]) * 16 * 16 * 16 * 16 + int(value[1])
-                community_hex += struct.pack('!I', value)
+                try:
+                    value = community.split(':')
+                    value = int(value[0]) * 16 * 16 * 16 * 16 + int(value[1])
+                    community_hex += struct.pack('!I', value)
+                except Exception:
+                    raise excep.UpdateMessageError(
+                        sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
+                        data=value
+                    )
 
         return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
             + struct.pack('!B', len(community_hex)) + community_hex

@@ -53,5 +53,8 @@ class TestCommunity(unittest.TestCase):
         community = Community.construct(value=['4837:1239', '4837:9929'])
         self.assertEqual(b'\xc0\x08\x08\x12\xe5\x04\xd7\x12\xe5&\xc9', community)
 
+    def test_construct_invalid(self):
+        self.assertRaises(excep.UpdateMessageError, Community.construct, value=['111:111', 'a:b'])
+
 if __name__ == '__main__':
     unittest.main()
