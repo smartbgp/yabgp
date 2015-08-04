@@ -39,4 +39,4 @@ SCRIPTPATH=`pwd -P`
 
 docker run -p 27017:27017 -p 27018:27018 -p 27019:27019 -d \
     -v /host/primary:$SCRIPTPATH/data/mongo/node1 -v /host/secondary:$SCRIPTPATH/data/mongo/node2 \
-    --name mongoreplset tattsun/mongodb-replset
+    tattsun/mongodb-replset
