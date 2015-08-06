@@ -16,6 +16,7 @@
 import sys
 import os
 import logging
+import contextlib
 
 from oslo.config import cfg
 from twisted.internet import reactor
@@ -27,6 +28,7 @@ from yabgp.config import get_bgp_config
 from yabgp.common import constants as bgp_cons
 from yabgp.api.app import app
 from yabgp.channel.config import rabbit_mq
+from yabgp.channel.config import channle_filter
 from yabgp.channel.factory import PikaFactory
 from yabgp.db.config import database_options
 from yabgp.db.mongodb import MongoApi
@@ -39,7 +41,15 @@ CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
 
-def load_channel_filter_from_db():
+@contextlib.contextmanager
+def mongo_operation(mongo_conn, connection_name):
+    mongo_conn.collection_name = connection_name
+    db = mongo_conn.get_collection()
+    yield db
+    mongo_conn._close_db()
+
+
+def load_channel_filter_from_db(mongo_conn, connection_name):
     """
     load rabbitmq channle filter from mongodb
     :return:
@@ -47,7 +57,7 @@ def load_channel_filter_from_db():
     pass
 
 
-def load_bgp_policy_from_db():
+def load_bgp_policy_from_db(mongo_conn, connection_name):
     """
     load bgp policy from mongodb
     :return:
@@ -60,6 +70,7 @@ def check_running_mode():
     if not CONF.standalone:
         # not standalone?
         CONF.register_opts(rabbit_mq, group='rabbit_mq')
+        CONF.register_opts(channle_filter, group='rabbit_mq')
         CONF.register_opts(database_options, group='database')
 
 
@@ -99,6 +110,7 @@ def prepare_twisted_service():
             write_concern=CONF.database.write_concern,
             w_timeout=CONF.database.write_concern_timeout
         )
+        # TODO load channel filter and peer policy
     else:
         rabbit_mq_factory = None
         mongo_connection = None

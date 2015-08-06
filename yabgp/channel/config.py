@@ -37,3 +37,9 @@ rabbit_mq = [
                help='The RabbitMQ password.',
                secret=True),
 ]
+
+channle_filter = [
+    cfg.DictOpt('filter',
+                default={'community': {}, 'prefix': {}},
+                help='the community and prefix filter dict'),
+]
