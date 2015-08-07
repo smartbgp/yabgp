@@ -18,6 +18,9 @@
 # run mode
 # standalone = True
 
+# pid file
+pid-file = None
+
 [message]
 
 # how to process parsed BGP message?

@@ -183,4 +183,12 @@ def prepare_service(args=None):
     except Exception as e:
         LOG.error(e, exc_info=True)
         sys.exit()
+
+    LOG.info('Starting server in PID %s' % os.getpid())
+
+    # write pid file
+    if CONF.pid_file:
+        with open(CONF.pid_file, 'w') as pid_file:
+            pid_file.write(str(os.getpid()))
+            LOG.info('create pid file: %s' % CONF.pid_file)
     prepare_twisted_service()
