@@ -162,7 +162,6 @@ class BGPPeering(BGPFactory):
                 timestamp=time.time(),
                 msg_type=0,
                 msg=error_msg,
-                afi_safi=(0, 0),
                 flush=True
             )
         LOG.info(error_msg)

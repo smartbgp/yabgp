@@ -125,6 +125,26 @@ class BGP(protocol.Protocol):
             error_str = traceback.format_exc()
             LOG.debug(error_str)
 
+    def _init_rib_table(self):
+        for afi_safi in cfg.CONF.bgp.afi_safi:
+            self._adj_rib_in[afi_safi] = {}
+            if not self._adj_rib_out:
+                self._adj_rib_out[afi_safi] = {}
+
+    def reset_rib_in(self):
+        """
+        clear _adj_rib_in table when bgp peer establish
+        :return:
+        """
+        self._init_rib_table()
+
+    def reset_rib_out(self):
+        """
+        when bgp peer established, should send all prefix in _adj_rib_out out.
+        :return:
+        """
+        pass
+
     def dataReceived(self, data):
 
         """
@@ -252,6 +272,14 @@ class BGP(protocol.Protocol):
                 msg=msg,
                 flush=True
             )
+            # update rib in ipv4
+            for prefix in msg['nlri']:
+                self._adj_rib_in['ipv4'][prefix] = msg['attr']
+            for prefix in msg['withdraw']:
+                if prefix in self._adj_rib_in['ipv4']:
+                    self._adj_rib_in['ipv4'].pop(prefix)
+                else:
+                    LOG.warning('withdraw prefix which does not exist in rib table!')
             if not CONF.standalone:
                 self.factory.channel.send_message(exchange='', routing_key=self.factory.peer_addr, message=str(msg))
 
@@ -420,6 +448,7 @@ class BGP(protocol.Protocol):
 
         self.negotiate_hold_time(open_msg.hold_time)
         self.fsm.open_received()
+        self.reset_rib_in()
 
     def send_route_refresh(self, afi, safi, res=0):
         """
