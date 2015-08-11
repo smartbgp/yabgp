@@ -201,18 +201,17 @@ class BGPPeering(BGPFactory):
 
         return last_seq
 
-    def write_msg(self, timestamp, msg_type, msg, afi_safi, flush=False):
+    def write_msg(self, timestamp, msg_type, msg, flush=False):
         """
 
         :param timestamp:
         :param msg_type:
         :param msg:
-        :param afi_safi:
         :param flush:
         :return:
         """
         if self.msg_path:
-            msg_record = [timestamp, self.msg_seq, msg_type, msg, afi_safi]
+            msg_record = [timestamp, self.msg_seq, msg_type, msg]
             self.msg_file.write(str(msg_record) + '\n')
             self.msg_seq += 1
             if flush:

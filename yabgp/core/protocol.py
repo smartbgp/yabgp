@@ -67,6 +67,12 @@ class BGP(protocol.Protocol):
             'RouteRefresh': 0
         }
 
+        # Adj-rib-in
+        self._adj_rib_in = {}
+
+        # Adj-rib-out
+        self._adj_rib_out = {}
+
     def connectionMade(self):
 
         """
@@ -223,12 +229,6 @@ class BGP(protocol.Protocol):
         """Called when a BGP Update message was received."""
         result = Update().parse([timestamp, self.fourbytesas, msg])
         if result['sub_error']:
-            # Get address family
-            if result['nlri'] or result['withdraw']:
-                afi_safi = bgp_cons.AFI_SAFI_STR_DICT['ipv4']
-            else:
-                afi_safi = (0, 0)
-                # write message to file
             self.factory.write_msg(
                 timestamp=result['time'],
                 msg_type=6,
@@ -237,21 +237,10 @@ class BGP(protocol.Protocol):
                     'nlri': result['nlri'],
                     'withdraw': result['withdraw']
                 },
-                afi_safi=afi_safi,
                 flush=True
             )
             LOG.error('[%s] Update message error: sub error=%s', self.factory.peer_addr, result['sub_error'])
         else:
-            # no error
-            # get address family
-            if result['nlri'] or result['withdraw']:
-                afi_safi = bgp_cons.AFI_SAFI_STR_DICT['ipv4']
-            elif bgp_cons.BGPTYPE_MP_REACH_NLRI in result['attr']:
-                afi_safi = result['attr'][bgp_cons.BGPTYPE_MP_REACH_NLRI]['afi_safi']
-            elif bgp_cons.BGPTYPE_MP_UNREACH_NLRI in result['attr']:
-                afi_safi = result['attr'][bgp_cons.BGPTYPE_MP_UNREACH_NLRI]['afi_safi']
-            else:
-                afi_safi = (0, 0)
             msg = {
                 'attr': result['attr'],
                 'nlri': result['nlri'],
@@ -261,7 +250,6 @@ class BGP(protocol.Protocol):
                 timestamp=result['time'],
                 msg_type=bgp_cons.MSG_UPDATE,
                 msg=msg,
-                afi_safi=afi_safi,
                 flush=True
             )
             if not CONF.standalone:
@@ -318,7 +306,6 @@ class BGP(protocol.Protocol):
             timestamp=time.time(),
             msg_type=3,
             msg=nofi_msg,
-            afi_safi=(0, 0),
             flush=True
         )
         self.fsm.notification_received(msg[0], msg[1])
@@ -356,7 +343,6 @@ class BGP(protocol.Protocol):
                 timestamp=timestamp,
                 msg_type=4,
                 msg=None,
-                afi_safi=(0, 0),
                 flush=True
             )
         self.fsm.keep_alive_received()
@@ -427,7 +413,6 @@ class BGP(protocol.Protocol):
             timestamp=timestamp,
             msg_type=1,
             msg=parse_result,
-            afi_safi=(0, 0),
             flush=True
         )
         self.peer_id = open_msg.bgp_id
