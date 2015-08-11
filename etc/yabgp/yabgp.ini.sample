@@ -71,6 +71,9 @@ pid-file = None
 # The MD5 string
 # md5 =
 
+# Whether maintain bgp rib table
+# rib = False
+
 # ======================= BGP capacity =============================
 
 # support 4 bytes AS
