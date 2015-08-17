@@ -20,7 +20,7 @@ import logging
 from flask.ext.httpauth import HTTPBasicAuth
 from flask import Blueprint
 import flask
-from oslo.config import cfg
+from oslo_config import cfg
 
 from yabgp.api import utils as api_utils
 

@@ -19,7 +19,7 @@ import logging
 import sys
 import os
 
-from oslo.config import cfg
+from oslo_config import cfg
 
 CONF = cfg.CONF
 

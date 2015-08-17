@@ -28,7 +28,7 @@ if sys.version_info[0] == 2:
 elif sys.version_info[0] == 3:
     from configparser import ConfigParser
 
-from oslo.config import cfg
+from oslo_config import cfg
 
 
 CONF = cfg.CONF

@@ -20,7 +20,7 @@ import flask
 
 from yabgp.api import v1
 from yabgp.api import config
-from oslo.config import cfg
+from oslo_config import cfg
 
 app = flask.Flask('yabgp.api')
 app.config['SECRET_KEY'] = 'cisco123'

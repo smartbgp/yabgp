@@ -18,7 +18,7 @@ import os
 import logging
 import contextlib
 
-from oslo.config import cfg
+from oslo_config import cfg
 from twisted.internet import reactor
 from twisted.web.server import Site
 

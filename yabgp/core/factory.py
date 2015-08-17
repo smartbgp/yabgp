@@ -27,7 +27,7 @@ import sys
 import netaddr
 from twisted.internet import protocol
 from twisted.internet import reactor
-from oslo.config import cfg
+from oslo_config import cfg
 
 from yabgp.core.protocol import BGP
 from yabgp.core.fsm import FSM

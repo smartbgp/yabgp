@@ -15,7 +15,7 @@
 
 """ database config """
 
-from oslo.config import cfg
+from oslo_config import cfg
 
 CONF = cfg.CONF
 

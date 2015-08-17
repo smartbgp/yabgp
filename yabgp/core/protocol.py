@@ -21,7 +21,7 @@ import struct
 import time
 
 import netaddr
-from oslo.config import cfg
+from oslo_config import cfg
 from twisted.internet import protocol
 
 from yabgp.common import constants as bgp_cons

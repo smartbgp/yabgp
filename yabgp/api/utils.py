@@ -16,7 +16,7 @@
 import time
 import logging
 
-from oslo.config import cfg
+from oslo_config import cfg
 
 from yabgp.common import constants as common_cons
 
