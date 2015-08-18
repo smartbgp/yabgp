@@ -421,3 +421,13 @@ def get_adj_rib_in(afi_safi, peer_ip):
     return flask.jsonify({
         'prefix': api_utils.get_adj_rib_in(peer_ip, afi_safi)}
     )
+
+
+@blueprint.route('/adj-rib-out/<afi_safi>/<peer_ip>', methods=['GET'])
+@auth.login_required
+@api_utils.log_request
+@api_utils.makesure_peer_establish
+def get_adj_rib_out(afi_safi, peer_ip):
+    return flask.jsonify({
+        'prefix': api_utils.get_adj_rib_out(peer_ip, afi_safi)}
+    )
