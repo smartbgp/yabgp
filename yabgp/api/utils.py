@@ -15,12 +15,28 @@
 
 import time
 import logging
+from functools import wraps
 
 from oslo_config import cfg
+from flask import request
 
 from yabgp.common import constants as common_cons
 
 LOG = logging.getLogger(__name__)
+
+
+def log_request(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        LOG.info('API request url %s', request.url)
+        if request.query_string:
+            LOG.info('API query string %s', request.query_string)
+        LOG.info('API request method %s', request.method)
+        if request.method == 'POST':
+            LOG.info('API POST data %s', request.json)
+        LOG.debug('API request environ %s', request.environ)
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 def get_peer_conf_and_state(peer_ip=None):

@@ -37,6 +37,7 @@ def get_pw(username):
 
 
 @blueprint.route('/')
+@api_utils.log_request
 def root():
     """
     v1 api root. Get the api status.
@@ -73,6 +74,7 @@ def root():
 
 @blueprint.route('/peers', methods=['GET'])
 @auth.login_required
+@api_utils.log_request
 def peers():
     """
     Get all peers realtime running information, include basic configurations and fsm state.
@@ -121,6 +123,7 @@ def peers():
 
 @blueprint.route('/peer/<peer_ip>/state')
 @auth.login_required
+@api_utils.log_request
 def peer(peer_ip):
     """
     Get one peer's running information, include basic configurations and fsm state.
@@ -160,6 +163,7 @@ def peer(peer_ip):
 
 @blueprint.route('/peer/<peer_ip>/statistic')
 @auth.login_required
+@api_utils.log_request
 def get_peer_statistic(peer_ip):
     """
     Get one peer's message statistic, include sending and receiving.
@@ -205,6 +209,7 @@ def get_peer_statistic(peer_ip):
 
 @blueprint.route('/peer/<peer_ip>/send/route-refresh', methods=['POST'])
 @auth.login_required
+@api_utils.log_request
 def send_route_refresh(peer_ip):
     """
     Try to send BGP Route Refresh message to a peer
@@ -266,6 +271,7 @@ def send_route_refresh(peer_ip):
 
 @blueprint.route('/peer/<peer_ip>/send/update', methods=['POST'])
 @auth.login_required
+@api_utils.log_request
 def send_update_message(peer_ip):
     """
     Try to send BGP update message to the peer. Both update nlri and withdraw nlri treated as Update.
@@ -383,6 +389,7 @@ def channel_filter_manage(filter_type):
 
 @blueprint.route('/channel/filter/prefix', methods=['GET', 'POST', 'DELETE'])
 @auth.login_required
+@api_utils.log_request
 def channel_filter_prefix():
     """
     manage prefix filter which is used in channel for sending bgp update messages
@@ -394,6 +401,7 @@ def channel_filter_prefix():
 
 @blueprint.route('/channel/filter/community', methods=['GET', 'POST', 'DELETE'])
 @auth.login_required
+@api_utils.log_request
 def channel_filter_community():
     """
     manage community filter which is used in channel for sending bgp update message
