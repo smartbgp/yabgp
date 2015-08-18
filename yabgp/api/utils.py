@@ -152,3 +152,8 @@ def send_update(peer_ip, attr, nlri, withdraw):
             'status': False,
             'code': 'failed when send this message out'
         }
+
+
+def get_adj_rib_in(peer_ip, afi_safi):
+    rib_table = cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol._adj_rib_in.get(afi_safi)
+    return rib_table.keys()
