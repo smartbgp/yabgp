@@ -19,6 +19,7 @@ from functools import wraps
 
 from oslo_config import cfg
 from flask import request
+import flask
 
 from yabgp.common import constants as common_cons
 
@@ -37,6 +38,20 @@ def log_request(f):
         LOG.debug('API request environ %s', request.environ)
         return f(*args, **kwargs)
     return decorated_function
+
+
+def makesure_peer_establish(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        value = kwargs['peer_ip']
+        if _ready_to_send_msg(peer_ip=value):
+            return f(*args, **kwargs)
+        else:
+            return flask.jsonify({
+                'status': False,
+                'code': "Please check the peer's state"
+            })
+    return decorator
 
 
 def get_peer_conf_and_state(peer_ip=None):
@@ -105,24 +120,17 @@ def send_route_refresh(peer_ip, afi, safi, res):
     :param peer_ip: peer ip address
     :return: the sending results
     """
-    if _ready_to_send_msg(peer_ip):
-        LOG.debug('peer %s is ready to send route refresh', peer_ip)
-        try:
-            if cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.send_route_refresh(
-                    afi=afi, safi=safi, res=res):
-                return {
-                    'status': True
-                }
-        except Exception as e:
-            LOG.error(e)
+    try:
+        if cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.send_route_refresh(
+                afi=afi, safi=safi, res=res):
             return {
-                'status': False,
-                'code': 'failed when send this message out'
+                'status': True
             }
-    else:
+    except Exception as e:
+        LOG.error(e)
         return {
             'status': False,
-            'code': "Please check the peer's state"
+            'code': 'failed when send this message out'
         }
 
 
@@ -132,11 +140,6 @@ def send_update(peer_ip, attr, nlri, withdraw):
     :param peer_ip: peer ip address
     :return:
     """
-    if not _ready_to_send_msg(peer_ip):
-        return {
-            'status': False,
-            'code': "Please check the peer's state"
-        }
     # TODO check RIB out policy
     # TODO update RIB out table
     if cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.send_update({

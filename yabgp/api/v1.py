@@ -210,6 +210,7 @@ def get_peer_statistic(peer_ip):
 @blueprint.route('/peer/<peer_ip>/send/route-refresh', methods=['POST'])
 @auth.login_required
 @api_utils.log_request
+@api_utils.makesure_peer_establish
 def send_route_refresh(peer_ip):
     """
     Try to send BGP Route Refresh message to a peer
@@ -272,6 +273,7 @@ def send_route_refresh(peer_ip):
 @blueprint.route('/peer/<peer_ip>/send/update', methods=['POST'])
 @auth.login_required
 @api_utils.log_request
+@api_utils.makesure_peer_establish
 def send_update_message(peer_ip):
     """
     Try to send BGP update message to the peer. Both update nlri and withdraw nlri treated as Update.
