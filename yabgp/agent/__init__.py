@@ -17,6 +17,7 @@ import sys
 import os
 import logging
 import contextlib
+import traceback
 
 from oslo_config import cfg
 from twisted.internet import reactor
@@ -32,6 +33,7 @@ from yabgp.channel.config import channle_filter
 from yabgp.channel.factory import PikaFactory
 from yabgp.db.config import database_options
 from yabgp.db.mongodb import MongoApi
+from yabgp.db import constants as db_cons
 
 
 log.early_init_log(logging.DEBUG)
@@ -82,6 +84,32 @@ def check_msg_config():
             os.makedirs(CONF.message.write_dir)
             LOG.info('Create dir %s', CONF.message.write_dir)
         CONF.message.write_msg_max_size = CONF.message.write_msg_max_size * 1024 * 1024
+
+
+def register_to_db(peer_ip, mongo_api):
+    """
+    register peer configuration to database
+    :return:
+    """
+    LOG.info('try to register yabgp agent to database')
+    peer_config = {
+        '_id': '%s:%s:%s' % (CONF.rest.bind_host, CONF.rest.bind_port, peer_ip),
+        'peer_ip': peer_ip,
+        'bind_host': CONF.rest.bind_host,
+        'bind_port': CONF.rest.bind_port,
+        'local_as': CONF.bgp.running_config[peer_ip]['local_as'],
+        'local_addr': CONF.bgp.running_config[peer_ip]['local_addr'],
+        'remote_as': CONF.bgp.running_config[peer_ip]['remote_as'],
+        'remote_addr': CONF.bgp.running_config[peer_ip]['remote_addr']
+
+    }
+    mongo_api.collection_name = db_cons.MONGO_COLLECTION_BGP_AGENT
+    try:
+        mongo_api.get_collection().save(peer_config)
+    except Exception:
+        LOG.debug(traceback.format_exc())
+        LOG.error('register failed')
+        sys.exit()
 
 
 def prepare_twisted_service():
@@ -145,6 +173,10 @@ def prepare_twisted_service():
         )
         all_peers[peer] = bgp_peering
         CONF.bgp.running_config[peer]['factory'] = bgp_peering
+
+        # register to database
+        if not CONF.standalone:
+            register_to_db(peer_ip=peer, mongo_api=mongo_connection)
 
     # Starting api server
     if sys.version_info[0] == 2:
