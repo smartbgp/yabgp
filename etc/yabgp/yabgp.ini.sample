@@ -19,7 +19,7 @@
 # standalone = True
 
 # pid file
-pid-file = None
+# pid-file = None
 
 [message]
 
@@ -133,7 +133,7 @@ pid-file = None
 # database configuration
 
 # connection url
-# eg: mongodb://10.75.44.10:27017,10.75.44.11:27017,10.75.44.12:27017
+# eg: mongodb://127.0.0.1:27017,127.0.0.1:27018,127.0.0.1:27019
 # connection = mongodb://127.0.0.1:27017'
 
 # database name
