@@ -94,14 +94,15 @@ class MongoApi(object):
                 self._DB[self.db_name] = self._get_db()
             coll = getattr(self._DB[self.db_name], self.collection_name)
 
-            # for read preference
-            if self.read_preference:
-                coll.read_preference = self.read_preference
+            if self.use_replica:
+                # for read preference
+                if self.read_preference:
+                    coll.read_preference = self.read_preference
 
-            # for write concern
-            if self.w > -1:
-                coll.write_concern['w'] = self.w
-                coll.write_concern['wtimeout'] = 5000
+                # for write concern
+                if self.w > -1:
+                    coll.write_concern['w'] = self.w
+                    coll.write_concern['wtimeout'] = 5000
 
             self._MONGO_COLLS[self.collection_name] = coll
 
