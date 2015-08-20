@@ -4,6 +4,9 @@ Installation
 We recommend run ``yabgp`` through python virtual-env from source
 code or pip install
 
+From source code
+~~~~~~~~~~~~~~~~
+
 Use yabgp from source code:
 
 .. code:: bash
@@ -15,6 +18,9 @@ Use yabgp from source code:
     $ pip install -r requirements.txt
     $ cd bin
     $ python yabgpd -h
+
+From pip
+~~~~~~~~
 
 Use pip install
 
