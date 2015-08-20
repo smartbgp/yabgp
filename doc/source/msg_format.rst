@@ -74,20 +74,7 @@ Type = 6  (Malformed update message )
 .. code-block:: python
     :emphasize-lines: 3,5
 
-    [ timestamp, sequence number, type, decoded_message, AFI SAFI]
-
-AFI SAFI is a Python tuple
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    (1, 1) # IPv4 Unicas
-    (1, 4) # Labled IPv4 Unicast
-    (1, 128) # IPv4 MPLS VPN
-    (1, 133) # BGP Flow Spec
-    (2, 1) # IPv6 Unicast
-    (2, 4) # Labled IPv6 Unicast
-    (2, 128) # IPv6 MPLS VPN
+    [ timestamp, sequence number, type, decoded_message]
 
 Decoded message is a Python dictionary
 
@@ -95,14 +82,15 @@ Decoded message is a Python dictionary
     :emphasize-lines: 3,5
 
     {
-        'ATTR': {},
-        'WITHDRAW': [],
-        'NLRI': []
+        'attr': {},
+        'withdraw': [],
+        'nlri': []
     }
 
-The decoded message dictionary has three keys, **ATTR**, **WITHDRAW**, **NLRI**.
+The decoded message dictionary has three keys, **attr**, **withdraw**, **nlri**.
 
-The value of key **ATTR** is a Python dictionary. it contains the BGP prefix's attribute, the dict's key represent what of kind of attribute, and the value is this attribute's value.
+The value of key **attr** is a Python dictionary. it contains the BGP prefix's attribute, the dict's key represent
+what of kind of attribute, and the value is this attribute's value.
 
 The attribute we supported now is: (reference by `IANA <http://www.iana.org/assignments/bgp-parameters/bgp-parameters.xml>`_)
 
@@ -128,13 +116,13 @@ The attribute we supported now is: (reference by `IANA <http://www.iana.org/assi
         128: 'ATTR_SET'
     }
 
-The **WITHDRAW** and **NLRI** are all Python List, they contain the particular prefix. Here is one real BGP decoded message example
+The **withdraw** and **nlri** are all Python List, they contain the particular prefix. Here is one real BGP decoded message example
 
 .. code-block:: python
     :emphasize-lines: 3,5
 
     # this is decoded update message
-    {'ATTR': {1: 0,
+    {'attr': {1: 0,
               2: [(2, [3356, 20485, 12772])],
               3: '219.158.1.203',
               4: 45400,
@@ -142,17 +130,17 @@ The **WITHDRAW** and **NLRI** are all Python List, they contain the particular p
               9: '219.158.1.203',
               10: ['219.158.1.209', '0.0.0.30'],
               '5': 110},
-     'NLRI': ['46.52.204.0/24',
+     'nlri': ['46.52.204.0/24',
               '46.52.204.0/23',
               '94.28.54.0/24',
               '79.122.216.0/22',
               '46.52.146.0/23'],
-     'WITHDRAW': []}
+     'withdraw': []}
 
      # this is decoded withdraw message
-     {'ATTR': {},
-      'NLRI': [],
-      'WITHDRAW': ['46.52.204.0/24',
+     {'attr': {},
+      'nlri': [],
+      'withdraw': ['46.52.204.0/24',
                   '46.52.204.0/23',
                   '94.28.54.0/24',
                   '79.122.216.0/22',
@@ -241,253 +229,59 @@ There are two kinds of **COMMUNITY**, first is "Well-Konwn", second is "The Othe
 
 .. [10] CLUSTER_LIST (key = 10)
 
-**CLUSTER_LIST** is one Python List, each item in this List is one Python string, format as IPv4 address. eg: ['0.0.0.1', '0.0.0.2', '10.0.0.1'].
+**CLUSTER_LIST** is one Python List, each item in this List is one Python string, format as IPv4
+address. eg: ['0.0.0.1', '0.0.0.2', '10.0.0.1'].
 
 .. [14] MP_REACH_NLRI (key = 14)
 
-**MP_REACH_NLRI** is one complex Python dict which has three key **AFI_SAFI**, **NEXT_HOP**, **NLRI**. and according to difference between the **AFI_SAFI**, the Data structure of **NEXTHOP**
-
-and **NLRI** are different.
+**MP_REACH_NLRI** is one complex Python dict which has three key **afi_safi**, **next_hop**, **nlri**.
+and according to difference between the **afi_safi**, the Data structure of **next_hop** and **nlri** are different.
 
 Here are the details.
 
-**a.** AFI_SAFI=(1, 4)
+**a.** afi_safi=(1, 4)
 
-Labeled IPv4 unicast **MP_REACH_NLRI**. **NEXT_HOP** is one Python string format as IPv4 address, **NLRI** is one Python List, each of item is Python Dict.
+**b.** afi_safi=(1, 128)
 
-.. code-block:: python
-    :emphasize-lines: 3,5
+**c.** afi_safi=(2, 1)
 
-    {
-        'AFI_SAFI': (1, 4),
-        'NEXT_HOP': '72.163.226.30',
-        'NLRI': [
-            {
-                'PREFIX': '30.1.1.28/32',
-                'LABEL_STACK': 1393
-            },
-            {
-                'PREFIX': '192.168.2.28/32',
-                'LABEL_STACK': 1409
-            }
-        ]
-    }
+**d.** afi_safi=(2, 4)
 
-**b.** AFI_SAFI=(1, 128)
+**e.** afi_safi=(2, 128)
 
-IPv4 MPLS VPN **MP_REACH_NLRI**. **NEXT_HOP** is one Python dict which has two keys, **NLRI** is one Python List, each of item is Python Dict.
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    {
-        'AFI_SAFI': (1,128),
-        'NEXT_HOP': {
-            'RD': '0:0', 'IPv4': '172.16.2.12'
-        },
-        'NLRI': [
-            {
-                'RD': '100:12',
-                'PREFIX': '192.168.2.0/24',
-                'LABEL_STACK': 785
-            },
-            {
-                'RD': '100:12',
-                'PREFIX': '192.168.12.024',
-                'LABEL_STACK': 801
-            }
-        ]
-    }
-
-**c.** AFI_SAFI=(2, 1)
-
-IPv6 unicast **MP_REACH_NLRI**. **NEXT_HOP** is one Python string format as IPv6 address, **NLRI** is one Python List, each of item is Pythn string formats as IPv6 prefix.
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    {
-        'AFI_SAFI': (2, 1),
-        'NEXTHOP': '2001:4837:1::20',
-        'NLRI': [
-            '2001:9929::26/128',
-            '2001:9929::28/128',
-            '2001:9929::33/128'
-        ]
-    }
-
-**d.** AFI_SAFI=(2, 4)
-
-IPv6 Labeled unicast **MP_REACH_NLRI**. **NEXT_HOP** is one Python string format as IPv6 address, **NLRI** is one Python Dict.
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    {'AFI_SAFI': (2,4),
-     'NEXTHOP': '::ffff:48a3:e29f',
-     'NLRI': [
-         {
-             'PREFIX': '2012:1731:2030::1',
-             'LABEL_STACK': 256257
-         },
-         {
-             'PREFIX': '2012:1731:2020::1',
-             'LABEL_STACK': 256241
-         }
-     ]
-    }
-
-**e.** AFI_SAFI=(2, 128)
-
-IPv6 MPLS VPN **MP_REACH_NLRI**. **NEXT_HOP** is one Python Dict which has two keys, **NLRI** is one Python Dict which has three keys.
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    {
-        'AFI_SAFI': (2, 128),
-        'NEXTHOP': {
-            'RD': '0:0',
-            'IPv6': '::ffff:1401:10b'},
-         'NLRI': [
-             {
-                 'RD': '4837:1111',
-                 'LABEL_STACK': 1457,
-                 'PREFIX': '2001:2222::1/128'},
-             {
-                 'RD': '4837:1111',
-                 'LABEL_STACK': 1473,
-                 'PREFIX': '::2001:2222:1:0/64'}
-         ]
-    }
-
-**f.** AFI_SAFI=(1, 133)
-
-IPv4 Flow Spec **MP_REACH_NLRI**. **NEXT_HOP** is one Python String, **NLRI** is one Python List, each element is one NLRI.
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    {
-        'AFI_SAFI': (1, 133),
-        'NEXTHOP': '1.1.1.1',
-         'NLRI': [
-            {1: '2.2.2.0/24'},
-            {2: '3.3.0.0/16'},
-         ]
-    }
+**f.** afi_safi=(1, 133)
 
 
 .. [15] MP_UNREACH_NLRI (key=15)
 
-The difference between **MP_REACH_NLRI** and **MP_UNREACH_NLRI** is that **MP_UNREACH_NLRI** only has two keys, **AFI_SAFI** and **WITHDRAW**.
+The difference between **MP_REACH_NLRI** and **MP_UNREACH_NLRI** is that **MP_UNREACH_NLRI** only has two keys,
+**afi_safi** and **withdraw**.
 
 Here are some examples:
 
+**a.** afi_safi=(1, 4)
 
-**a.** AFI_SAFI=(1, 4)
+**b.** afi_safi=(1, 128)
 
-.. code-block:: python
-    :emphasize-lines: 3,5
+**c.** afi_safi=(2, 1)
 
-    {
-        'AFI_SAFI': (1, 4),
-        'WITHDRAW': [
-            {
-                'PREFIX': '30.1.1.28/32',
-                'LABEL_STACK': 1393
-            },
-            {
-                'PREFIX': '192.168.2.28/32',
-                'LABEL_STACK': 1409
-            }
-        ]
-    }
+**d.** afi_safi=(2, 4)
 
-**b.** AFI_SAFI=(1, 128)
+**e.** afi_safi=(2, 128)
+
+**f.** afi_safi=(1, 133)
+
+
+Here are some real BGP Update message examples:
 
 .. code-block:: python
     :emphasize-lines: 3,5
 
-    {
-        'AFI_SAFI': (1,128),
-        'WITHDRAW': [
-            {
-                'RD': '100:12',
-                'PREFIX': '192.168.2.0/24',
-                'LABEL_STACK': 785
-            },
-            {
-                'RD': '100:12',
-                'PREFIX': '192.168.12.024',
-                'LABEL_STACK': 801
-            }
-        ]
-    }
-
-**c.** AFI_SAFI=(2, 1)
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    {
-        'AFI_SAFI': (2, 1),
-        'WITHDRAW': [
-            '2001:9929::26/128',
-            '2001:9929::28/128',
-            '2001:9929::33/128'
-        ]
-    }
-
-**d.** AFI_SAFI=(2, 4)
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    {'AFI_SAFI': (2,4),
-     'WITHDRAW': [
-         {
-             'PREFIX': '2012:1731:2030::1',
-             'LABEL_STACK': 256257
-         },
-         {
-             'PREFIX': '2012:1731:2020::1',
-             'LABEL_STACK': 256241
-         }
-     ]
-    }
-
-**e.** AFI_SAFI=(2, 128)
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    {
-        'AFI_SAFI': (2, 128),
-         'WITHDRAW': [
-             {
-                 'RD': '4837:1111',
-                 'LABEL_STACK': 1457,
-                 'PREFIX': '2001:2222::1/128'},
-             {
-                 'RD': '4837:1111',
-                 'LABEL_STACK': 1473,
-                 'PREFIX': '::2001:2222:1:0/64'}
-         ]
-    }
-
-
-Here are some real BGP message examples:
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    [1372646400.545617, 1, 1, {'bgpID': '72.163.226.222', 'Version': 4, 'holdTime': 180, 'ASN': 4837, 'Capabilities': {'GracefulRestart': False, 'ciscoMultiSession': False, 'ciscoRouteRefresh': True, '4byteAS': True, 'AFI_SAFI': [(1, 1)], '70': '', 'routeRefresh': True}}, (0, 0)]
-    [1372646400.563245, 2, 2, {'ATTR': {1: 0, 2: [(2, [2914, 45896, 56149])], 3: '10.75.44.224', 4: 37, 5: 500, 9: '219.158.1.153', 10: ['72.163.226.222', '219.158.1.209', '0.0.0.40']}, 'WITHDRAW': [], 'NLRI': ['103.3.252.0/22']}, (1, 1)]
-    [1372646400.563346, 3, 2, {'ATTR': {1: 2, 2: [(2, [4766, 9531])], 3: '10.75.44.224', 5: 500, 9: '219.158.1.151', 10: ['72.163.226.222', '219.158.1.209', '0.0.0.30']}, 'WITHDRAW': [], 'NLRI': ['210.218.1.0/24', '210.218.2.0/24', '210.218.6.0/24']}, (1, 1)]
-    [1372646400.563359, 4, 2, {'ATTR': {1: 0, 2: [(2, [3356, 20485, 49055])], 3: '10.75.44.224', 4: 45400, 5: 110, 9: '219.158.1.203', 10: ['72.163.226.222', '219.158.1.209', '0.0.0.30']},'WITHDRAW': [], 'NLRI': ['31.128.32.0/20', '95.215.208.0/22']}, (1, 1)]
-    [1372646400.56337, 5, 2, {'ATTR': {1: 0, 2: [(2, [3257, 43833])], 3: '10.75.44.224', 4: 0, 5: 500, 9: '219.158.30.2', 10: ['72.163.226.222', '219.158.1.209', '0.0.0.30']}, 'WITHDRAW':[], 'NLRI': ['89.29.203.0/24']}, (1, 1)]
-    [1372646400.563379, 6, 2, {'ATTR': {1: 0, 2: [(2, [3257, 22773, 22073])], 3: '10.75.44.224', 4: 500, 5: 500, 9: '219.158.1.240', 10: ['72.163.226.222', '219.158.1.209', '0.0.0.30']}, 'WITHDRAW': [], 'NLRI': ['208.48.8.0/24']}, (1, 1)]
+    [1372646400.563245, 2, 2, {'attr': {1: 0, 2: [(2, [2914, 45896, 56149])], 3: '10.75.44.224', 4: 37, 5: 500, 9: '219.158.1.153', 10: ['72.163.226.222', '219.158.1.209', '0.0.0.40']}, 'withdraw': [], 'nlri': ['103.3.252.0/22']}, (1, 1)]
+    [1372646400.563346, 3, 2, {'attr': {1: 2, 2: [(2, [4766, 9531])], 3: '10.75.44.224', 5: 500, 9: '219.158.1.151', 10: ['72.163.226.222', '219.158.1.209', '0.0.0.30']}, 'withdraw': [], 'nlri': ['210.218.1.0/24', '210.218.2.0/24', '210.218.6.0/24']}, (1, 1)]
+    [1372646400.563359, 4, 2, {'attr': {1: 0, 2: [(2, [3356, 20485, 49055])], 3: '10.75.44.224', 4: 45400, 5: 110, 9: '219.158.1.203', 10: ['72.163.226.222', '219.158.1.209', '0.0.0.30']},'withdraw': [], 'nlri': ['31.128.32.0/20', '95.215.208.0/22']}, (1, 1)]
+    [1372646400.56337, 5, 2, {'attr': {1: 0, 2: [(2, [3257, 43833])], 3: '10.75.44.224', 4: 0, 5: 500, 9: '219.158.30.2', 10: ['72.163.226.222', '219.158.1.209', '0.0.0.30']}, 'withdraw':[], 'NLRI': ['89.29.203.0/24']}, (1, 1)]
+    [1372646400.563379, 6, 2, {'attr': {1: 0, 2: [(2, [3257, 22773, 22073])], 3: '10.75.44.224', 4: 500, 5: 500, 9: '219.158.1.240', 10: ['72.163.226.222', '219.158.1.209', '0.0.0.30']}, 'withdraw': [], 'nlri': ['208.48.8.0/24']}, (1, 1)]
 
 - **3. type = 3**
 
@@ -523,7 +317,6 @@ route refresh message content is (AFI, SAFI).
     [timestamp, sequence number, type = 5, BGP route refresh message]
     # Example
     [1372065358.666234, 141353378, 5, (1, 2)]
-
 
 
 - **6. type = 6**
