@@ -106,9 +106,9 @@ def register_to_db(peer_ip, mongo_api):
     mongo_api.collection_name = db_cons.MONGO_COLLECTION_BGP_AGENT
     try:
         mongo_api.get_collection().save(peer_config)
-    except Exception:
+    except Exception as e:
         LOG.debug(traceback.format_exc())
-        LOG.error('register failed')
+        LOG.error('register failed, %s', e)
         sys.exit()
 
 
@@ -138,6 +138,10 @@ def prepare_twisted_service():
             write_concern=CONF.database.write_concern,
             w_timeout=CONF.database.write_concern_timeout
         )
+        # check api bind host
+        if CONF.rest.bind_host == '0.0.0.0':
+            LOG.error('please use the exactly ip address when not running in standalone mode')
+            sys.exit()
         # TODO load channel filter and peer policy
     else:
         rabbit_mq_factory = None
