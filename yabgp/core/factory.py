@@ -156,7 +156,7 @@ class BGPPeering(BGPFactory):
         :param reason: connection failed reason
         """
 
-        error_msg = "[%s]Client connection failed: ", self.peer_addr, reason.getErrorMessage()
+        error_msg = "[%s]Client connection failed: %s" % (self.peer_addr, reason.getErrorMessage())
         if self.msg_path:
             self.write_msg(
                 timestamp=time.time(),
