@@ -51,6 +51,9 @@
 # if you want to support more than one address family, you can set afi_safi = ipv4, ipv6, ....
 # afi_safi = ipv4
 
+# role tag
+# tag =
+
 # ===================== items for peer configuration ================================
 # the following parameters will be ignored if conf_file is configured
 # and this configuration only support one bgp peer, if you need start more peers in

@@ -104,7 +104,8 @@ def register_to_db(peer_ip, mongo_api):
         'local_as': CONF.bgp.running_config[peer_ip]['local_as'],
         'local_addr': CONF.bgp.running_config[peer_ip]['local_addr'],
         'remote_as': CONF.bgp.running_config[peer_ip]['remote_as'],
-        'remote_addr': CONF.bgp.running_config[peer_ip]['remote_addr']
+        'remote_addr': CONF.bgp.running_config[peer_ip]['remote_addr'],
+        'tag': CONF.bgp.running_config[peer_ip]['tag']
 
     }
     mongo_api.collection_name = db_cons.MONGO_COLLECTION_BGP_AGENT
@@ -185,9 +186,12 @@ def prepare_twisted_service():
         all_peers[peer] = bgp_peering
         CONF.bgp.running_config[peer]['factory'] = bgp_peering
 
-        # register to database
+        # register to database and check agent role
         if not CONF.standalone:
             register_to_db(peer_ip=peer, mongo_api=mongo_connection)
+            if not CONF.bgp.running_config[peer]['tag']:
+                LOG.error('Please point out the role tag(SRC,DST or BOTH)for not running in standalone mode')
+                sys.exit()
 
     # Starting api server
     if sys.version_info[0] == 2:

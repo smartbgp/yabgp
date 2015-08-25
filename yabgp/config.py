@@ -77,7 +77,9 @@ bgp_config_opts = [
                 default={},
                 help='The running configuration for BGP'),
     cfg.StrOpt('config_file',
-               help='BGP peers configuration file')
+               help='BGP peers configuration file'),
+    cfg.StrOpt('tag',
+               help='The agent role tag')
 ]
 
 CONF.register_opts(bgp_config_opts, group='bgp')
@@ -138,7 +140,8 @@ def get_bgp_config():
                         'cisco_multi_session': CONF.bgp.cisco_multi_session,
                         'add_path': CONF.bgp.add_path},
                     'remote': {}
-                }
+                },
+                'tag': CONF.bgp.tag
             }
 
             LOG.info('Get BGP running configuration for peer %s', CONF.bgp.remote_addr)
