@@ -19,7 +19,7 @@ from oslo_config import cfg
 
 CONF = cfg.CONF
 
-database_options = [
+database_base_options = [
     cfg.StrOpt('connection',
                default='mongodb://127.0.0.1:27017',
                help='Database connection'),
@@ -27,8 +27,12 @@ database_options = [
                default='yabgp',
                help='database name'),
     cfg.BoolOpt('use_replica',
-                default=True,
-                help='if use replica set'),
+                default=False,
+                help='if use replica set')
+]
+
+database_replica_options = [
+
     cfg.StrOpt('replica_name',
                default='rs1',
                help='the replica set name'),
@@ -42,3 +46,9 @@ database_options = [
                default=5000,
                help='write concern timeout')
 ]
+
+
+def register_options():
+    CONF.register_opts(database_base_options, group='database')
+    if CONF.database.use_replica:
+        CONF.register_opts(database_replica_options, group='database')

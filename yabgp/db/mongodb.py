@@ -33,8 +33,8 @@ class MongoApi(object):
     _DB = {}  # dict of db_name: db connection reference
     _MONGO_COLLS = {}  # dict of cache_collection : db collection reference
 
-    def __init__(self, connection_url, db_name, use_replica,
-                 replica_name, read_preference, write_concern, w_timeout):
+    def __init__(self, connection_url, db_name, use_replica=False, replica_name='rs1',
+                 read_preference=3, write_concern=-1, w_timeout=5000):
         """for parameters details, please see
         http://api.mongodb.org/python/current/api/pymongo/mongo_client.html
 

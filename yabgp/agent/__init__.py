@@ -31,7 +31,7 @@ from yabgp.api.app import app
 from yabgp.channel.config import rabbit_mq
 from yabgp.channel.config import channle_filter
 from yabgp.channel.factory import PikaFactory
-from yabgp.db.config import database_options
+from yabgp.db import config as db_config
 from yabgp.db.mongodb import MongoApi
 from yabgp.db import constants as db_cons
 
@@ -68,12 +68,16 @@ def load_bgp_policy_from_db(mongo_conn, connection_name):
 
 
 def check_running_mode():
+    """
+    before start the bgp peering, we should check the running mode
+    :return:
+    """
 
     if not CONF.standalone:
         # not standalone?
         CONF.register_opts(rabbit_mq, group='rabbit_mq')
         CONF.register_opts(channle_filter, group='rabbit_mq')
-        CONF.register_opts(database_options, group='database')
+        db_config.register_options()
 
 
 def check_msg_config():
@@ -129,15 +133,18 @@ def prepare_twisted_service():
         rabbit_mq_factory.peer_list = CONF.bgp.running_config.keys()
         rabbit_mq_factory.connect()
         # mongodb connection
-        mongo_connection = MongoApi(
-            connection_url=CONF.database.connection,
-            db_name=CONF.database.dbname,
-            use_replica=CONF.database.use_replica,
-            replica_name=CONF.database.replica_name,
-            read_preference=CONF.database.read_preference,
-            write_concern=CONF.database.write_concern,
-            w_timeout=CONF.database.write_concern_timeout
-        )
+        if CONF.database.use_replica:
+            mongo_connection = MongoApi(
+                connection_url=CONF.database.connection,
+                db_name=CONF.database.dbname,
+                use_replica=CONF.database.use_replica,
+                replica_name=CONF.database.replica_name,
+                read_preference=CONF.database.read_preference,
+                write_concern=CONF.database.write_concern,
+                w_timeout=CONF.database.write_concern_timeout
+            )
+        else:
+            mongo_connection = MongoApi(connection_url=CONF.database.connection, db_name=CONF.database.dbname)
         # check api bind host
         if CONF.rest.bind_host == '0.0.0.0':
             LOG.error('please use the exactly ip address when not running in standalone mode')
