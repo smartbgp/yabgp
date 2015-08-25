@@ -59,3 +59,6 @@ docs/_build/
 target/
 .idea/
 etc/yabgp/yabgp.ini
+
+# Vagrantfile
+.vagrant/
