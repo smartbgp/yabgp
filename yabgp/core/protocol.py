@@ -281,7 +281,19 @@ class BGP(protocol.Protocol):
                 else:
                     LOG.warning('withdraw prefix which does not exist in rib table!')
             if not CONF.standalone:
-                self.factory.channel.send_message(exchange='', routing_key=self.factory.peer_addr, message=str(msg))
+                send_flag = False
+                for prefix in CONF.rabbit_mq.filter['prefix']:
+                    if prefix in msg['nlri']:
+                        send_flag = True
+                        break
+                if not send_flag and 8 in msg['attr']:
+                    for community in CONF.rabbit_mq.filter['community']:
+                        if community in msg['attr'][8]:
+                            send_flag = True
+                            break
+                if send_flag:
+                    self.factory.channel.send_message(
+                        exchange='', routing_key=self.factory.peer_addr, message=str(msg))
 
         self.msg_recv_stat['Updates'] += 1
         self.fsm.update_received()

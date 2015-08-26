@@ -51,11 +51,22 @@ def mongo_operation(mongo_conn, connection_name):
     mongo_conn._close_db()
 
 
-def load_channel_filter_from_db(mongo_conn, connection_name):
+def load_channel_filter_from_db(peer_ip, mongo_api):
     """
     load rabbitmq channle filter from mongodb
     :return:
     """
+    LOG.info('try to load yabgp rabbitmq channel filter from mongodb')
+    mongo_api.collection_name = db_cons.MONGO_COLLECTION_RABBIT_CHANNEL_FILTER
+    try:
+        filter_list = mongo_api.get_collection().find({'peer_ip': peer_ip})
+        for item in filter_list:
+            if item['value'] not in CONF.rabbit_mq.filter[item['type']]:
+                CONF.rabbit_mq.filter[item['type']][item['value']] = None
+    except Exception as e:
+        LOG.debug(traceback.format_exc())
+        LOG.error('load failed, %s', e)
+        sys.exit()
     pass
 
 
@@ -192,6 +203,7 @@ def prepare_twisted_service():
             if not CONF.bgp.running_config[peer]['tag']:
                 LOG.error('Please point out the role tag(SRC,DST or BOTH)for not running in standalone mode')
                 sys.exit()
+            load_channel_filter_from_db(peer_ip=peer, mongo_api=mongo_connection)
 
     # Starting api server
     if sys.version_info[0] == 2:
