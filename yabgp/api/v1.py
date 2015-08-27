@@ -418,6 +418,36 @@ def channel_filter_community():
 @api_utils.log_request
 @api_utils.makesure_peer_establish
 def get_adj_rib_in(afi_safi, peer_ip):
+    """
+    Try to get BGP adj rib in
+
+    **Example request**
+
+    .. sourcecode:: http
+
+      GET /v1/adj-rib-in/ipv4/10.75.44.242  HTTP/1.1
+      Host: example.com
+      Accept: application/json
+
+    **Example response**:
+
+    .. sourcecode:: http
+
+      HTTP/1.1 200 OK
+      Vary: Accept
+      Content-Type: text/json
+      {
+        "prefix": [
+          "1.1.1.1/32",
+          "2.2.2.2/32",
+          "3.3.3.3/32"
+        ]
+      }
+
+    :param afi_safi: address and sub address family, now only suport ipv4
+    :param peer_ip: peer ip address
+    :status 200: the api can work, otherwise the peer is not established maybe.
+    """
     return flask.jsonify({
         'prefix': api_utils.get_adj_rib_in(peer_ip, afi_safi)}
     )
@@ -428,6 +458,36 @@ def get_adj_rib_in(afi_safi, peer_ip):
 @api_utils.log_request
 @api_utils.makesure_peer_establish
 def get_adj_rib_out(afi_safi, peer_ip):
+    """
+    Try to get BGP adj rib out
+
+    **Example request**
+
+    .. sourcecode:: http
+
+      GET /v1/adj-rib-out/ipv4/10.75.44.242  HTTP/1.1
+      Host: example.com
+      Accept: application/json
+
+    **Example response**:
+
+    .. sourcecode:: http
+
+      HTTP/1.1 200 OK
+      Vary: Accept
+      Content-Type: text/json
+      {
+        "prefix": [
+          "4.4.4.4/32",
+          "5.5.5.5/32",
+          "6.6.6.6/32"
+        ]
+      }
+
+    :param afi_safi: address and sub address family, now only suport ipv4
+    :param peer_ip: peer ip address
+    :status 200: the api can work, otherwise the peer is not established maybe.
+    """
     return flask.jsonify({
         'prefix': api_utils.get_adj_rib_out(peer_ip, afi_safi)}
     )
