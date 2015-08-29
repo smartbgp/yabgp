@@ -154,8 +154,14 @@ def send_update(peer_ip, attr, nlri, withdraw):
         }
 
 
-def get_adj_rib_in(peer_ip, afi_safi):
+def get_adj_rib_in(peer_ip, afi_safi, prefix=None):
     rib_table = cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol._adj_rib_in.get(afi_safi)
+    if prefix:
+        attr = rib_table.get(prefix)
+        if not attr:
+            flask.abort(404)
+        else:
+            return attr
     return rib_table.keys()
 
 

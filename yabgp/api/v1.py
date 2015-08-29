@@ -448,9 +448,17 @@ def get_adj_rib_in(afi_safi, peer_ip):
     :param peer_ip: peer ip address
     :status 200: the api can work, otherwise the peer is not established maybe.
     """
-    return flask.jsonify({
-        'prefix': api_utils.get_adj_rib_in(peer_ip, afi_safi)}
-    )
+    prefix = flask.request.args.get('prefix')
+    community = flask.request.args('community')
+    if prefix or community:
+        if prefix:
+            return flask.jsonify({
+                'attr': api_utils.get_adj_rib_in(peer_ip, afi_safi, prefix)
+            })
+    else:
+        return flask.jsonify({
+            'prefix': api_utils.get_adj_rib_in(peer_ip, afi_safi)}
+        )
 
 
 @blueprint.route('/adj-rib-out/<afi_safi>/<peer_ip>', methods=['GET'])
