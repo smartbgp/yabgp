@@ -19,6 +19,7 @@
 """ BGP Route injector
 """
 
+import sys
 import urllib2
 import json
 
@@ -30,22 +31,48 @@ CONF.register_cli_opt(
     cfg.BoolOpt('peerip', help='The BGP peer address'))
 
 rest_server_ops = [
-    cfg.StrOpt('bind_host',
+    cfg.StrOpt('rest_host',
                default='0.0.0.0',
                help='Address to bind the API server to'),
-    cfg.IntOpt('bind_port',
+    cfg.IntOpt('rest_port',
                default=8801,
                help='Port the bind the API server to'),
-    cfg.StrOpt('username',
+    cfg.StrOpt('rest_user',
                default='admin',
                help='Username for api server'),
-    cfg.StrOpt('password',
+    cfg.StrOpt('rest_pass',
                default='admin',
                help='Password for api server',
                secret=True)
 ]
 
+CONF.register_cli_opts(rest_server_ops, group='rest')
+
+
+msg_source_ops = [
+    cfg.StrOpt('json_file',
+               help='json format update messages'),
+    cfg.StrOpt('raw_msg_file',
+               help='yabgp raw message file')
+]
+
+CONF.register_cli_opts(msg_source_ops, group='message')
+
+bgp_config_ops = [
+    cfg.StrOpt('nexthop',
+               help='new next hop address'),
+    cfg.StrOpt('originator_id',
+               help='new originator id'),
+    cfg.ListOpt('cluster_list',
+                help='new cluster list'
+                )
+]
+
+CONF.register_cli_opts(bgp_config_ops, group='attribute')
+
+
 URL = 'http://%s:%s/v1/peer/%s/send/update'
+
 
 def get_api_opener_v1(url, username, password):
     """
@@ -84,3 +111,8 @@ def get_data_from_agent(url, username, password, method='GET', data=None):
     except Exception as e:
         print(e)
     return None
+
+
+if __name__ == '__main__':
+
+    CONF(args=sys.argv[1:])
