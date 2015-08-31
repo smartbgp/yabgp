@@ -437,11 +437,36 @@ def get_adj_rib_in(afi_safi, peer_ip):
       Vary: Accept
       Content-Type: text/json
       {
-        "prefix": [
+        "prefixes": [
           "1.1.1.1/32",
           "2.2.2.2/32",
           "3.3.3.3/32"
         ]
+      }
+
+    **Example request**
+
+    .. sourcecode:: http
+
+      GET /v1/adj-rib-in/ipv4/10.75.44.242?prefix=1.1.1.1/32  HTTP/1.1
+      Host: example.com
+      Accept: application/json
+
+    **Example response**:
+
+    .. sourcecode:: http
+
+      HTTP/1.1 200 OK
+      Vary: Accept
+      Content-Type: text/json
+      {
+          "attr": {
+            "1": 0,
+            "2": [],
+            "3": "10.124.1.221",
+            "4": 0,
+            "5": 100
+          }
       }
 
     :param afi_safi: address and sub address family, now only suport ipv4
@@ -449,7 +474,7 @@ def get_adj_rib_in(afi_safi, peer_ip):
     :status 200: the api can work, otherwise the peer is not established maybe.
     """
     prefix = flask.request.args.get('prefix')
-    community = flask.request.args('community')
+    community = flask.request.args.get('community')
     if prefix or community:
         if prefix:
             return flask.jsonify({
@@ -457,7 +482,7 @@ def get_adj_rib_in(afi_safi, peer_ip):
             })
     else:
         return flask.jsonify({
-            'prefix': api_utils.get_adj_rib_in(peer_ip, afi_safi)}
+            'prefixes': api_utils.get_adj_rib_in(peer_ip, afi_safi)}
         )
 
 
@@ -485,17 +510,51 @@ def get_adj_rib_out(afi_safi, peer_ip):
       Vary: Accept
       Content-Type: text/json
       {
-        "prefix": [
+        "prefixes": [
           "4.4.4.4/32",
           "5.5.5.5/32",
           "6.6.6.6/32"
         ]
       }
 
+    **Example request**
+
+    .. sourcecode:: http
+
+      GET /v1/adj-rib-out/ipv4/10.75.44.242?prefix=4.4.4.4/32  HTTP/1.1
+      Host: example.com
+      Accept: application/json
+
+    **Example response**:
+
+    .. sourcecode:: http
+
+      HTTP/1.1 200 OK
+      Vary: Accept
+      Content-Type: text/json
+      {
+          "attr": {
+            "1": 0,
+            "2": [],
+            "3": "10.75.44.225",
+            "5": 100,
+            "8": [
+              "NO_EXPORT"
+            ]
+          }
+      }
+
     :param afi_safi: address and sub address family, now only suport ipv4
     :param peer_ip: peer ip address
     :status 200: the api can work, otherwise the peer is not established maybe.
     """
+    prefix = flask.request.args.get('prefix')
+    community = flask.request.args.get('community')
+    if prefix or community:
+        if prefix:
+            return flask.jsonify({
+                'attr': api_utils.get_adj_rib_out(peer_ip, afi_safi, prefix)
+            })
     return flask.jsonify({
-        'prefix': api_utils.get_adj_rib_out(peer_ip, afi_safi)}
+        'prefixes': api_utils.get_adj_rib_out(peer_ip, afi_safi)}
     )

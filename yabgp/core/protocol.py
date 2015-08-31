@@ -145,6 +145,12 @@ class BGP(protocol.Protocol):
         """
         pass
 
+    def get_rib_in(self):
+        return self._adj_rib_in
+
+    def get_rib_out(self):
+        return self._adj_rib_out
+
     def dataReceived(self, data):
 
         """

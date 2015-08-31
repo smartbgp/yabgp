@@ -144,6 +144,11 @@ def send_update(peer_ip, attr, nlri, withdraw):
     # TODO update RIB out table
     if cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.send_update({
             'attr': attr, 'nlri': nlri, 'withdraw': withdraw}):
+        # update ad rib out table
+        if nlri or withdraw:
+            for prefix in nlri:
+                cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.get_rib_out()['ipv4'][prefix] = attr
+
         return {
             'status': True
         }
@@ -155,7 +160,7 @@ def send_update(peer_ip, attr, nlri, withdraw):
 
 
 def get_adj_rib_in(peer_ip, afi_safi, prefix=None):
-    rib_table = cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol._adj_rib_in.get(afi_safi)
+    rib_table = cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.get_rib_in().get(afi_safi)
     if prefix:
         attr = rib_table.get(prefix)
         if not attr:
@@ -165,6 +170,12 @@ def get_adj_rib_in(peer_ip, afi_safi, prefix=None):
     return rib_table.keys()
 
 
-def get_adj_rib_out(peer_ip, afi_safi):
-    rib_table = cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol._adj_rib_out.get(afi_safi)
+def get_adj_rib_out(peer_ip, afi_safi, prefix=None):
+    rib_table = cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.get_rib_out().get(afi_safi)
+    if prefix:
+        attr = rib_table.get(prefix)
+        if not attr:
+            flask.abort(404)
+        else:
+            return attr
     return rib_table.keys()
