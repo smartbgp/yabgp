@@ -80,7 +80,7 @@ class MongoApi(object):
         return database
 
     def _close_db(self):
-        self._DB[self.db_name].connection.disconect()
+        self._DB[self.db_name].client.close()
         self._DB.pop(self.db_name)
 
     def get_collection(self):
