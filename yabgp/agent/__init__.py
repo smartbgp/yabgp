@@ -167,6 +167,10 @@ def prepare_twisted_service():
         mongo_connection = None
     for peer in CONF.bgp.running_config:
         LOG.info('Get peer %s configuration', peer)
+        if not CONF.standalone:
+            if CONF.bgp.running_config[peer]['local_addr'] == '0.0.0.0':
+                LOG.error('please use the exactly local bgp ip address when not running in standalone mode')
+                sys.exit()
         if CONF.message.write_disk:
             msg_file_path_for_peer = os.path.join(
                 CONF.message.write_dir,
