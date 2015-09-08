@@ -159,7 +159,7 @@ def prepare_twisted_service():
             mongo_connection = MongoApi(connection_url=CONF.database.connection, db_name=CONF.database.dbname)
         # check api bind host
         if CONF.rest.bind_host == '0.0.0.0':
-            LOG.error('please use the exactly ip address when not running in standalone mode')
+            LOG.error('please use the exactly rest host ip address when not running in standalone mode')
             sys.exit()
         # TODO load channel filter and peer policy
     else:

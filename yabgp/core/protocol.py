@@ -456,9 +456,12 @@ class BGP(protocol.Protocol):
         # then copy peer's capability to local according to the
         # local support. best effort support.
         if cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']:
+            unsupport_cap = []
             for capability in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']:
                 if capability not in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']:
-                    cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local'].pop(capability)
+                    unsupport_cap.append(capability)
+            for capability in unsupport_cap:
+                cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local'].pop(capability)
 
     def send_open(self):
         """
@@ -496,7 +499,6 @@ class BGP(protocol.Protocol):
 
         # Open message Capabilities negotiation
         cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote'] = open_msg.capa_dict
-
         LOG.info("[%s]A BGP Open message was received", self.factory.peer_addr)
         LOG.info('--version = %s', open_msg.version)
         LOG.info('--ASN = %s', open_msg.asn)

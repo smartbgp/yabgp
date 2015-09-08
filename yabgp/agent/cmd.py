@@ -19,4 +19,7 @@ from yabgp.agent import prepare_service
 
 
 def main():
-    prepare_service()
+    try:
+        prepare_service()
+    except Exception as e:
+        print e
