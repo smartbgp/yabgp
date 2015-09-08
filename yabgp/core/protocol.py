@@ -109,6 +109,16 @@ class BGP(protocol.Protocol):
         :param reason: the reason of lost connection.
         """
         LOG.debug('Called connectionLost')
+
+        # send msg to rabbit mq
+        if not CONF.standalone:
+            send_to_channel_msg = {
+                'agent_id': self.factory.my_addr,
+                'type': bgp_cons.MSG_BGP_CLOSED,
+                'msg': None
+            }
+            self.factory.channel.send_message(
+                exchange='', routing_key=self.factory.peer_addr, message=str(send_to_channel_msg))
         # Don't do anything if we closed the connection explicitly ourselves
         if self.disconnected:
             self.factory.connection_closed(self)
