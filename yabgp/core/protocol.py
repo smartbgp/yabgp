@@ -278,28 +278,72 @@ class BGP(protocol.Protocol):
                 msg=msg,
                 flush=True
             )
-            # update rib in ipv4
+            # update rib in ipv4 and try to send message to rabbitmq
+            send_to_channel_msg = {
+                'agent_id': self.factory.my_addr,
+                'type': bgp_cons.MSG_UPDATE,
+                'msg': None
+            }
+
+            match_community = False
+            nlri_out = []
+            withdraw_out = []
+
+            # for update prefix
             for prefix in msg['nlri']:
+                # send message to rabbitmq
+                if not CONF.standalone and not match_community:
+                    if 8 in msg['attr']:
+                        for community in msg['attr'][8]:
+                            if community in CONF.rabbit_mq.filter['community']:
+                                match_community = True
+                                break
+
+                    if not match_community:
+                        if prefix in CONF.rabbit_mq.filter['prefix']:
+                            nlri_out.append(prefix)
+                # update rib
                 self._adj_rib_in['ipv4'][prefix] = msg['attr']
+
+            # for withdraw prefix
+            prefix_match = False
             for prefix in msg['withdraw']:
+                # send message to rabbitmq
+                if not CONF.standalone:
+                    if prefix in CONF.rabbit_mq.filter['prefix']:
+                        withdraw_out.append(prefix)
+                        prefix_match = True
+                    if not prefix_match:
+                        # check community
+                        if prefix in self._adj_rib_in['ipv4']:
+                            if 8 in self._adj_rib_in['ipv4'][prefix]:
+                                for community in self._adj_rib_in['ipv4'][prefix][8]:
+                                    if community in CONF.rabbit_mq.filter['community']:
+                                        withdraw_out.append(prefix)
+
                 if prefix in self._adj_rib_in['ipv4']:
                     self._adj_rib_in['ipv4'].pop(prefix)
                 else:
                     LOG.warning('withdraw prefix which does not exist in rib table!')
-            if not CONF.standalone:
-                send_flag = False
-                for prefix in CONF.rabbit_mq.filter['prefix']:
-                    if prefix in msg['nlri']:
-                        send_flag = True
-                        break
-                if not send_flag and 8 in msg['attr']:
-                    for community in CONF.rabbit_mq.filter['community']:
-                        if community in msg['attr'][8]:
-                            send_flag = True
-                            break
-                if send_flag:
-                    self.factory.channel.send_message(
-                        exchange='', routing_key=self.factory.peer_addr, message=str(msg))
+
+            # try to send message to rabbitmq
+            if match_community:
+                send_to_channel_msg['msg'] = msg
+            elif nlri_out:
+                send_to_channel_msg['msg'] = {
+                    'attr': msg['attr'],
+                    'nlri': nlri_out,
+                    'withdraw': []
+                }
+            elif withdraw_out:
+                send_to_channel_msg['msg'] = {
+                    'attr': {},
+                    'nlri': [],
+                    'withdraw': withdraw_out
+                }
+            if send_to_channel_msg['msg']:
+                self.factory.channel.send_message(
+                    exchange='', routing_key=self.factory.peer_addr, message=str(send_to_channel_msg))
 
         self.msg_recv_stat['Updates'] += 1
         self.fsm.update_received()
