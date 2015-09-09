@@ -63,6 +63,7 @@ def load_channel_filter_from_db(peer_ip, mongo_api):
         for item in filter_list:
             if item['value'] not in CONF.rabbit_mq.filter[item['type']]:
                 CONF.rabbit_mq.filter[item['type']][item['value']] = None
+        print CONF.rabbit_mq.filter
     except Exception as e:
         LOG.debug(traceback.format_exc())
         LOG.error('load failed, %s', e)

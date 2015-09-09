@@ -23,6 +23,7 @@ import flask
 from oslo_config import cfg
 
 from yabgp.api import utils as api_utils
+from yabgp.channel import filter as channel_filter
 
 LOG = logging.getLogger(__name__)
 blueprint = Blueprint('v1', __name__)
@@ -359,7 +360,7 @@ def channel_filter_manage(filter_type):
             'status': False,
             'code': 'The standalone mode does not support channel filter function'
         })
-    if filter_type not in ['community', 'prefix']:
+    if filter_type not in channel_filter.FILTER_TYPE_LIST:
         return flask.jsonify({
             'status': False,
             'code': 'Does not support the filter type %s' % filter_type
@@ -396,9 +397,63 @@ def channel_filter_prefix():
     """
     manage prefix filter which is used in channel for sending bgp update messages
 
-    :return:
+    **Example request**
+
+    .. sourcecode:: http
+
+      GET /v1/channel/filter/prefix HTTP/1.1
+      Host: example.com
+      Accept: application/json
+
+    **Example response**:
+
+    .. sourcecode:: http
+
+      HTTP/1.1 200 OK
+      Vary: Accept
+      Content-Type: text/json
+      {
+          "prefix": [
+            "1.1.1.1/32",
+            "2.2.2.2/32"
+          ]
+      }
+
+    **Example request**
+
+    .. sourcecode:: http
+
+      POST /v1/channel/filter/prefix HTTP/1.1
+      Host: example.com
+      Accept: application/json
+
+    Post data example
+
+    .. sourcecode:: http
+
+        {
+            "prefix": ["2.2.2.2/32"]
+        }
+
+
+    **Example response**:
+
+    .. sourcecode:: http
+
+      HTTP/1.1 200 OK
+      Vary: Accept
+      Content-Type: text/json
+      {
+        "status": True
+      }
+
+    Success f the status is `True` in the reponse, otherwise, the status is `False`. If the status is
+    Flase, there will be a code tell you why. like:
+
+    :status 200: the api can work.
+
     """
-    return channel_filter_manage('prefix')
+    return channel_filter_manage(channel_filter.FILTER_TYPE_PREFIX)
 
 
 @blueprint.route('/channel/filter/community', methods=['GET', 'POST', 'DELETE'])
@@ -410,7 +465,19 @@ def channel_filter_community():
 
     :return:
     """
-    return channel_filter_manage('community')
+    return channel_filter_manage(channel_filter.FILTER_TYPE_COMMUNITY)
+
+
+@blueprint.route('/channel/filter/as_path', methods=['GET', 'POST', 'DELETE'])
+@auth.login_required
+@api_utils.log_request
+def channel_filter_as_path():
+    """
+    manage as path filter which is used in channel for sending bgp update message
+
+    :return:
+    """
+    return channel_filter_manage(channel_filter.FILTER_TYPE_AS_PATH)
 
 
 @blueprint.route('/adj-rib-in/<afi_safi>/<peer_ip>', methods=['GET'])

@@ -17,6 +17,8 @@
 
 from oslo_config import cfg
 
+from yabgp.channel.filter import FILTER_TYPR_INIT_DICT
+
 CONF = cfg.CONF
 
 rabbit_mq = [
@@ -40,6 +42,6 @@ rabbit_mq = [
 
 channle_filter = [
     cfg.DictOpt('filter',
-                default={'community': {}, 'prefix': {}},
+                default=FILTER_TYPR_INIT_DICT,
                 help='the community and prefix filter dict'),
 ]
