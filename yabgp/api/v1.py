@@ -349,63 +349,22 @@ def send_update_message(peer_ip):
         })
 
 
-def channel_filter_manage(filter_type):
-    """
-    channel filter managment
-    :param filter_type: community or prefix
-    :return:
-    """
-    if cfg.CONF.standalone:
-        return flask.jsonify({
-            'status': False,
-            'code': 'The standalone mode does not support channel filter function'
-        })
-    if filter_type not in channel_filter.FILTER_TYPE_LIST:
-        return flask.jsonify({
-            'status': False,
-            'code': 'Does not support the filter type %s' % filter_type
-        })
-    if flask.request.method in ['POST', 'DELETE']:
-        json_request = flask.request.get_json()
-        items = json_request.get(filter_type)
-        if items and flask.request.method == 'POST':
-            for item in items:
-                cfg.CONF.rabbit_mq.filter[filter_type][item] = None
-        elif items and flask.request.method == 'DELETE':
-            for item in items:
-                if item in cfg.CONF.rabbit_mq.filter[filter_type]:
-                    cfg.CONF.rabbit_mq.filter[filter_type].pop(item)
-        else:
-            return flask.jsonify({
-                'status': False,
-                'code': 'Request data format error'
-            })
-        return flask.jsonify({
-            'status': True,
-            'code': None
-        })
-    elif flask.request.method == 'GET':
-        return flask.jsonify({
-            filter_type: cfg.CONF.rabbit_mq.filter[filter_type].keys()
-        })
-
-
-@blueprint.route('/channel/filter/prefix', methods=['GET', 'POST', 'DELETE'])
+@blueprint.route('/channel/filter', methods=['GET', 'POST', 'DELETE'])
 @auth.login_required
 @api_utils.log_request
-def channel_filter_prefix():
+def manage_channel_filter():
     """
-    manage prefix filter which is used in channel for sending bgp update messages
+    manage channel filter which is used in channel for sending bgp update messages
 
     **Example request**
 
     .. sourcecode:: http
 
-      GET /v1/channel/filter/prefix HTTP/1.1
+      POST /v1/channel/filter HTTP/1.1
       Host: example.com
       Accept: application/json
 
-    **Example response**:
+    post data example
 
     .. sourcecode:: http
 
@@ -413,28 +372,21 @@ def channel_filter_prefix():
       Vary: Accept
       Content-Type: text/json
       {
-          "prefix": [
-            "1.1.1.1/32",
-            "2.2.2.2/32"
+          "filter": [
+            {
+                'type': 'prefix',
+                'value': '1.1.1.1/32'
+            },
+            {
+                'type': 'as_path',
+                'value': 4837
+            },
+            {
+                'type': 'community',
+                'value': '4837:1239'
+            }
           ]
       }
-
-    **Example request**
-
-    .. sourcecode:: http
-
-      POST /v1/channel/filter/prefix HTTP/1.1
-      Host: example.com
-      Accept: application/json
-
-    Post data example
-
-    .. sourcecode:: http
-
-        {
-            "prefix": ["2.2.2.2/32"]
-        }
-
 
     **Example response**:
 
@@ -453,31 +405,35 @@ def channel_filter_prefix():
     :status 200: the api can work.
 
     """
-    return channel_filter_manage(channel_filter.FILTER_TYPE_PREFIX)
-
-
-@blueprint.route('/channel/filter/community', methods=['GET', 'POST', 'DELETE'])
-@auth.login_required
-@api_utils.log_request
-def channel_filter_community():
-    """
-    manage community filter which is used in channel for sending bgp update message
-
-    :return:
-    """
-    return channel_filter_manage(channel_filter.FILTER_TYPE_COMMUNITY)
-
-
-@blueprint.route('/channel/filter/as_path', methods=['GET', 'POST', 'DELETE'])
-@auth.login_required
-@api_utils.log_request
-def channel_filter_as_path():
-    """
-    manage as path filter which is used in channel for sending bgp update message
-
-    :return:
-    """
-    return channel_filter_manage(channel_filter.FILTER_TYPE_AS_PATH)
+    if cfg.CONF.standalone:
+        return flask.jsonify({
+            'status': False,
+            'code': 'The standalone mode does not support channel filter function'
+        })
+    if flask.request.method in ['POST', 'DELETE']:
+        filter_dict = flask.request.get_json()
+        if flask.request.method == 'POST':
+            for item in filter_dict['filter']:
+                cfg.CONF.rabbit_mq.filter[item['type']][item['value']] = None
+        elif flask.request.method == 'DELETE':
+            for item in filter_dict['filter']:
+                if item['value'] in cfg.CONF.rabbit_mq.filter[item['type']]:
+                    cfg.CONF.rabbit_mq.filter[item['type']].pop(item['value'])
+        return flask.jsonify({
+            'status': True,
+            'code': None
+        })
+    elif flask.request.method == 'GET':
+        filter_list = []
+        for filter_type in channel_filter.FILTER_TYPE_LIST:
+            for item in cfg.CONF.rabbit_mq.filter[filter_type].keys():
+                filter_list.append({
+                    'type': filter_type,
+                    'value': item
+                })
+        return flask.jsonify({
+            'filter': filter_list
+        })
 
 
 @blueprint.route('/adj-rib-in/<afi_safi>/<peer_ip>', methods=['GET'])
