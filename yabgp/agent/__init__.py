@@ -245,7 +245,8 @@ def prepare_service(args=None):
         get_bgp_config()
         check_msg_config()
     except Exception as e:
-        LOG.error(e, exc_info=True)
+        LOG.error(e)
+        LOG.debug(traceback.format_exc())
         sys.exit()
 
     LOG.info('Starting server in PID %s' % os.getpid())
