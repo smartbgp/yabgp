@@ -1,7 +1,7 @@
 YABGP
 =====
 
-|Join Chat| |License| |Build Status| |Code Health| |Documentation Status| |Test Coverage|
+|Version| |License| |Build Status| |Code Health| |Documentation Status| |Test Coverage| |Downloads|
 
 What is yabgp?
 ~~~~~~~~~~~~~~
@@ -80,6 +80,8 @@ More information please see the documentation http://yabgp.readthedocs.org
 Support
 ~~~~~~~
 
+|Join Chat|
+
 Send email to xiaoquwl@gmail.com, or use GitHub issue system.
 
 TODO
@@ -121,3 +123,9 @@ https://github.com/Exa-Networks/exabgp
 
 .. |Test Coverage| image:: https://coveralls.io/repos/smartbgp/yabgp/badge.svg?branch=master 
    :target: https://coveralls.io/r/smartbgp/yabgp
+   
+.. |Version| image:: https://img.shields.io/pypi/v/yabgp.svg?
+   :target: http://badge.fury.io/py/yabgp
+
+.. |Downloads| image:: https://img.shields.io/pypi/dm/yabgp.svg?
+   :target: https://pypi.python.org/pypi/yabgp
