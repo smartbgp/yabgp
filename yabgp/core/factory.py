@@ -73,7 +73,7 @@ class BGPPeering(BGPFactory):
     One connection, One BGPPeering class.
     """
 
-    def __init__(self, myasn=None, myaddr=None, peerasn=None, peeraddr=None,
+    def __init__(self, myasn=None, myaddr=None, peerasn=None, peeraddr=None, tag=None,
                  msgpath=None, afisafi=None, md5=None, channel=None, mongo_conn=None):
         """Initial a BGPPeering instance.
 
@@ -81,6 +81,7 @@ class BGPPeering(BGPFactory):
         :param myaddr: local ip address.
         :param peerasn: remote bgp peer as number
         :param peeraddr: remote peer ip address.
+        :param tag: bgp agent tag
         :param msgpath: the path to store bgp message file.
         :param afisafi: afi and safi
         :param md5: TCP md5 string
@@ -98,6 +99,7 @@ class BGPPeering(BGPFactory):
         self.md5 = md5
         self.channel = channel
         self.mongo_conn = mongo_conn
+        self.tag = tag
 
         self.status = False
         self.fsm = BGPFactory.FSM(self)

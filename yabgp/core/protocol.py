@@ -31,6 +31,7 @@ from yabgp.message.update import Update
 from yabgp.message.notification import Notification
 from yabgp.message.route_refresh import RouteRefresh
 from yabgp.common import exception as excep
+from yabgp.db import constants as channel_cons
 
 LOG = logging.getLogger(__name__)
 
@@ -111,7 +112,7 @@ class BGP(protocol.Protocol):
         LOG.debug('Called connectionLost')
 
         # send msg to rabbit mq
-        if not CONF.standalone:
+        if not CONF.standalone and self.factory.tag == channel_cons.SOURCE_ROUTER_TAG:
             send_to_channel_msg = {
                 'agent_id': self.factory.my_addr,
                 'type': bgp_cons.MSG_BGP_CLOSED,
@@ -160,6 +161,16 @@ class BGP(protocol.Protocol):
 
     def get_rib_out(self):
         return self._adj_rib_out
+
+    def update_rib(self, msg):
+
+        for prefix in msg['nlri']:
+            self._adj_rib_in['ipv4'][prefix] = msg['attr']
+        for prefix in msg['withdraw']:
+            if prefix in self._adj_rib_in['ipv4']:
+                self._adj_rib_in['ipv4'].pop(prefix)
+            else:
+                LOG.warning('withdraw prefix which does not exist in rib table!')
 
     def dataReceived(self, data):
 
@@ -276,87 +287,106 @@ class BGP(protocol.Protocol):
                 flush=True
             )
             LOG.error('[%s] Update message error: sub error=%s', self.factory.peer_addr, result['sub_error'])
-        else:
-            msg = {
-                'attr': result['attr'],
-                'nlri': result['nlri'],
-                'withdraw': result['withdraw']
-            }
-            self.factory.write_msg(
-                timestamp=result['time'],
-                msg_type=bgp_cons.MSG_UPDATE,
-                msg=msg,
-                flush=True
-            )
-            # update rib in ipv4 and try to send message to rabbitmq
-            send_to_channel_msg = {
-                'agent_id': self.factory.my_addr,
-                'type': bgp_cons.MSG_UPDATE,
-                'msg': None
-            }
+            self.msg_recv_stat['Updates'] += 1
+            self.fsm.update_received()
+            return
 
-            match_community = False
-            nlri_out = []
-            withdraw_out = []
+        # process messages
+        msg = {
+            'attr': result['attr'],
+            'nlri': result['nlri'],
+            'withdraw': result['withdraw']
+        }
 
-            # for update prefix
+        # write message to disk
+        self.factory.write_msg(
+            timestamp=result['time'],
+            msg_type=bgp_cons.MSG_UPDATE,
+            msg=msg,
+            flush=True
+        )
+
+        # check channel filter
+        if not CONF.standalone and self.factory.tag == channel_cons.SOURCE_ROUTER_TAG:
+            self.channel_filter(msg=msg)
+        # update rib
+        self.update_rib(msg)
+
+    def channel_filter(self, msg):
+        """if not running standalone mode, need to check the filter"""
+
+        send_to_channel_msg = {
+            'agent_id': self.factory.my_addr,
+            'type': bgp_cons.MSG_UPDATE,
+            'msg': None
+        }
+        match_community = False
+        match_as_path = False
+        nlri_out = []
+        withdraw_out = []
+
+        # for prefix update
+        # compare community
+        if 8 in msg['attr']:
+            for community in msg['attr'][8]:
+                if community in CONF.rabbit_mq.filter['community']:
+                    match_community = True
+                    break
+        # not match community, then compare as path
+        if not match_community:
+            # [(2, [3257, 31027, 34848, 21465])]
+            as_path_list = msg['attr'].get(2)
+            if as_path_list:
+                for as_path in CONF.rabbit_mq.filter['as_path']:
+                    if as_path in as_path_list[0][1]:
+                        match_as_path = True
+                        break
+
+        # if not match community and as path, then compare prefix
+        if not match_community and not match_as_path:
             for prefix in msg['nlri']:
-                # send message to rabbitmq
-                if not CONF.standalone and not match_community:
-                    if 8 in msg['attr']:
-                        for community in msg['attr'][8]:
-                            if community in CONF.rabbit_mq.filter['community']:
-                                match_community = True
-                                break
+                if prefix in CONF.rabbit_mq.filter['prefix']:
+                    nlri_out.append(prefix)
 
-                    if not match_community:
-                        if prefix in CONF.rabbit_mq.filter['prefix']:
-                            nlri_out.append(prefix)
-                # update rib
-                self._adj_rib_in['ipv4'][prefix] = msg['attr']
-
-            # for withdraw prefix
-            prefix_match = False
-            for prefix in msg['withdraw']:
-                # send message to rabbitmq
-                if not CONF.standalone:
-                    if prefix in CONF.rabbit_mq.filter['prefix']:
-                        withdraw_out.append(prefix)
-                        prefix_match = True
-                    if not prefix_match:
-                        # check community
-                        if prefix in self._adj_rib_in['ipv4']:
-                            if 8 in self._adj_rib_in['ipv4'][prefix]:
-                                for community in self._adj_rib_in['ipv4'][prefix][8]:
-                                    if community in CONF.rabbit_mq.filter['community']:
-                                        withdraw_out.append(prefix)
-
+        # for withdraw prefix
+        prefix_match = False
+        for prefix in msg['withdraw']:
+            if prefix in CONF.rabbit_mq.filter['prefix']:
+                withdraw_out.append(prefix)
+                prefix_match = True
+            if not prefix_match:  # not match prefix, then compare attribute
+                # check community
                 if prefix in self._adj_rib_in['ipv4']:
-                    self._adj_rib_in['ipv4'].pop(prefix)
-                else:
-                    LOG.warning('withdraw prefix which does not exist in rib table!')
+                    flag = False
+                    if 8 in self._adj_rib_in['ipv4'][prefix]:
+                        for community in self._adj_rib_in['ipv4'][prefix][8]:
+                            if community in CONF.rabbit_mq.filter['community']:
+                                withdraw_out.append(prefix)
+                                flag = True
+                    as_path_list = self._adj_rib_in['ipv4'][prefix].get(2)
+                    if as_path_list and not flag:
+                        for as_path in CONF.rabbit_mq.filter['as_path']:
+                            if as_path in as_path_list[0][1]:
+                                withdraw_out.append(prefix)
 
-            # try to send message to rabbitmq
-            if match_community:
-                send_to_channel_msg['msg'] = msg
-            elif nlri_out:
-                send_to_channel_msg['msg'] = {
-                    'attr': msg['attr'],
-                    'nlri': nlri_out,
-                    'withdraw': []
+        # try to send message to rabbitmq
+        if match_community or match_as_path:
+            send_to_channel_msg['msg'] = msg
+        elif nlri_out:
+            send_to_channel_msg['msg'] = {
+                'attr': msg['attr'],
+                'nlri': nlri_out,
+                'withdraw': []
                 }
-            elif withdraw_out:
-                send_to_channel_msg['msg'] = {
-                    'attr': {},
-                    'nlri': [],
-                    'withdraw': withdraw_out
-                }
-            if send_to_channel_msg['msg']:
-                self.factory.channel.send_message(
-                    exchange='', routing_key=self.factory.peer_addr, message=str(send_to_channel_msg))
-
-        self.msg_recv_stat['Updates'] += 1
-        self.fsm.update_received()
+        elif withdraw_out:
+            send_to_channel_msg['msg'] = {
+                'attr': {},
+                'nlri': [],
+                'withdraw': withdraw_out
+            }
+        if send_to_channel_msg['msg']:
+            self.factory.channel.send_message(
+                exchange='', routing_key=self.factory.peer_addr, message=str(send_to_channel_msg))
 
     def send_update(self, msg):
         """

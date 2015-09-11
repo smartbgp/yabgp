@@ -63,7 +63,6 @@ def load_channel_filter_from_db(peer_ip, mongo_api):
         for item in filter_list:
             if item['value'] not in CONF.rabbit_mq.filter[item['type']]:
                 CONF.rabbit_mq.filter[item['type']][item['value']] = None
-        print CONF.rabbit_mq.filter
     except Exception as e:
         LOG.debug(traceback.format_exc())
         LOG.error('load failed, %s', e)
@@ -193,6 +192,7 @@ def prepare_twisted_service():
             myaddr=CONF.bgp.running_config[peer]['local_addr'],
             peerasn=CONF.bgp.running_config[peer]['remote_as'],
             peeraddr=CONF.bgp.running_config[peer]['remote_addr'],
+            tag=CONF.bgp.running_config[peer]['tag'],
             afisafi=CONF.bgp.running_config[peer]['afi_safi'],
             msgpath=msg_file_path_for_peer,
             md5=CONF.bgp.running_config[peer]['md5'],
