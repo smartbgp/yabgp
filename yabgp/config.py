@@ -77,9 +77,7 @@ bgp_config_opts = [
                 default={},
                 help='The running configuration for BGP'),
     cfg.StrOpt('config_file',
-               help='BGP peers configuration file'),
-    cfg.StrOpt('tag',
-               help='The agent role tag')
+               help='BGP peers configuration file')
 ]
 
 CONF.register_opts(bgp_config_opts, group='bgp')
@@ -99,7 +97,8 @@ bgp_peer_conf_cli_opts = [
                secret=True),
     cfg.BoolOpt('rib',
                 default=False,
-                help='Whether maintain BGP rib table')
+                help='Whether maintain BGP rib table'),
+    cfg.StrOpt('tag', help='The agent role tag')
 ]
 
 CONF.register_cli_opts(bgp_peer_conf_cli_opts, group='bgp')
