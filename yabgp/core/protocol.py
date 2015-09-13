@@ -113,8 +113,9 @@ class BGP(protocol.Protocol):
 
         # send msg to rabbit mq
         if not CONF.standalone and self.factory.tag == channel_cons.SOURCE_ROUTER_TAG:
+            agent_id = "%s:%s" % (CONF.rest.bind_host, CONF.rest.bind_port)
             send_to_channel_msg = {
-                'agent_id': self.factory.my_addr,
+                'agent_id': agent_id,
                 'type': bgp_cons.MSG_BGP_CLOSED,
                 'msg': None
             }
@@ -314,9 +315,9 @@ class BGP(protocol.Protocol):
 
     def channel_filter(self, msg):
         """if not running standalone mode, need to check the filter"""
-
+        agent_id = '%s:%sC' % (CONF.rest.bind_host, CONF.rest.bind_port)
         send_to_channel_msg = {
-            'agent_id': self.factory.my_addr,
+            'agent_id': agent_id,
             'type': bgp_cons.MSG_UPDATE,
             'msg': None
         }
