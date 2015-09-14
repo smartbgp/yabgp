@@ -315,7 +315,7 @@ class BGP(protocol.Protocol):
 
     def channel_filter(self, msg):
         """if not running standalone mode, need to check the filter"""
-        agent_id = '%s:%sC' % (CONF.rest.bind_host, CONF.rest.bind_port)
+        agent_id = '%s:%s' % (CONF.rest.bind_host, CONF.rest.bind_port)
         send_to_channel_msg = {
             'agent_id': agent_id,
             'type': bgp_cons.MSG_UPDATE,
