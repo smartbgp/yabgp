@@ -53,7 +53,7 @@ class PikaProtocol(twisted_connection.TwistedProtocolConnection):
         if not exchange == '':
             yield self.channel.exchange_declare(exchange=exchange, type='topic', durable=True, auto_delete=False)
         else:
-            yield self.channel.queue_declare(queue=routing_key, durable=True, auto_delete=True)
+            yield self.channel.queue_declare(queue=routing_key, durable=True, auto_delete=False)
 
     def send(self):
         """If connected, send all waiting messages."""
