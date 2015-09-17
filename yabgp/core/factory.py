@@ -112,11 +112,11 @@ class BGPPeering(BGPFactory):
             if not os.path.exists(self.msg_path):
                 os.makedirs(self.msg_path)
             self.msg_file_name = "%s.msg" % time.time()
-            self.msg_seq = self.get_last_seq()
+            self.msg_seq = self.get_last_seq() + 1
             self.msg_file = open(os.path.join(self.msg_path, self.msg_file_name), 'a')
             self.msg_file.flush()
             LOG.info('BGP message file %s', self.msg_file_name)
-            LOG.info('The last bgp message seq number is %s', self.msg_seq)
+            LOG.info('The last bgp message seq number is %s', self.msg_seq - 1)
 
     def buildProtocol(self, addr):
 
@@ -283,7 +283,12 @@ class BGPPeering(BGPFactory):
 
         """Called by FSM when we should reattempt to connect.
         """
-        self.connect()
+        try:
+            self.connect()
+        except Exception as e:
+            print e
+            import traceback
+            print traceback.format_exc()
 
     def set_peer_id(self, bgp_id):
         """
