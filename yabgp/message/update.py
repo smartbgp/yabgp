@@ -205,11 +205,11 @@ class Update(object):
         attr_hex = b''
         nlri_hex = b''
         withdraw_hex = b''
-        if msg_dict['attr']:
+        if msg_dict.get('attr'):
             attr_hex = cls.construct_attributes(msg_dict['attr'], asn4)
-        if msg_dict['nlri']:
+        if msg_dict.get('nlri'):
             nlri_hex = cls.construct_prefix_v4(msg_dict['nlri'])
-        if msg_dict['withdraw']:
+        if msg_dict.get('withdraw'):
             withdraw_hex = cls.construct_prefix_v4(msg_dict['withdraw'])
         if nlri_hex and attr_hex:
             msg_body = struct.pack('!H', 0) + struct.pack('!H', len(attr_hex)) + attr_hex + nlri_hex
