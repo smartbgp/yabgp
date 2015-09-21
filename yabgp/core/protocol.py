@@ -312,6 +312,8 @@ class BGP(protocol.Protocol):
             self.channel_filter(msg=msg)
         # update rib
         self.update_rib(msg)
+        self.msg_recv_stat['Updates'] += 1
+        self.fsm.update_received()
 
     def channel_filter(self, msg):
         """if not running standalone mode, need to check the filter"""
