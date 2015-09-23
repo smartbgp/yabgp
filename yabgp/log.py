@@ -44,6 +44,12 @@ CONF.register_cli_opts([
                help='Path to a logging config file to use')
 ])
 
+CONF.register_cli_opt(cfg.IntOpt(
+    'log-backup-count',
+    default=5,
+    help='the number of backup log file'
+))
+
 DEBUG_LOG_FORMAT = '%(asctime)s.%(msecs)03d %(process)d %(levelname)s %(name)s ' \
                    '%(funcName)s %(lineno)d [-] %(message)s'
 INFOR_LOG_FORMAT = '%(asctime)s.%(msecs)03d %(process)d %(levelname)s %(name)s [-] %(message)s'
@@ -101,7 +107,7 @@ def init_log():
     log_file = _get_log_file()
     if log_file is not None:
         log.addHandler(logging.handlers.RotatingFileHandler(
-            log_file, maxBytes=5 * 1024 * 1024, backupCount=5))
+            log_file, maxBytes=5 * 1024 * 1024, backupCount=CONF.log_backup_count))
         mode = int(CONF.log_file_mode, 8)
         os.chmod(log_file, mode)
         for handler in log.handlers:
