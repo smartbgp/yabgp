@@ -112,7 +112,8 @@ class BGP(protocol.Protocol):
         LOG.debug('Called connectionLost')
 
         # send msg to rabbit mq
-        if not CONF.standalone and self.factory.tag == channel_cons.SOURCE_ROUTER_TAG:
+        if not CONF.standalone and self.factory.tag in \
+                [channel_cons.SOURCE_ROUTER_TAG, channel_cons.SOURCE_AND_TARGET_ROUTER_TAG]:
             agent_id = "%s:%s" % (CONF.rest.bind_host, CONF.rest.bind_port)
             send_to_channel_msg = {
                 'agent_id': agent_id,
@@ -308,7 +309,8 @@ class BGP(protocol.Protocol):
         )
 
         # check channel filter
-        if not CONF.standalone and self.factory.tag == channel_cons.SOURCE_ROUTER_TAG:
+        if not CONF.standalone and self.factory.tag in \
+                [channel_cons.SOURCE_ROUTER_TAG, channel_cons.SOURCE_AND_TARGET_ROUTER_TAG]:
             self.channel_filter(msg=msg)
         # update rib
         self.update_rib(msg)
@@ -467,6 +469,19 @@ class BGP(protocol.Protocol):
         :return:
         """
         self.msg_recv_stat['Keepalives'] += 1
+
+        if self.msg_recv_stat['Keepalives'] == 1:
+            # agent online
+            if not CONF.standalone and self.factory.tag in \
+                    [channel_cons.TARGET_ROUTER_TAG, channel_cons.SOURCE_AND_TARGET_ROUTER_TAG]:
+                send_to_channel_msg = {
+                    'agent_id': '%s:%s' % (CONF.rest.bind_host, CONF.rest.bind_port),
+                    'type': bgp_cons.MSG_KEEPALIVE,
+                    'msg': None
+                }
+                self.factory.channel.send_message(
+                    exchange='', routing_key=self.factory.peer_addr, message=str(send_to_channel_msg))
+
         LOG.info("[%s]A BGP KeepAlive message was received from peer.", self.factory.peer_addr)
         KeepAlive().parse(msg)
 
