@@ -62,3 +62,10 @@ etc/yabgp/yabgp.ini
 
 # Vagrantfile
 .vagrant/
+
+AUTHORS
+build-stamp
+ChangeLog
+covhtml/
+doc/build
+*.DS_Store
