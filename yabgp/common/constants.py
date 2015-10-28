@@ -101,9 +101,10 @@ BGP_EXT_COM_RO_1 = 0x0103  # Route Origin,Format IP address:AN(2bytes)
 BGP_EXT_COM_RO_2 = 0x0203  # Route Origin,Format AS(2bytes):AN(4bytes)
 
 # BGP Flow Spec
+BGP_EXT_REDIRECT_NH = 0x0800  # redirect to ipv4/v6 nexthop
 BGP_EXT_TRA_RATE = 0x8006  # traffic-rate 2-byte as#, 4-byte float
 BGP_EXT_TRA_ACTION = 0x8007  # traffic-action bitmask
-BGP_EXT_REDIRECT = 0x8008  # redirect 6-byte Route Target
+BGP_EXT_REDIRECT_VRF = 0x8008  # redirect 6-byte Route Target
 BGP_EXT_TRA_MARK = 0x8009  # traffic-marking DSCP value
 
 # BGP cost cummunity

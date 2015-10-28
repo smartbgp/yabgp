@@ -18,6 +18,7 @@
 
 import struct
 import logging
+import binascii
 
 import netaddr
 
@@ -112,6 +113,25 @@ class ExtCommunity(Attribute):
                 asn, an = struct.unpack('!IH', value_tmp)
                 ext_community.append((bgp_cons.BGP_EXT_COM_RO_2, '%s:%s' % (asn, an)))
 
+            # BGP Flow spec
+            elif comm_code == bgp_cons.BGP_EXT_REDIRECT_NH:
+                ipv4 = str(netaddr.IPAddress(int(binascii.b2a_hex(value_tmp[0:4]), 16)))
+                copy_flag = struct.unpack('!H', value_tmp[4:])[0]
+                ext_community.append((bgp_cons.BGP_EXT_REDIRECT_NH, ipv4, copy_flag))
+            elif comm_code == bgp_cons.BGP_EXT_TRA_RATE:
+                asn, rate = struct.unpack('!HI', value_tmp)
+                ext_community.append((bgp_cons.BGP_EXT_TRA_RATE, '%s:%s' % (asn, rate)))
+
+            elif comm_code == bgp_cons.BGP_EXT_TRA_ACTION:
+                bit_value = parse_bit(value_tmp[-1])
+                ext_community.append((bgp_cons.BGP_EXT_TRA_ACTION, {'S': bit_value['6'], 'T': bit_value['7']}))
+            elif comm_code == bgp_cons.BGP_EXT_REDIRECT_VRF:
+                asn, an = struct.unpack('!HI', value_tmp)
+                ext_community.append((bgp_cons.BGP_EXT_REDIRECT_VRF, '%s:%s' % (asn, an)))
+            elif comm_code == bgp_cons.BGP_EXT_TRA_MARK:
+                mark = struct.unpack('!B', value_tmp[-1])[0]
+                ext_community.append((bgp_cons.BGP_EXT_TRA_MARK, mark))
+
             else:
                 ext_community.append((bgp_cons.BGP_EXT_COM_UNKNOW, repr(value_tmp)))
                 LOG.warn('unknow bgp extended community, type=%s, value=%s', comm_code, repr(value_tmp))
@@ -154,6 +174,22 @@ class ExtCommunity(Attribute):
                 asn, an = item[1].split(':')
                 ext_community_hex += struct.pack('!HIH', bgp_cons.BGP_EXT_COM_RO_2, int(asn), int(an))
 
+            # for bgp flow spec
+            elif item[0] == bgp_cons.BGP_EXT_REDIRECT_VRF:
+                asn, an = item[1].split(':')
+                ext_community_hex += struct.pack('!HHI', bgp_cons.BGP_EXT_REDIRECT_VRF, int(asn), int(an))
+            elif item[0] == bgp_cons.BGP_EXT_REDIRECT_NH:
+                nexthop = netaddr.IPAddress(item[1]).packed
+                copy_flag = struct.pack('!H', item[2])
+                type_hex = struct.pack('!H', bgp_cons.BGP_EXT_REDIRECT_NH)
+                com_hex = type_hex + nexthop + copy_flag
+                ext_community_hex += com_hex
+            elif item[0] == bgp_cons.BGP_EXT_TRA_MARK:
+                ext_community_hex += struct.pack('!HIBB', bgp_cons.BGP_EXT_TRA_MARK, 0, 0, item[1])
+            elif item[0] == bgp_cons.BGP_EXT_TRA_RATE:
+                asn, rate = item[1].split(':')
+                ext_community_hex += struct.pack('!HHf', bgp_cons.BGP_EXT_TRA_RATE, int(asn), int(rate))
+
             else:
                 LOG.warn('unknow bgp extended community for construct, type=%s, value=%s', item[0], item[1])
 
@@ -163,3 +199,28 @@ class ExtCommunity(Attribute):
         else:
             LOG.error('construct error, value=%s' % value)
             return None
+
+
+def parse_bit(data):
+    """
+    The operator byte is encoded as:
+      0    1   2   3   4  5   6   7
+    +---+---+---+---+---+---+---+---+
+    | e | a |  len  | 0 |lt |gt |eq |
+    +---+---+---+---+---+---+---+---+
+    """
+    bit_list = []
+    for i in xrange(8):
+        bit_list.append((data >> i) & 1)
+    bit_list.reverse()
+    result = {
+        '0': bit_list[0],
+        '1': bit_list[1],
+        '2': bit_list[2],
+        '3': bit_list[3],
+        '4': bit_list[4],
+        '5': bit_list[5],
+        '6': bit_list[6],
+        '7': bit_list[7]
+    }
+    return result

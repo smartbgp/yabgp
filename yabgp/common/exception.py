@@ -89,3 +89,8 @@ class FSMError(NotificationSent):
 class ErrCease(NotificationSent):
     error = 6
     message = "BGP ERR CEASE Error, sub error:%(sub_error)s, data:%(data)s"
+
+
+class ConstructAttributeFailed(BGPException):
+
+    message = 'construct attributes failed, reason :%(reason)s, data=%(data)s'

@@ -34,6 +34,9 @@ from yabgp.message.attribute.aggregator import Aggregator
 from yabgp.message.attribute.community import Community
 from yabgp.message.attribute.originatorid import OriginatorID
 from yabgp.message.attribute.clusterlist import ClusterList
+from yabgp.message.attribute.mpreachnlri import MpReachNLRI
+from yabgp.message.attribute.mpunreachnlri import MpUnReachNLRI
+from yabgp.message.attribute.extcommunity import ExtCommunity
 
 LOG = logging.getLogger()
 
@@ -347,6 +350,15 @@ class Update(object):
             elif type_code == bgp_cons.BGPTYPE_NEW_AGGREGATOR:
 
                 decode_value = Aggregator.parse(value=attr_value, asn4=True)
+
+            elif type_code == bgp_cons.BGPTYPE_MP_REACH_NLRI:
+                decode_value = MpReachNLRI.parse(value=attr_value)
+
+            elif type_code == bgp_cons.BGPTYPE_MP_UNREACH_NLRI:
+                decode_value = MpUnReachNLRI.parse(value=attr_value)
+
+            elif type_code == bgp_cons.BGPTYPE_EXTENDED_COMMUNITY:
+                decode_value = ExtCommunity.parse(value=attr_value)
             else:
                 decode_value = repr(attr_value)
             attributes[type_code] = decode_value
@@ -404,6 +416,13 @@ class Update(object):
             elif type_code == bgp_cons.BGPTYPE_CLUSTER_LIST:
                 clusterlist_hex = ClusterList.construct(value=value)
                 attr_raw_hex += clusterlist_hex
+
+            elif type_code == bgp_cons.BGPTYPE_MP_REACH_NLRI:
+                mpreach_hex = MpReachNLRI().construct(value=value)
+                attr_raw_hex += mpreach_hex
+            elif type_code == bgp_cons.BGPTYPE_MP_UNREACH_NLRI:
+                mpunreach_hex = MpUnReachNLRI.construct(value=value)
+                attr_raw_hex += mpunreach_hex
 
         return attr_raw_hex
 
