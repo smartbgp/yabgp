@@ -423,6 +423,9 @@ class Update(object):
             elif type_code == bgp_cons.BGPTYPE_MP_UNREACH_NLRI:
                 mpunreach_hex = MpUnReachNLRI.construct(value=value)
                 attr_raw_hex += mpunreach_hex
+            elif type_code == bgp_cons.BGPTYPE_EXTENDED_COMMUNITY:
+                community_ext_hex = ExtCommunity.construct(value=value)
+                attr_raw_hex += community_ext_hex
 
         return attr_raw_hex
 
