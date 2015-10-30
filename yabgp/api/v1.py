@@ -24,6 +24,7 @@ from oslo_config import cfg
 
 from yabgp.api import utils as api_utils
 from yabgp.channel import filter as channel_filter
+from yabgp.common import constants as bgp_cons
 
 LOG = logging.getLogger(__name__)
 blueprint = Blueprint('v1', __name__)
@@ -340,9 +341,12 @@ def send_update_message(peer_ip):
     withdraw = json_request.get('withdraw')
     if attr:
         attr = {int(k): v for k, v in attr.items()}
+        if bgp_cons.ATTRIBUTE_STR_2_ID['LOCAL_PREF'] not in attr:
+            # default local preference
+            attr[bgp_cons.ATTRIBUTE_STR_2_ID['LOCAL_PREF']] = 100
     if (attr and nlri) or withdraw:
         return flask.jsonify(api_utils.send_update(peer_ip, attr, nlri, withdraw))
-    elif 14 in attr or 15 in attr:
+    elif bgp_cons.ATTRIBUTE_STR_2_ID['MP_REACH_NLRI'] in attr or bgp_cons.ATTRIBUTE_STR_2_ID['MP_UNREACH_NLRI'] in attr:
         return flask.jsonify(api_utils.send_update(peer_ip, attr, nlri, withdraw))
 
     else:
