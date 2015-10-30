@@ -341,12 +341,12 @@ def send_update_message(peer_ip):
     withdraw = json_request.get('withdraw')
     if attr:
         attr = {int(k): v for k, v in attr.items()}
-        if bgp_cons.ATTRIBUTE_STR_2_ID['LOCAL_PREF'] not in attr:
+        if 5 not in attr:
             # default local preference
-            attr[bgp_cons.ATTRIBUTE_STR_2_ID['LOCAL_PREF']] = 100
+            attr[5] = 100
     if (attr and nlri) or withdraw:
         return flask.jsonify(api_utils.send_update(peer_ip, attr, nlri, withdraw))
-    elif bgp_cons.ATTRIBUTE_STR_2_ID['MP_REACH_NLRI'] in attr or bgp_cons.ATTRIBUTE_STR_2_ID['MP_UNREACH_NLRI'] in attr:
+    elif 14 in attr or 15 in attr:
         return flask.jsonify(api_utils.send_update(peer_ip, attr, nlri, withdraw))
 
     else:
