@@ -123,8 +123,10 @@ class IPv4FlowSpec(object):
             ip_hex = ip_hex[0:3]
         elif 8 < masklen <= 16:
             ip_hex = ip_hex[0:2]
-        elif masklen <= 8:
+        elif 0 < masklen <= 8:
             ip_hex = ip_hex[0:1]
+        elif masklen == 0:
+            ip_hex = ''
         return struct.pack('!B', masklen) + ip_hex
 
     @staticmethod
