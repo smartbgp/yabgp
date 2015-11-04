@@ -24,7 +24,6 @@ from oslo_config import cfg
 
 from yabgp.api import utils as api_utils
 from yabgp.channel import filter as channel_filter
-from yabgp.common import constants as bgp_cons
 
 LOG = logging.getLogger(__name__)
 blueprint = Blueprint('v1', __name__)
