@@ -83,57 +83,57 @@ class ExtCommunity(Attribute):
             if comm_code == bgp_cons.BGP_EXT_COM_RT_0:
                 # Route Target, Format AS(2bytes):AN(4bytes)
                 asn, an = struct.unpack('!HI', value_tmp)
-                ext_community.append((bgp_cons.BGP_EXT_COM_RT_0, '%s:%s' % (asn, an)))
+                ext_community.append([bgp_cons.BGP_EXT_COM_RT_0, '%s:%s' % (asn, an)])
 
             elif comm_code == bgp_cons.BGP_EXT_COM_RT_1:
                 # Route Target,Format IPv4 address(4bytes):AN(2bytes)
                 ipv4 = str(netaddr.IPAddress(struct.unpack('!I', value_tmp[0:4])[0]))
                 an = struct.unpack('!H', value_tmp[4:])[0]
-                ext_community.append((bgp_cons.BGP_EXT_COM_RT_1, '%s:%s' % (ipv4, an)))
+                ext_community.append([bgp_cons.BGP_EXT_COM_RT_1, '%s:%s' % (ipv4, an)])
 
             elif comm_code == bgp_cons.BGP_EXT_COM_RT_2:
                 # Route Target,Format AS(4bytes):AN(2bytes)
                 asn, an = struct.unpack('!IH', value_tmp)
-                ext_community.append((bgp_cons.BGP_EXT_COM_RT_2, '%s:%s' % (asn, an)))
+                ext_community.append([bgp_cons.BGP_EXT_COM_RT_2, '%s:%s' % (asn, an)])
 
             # Route Origin
             elif comm_code == bgp_cons.BGP_EXT_COM_RO_0:
                 # Route Origin,Format AS(2bytes):AN(4bytes)
                 asn, an = struct.unpack('!HI', value_tmp)
-                ext_community.append((bgp_cons.BGP_EXT_COM_RO_0, '%s:%s' % (asn, an)))
+                ext_community.append([bgp_cons.BGP_EXT_COM_RO_0, '%s:%s' % (asn, an)])
 
             elif comm_code == bgp_cons.BGP_EXT_COM_RO_1:
                 # Route Origin,Format IP address:AN(2bytes)
                 ipv4 = str(netaddr.IPAddress(struct.unpack('!I', value_tmp[0:4])[0]))
                 an = struct.unpack('!H', value_tmp[4:])[0]
-                ext_community.append((bgp_cons.BGP_EXT_COM_RO_1, '%s:%s' % (ipv4, an)))
+                ext_community.append([bgp_cons.BGP_EXT_COM_RO_1, '%s:%s' % (ipv4, an)])
 
             elif comm_code == bgp_cons.BGP_EXT_COM_RO_2:
                 # Route Origin,Format AS(2bytes):AN(4bytes)
                 asn, an = struct.unpack('!IH', value_tmp)
-                ext_community.append((bgp_cons.BGP_EXT_COM_RO_2, '%s:%s' % (asn, an)))
+                ext_community.append([bgp_cons.BGP_EXT_COM_RO_2, '%s:%s' % (asn, an)])
 
             # BGP Flow spec
             elif comm_code == bgp_cons.BGP_EXT_REDIRECT_NH:
                 ipv4 = str(netaddr.IPAddress(int(binascii.b2a_hex(value_tmp[0:4]), 16)))
                 copy_flag = struct.unpack('!H', value_tmp[4:])[0]
-                ext_community.append((bgp_cons.BGP_EXT_REDIRECT_NH, ipv4, copy_flag))
+                ext_community.append([bgp_cons.BGP_EXT_REDIRECT_NH, ipv4, copy_flag])
             elif comm_code == bgp_cons.BGP_EXT_TRA_RATE:
-                asn, rate = struct.unpack('!HI', value_tmp)
-                ext_community.append((bgp_cons.BGP_EXT_TRA_RATE, '%s:%s' % (asn, rate)))
+                asn, rate = struct.unpack('!Hf', value_tmp)
+                ext_community.append([bgp_cons.BGP_EXT_TRA_RATE, '%s:%s' % (asn, int(rate))])
 
             elif comm_code == bgp_cons.BGP_EXT_TRA_ACTION:
                 bit_value = parse_bit(value_tmp[-1])
-                ext_community.append((bgp_cons.BGP_EXT_TRA_ACTION, {'S': bit_value['6'], 'T': bit_value['7']}))
+                ext_community.append([bgp_cons.BGP_EXT_TRA_ACTION, {'S': bit_value['6'], 'T': bit_value['7']}])
             elif comm_code == bgp_cons.BGP_EXT_REDIRECT_VRF:
                 asn, an = struct.unpack('!HI', value_tmp)
-                ext_community.append((bgp_cons.BGP_EXT_REDIRECT_VRF, '%s:%s' % (asn, an)))
+                ext_community.append([bgp_cons.BGP_EXT_REDIRECT_VRF, '%s:%s' % (asn, an)])
             elif comm_code == bgp_cons.BGP_EXT_TRA_MARK:
                 mark = struct.unpack('!B', value_tmp[-1])[0]
-                ext_community.append((bgp_cons.BGP_EXT_TRA_MARK, mark))
+                ext_community.append([bgp_cons.BGP_EXT_TRA_MARK, mark])
 
             else:
-                ext_community.append((bgp_cons.BGP_EXT_COM_UNKNOW, repr(value_tmp)))
+                ext_community.append([bgp_cons.BGP_EXT_COM_UNKNOW, repr(value_tmp)])
                 LOG.warn('unknow bgp extended community, type=%s, value=%s', comm_code, repr(value_tmp))
 
             value = value[8:]

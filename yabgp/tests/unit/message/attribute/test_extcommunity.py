@@ -27,7 +27,7 @@ class TestExtCommunity(unittest.TestCase):
     def test_parse_rt0(self):
         # Route Target,Format AS(2bytes):AN(4bytes)
         ext_community = ExtCommunity.parse(value=b'\x00\x02\x00\x64\x00\x00\x00\x0c')
-        self.assertEqual([(bgp_cons.BGP_EXT_COM_RT_0, '100:12')], ext_community)
+        self.assertEqual([[bgp_cons.BGP_EXT_COM_RT_0, '100:12']], ext_community)
 
     def test_construct_rt0(self):
         ext_community = ExtCommunity.construct(value=[(bgp_cons.BGP_EXT_COM_RT_0, '100:12')])
@@ -36,7 +36,7 @@ class TestExtCommunity(unittest.TestCase):
     def test_parse_rt1(self):
         # Route Target,Format IPv4 address(4bytes):AN(2bytes)
         ext_community = ExtCommunity.parse(value=b'\x01\x02\x0a\x0a\x0a\x0a\x00\x0c')
-        self.assertEqual([(bgp_cons.BGP_EXT_COM_RT_1, '10.10.10.10:12')], ext_community)
+        self.assertEqual([[bgp_cons.BGP_EXT_COM_RT_1, '10.10.10.10:12']], ext_community)
 
     def test_construct_rt1(self):
         ext_community = ExtCommunity.construct(value=[(bgp_cons.BGP_EXT_COM_RT_1, '10.10.10.10:12')])
@@ -45,7 +45,7 @@ class TestExtCommunity(unittest.TestCase):
     def test_parse_rt2(self):
         # Route Target,Format AS(4bytes):AN(2bytes)
         ext_community = ExtCommunity.parse(value=b'\x02\x02\x00\x01\x00\x01\x00\x0c')
-        self.assertEqual([(bgp_cons.BGP_EXT_COM_RT_2, '65537:12')], ext_community)
+        self.assertEqual([[bgp_cons.BGP_EXT_COM_RT_2, '65537:12']], ext_community)
 
     def test_construct_rt2(self):
         ext_community = ExtCommunity.construct(value=[(bgp_cons.BGP_EXT_COM_RT_2, '65537:12')])
@@ -54,7 +54,7 @@ class TestExtCommunity(unittest.TestCase):
     def test_parse_ro0(self):
         # Route Origin,Format AS(2bytes):AN(4bytes)
         ext_community = ExtCommunity.parse(value=b'\x00\x03\x00\x64\x00\x00\x00\x0c')
-        self.assertEqual([(bgp_cons.BGP_EXT_COM_RO_0, '100:12')], ext_community)
+        self.assertEqual([[bgp_cons.BGP_EXT_COM_RO_0, '100:12']], ext_community)
 
     def test_construct_ro0(self):
         ext_community = ExtCommunity.construct(value=[(bgp_cons.BGP_EXT_COM_RO_0, '100:12')])
@@ -63,7 +63,7 @@ class TestExtCommunity(unittest.TestCase):
     def test_parse_ro1(self):
         # Route Origin,Format IPv4 address(4bytes):AN(2bytes)
         ext_community = ExtCommunity.parse(value=b'\x01\x03\x0a\x0a\x0a\x0a\x00\x0c')
-        self.assertEqual([(bgp_cons.BGP_EXT_COM_RO_1, '10.10.10.10:12')], ext_community)
+        self.assertEqual([[bgp_cons.BGP_EXT_COM_RO_1, '10.10.10.10:12']], ext_community)
 
     def test_construct_ro1(self):
         ext_community = ExtCommunity.construct(value=[(bgp_cons.BGP_EXT_COM_RO_1, '10.10.10.10:12')])
@@ -72,7 +72,7 @@ class TestExtCommunity(unittest.TestCase):
     def test_parse_ro2(self):
         # Route Origin,Format AS(4bytes):AN(2bytes)
         ext_community = ExtCommunity.parse(value=b'\x02\x03\x00\x01\x00\x01\x00\x0c')
-        self.assertEqual([(bgp_cons.BGP_EXT_COM_RO_2, '65537:12')], ext_community)
+        self.assertEqual([[bgp_cons.BGP_EXT_COM_RO_2, '65537:12']], ext_community)
 
     def test_construct_ro2(self):
         ext_community = ExtCommunity.construct(value=[(bgp_cons.BGP_EXT_COM_RO_2, '65537:12')])
@@ -92,6 +92,24 @@ class TestExtCommunity(unittest.TestCase):
         hex_tmp = b'\x09\x03\x00\x01\x00\x01\x00\x0c'
         ext_community = ExtCommunity.parse(value=hex_tmp)
         self.assertEqual(bgp_cons.BGP_EXT_COM_UNKNOW, ext_community[0][0])
+
+    def test_parse_construct_flowspec_redirect_vrf(self):
+        community_list = [[bgp_cons.BGP_EXT_REDIRECT_VRF, '4837:100']]
+        self.assertEqual(b'\xc0\x10\x08\x80\x08\x12\xe5\x00\x00\x00d', ExtCommunity.construct(value=community_list))
+        community_hex = b'\x80\x08\x12\xe5\x00\x00\x00d'
+        self.assertEqual(community_list, ExtCommunity.parse(value=community_hex))
+
+    def test_parse_construct_flowspec_redirect_nh(self):
+        community_list = [[bgp_cons.BGP_EXT_REDIRECT_NH, '0.0.0.0', 0]]
+        self.assertEqual(b'\xc0\x10\x08\x08\x00\x00\x00\x00\x00\x00\x00', ExtCommunity.construct(value=community_list))
+        self.assertEqual([[bgp_cons.BGP_EXT_REDIRECT_NH, '0.0.0.0', 0]],
+                         ExtCommunity.parse(value=b'\x08\x00\x00\x00\x00\x00\x00\x00'))
+
+    def test_parse_construct_tarffic_rate(self):
+        community_list = [[bgp_cons.BGP_EXT_TRA_RATE, "100:6250000"]]
+        self.assertEqual(b'\xc0\x10\x08\x80\x06\x00dJ\xbe\xbc ', ExtCommunity.construct(value=community_list))
+        self.assertEqual([[bgp_cons.BGP_EXT_TRA_RATE, "100:6250000"]],
+                         ExtCommunity.parse(value=b'\x80\x06\x00dJ\xbe\xbc '))
 
 if __name__ == '__main__':
     unittest.main()
