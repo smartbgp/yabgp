@@ -433,9 +433,14 @@ class BGP(protocol.Protocol):
         BGP notification message received.
         """
         self.msg_recv_stat['Notifications'] += 1
+        error_str = bgp_cons.NOTIFICATION_ERROR_CODES_DICT.get(msg[0])
+        if error_str:
+            sub_error_str = bgp_cons.NOTIFICATION_SUB_ERROR_CODES_DICT.get(msg[0]).get(msg[1])
+        else:
+            sub_error_str = None
         LOG.info(
-            '[%s]Notification message received, error=%s, sub error=%s, data=%s',
-            self.factory.peer_addr, msg[0], msg[1], msg[2])
+            '[%s]Notification message received, error: %s, sub error: %s, data=%s',
+            self.factory.peer_addr, error_str, sub_error_str, msg[2])
         nofi_msg = {'Error': msg[0], 'Suberror': msg[1], 'Error data': repr(msg[2])}
         self.factory.write_msg(
             timestamp=time.time(),

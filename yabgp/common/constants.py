@@ -201,6 +201,18 @@ ERR_MSG_UPDATE = 3
 ERR_HOLD_TIMER_EXPIRED = 4
 ERR_FSM = 5
 ERR_CEASE = 6
+ERR_CAP = 7
+
+# Notification error codes dict
+NOTIFICATION_ERROR_CODES_DICT = {
+    ERR_MSG_HDR: "Message Header Error",
+    ERR_MSG_OPEN: "OPEN Message Error",
+    ERR_MSG_UPDATE: "UPDATE Message Error",
+    ERR_HOLD_TIMER_EXPIRED: "Hold Timer Expired",
+    ERR_FSM: "Finite State Machine Error",
+    ERR_CEASE: "Cease",
+    ERR_CAP: "CAPABILITY Message Error"
+}
 
 # Notification suberror codes
 ERR_MSG_HDR_CONN_NOT_SYNC = 1
@@ -226,6 +238,37 @@ ERR_MSG_UPDATE_OPTIONAL_ATTR = 9
 ERR_MSG_UPDATE_INVALID_NETWORK_FIELD = 10
 ERR_MSG_UPDATE_MALFORMED_ASPATH = 11
 ERR_MSG_UPDATE_UNKOWN_ATTR = 12
+
+NOTIFICATION_SUB_ERROR_CODES_DICT = {
+    ERR_MSG_HDR: {
+        ERR_MSG_HDR_CONN_NOT_SYNC: 'Connection Not Synchronized',  # 1
+        ERR_MSG_HDR_BAD_MSG_LEN: 'Bad Message Length',             # 2
+        ERR_MSG_HDR_BAD_MSG_TYPE: 'Bad Message Type'               # 3
+    },
+    ERR_MSG_OPEN: {
+        ERR_MSG_OPEN_UNSUP_VERSION: 'Unsupported Version Number',
+        ERR_MSG_OPEN_BAD_PEER_AS: 'Bad Peer AS',
+        ERR_MSG_OPEN_BAD_BGP_ID: 'Bad BGP Identifier',
+        ERR_MSG_OPEN_UNSUP_OPT_PARAM: 'Unsupported Optional Parameter',
+        ERR_MSG_OPEN_UNACCPT_HOLD_TIME: 'Unacceptable Hold Time',
+        ERR_MSG_OPEN_UNSUP_CAPA: 'Unsupported Capability',
+        ERR_MSG_OPEN_UNKNO: 'NULL',
+    },
+    ERR_MSG_UPDATE: {
+        ERR_MSG_UPDATE_MALFORMED_ATTR_LIST: 'Malformed Attribute List',
+        ERR_MSG_UPDATE_UNRECOGNIZED_WELLKNOWN_ATTR: 'Unrecognized Well-known Attribute',
+        ERR_MSG_UPDATE_MISSING_WELLKNOWN_ATTR: 'Missing Well-known Attribute',
+        ERR_MSG_UPDATE_ATTR_FLAGS: 'Attribute Flags Error',
+        ERR_MSG_UPDATE_ATTR_LEN: 'Attribute Length Error',
+        ERR_MSG_UPDATE_INVALID_ORIGIN: 'Invalid ORIGIN Attribute',
+        ERR_MSG_UPDATE_INVALID_NEXTHOP: 'Invalid NEXT_HOP Attribute',
+        ERR_MSG_UPDATE_OPTIONAL_ATTR: 'Optional Attribute Error',
+        ERR_MSG_UPDATE_INVALID_NETWORK_FIELD: 'Invalid Network Field',
+        ERR_MSG_UPDATE_MALFORMED_ASPATH: 'Malformed AS_PATH',
+        ERR_MSG_UPDATE_UNKOWN_ATTR: 'NULL'
+    }
+
+}
 
 ATTRIBUTE_ID_2_STR = {
     1: 'ORIGIN',
