@@ -106,6 +106,8 @@ def init_log():
 
     log_file = _get_log_file()
     if log_file is not None:
+        if not os.path.exists(os.path.dirname(log_file)):
+            os.makedirs(os.path.dirname(log_file))
         log.addHandler(logging.handlers.RotatingFileHandler(
             log_file, maxBytes=5 * 1024 * 1024, backupCount=CONF.log_backup_count))
         mode = int(CONF.log_file_mode, 8)
