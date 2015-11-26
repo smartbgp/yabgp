@@ -116,6 +116,7 @@ def register_to_db(peer_ip, mongo_api):
         'local_addr': CONF.bgp.running_config[peer_ip]['local_addr'],
         'remote_as': CONF.bgp.running_config[peer_ip]['remote_as'],
         'remote_addr': CONF.bgp.running_config[peer_ip]['remote_addr'],
+        'afi_safi': CONF.bgp.afi_safi,
         'tag': CONF.bgp.running_config[peer_ip]['tag']
 
     }
