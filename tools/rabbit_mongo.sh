@@ -29,7 +29,7 @@ docker rm `docker ps -a | awk '{print $1}'`
 
 # for rabbitmq
 echo "Starting rabbitmq..."
-docker run -d -p 5672:5672 -p 15672:15672 tutum/rabbitmq
+docker run -d -p 5672:5672 -p 15672:15672 -e RABBITMQ_PASS="admin" tutum/rabbitmq
 
 # for mongodb
 echo "starting mongodb replica set"
