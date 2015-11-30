@@ -197,8 +197,9 @@ class BGPPeering(BGPFactory):
                     last_seq = eval(last)[1]
         except OSError:
             LOG.error('Error when reading bgp message files')
-        else:
-            LOG.error('Error when eval bgp message')
+        except Exception as e:
+            LOG.error(e)
+            sys.exit()
 
         return last_seq
 
