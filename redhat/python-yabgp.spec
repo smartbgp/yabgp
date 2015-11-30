@@ -2,7 +2,7 @@
 %{!?python2_sitelib:  %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 
 Name:           python-yabgp
-Version:        0.1.0
+Version:        0.1.4
 Release:        0%{?dist}
 Summary:        Yet Another BGP (Border Gateway Protocol) Python Implementation
 
