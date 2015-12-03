@@ -11,6 +11,8 @@ of routers (include real Cisco/HuaWei/Juniper routers and some router
 simulators like GNS3) and receive/parse BGP messages for
 future analysis.
 
+Support sending BGP messages(route refresh/update) to the peer through RESTful API.
+
 We write it in strict accordance with the specifications of RFCs.
 
 This software can be used on Linux/Unix, Mac OS and Windows systems.
@@ -24,13 +26,14 @@ Features
 -  Support TCP MD5 authentication(IPv4 and does not support Windows
    now);
 
--  BGP capabilities support: 4 Bytes ASN, IPv4 address family, Route
-   Refresh(Cisco Route Refresh);
+-  BGP capabilities support: 4 Bytes ASN, Route Refresh(Cisco Route Refresh);
+
+-  Address family support: IPv4 unicast, IPv4 Flowspec(limited);
 
 -  Decode all BGP messages to human readable strings and write files to
    disk(configurable);
 
--  Support basic RESTFUL API.
+-  Support basic RESTFUL API for getting running information and sending BGP messages.
 
 Quick Start
 ~~~~~~~~~~~
