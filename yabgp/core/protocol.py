@@ -51,6 +51,7 @@ class BGP(protocol.Protocol):
         self.disconnected = False
         self.receive_buffer = b''
         self.fourbytesas = False
+        self.addpath = False
 
         # statistic
         self.msg_sent_stat = {
@@ -166,6 +167,8 @@ class BGP(protocol.Protocol):
 
     def update_rib(self, msg):
 
+        if not CONF.bgp.rib:
+            return
         for prefix in msg['nlri']:
             self._adj_rib_in['ipv4'][prefix] = msg['attr']
         for prefix in msg['withdraw']:
@@ -276,7 +279,7 @@ class BGP(protocol.Protocol):
     def update_received(self, timestamp, msg):
 
         """Called when a BGP Update message was received."""
-        result = Update().parse([timestamp, self.fourbytesas, msg])
+        result = Update().parse([timestamp, self.fourbytesas, self.addpath, msg])
         if result['sub_error']:
             self.factory.write_msg(
                 timestamp=result['time'],
@@ -561,6 +564,9 @@ class BGP(protocol.Protocol):
         for key in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']:
             if key == 'four_bytes_as':
                 self.fourbytesas = True
+            elif key == 'add_path':
+                self.addpath = True
+                CONF.bgp.rib = False
             LOG.info("--%s = %s", key, cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote'][key])
 
         # write bgp message

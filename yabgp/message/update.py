@@ -153,12 +153,13 @@ class Update(object):
         """
         t = msg[0]
         asn4 = msg[1]
-        msg_hex = msg[2]
+        add_path = msg[2]
+        msg_hex = msg[3]
 
         results = {
-            "withdraw": None,
+            "withdraw": [],
             "attr": None,
-            "nlri": None,
+            "nlri": [],
             'time': t,
             'hex': msg_hex,
             'sub_error': None,
@@ -176,7 +177,7 @@ class Update(object):
             results['withdraw'] = cls.parse_prefix_list(withdraw_prefix_data)
 
             # parse nlri
-            results['nlri'] = cls.parse_prefix_list(nlri_data)
+            results['nlri'] = cls.parse_prefix_list(nlri_data, add_path)
         except Exception as e:
             LOG.error(e)
             error_str = traceback.format_exc()
@@ -225,17 +226,21 @@ class Update(object):
             return cls.construct_header(msg_body)
 
     @staticmethod
-    def parse_prefix_list(data):
+    def parse_prefix_list(data, addpath=False):
         """
         Parses an RFC4271 encoded blob of BGP prefixes into a list
 
-        :param data:
+        :param data: hex data
+        :param addpath: support addpath or not
         :return: prefix_list
         """
         prefixes = []
         postfix = data
         while len(postfix) > 0:
             # for python2 and python3
+            if addpath:
+                path_id = struct.unpack('!I', postfix[0:4])[0]
+                postfix = postfix[4:]
             if isinstance(postfix[0], int):
                 prefix_len = postfix[0]
             else:
@@ -262,7 +267,10 @@ class Update(object):
                 prefix_data[-1] &= 255 << (8 - remainder)
             prefix_data = prefix_data + list(str(0)) * 4
             prefix = "%s.%s.%s.%s" % (tuple(prefix_data[0:4])) + '/' + str(prefix_len)
-            prefixes.append(prefix)
+            if not addpath:
+                prefixes.append(prefix)
+            else:
+                prefixes.append({'prefix': prefix, 'path_id': path_id})
             # Next prefix
             postfix = postfix[octet_len + 1:]
 
