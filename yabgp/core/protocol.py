@@ -51,7 +51,8 @@ class BGP(protocol.Protocol):
         self.disconnected = False
         self.receive_buffer = b''
         self.fourbytesas = False
-        self.addpath = False
+        self.add_path_ipv4_receive = False
+        self.add_path_ipv4_send = False
 
         # statistic
         self.msg_sent_stat = {
@@ -279,7 +280,7 @@ class BGP(protocol.Protocol):
     def update_received(self, timestamp, msg):
 
         """Called when a BGP Update message was received."""
-        result = Update().parse([timestamp, self.fourbytesas, self.addpath, msg])
+        result = Update().parse(timestamp, msg, self.fourbytesas, self.add_path_ipv4_receive, self.add_path_ipv4_send)
         if result['sub_error']:
             self.factory.write_msg(
                 timestamp=result['time'],
@@ -403,7 +404,7 @@ class BGP(protocol.Protocol):
         :return:
         """
         try:
-            msg_update = Update().construct(msg, self.fourbytesas)
+            msg_update = Update().construct(msg, self.fourbytesas, self.add_path_ipv4_send)
             self.transport.write(msg_update)
             self.msg_sent_stat['Updates'] += 1
             return True
@@ -530,6 +531,10 @@ class BGP(protocol.Protocol):
         open_msg = Open(version=bgp_cons.VERSION, asn=self.factory.my_asn, hold_time=self.fsm.hold_time,
                         bgp_id=self.factory.bgp_id). \
             construct(cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local'])
+        if 'add_path' in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']:
+            if cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']['add_path'] in \
+                    ['ipv4_send', 'ipv4_both']:
+                self.add_path_ipv4_send = True
         # send message
         self.transport.write(open_msg)
         self.msg_sent_stat['Opens'] += 1
@@ -565,8 +570,10 @@ class BGP(protocol.Protocol):
             if key == 'four_bytes_as':
                 self.fourbytesas = True
             elif key == 'add_path':
-                self.addpath = True
-                CONF.bgp.rib = False
+                if cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']['add_path'] in \
+                        ['ipv4_send', 'ipv4_both']:
+                    self.add_path_ipv4_receive = True
+                    CONF.bgp.rib = False
             LOG.info("--%s = %s", key, cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote'][key])
 
         # write bgp message
