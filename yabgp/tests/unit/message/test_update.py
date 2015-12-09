@@ -31,6 +31,14 @@ class TestUpdate(unittest.TestCase):
                 '209.102.178.0/24', '66.112.100.0/22', '208.54.194.0/24']
         self.assertEqual(nlri, Update.parse_prefix_list(prefix_hex))
 
+    def test_parse_prefix_list_with_addpath(self):
+        prefix_hex = b'\x00\x00\x00\x01\x20\x05\x05\x05\x05\x00\x00\x00\x01\x20\xc0\xa8\x01\x05'
+        nlri = [
+            {'prefix': '5.5.5.5/32', 'path_id': 1},
+            {'prefix': '192.168.1.5/32', 'path_id': 1}
+        ]
+        self.assertEqual(nlri, Update.parse_prefix_list(prefix_hex, True))
+
     def test_parse_prefix_mask_larger_than_32(self):
         prefix_hex = b'\x21\xb8\x9d\xe0\x18E\xb3\xdd\x18E\xb3\xdc\x18\xd1f\xb2\x16Bpd\x18\xd06\xc2'
         self.assertRaises(UpdateMessageError, Update.parse_prefix_list, prefix_hex)
@@ -41,6 +49,11 @@ class TestUpdate(unittest.TestCase):
                 '209.102.178.0/24', '66.112.100.0/22', '208.54.194.0/24']
         nlri_hex = Update.construct_prefix_v4(nlri)
         self.assertEqual(nlri, Update.parse_prefix_list(nlri_hex))
+
+    def test_construct_prefix_v4_addpath(self):
+        nlri = [{'path_id': 1, 'prefix': '99.99.99.99/32'}]
+        nlri_hex = Update.construct_prefix_v4(nlri, add_path=True)
+        self.assertEqual(b'\x00\x00\x00\x01\x20\x63\x63\x63\x63', nlri_hex)
 
     def test_parse_attributes_ipv4(self):
 
@@ -74,7 +87,7 @@ class TestUpdate(unittest.TestCase):
         # 2 bytes asn
         msg_hex = b'\x00\x00\x00\x28\x40\x01\x01\x02\x40\x02\x0a\x02\x01\x00\x1e\x01\x02\x00\x0a\x00\x14\x40\x03\x04' \
                   b'\x0a\x00\x00\x09\x80\x04\x04\x00\x00\x00\x00\xc0\x07\x06\x00\x1e\x0a\x00\x00\x09\x15\xac\x10\x00'
-        update = Update.parse([None, False, msg_hex])
+        update = Update.parse(None, msg_hex)
         attributes = {1: 2, 2: [(2, [30]), (1, [10, 20])], 3: '10.0.0.9', 4: 0, 7: (30, '10.0.0.9')}
         self.assertEqual(attributes, update['attr'])
         self.assertEqual([], update['withdraw'])
@@ -86,11 +99,29 @@ class TestUpdate(unittest.TestCase):
         msg_hex = b'\x00\x00\x00\x30\x40\x01\x01\x02\x40\x02\x10\x02\x01\x00\x00\x00\x1e\x01\x02\x00\x00\x00\x0a\x00' \
                   b'\x00\x00\x14\x40\x03\x04\x0a\x00\x00\x09\x80\x04\x04\x00\x00\x00\x00\xc0\x07\x08\x00\x00\x00' \
                   b'\x1e\x0a\x00\x00\x09\x15\xac\x10\x00'
-        update = Update.parse([None, True, msg_hex])
+        update = Update.parse(None, msg_hex, True)
         attributes = {1: 2, 2: [(2, [30]), (1, [10, 20])], 3: '10.0.0.9', 4: 0, 7: (30, '10.0.0.9')}
         self.assertEqual(attributes, update['attr'])
         self.assertEqual([], update['withdraw'])
         self.assertEqual(['172.16.0.0/21'], update['nlri'])
+
+    def test_parse_ipv4_addpath_update(self):
+        msg_hex = b'\x00\x00\x00\x30\x40\x01\x01\x00\x40\x02\x06\x02\x01\x00\x00\xfb\xff\x40\x03\x04\x0a\x00\x0e' \
+                  b'\x01\x80\x04\x04\x00\x00\x00\x00\x40\x05\x04\x00\x00\x00\x64\x80\x0a\x04\x0a\x00\x22' \
+                  b'\x04\x80\x09\x04\x0a\x00\x0f\x01\x00\x00\x00\x01\x20\x05\x05\x05\x05\x00\x00\x00\x01' \
+                  b'\x20\xc0\xa8\x01\x05'
+        update = Update.parse(None, msg_hex, True, True)
+        attributes = {1: 0, 2: [(2, [64511])], 3: '10.0.14.1', 4: 0, 5: 100, 9: '10.0.15.1', 10: ['10.0.34.4']}
+        self.assertEqual(attributes, update['attr'])
+        self.assertEqual([], update['withdraw'])
+        self.assertEqual([
+            {'path_id': 1, 'prefix': '5.5.5.5/32'},
+            {'path_id': 1, 'prefix': '192.168.1.5/32'}], update['nlri'])
+
+    def test_parse_ipv4_addpath_withdraw(self):
+        msg_hex = b'\x00\x09\x00\x00\x00\x01\x20\x63\x63\x63\x63\x00\x00'
+        update = Update.parse(None, msg_hex, True, True)
+        self.assertEqual([{'path_id': 1, 'prefix': '99.99.99.99/32'}], update['withdraw'])
 
 
 if __name__ == '__main__':

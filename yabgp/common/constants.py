@@ -169,6 +169,12 @@ AFI_SAFI_STR_DICT = {
     'ipv4': (1, 1),
     'flowspec': (1, 133)
 }
+
+ADD_PATH_ACT_DICT = {
+    1: 'receive',
+    2: 'send',
+    3: 'both'
+}
 # BGP FSM State
 ST_IDLE = 1
 ST_CONNECT = 2

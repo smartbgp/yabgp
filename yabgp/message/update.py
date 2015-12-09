@@ -140,25 +140,21 @@ class Update(object):
         """
 
     @classmethod
-    def parse(cls, msg):
+    def parse(cls, t, msg_hex, asn4=False, add_path_remote=False, add_path_local=False):
 
         """
         Parse BGP Update message
-
-        :param msg: raw BGP update binary PDU data
-        :type msg: list
+        :param t: timestamp
+        :param msg_hex: raw message
+        :param asn4: support 4 bytes AS or not
+        :param add_path_remote: if the remote peer can send add path NLRI
+        :param add_path_local: if the local can send add path NLRI
         :return: message after parsing.
-        :return type: dict
-
         """
-        t = msg[0]
-        asn4 = msg[1]
-        msg_hex = msg[2]
-
         results = {
-            "withdraw": None,
+            "withdraw": [],
             "attr": None,
-            "nlri": None,
+            "nlri": [],
             'time': t,
             'hex': msg_hex,
             'sub_error': None,
@@ -173,10 +169,10 @@ class Update(object):
 
         try:
             # parse withdraw prefixes
-            results['withdraw'] = cls.parse_prefix_list(withdraw_prefix_data)
+            results['withdraw'] = cls.parse_prefix_list(withdraw_prefix_data, add_path_remote)
 
             # parse nlri
-            results['nlri'] = cls.parse_prefix_list(nlri_data)
+            results['nlri'] = cls.parse_prefix_list(nlri_data, add_path_remote)
         except Exception as e:
             LOG.error(e)
             error_str = traceback.format_exc()
@@ -200,20 +196,22 @@ class Update(object):
         return results
 
     @classmethod
-    def construct(cls, msg_dict, asn4=False):
+    def construct(cls, msg_dict, asn4=False, addpath=False):
         """construct BGP update message
 
         :param msg_dict: update message string
-        :param asn4: support 4 bytes asn or not"""
+        :param asn4: support 4 bytes asn or not
+        :param addpath: support add path or not
+        """
         attr_hex = b''
         nlri_hex = b''
         withdraw_hex = b''
         if msg_dict.get('attr'):
             attr_hex = cls.construct_attributes(msg_dict['attr'], asn4)
         if msg_dict.get('nlri'):
-            nlri_hex = cls.construct_prefix_v4(msg_dict['nlri'])
+            nlri_hex = cls.construct_prefix_v4(msg_dict['nlri'], addpath)
         if msg_dict.get('withdraw'):
-            withdraw_hex = cls.construct_prefix_v4(msg_dict['withdraw'])
+            withdraw_hex = cls.construct_prefix_v4(msg_dict['withdraw'], addpath)
         if nlri_hex and attr_hex:
             msg_body = struct.pack('!H', 0) + struct.pack('!H', len(attr_hex)) + attr_hex + nlri_hex
             return cls.construct_header(msg_body)
@@ -225,17 +223,21 @@ class Update(object):
             return cls.construct_header(msg_body)
 
     @staticmethod
-    def parse_prefix_list(data):
+    def parse_prefix_list(data, addpath=False):
         """
         Parses an RFC4271 encoded blob of BGP prefixes into a list
 
-        :param data:
+        :param data: hex data
+        :param addpath: support addpath or not
         :return: prefix_list
         """
         prefixes = []
         postfix = data
         while len(postfix) > 0:
             # for python2 and python3
+            if addpath:
+                path_id = struct.unpack('!I', postfix[0:4])[0]
+                postfix = postfix[4:]
             if isinstance(postfix[0], int):
                 prefix_len = postfix[0]
             else:
@@ -262,7 +264,10 @@ class Update(object):
                 prefix_data[-1] &= 255 << (8 - remainder)
             prefix_data = prefix_data + list(str(0)) * 4
             prefix = "%s.%s.%s.%s" % (tuple(prefix_data[0:4])) + '/' + str(prefix_len)
-            prefixes.append(prefix)
+            if not addpath:
+                prefixes.append(prefix)
+            else:
+                prefixes.append({'prefix': prefix, 'path_id': path_id})
             # Next prefix
             postfix = postfix[octet_len + 1:]
 
@@ -444,14 +449,19 @@ class Update(object):
         return b'\xff'*16 + struct.pack('!HB', len(msg) + 19, 2) + msg
 
     @staticmethod
-    def construct_prefix_v4(prefix_list):
+    def construct_prefix_v4(prefix_list, add_path=False):
         """
         constructs NLRI prefix list
 
         :param prefix_list: prefix list
+        :param add_path: support add path or not
         """
         nlri_raw_hex = b''
         for prefix in prefix_list:
+            if add_path and isinstance(prefix, dict):
+                path_id = prefix.get('path_id')
+                prefix = prefix.get('prefix')
+                nlri_raw_hex += struct.pack('!I', path_id)
             masklen = prefix.split('/')[1]
             ip_hex = struct.pack('!I', netaddr.IPNetwork(prefix).value)
             masklen = int(masklen)

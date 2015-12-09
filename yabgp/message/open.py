@@ -168,7 +168,9 @@ class Open(object):
                         self.capa_dict['enhanced_route_refresh'] = True
                     # (8) add path
                     elif capability.capa_code == capability.ADD_PATH:
-                        self.capa_dict['add_path'] = True
+                        afi, safi, send_rev = struct.unpack('!HBB', capability.capa_value)
+                        self.capa_dict['add_path'] = '%s_%s' % (
+                            bgp_cons.AFI_SAFI_DICT[(afi, safi)], bgp_cons.ADD_PATH_ACT_DICT[send_rev])
                     else:
                         self.capa_dict[str(capability.capa_code)] = capability.capa_value
 
@@ -381,8 +383,19 @@ class Capability(object):
             return afisafi
         # for add path
         elif self.capa_code == self.ADD_PATH:
-            add_path = struct.pack('!BBBBHBB', 2, 6, self.ADD_PATH, self.capa_length, 1, 1, self.capa_value)
+            afi_safi, value = convert_addpath_str_to_int(self.capa_value)
+            add_path = struct.pack(
+                '!BBBBHBB', 2, 6, self.ADD_PATH, self.capa_length, afi_safi[0], afi_safi[1], value)
             return add_path
 
         elif self.capa_code == self.ENHANCED_ROUTE_REFRESH:
             return struct.pack('!BBBB', 2, 2, self.ENHANCED_ROUTE_REFRESH, 0)
+
+
+def convert_addpath_str_to_int(addpath_str):
+    addpath_dict = {
+        'ipv4_receive': [(1, 1), 1],
+        'ipv4_send': [(1, 1), 2],
+        'ipv4_both': [(1, 1), 3]
+    }
+    return addpath_dict[addpath_str]

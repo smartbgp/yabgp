@@ -144,10 +144,11 @@ def send_update(peer_ip, attr, nlri, withdraw):
     # TODO update RIB out table
     if cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.send_update({
             'attr': attr, 'nlri': nlri, 'withdraw': withdraw}):
-        # update ad rib out table
-        if nlri or withdraw:
-            for prefix in nlri:
-                cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.get_rib_out()['ipv4'][prefix] = attr
+        # TODO update ad rib out table
+        # if nlri or withdraw:
+        #     for prefix in nlri:
+        #         if isinstance(prefix, basestring):
+        #             cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.get_rib_out()['ipv4'][prefix] = attr
 
         return {
             'status': True
