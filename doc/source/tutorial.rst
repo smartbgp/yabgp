@@ -28,7 +28,8 @@ If you change the default setting (like change the ``write_dir``), please start 
 
 .. code:: bash
 
-    $ yabgpd --bgp-local_addr=10.75.44.11 --bgp-local_as=23650 --bgp-remote_addr=10.124.1.245 --bgp-remote_as=23650 --bgp-md5=cisco --config-file=yabgp.ini
+    $ cp etc/yabgp/yabgp.ini.sample etc/yabgp/yabgp.ini
+    $ yabgpd --bgp-local_addr=10.75.44.11 --bgp-local_as=23650 --bgp-remote_addr=10.124.1.245 --bgp-remote_as=23650 --bgp-md5=cisco --config-file=../etc/yabgp/yabgp.ini
 
 Running Mode
 ~~~~~~~~~~~~
