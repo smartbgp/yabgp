@@ -93,10 +93,10 @@
 # (b) able to send multiple paths to its peer
 # (c) both send and receive for the <AFI, SAFI>.
 # now we only support ipv4, so there are
-# ipv4_send, ipv4_receive and ipv4_both, the default value is
+# 'ipv4_send', 'ipv4_receive' and 'ipv4_both', the default value is
 # ipv4_both
 
-# add_path = ipv4_both
+# add_path =
 
 # suport graceful restart or not
 # graceful_restart = True

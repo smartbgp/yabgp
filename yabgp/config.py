@@ -65,7 +65,6 @@ bgp_config_opts = [
                 default=True,
                 help='If support enhanced route refresh'),
     cfg.StrOpt('add_path',
-               default='ipv4_both',
                help='BGP additional path feature and supported address family'),
     cfg.BoolOpt('graceful_restart',
                 default=True,

@@ -532,9 +532,14 @@ class BGP(protocol.Protocol):
                         bgp_id=self.factory.bgp_id). \
             construct(cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local'])
         if 'add_path' in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']:
+            # check add path feature, send add path condition:
+            # local support send or both
+            # remote support receive or both
             if cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']['add_path'] in \
                     ['ipv4_send', 'ipv4_both']:
-                self.add_path_ipv4_send = True
+                if cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote'].get('add_path') in \
+                        ['ipv4_receive', 'ipv4_both']:
+                    self.add_path_ipv4_send = True
         # send message
         self.transport.write(open_msg)
         self.msg_sent_stat['Opens'] += 1
@@ -572,7 +577,9 @@ class BGP(protocol.Protocol):
             elif key == 'add_path':
                 if cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']['add_path'] in \
                         ['ipv4_send', 'ipv4_both']:
-                    self.add_path_ipv4_receive = True
+                    if cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']['add_path'] in \
+                            ['ipv4_receive', 'ipv4_both']:
+                        self.add_path_ipv4_receive = True
                     CONF.bgp.rib = False
             LOG.info("--%s = %s", key, cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote'][key])
 
