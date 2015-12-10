@@ -11,7 +11,8 @@ of routers (include real Cisco/HuaWei/Juniper routers and some router
 simulators like GNS3) and receive/parse BGP messages for
 future analysis.
 
-Support sending BGP messages(route refresh/update) to the peer through RESTful API.
+Support sending BGP messages(route refresh/update) to the peer through RESTful API. YABGP can't send any BGP update messages
+by itself, it's just a agent, so there can be many agents and they can be controlled by a contoller.
 
 We write it in strict accordance with the specifications of RFCs.
 
@@ -26,7 +27,7 @@ Features
 -  Support TCP MD5 authentication(IPv4 and does not support Windows
    now);
 
--  BGP capabilities support: 4 Bytes ASN, Route Refresh(Cisco Route Refresh);
+-  BGP capabilities support: 4 Bytes ASN, Route Refresh(Cisco Route Refresh), Add Path send/receive;
 
 -  Address family support: IPv4 unicast, IPv4 Flowspec(limited);
 
@@ -90,7 +91,7 @@ Send email to xiaoquwl@gmail.com, or use GitHub issue system.
 TODO
 ~~~~
 
--  support more address family (flowspec, IPv6, VPNv4, VPNv6, etc.)
+-  support more address family (IPv6, VPNv4, VPNv6, etc.)
 -  more unittest
 -  others
 
