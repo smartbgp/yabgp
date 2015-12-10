@@ -39,7 +39,7 @@ msg_process_opts = [
                default=500,
                help='The Max size of one BGP message file, the unit is MB'),
     cfg.BoolOpt('write_keepalive',
-                default=True,
+                default=False,
                 help='Whether write keepalive message to disk')
 ]
 

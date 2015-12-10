@@ -35,7 +35,7 @@
 # write_msg_max_size = 500
 
 # Whether write keepalive message to disk
-# write_keepalive = True
+# write_keepalive = False
 
 [bgp]
 
@@ -147,7 +147,7 @@
 # dbname = yabgp
 
 # if use replica set
-# use_replica = True
+# use_replica = False
 
 # replica set name
 # replica_name = rs1
