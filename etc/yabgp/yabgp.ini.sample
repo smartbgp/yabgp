@@ -37,6 +37,11 @@
 # Whether write keepalive message to disk
 # write_keepalive = False
 
+# The output format of bgp messagees
+# two options: list and json, default value is list
+# format = list
+
+
 [bgp]
 
 # BGP global configuration items
