@@ -287,9 +287,9 @@ class BGPPeering(BGPFactory):
         try:
             self.connect()
         except Exception as e:
-            print e
+            LOG.error(e)
             import traceback
-            print traceback.format_exc()
+            LOG.debug(traceback.format_exc())
 
     def set_peer_id(self, bgp_id):
         """
