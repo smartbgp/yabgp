@@ -23,6 +23,7 @@ import socket
 import platform
 import struct
 import sys
+import json
 
 import netaddr
 from twisted.internet import protocol
@@ -194,7 +195,11 @@ class BGPPeering(BGPFactory):
                     pass
                 last = line
                 if line:
-                    last_seq = eval(last)[1]
+                    last = eval(last)
+                    if isinstance(last, list):
+                        last_seq = last[1]
+                    if isinstance(last, dict):
+                        last_seq = last['seq']
         except OSError:
             LOG.error('Error when reading bgp message files')
         except Exception as e:
@@ -205,16 +210,29 @@ class BGPPeering(BGPFactory):
 
     def write_msg(self, timestamp, msg_type, msg, flush=False):
         """
-
-        :param timestamp:
-        :param msg_type:
-        :param msg:
-        :param flush:
+        write bgp message into local disk file
+        :param timestamp: timestamp
+        :param msg_type: message type (0,1,2,3,4,5,6)
+        :param msg: message dict
+        :param flush: flush after write or not
         :return:
         """
         if self.msg_path:
-            msg_record = [timestamp, self.msg_seq, msg_type, msg]
-            self.msg_file.write(str(msg_record) + '\n')
+            if CONF.message.format == 'list':
+                msg_record = [timestamp, self.msg_seq, msg_type, msg]
+                self.msg_file.write(str(msg_record) + '\n')
+            elif CONF.message.format == 'json':
+                msg_record = {
+                    't': timestamp,
+                    'seq': self.msg_seq,
+                    'type': msg_type
+                }
+                msg_record.update(msg)
+                json.dump(msg_record, self.msg_file)
+                self.msg_file.write('\n')
+            else:
+                LOG.error('unknow message format %s', CONF.message.format)
+                sys.exit()
             self.msg_seq += 1
             if flush:
                 self.msg_file.flush()
@@ -287,9 +305,9 @@ class BGPPeering(BGPFactory):
         try:
             self.connect()
         except Exception as e:
-            print e
+            LOG.error(e)
             import traceback
-            print traceback.format_exc()
+            LOG.debug(traceback.format_exc())
 
     def set_peer_id(self, bgp_id):
         """
