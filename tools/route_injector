@@ -25,22 +25,23 @@ import json
 
 from oslo_config import cfg
 
+
 CONF = cfg.CONF
 
 CONF.register_cli_opt(
-    cfg.BoolOpt('peerip', help='The BGP peer address'))
+    cfg.StrOpt('peerip', help='The BGP peer address'))
 
 rest_server_ops = [
-    cfg.StrOpt('rest_host',
+    cfg.StrOpt('host',
                default='0.0.0.0',
                help='Address to bind the API server to'),
-    cfg.IntOpt('rest_port',
+    cfg.IntOpt('port',
                default=8801,
                help='Port the bind the API server to'),
-    cfg.StrOpt('rest_user',
+    cfg.StrOpt('user',
                default='admin',
                help='Username for api server'),
-    cfg.StrOpt('rest_pass',
+    cfg.StrOpt('passwd',
                default='admin',
                help='Password for api server',
                secret=True)
@@ -50,9 +51,9 @@ CONF.register_cli_opts(rest_server_ops, group='rest')
 
 
 msg_source_ops = [
-    cfg.StrOpt('json_file',
+    cfg.StrOpt('json',
                help='json format update messages'),
-    cfg.StrOpt('raw_msg_file',
+    cfg.StrOpt('list',
                help='yabgp raw message file')
 ]
 
@@ -96,6 +97,12 @@ def get_api_opener_v1(url, username, password):
 def get_data_from_agent(url, username, password, method='GET', data=None):
     """
     HTTP interaction with yabgp rest api
+    :param url:
+    :param username:
+    :param password:
+    :param method:
+    :param data:
+    :return:
     :return:
     """
     # build request
@@ -113,6 +120,22 @@ def get_data_from_agent(url, username, password, method='GET', data=None):
     return None
 
 
+def send_update():
+    # get the message file
+    url = 'http://{bind_host}:{bind_port}/v1/peer/{peer_ip}/send/update'
+    url = url.format(bind_host=CONF.rest.host, bind_port=CONF.rest.port, peer_ip=CONF.peerip)
+    for message in open(CONF.message.json).readlines():
+        message = json.loads(message)
+        if message['type'] != 2:
+            continue
+        if message['NLRI']:
+            post_data = {
+                'nlri': message['NLRI'],
+                'attr': message['ATTR']
+            }
+            get_data_from_agent(url, 'admin', 'admin', 'POST', post_data)
+
 if __name__ == '__main__':
 
     CONF(args=sys.argv[1:])
+    send_update()
