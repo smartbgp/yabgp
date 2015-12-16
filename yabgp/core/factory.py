@@ -181,7 +181,7 @@ class BGPPeering(BGPFactory):
         Get the last sequence number in the latest log file.
         """
         LOG.info('get the last bgp message seq for this peer')
-        last_seq = 1
+        last_seq = 0
         # first get the last file
         file_list = os.listdir(self.msg_path)
         if not file_list:
