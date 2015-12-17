@@ -24,6 +24,7 @@ import platform
 import struct
 import sys
 import json
+import traceback
 
 import netaddr
 from twisted.internet import protocol
@@ -195,14 +196,14 @@ class BGPPeering(BGPFactory):
                     pass
                 last = line
                 if line:
-                    last = eval(last)
-                    if isinstance(last, list):
-                        last_seq = last[1]
-                    if isinstance(last, dict):
-                        last_seq = last['seq']
+                    if last.startswith('['):
+                        last_seq = eval(last)[1]
+                    elif last.startswith('{'):
+                        last_seq = json.loads(last)['seq']
         except OSError:
             LOG.error('Error when reading bgp message files')
         except Exception as e:
+            LOG.debug(traceback.format_exc())
             LOG.error(e)
             sys.exit()
 
