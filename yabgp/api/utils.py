@@ -63,7 +63,7 @@ def get_peer_conf_and_state(peer_ip=None):
 
     def get_peer_state(peer):
         one_peer_state = {key: cfg.CONF.bgp.running_config[peer][key] for key in [
-            'remote_as', 'remote_addr', 'local_as', 'local_addr']}
+            'remote_as', 'remote_addr', 'local_as', 'local_addr', 'capability']}
         fsm = cfg.CONF.bgp.running_config[peer]['factory'].fsm.state
         one_peer_state['fsm'] = common_cons.stateDescr[fsm]
         if fsm == common_cons.ST_ESTABLISHED:
