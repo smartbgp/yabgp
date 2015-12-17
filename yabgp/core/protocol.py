@@ -308,9 +308,11 @@ class BGP(protocol.Protocol):
         self.factory.write_msg(
             timestamp=result['time'],
             msg_type=bgp_cons.MSG_UPDATE,
-            msg=msg,
-            flush=True
+            msg=msg
         )
+        if self.factory.flush_and_check_file_size():
+            for afi, safi in CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']['afi_safi']:
+                self.send_route_refresh(afi=afi, safi=safi)
 
         # check channel filter
         if not CONF.standalone and self.factory.tag in \

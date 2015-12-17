@@ -245,13 +245,12 @@ class BGPPeering(BGPFactory):
 
             # if the size of the msg file is bigger than 'max_msg_file_size',
             # then save as and re-open a new file.
-            if os.path.getsize(self.msg_path + self.msg_file_name) > \
+            if os.path.getsize(os.path.join(self.msg_path, self.msg_file_name)) >= \
                     CONF.message.write_msg_max_size:
                 self.msg_file.close()
-
-                self.msg_file_name = "%s.msg", time.time()
+                self.msg_file_name = "%s.msg" % time.time()
                 LOG.info('Open a new message file %s', self.msg_file_name)
-                self.msg_file = open(self.msg_path + self.msg_file_name, 'ab')
+                self.msg_file = open(os.path.join(self.msg_path + self.msg_file_name), 'a')
                 return True
         return False
 
