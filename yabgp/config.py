@@ -42,7 +42,7 @@ msg_process_opts = [
                 default=False,
                 help='Whether write keepalive message to disk'),
     cfg.StrOpt('format',
-               default='list',
+               default='json',
                help='The output format of bgp messagees.')
 ]
 

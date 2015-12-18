@@ -39,7 +39,7 @@
 
 # The output format of bgp messagees
 # two options: list and json, default value is list
-# format = list
+# format = json
 
 
 [bgp]
