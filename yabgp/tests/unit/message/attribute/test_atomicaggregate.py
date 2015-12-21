@@ -40,7 +40,7 @@ class TestAtomicAggregate(unittest.TestCase):
     def test_construct(self):
 
         atomicaggregate = AtomicAggregate.construct(value=b'')
-        self.assertEqual(b'\xc0\x06\x00', atomicaggregate)
+        self.assertEqual(b'\x40\x06\x00', atomicaggregate)
 
     def test_construct_exception(self):
         self.assertRaises(UpdateMessageError, AtomicAggregate.construct, b'\x00')

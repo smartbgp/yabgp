@@ -28,7 +28,7 @@ class AtomicAggregate(Attribute):
     """
 
     ID = AttributeID.ATOMIC_AGGREGATE
-    FLAG = AttributeFlag.OPTIONAL + AttributeFlag.TRANSITIVE
+    FLAG = AttributeFlag.TRANSITIVE
 
     @classmethod
     def parse(cls, value):
