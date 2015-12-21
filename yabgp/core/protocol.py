@@ -630,6 +630,7 @@ class BGP(protocol.Protocol):
 
         :param msg: msg content
         """
+        self.msg_recv_stat['RouteRefresh'] += 1
         LOG.info(
             '[%s]Route Refresh message received, afi=%s, res=%s, safi=%s',
             self.factory.peer_addr, msg[0], msg[1], msg[2])
