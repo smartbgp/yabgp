@@ -43,6 +43,7 @@ msg_process_opts = [
                 help='Whether write keepalive message to disk'),
     cfg.StrOpt('format',
                default='json',
+               choices=['json', 'list'],
                help='The output format of bgp messagees.')
 ]
 
@@ -68,6 +69,7 @@ bgp_config_opts = [
                 default=True,
                 help='If support enhanced route refresh'),
     cfg.StrOpt('add_path',
+               choices=['ipv4_send', 'ipv4_receive', 'ipv4_both'],
                help='BGP additional path feature and supported address family'),
     cfg.BoolOpt('graceful_restart',
                 default=True,
@@ -100,7 +102,10 @@ bgp_peer_conf_cli_opts = [
     cfg.BoolOpt('rib',
                 default=False,
                 help='Whether maintain BGP rib table'),
-    cfg.StrOpt('tag', help='The agent role tag')
+    cfg.StrOpt('tag',
+               choices=['SRC', 'DST', 'BOTH'],
+               help='The agent role tag'
+               )
 ]
 
 CONF.register_cli_opts(bgp_peer_conf_cli_opts, group='bgp')
