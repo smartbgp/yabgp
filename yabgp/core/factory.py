@@ -165,8 +165,7 @@ class BGPPeering(BGPFactory):
             self.write_msg(
                 timestamp=time.time(),
                 msg_type=0,
-                msg=error_msg,
-                flush=True
+                msg={"msg": "Client connection failed: %s" % reason.getErrorMessage()}
             )
         LOG.info(error_msg)
         # There is no protocol instance yet at this point.

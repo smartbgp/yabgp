@@ -451,7 +451,7 @@ class BGP(protocol.Protocol):
         self.factory.write_msg(
             timestamp=time.time(),
             msg_type=3,
-            msg=nofi_msg,
+            msg={"msg": nofi_msg},
             flush=True
         )
         self.fsm.notification_received(msg[0], msg[1])
@@ -501,7 +501,7 @@ class BGP(protocol.Protocol):
             self.factory.write_msg(
                 timestamp=timestamp,
                 msg_type=4,
-                msg=None,
+                msg={"msg": None},
                 flush=True
             )
         self.fsm.keep_alive_received()
