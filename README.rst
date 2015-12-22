@@ -31,7 +31,7 @@ Features
 
 -  Address family support: IPv4 unicast, IPv4 Flowspec(limited);
 
--  Decode all BGP messages to human readable strings and write files to
+-  Decode all BGP messages to json format and write files to
    disk(configurable);
 
 -  Support basic RESTFUL API for getting running information and sending BGP messages.
