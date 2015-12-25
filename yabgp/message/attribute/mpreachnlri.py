@@ -17,6 +17,7 @@
 """
 
 import struct
+import binascii
 
 import netaddr
 
@@ -29,6 +30,7 @@ from yabgp.common import exception as excep
 from yabgp.common import constants as bgp_cons
 from yabgp.message.attribute.nlri.ipv4_mpls_vpn import IPv4MPLSVPN
 from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
+from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
 
 
 class MpReachNLRI(Attribute):
@@ -61,31 +63,62 @@ class MpReachNLRI(Attribute):
 
         try:
             afi, safi, nexthop_length = struct.unpack('!HBB', value[0:4])
-            nexthop_data = value[4:4 + nexthop_length]
-            nlri_data = value[5 + nexthop_length:]
+            nexthop_bin = value[4:4 + nexthop_length]
+            nlri_bin = value[5 + nexthop_length:]
         except Exception:
             # error when lenght is wrong
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                 data=repr(value))
+
+        #  Address Family IPv4
         if afi == afn.AFNUM_INET:
             if safi == safn.SAFNUM_LAB_VPNUNICAST:
-                nlri = IPv4MPLSVPN.parse(nlri_data)
+                nlri = IPv4MPLSVPN.parse(nlri_bin)
 
             elif safi == safn.SAFNUM_FSPEC_RULE:
                 # if nlri length is greater than 240 bytes, it is encoded over 2 bytes
-                if len(nlri_data) >= 240:
-                    nlri_data = nlri_data[2:]
+                if len(nlri_bin) >= 240:
+                    nlri_bin = nlri_bin[2:]
                 else:
-                    nlri_data = nlri_data[1:]
-                nlri = IPv4FlowSpec.parse(nlri_data)
+                    nlri_bin = nlri_bin[1:]
+                nlri = IPv4FlowSpec.parse(nlri_bin)
 
             else:
-                nlri = repr(nlri_data)
-        else:
-            nlri = repr(nlri_data)
+                nlri = repr(nlri_bin)
 
-        return dict(afi_safi=(afi, safi), nexthop=nexthop_data, nlri=nlri)
+        # #  Address Family IPv6
+        elif afi == afn.AFNUM_INET6:
+            # IPv6 unicast
+            if safi == safn.SAFNUM_UNICAST:
+                # decode nexthop
+                # RFC 2545
+                # The value of the Length of Next Hop Network Address field on a
+                # MP_REACH_NLRI attribute shall be set to 16, when only a global
+                # address is present, or 32 if a link-local address is also included in
+                # the Next Hop field.
+                #
+                # The link-local address shall be included in the Next Hop field if and
+                # only if the BGP speaker shares a common subnet with the entity
+                # identified by the global IPv6 address carried in the Network Address
+                # of Next Hop field and the peer the route is being advertised to.
+                nexthop_addrlen = 16
+                has_link_local = False
+                nexthop = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin[:nexthop_addrlen]), 16)))
+                if len(nexthop_bin) == 2 * nexthop_addrlen:
+                    # has link local address
+                    has_link_local = True
+                    linklocal_nexthop = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin[nexthop_addrlen:]), 16)))
+                nlri = IPv6Unicast.parse(nlri_bin)
+                if has_link_local:
+                    return dict(afi_safi=(afi, safi), nexthop=nexthop, linklocal_nexthop=linklocal_nexthop, nlri=nlri)
+                else:
+                    return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
+
+        else:
+            nlri = repr(nlri_bin)
+
+        return dict(afi_safi=(afi, safi), nexthop=nexthop_bin, nlri=nlri)
 
     @classmethod
     def construct(cls, value):
