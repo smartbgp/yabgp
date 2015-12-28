@@ -49,5 +49,21 @@ class TestMpReachNLRI(unittest.TestCase):
             'nexthop': '2001:db8::2',
             'nlri': ['::2001:db8:2:2/64', '::2001:db8:2:1/64', '::2001:db8:2:0/64']}
         self.assertEqual(data_hoped, MpReachNLRI.parse(data_bin))
+
+    def test_ipv6_unicast_construct(self):
+        data_parsed = {
+            'afi_safi': (2, 1),
+            'nexthop': '2001:3232::1',
+            'nlri': ['2001:3232::1/128', '::2001:3232:1:0/64', '2001:4837:1632::2/127']}
+        self.assertEqual(data_parsed, MpReachNLRI.parse(MpReachNLRI.construct(data_parsed)[3:]))
+
+    def test_ipv6_unicast_with_locallink_nexthop_construct(self):
+        data_hoped = {
+            'afi_safi': (2, 1),
+            'linklocal_nexthop': 'fe80::c002:bff:fe7e:0',
+            'nexthop': '2001:db8::2',
+            'nlri': ['::2001:db8:2:2/64', '::2001:db8:2:1/64', '::2001:db8:2:0/64']}
+        self.assertEqual(data_hoped, MpReachNLRI.parse(MpReachNLRI.construct(data_hoped)[3:]))
+
 if __name__ == '__main__':
     unittest.main()

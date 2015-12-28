@@ -155,6 +155,23 @@ class MpReachNLRI(Attribute):
                 raise excep.ConstructAttributeFailed(
                     reason='unsupport this sub address family',
                     data=value)
+
+        # ipv6 unicast
+        elif afi == afn.AFNUM_INET6:
+            if safi == safn.SAFNUM_UNICAST:
+                nexthop_len = 16
+                nexthop_bin = netaddr.IPAddress(value['nexthop']).packed
+                if value.get('linklocal_nexthop'):
+                    nexthop_len *= 2
+                    nexthop_bin += netaddr.IPAddress(value['linklocal_nexthop']).packed
+
+                nlri_bin = IPv6Unicast.construct(nlri_list=value['nlri'])
+
+                attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + struct.pack('!B', nexthop_len) + \
+                    nexthop_bin + b'\x00' + nlri_bin
+                return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID)\
+                    + struct.pack('!B', len(attr_value)) + attr_value
+
         else:
             raise excep.ConstructAttributeFailed(
                 reason='unsupport this sub address family',

@@ -22,6 +22,7 @@ from yabgp.message.attribute import Attribute
 from yabgp.message.attribute import AttributeFlag
 from yabgp.message.attribute import AttributeID
 from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
+from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
 from yabgp.common import afn
 from yabgp.common import safn
 from yabgp.common import exception as excep
@@ -57,18 +58,26 @@ class MpUnReachNLRI(Attribute):
             raise excep.UpdateMessageError(sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                                            data='')
 
-        nlri = value[3:]
+        nlri_bin = value[3:]
 
         # for IPv4
         if afi == afn.AFNUM_INET:
             # BGP flow spec
             if safi == safn.SAFNUM_FSPEC_RULE:
-                return IPv4FlowSpec().parse(value=nlri)
+                return IPv4FlowSpec().parse(value=nlri_bin)
             else:
                 return {'afi_safi': (afn.AFNUM_INET, safi),
-                        'withdraw': repr(nlri)}
+                        'withdraw': repr(nlri_bin)}
+        # for ipv6
+        elif afi == afn.AFNUM_INET6:
+            # for ipv6 unicast
+            if safi == safn.SAFNUM_UNICAST:
+                return dict(afi_safi=(afi, safi), withdraw=IPv6Unicast.parse(nlri_data=nlri_bin))
+            else:
+                return dict(afi_safi=(afi, safi), withdraw=repr(nlri_bin))
 
-        return dict(afi_safi=(afi, safi), withdraw=nlri)
+        else:
+            return dict(afi_safi=(afi, safi), withdraw=repr(nlri_bin))
 
     @classmethod
     def construct(cls, value):
@@ -103,6 +112,15 @@ class MpUnReachNLRI(Attribute):
                 raise excep.ConstructAttributeFailed(
                     reason='unsupport this sub address family',
                     data=value)
+        elif afi == afn.AFNUM_INET6:
+            if safi == safn.SAFNUM_UNICAST:
+                nlri = IPv6Unicast.construct(nlri_list=value['withdraw'])
+                if nlri:
+                    attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri
+                    return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
+                        + struct.pack('!B', len(attr_value)) + attr_value
+                else:
+                    return None
         else:
             raise excep.ConstructAttributeFailed(
                 reason='unsupport this sub address family',
