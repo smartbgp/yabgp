@@ -16,16 +16,13 @@
 """ Test Update message"""
 
 import unittest
-
 from yabgp.common.constants import HDR_LEN
 from yabgp.message.update import Update
 from yabgp.common.exception import UpdateMessageError
 
 
 class TestUpdate(unittest.TestCase):
-
     def test_parse_prefix_list(self):
-
         prefix_hex = b'\x13\xb8\x9d\xe0\x18E\xb3\xdd\x18E\xb3\xdc\x18\xd1f\xb2\x16Bpd\x18\xd06\xc2'
         nlri = ['184.157.224.0/19', '69.179.221.0/24', '69.179.220.0/24',
                 '209.102.178.0/24', '66.112.100.0/22', '208.54.194.0/24']
@@ -56,7 +53,6 @@ class TestUpdate(unittest.TestCase):
         self.assertEqual(b'\x00\x00\x00\x01\x20\x63\x63\x63\x63', nlri_hex)
 
     def test_parse_attributes_ipv4(self):
-
         attr_hex = b'@\x01\x01\x00@\x02\x08\x02\x03\x00\x01\x00\x02\x00\x03@\x03\x04\xac\x10\x01\x0e\x80\x04\x04' \
                    b'\x00\x00\x00\x00@\x05\x04\x00\x00\x00d\x80\t\x04\xac\x10\x01\x0e\x80\n\x08\x02\x02\x02\x02dddd'
         attributes = {1: 0,
@@ -122,6 +118,24 @@ class TestUpdate(unittest.TestCase):
         msg_hex = b'\x00\x09\x00\x00\x00\x01\x20\x63\x63\x63\x63\x00\x00'
         update = Update.parse(None, msg_hex, True, True)
         self.assertEqual([{'path_id': 1, 'prefix': '99.99.99.99/32'}], update['withdraw'])
+
+    def test_parse_and_construct_ipv6_unicast_update(self):
+        value_parse = {
+            'attr': {
+                1: 0,
+                2: [(2, [65502])],
+                4: 0,
+                14: {
+                    'afi_safi': (2, 1),
+                    'linklocal_nexthop': 'fe80::c002:bff:fe7e:0',
+                    'nexthop': '2001:db8::2',
+                    'nlri': ['::2001:db8:2:2/64', '::2001:db8:2:1/64', '::2001:db8:2:0/64']}
+            }}
+        self.assertEqual(value_parse['attr'], Update.parse(
+            None,
+            Update.construct(
+                msg_dict=value_parse,
+                asn4=True)[HDR_LEN:], True)['attr'], True)
 
 
 if __name__ == '__main__':
