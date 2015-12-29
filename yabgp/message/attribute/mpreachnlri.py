@@ -118,7 +118,7 @@ class MpReachNLRI(Attribute):
         else:
             nlri = repr(nlri_bin)
 
-        return dict(afi_safi=(afi, safi), nexthop=nexthop_bin, nlri=nlri)
+        return dict(afi_safi=(afi, safi), nexthop=nexthop_bin, nlri=nlri_bin)
 
     @classmethod
     def construct(cls, value):
@@ -143,7 +143,7 @@ class MpReachNLRI(Attribute):
                     nlri = IPv4FlowSpec.construct(value=value['nlri'])
                     if nlri:
                         attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + \
-                            struct.pack('!B', len(nexthop)) + nexthop + '\x00' + nlri
+                            struct.pack('!B', len(nexthop)) + nexthop + b'\x00' + nlri
                         return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
                             + struct.pack('!B', len(attr_value)) + attr_value
                 except Exception as e:

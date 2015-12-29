@@ -31,15 +31,20 @@ class IPv6Unicast(object):
         """
         nlri_list = []
         while nlri_data:
-            prefix_bit_len = struct.unpack('!B', nlri_data[0])[0]
+            if isinstance(nlri_data[0], int):
+                prefix_bit_len = int(nlri_data[0])
+            else:
+                prefix_bit_len = struct.unpack('!B', nlri_data[0])[0]
+            print (type(nlri_data))
             if prefix_bit_len % 8 == 0:
                 prefix_byte_len = prefix_bit_len / 8
             else:
                 prefix_byte_len = prefix_bit_len / 8 + 1
-            prefix_addr = netaddr.IPAddress(int(binascii.b2a_hex(nlri_data[1:prefix_byte_len + 1]), 16)).__str__() \
+            offset = int(prefix_byte_len + 1)
+            prefix_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(nlri_data[1:offset]), 16))) \
                 + '/%s' % prefix_bit_len
             nlri_list.append(prefix_addr)
-            nlri_data = nlri_data[prefix_byte_len + 1:]
+            nlri_data = nlri_data[int(prefix_byte_len) + 1:]
 
         return nlri_list
 
