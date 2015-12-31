@@ -32,7 +32,8 @@
 			"description": "# send update\n\n# send route refresh",
 			"order": [
 				"5c764253-4b1a-736b-eea3-3bca2e7377dd",
-				"94cd3abf-a102-cb05-c671-6268ef489c02"
+				"94cd3abf-a102-cb05-c671-6268ef489c02",
+				"ab79e54d-c442-9f71-9e8c-940523c41ef1"
 			],
 			"owner": "29527",
 			"lastUpdatedBy": {
@@ -67,8 +68,7 @@
 			"rawModeData": null,
 			"descriptionFormat": "html",
 			"folder": "c15d8fe3-1abc-0c5e-0bbf-4979ab393cb4",
-			"isFromCollection": true,
-			"collectionRequestId": "0a02e0cf-35b2-fc55-b94b-65a5fde07236"
+			"isFromCollection": true
 		},
 		{
 			"id": "21940e7a-9da9-f899-d31d-e8dae3c09c8f",
@@ -90,7 +90,6 @@
 			"descriptionFormat": "html",
 			"folder": "682ce0ca-ef74-d9af-a512-159ff1bc4cba",
 			"isFromCollection": true,
-			"collectionRequestId": "21940e7a-9da9-f899-d31d-e8dae3c09c8f",
 			"rawModeData": "{\n    \"filter\": [\n    {\n        \"type\": \"prefix\",\n        \"value\": \"2.2.2.2/32\"\n    }\n]\n}"
 		},
 		{
@@ -103,18 +102,19 @@
 			"data": [],
 			"dataMode": "params",
 			"version": 2,
-			"tests": "",
+			"tests": "tests[\"Response time is less than 200ms\"] = responseTime < 200;\n\ntests[\"Content-Type is present\"] = postman.getResponseHeader(\"Content-Type\");\n\nvar data = JSON.parse(responseBody);\n\n\n\nvar data = JSON.parse(responseBody);\n\ntests[\"Return value check\"] = data.value ==={\n  \"filter\": [\n    {\n      \"type\": \"community\",\n      \"value\": \"4134:100\"\n    }\n  ]\n};\n\npostman.setGlobalVariable(\"filter\", \"test\");",
 			"currentHelper": "basicAuth",
-			"helperAttributes": "{\"username\":\"admin\",\"password\":\"admin\",\"saveToRequest\":true,\"id\":\"basic\",\"timestamp\":1441674669014}",
-			"time": 1446706089499,
-			"name": "channel filter - get",
+			"helperAttributes": {
+				"username": "admin",
+				"password": "admin",
+				"saveToRequest": true,
+				"id": "basic",
+				"timestamp": 1441674669014
+			},
+			"time": 1450424252159,
+			"name": "channel filter - get-init",
 			"description": "",
-			"collectionId": "2331b642-660a-c670-0032-f81410a58926",
-			"rawModeData": null,
-			"descriptionFormat": "html",
-			"folder": "682ce0ca-ef74-d9af-a512-159ff1bc4cba",
-			"isFromCollection": true,
-			"collectionRequestId": "29edf5f0-58a8-4bd9-05a2-cc7a39f8f0d1"
+			"collectionId": "2331b642-660a-c670-0032-f81410a58926"
 		},
 		{
 			"id": "5c764253-4b1a-736b-eea3-3bca2e7377dd",
@@ -157,8 +157,7 @@
 			"rawModeData": null,
 			"descriptionFormat": "html",
 			"folder": "c15d8fe3-1abc-0c5e-0bbf-4979ab393cb4",
-			"isFromCollection": true,
-			"collectionRequestId": "880d2f0a-17ba-1add-ff7d-fd19dd0728a3"
+			"isFromCollection": true
 		},
 		{
 			"folder": "c15d8fe3-1abc-0c5e-0bbf-4979ab393cb4",
@@ -178,8 +177,7 @@
 			"currentHelper": "normal",
 			"helperAttributes": {},
 			"collectionId": "2331b642-660a-c670-0032-f81410a58926",
-			"isFromCollection": true,
-			"collectionRequestId": "89d59290-7fcb-938c-d150-f8f7bdb7d320"
+			"isFromCollection": true
 		},
 		{
 			"id": "94cd3abf-a102-cb05-c671-6268ef489c02",
@@ -201,8 +199,33 @@
 			"descriptionFormat": "html",
 			"folder": "3dd8daf1-0a91-6c8a-6234-8834d95cb300",
 			"isFromCollection": true,
-			"collectionRequestId": "94cd3abf-a102-cb05-c671-6268ef489c02",
 			"rawModeData": "      {\n        \"afi\": 1,\n        \"safi\": 1,\n        \"res\": 0\n      }"
+		},
+		{
+			"id": "ab79e54d-c442-9f71-9e8c-940523c41ef1",
+			"headers": "Authorization: Basic YWRtaW46YWRtaW4=\nContent-Type: application/json\n",
+			"url": "http://10.75.44.11:8802/v1/peer/2001:da8:2004:1000::1/send/update",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "basicAuth",
+			"helperAttributes": {
+				"username": "admin",
+				"password": "admin",
+				"saveToRequest": true,
+				"id": "basic",
+				"timestamp": 1441674669014
+			},
+			"time": 1451527597977,
+			"name": "send update ipv6 unicast",
+			"description": "if you want to withdraw\n\n```\n{\n    \"attr\": {\n                \"15\": {\n                    \"afi_safi\": [2, 1],\n                    \"nlri\": [\"::2001:db8:2:2/64\", \"::2001:db8:2:1/64\", \"::2001:db8:2:0/64\"]}\n            },\n    \"nlri\":[],\n    \"withdraw\": []\n}\n```",
+			"collectionId": "2331b642-660a-c670-0032-f81410a58926",
+			"responses": [],
+			"rawModeData": "{\n    \"attr\": {\n                \"1\": 0,\n                \"2\": [[2, [65502]]],\n                \"4\": 0,\n                \"14\": {\n                    \"afi_safi\": [2, 1],\n                    \"linklocal_nexthop\": \"fe80::c002:bff:fe7e:0\",\n                    \"nexthop\": \"2001:db8::2\",\n                    \"nlri\": [\"::2001:db8:2:2/64\", \"::2001:db8:2:1/64\", \"::2001:db8:2:0/64\"]}\n            },\n    \"nlri\":[],\n    \"withdraw\": []\n}"
 		},
 		{
 			"id": "b40a1f8b-c142-1f09-0109-f068bcf844b3",
@@ -224,8 +247,7 @@
 			"rawModeData": null,
 			"descriptionFormat": null,
 			"folder": "c15d8fe3-1abc-0c5e-0bbf-4979ab393cb4",
-			"isFromCollection": true,
-			"collectionRequestId": "b40a1f8b-c142-1f09-0109-f068bcf844b3"
+			"isFromCollection": true
 		}
 	]
 }
