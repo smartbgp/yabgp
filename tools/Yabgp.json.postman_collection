@@ -32,15 +32,17 @@
 			"description": "# send update\n\n# send route refresh",
 			"order": [
 				"5c764253-4b1a-736b-eea3-3bca2e7377dd",
-				"94cd3abf-a102-cb05-c671-6268ef489c02",
-				"ab79e54d-c442-9f71-9e8c-940523c41ef1"
+				"ab79e54d-c442-9f71-9e8c-940523c41ef1",
+				"38ebfd2d-26fe-7acb-4ff4-34a072bf968c",
+				"94cd3abf-a102-cb05-c671-6268ef489c02"
 			],
 			"owner": "29527",
 			"lastUpdatedBy": {
 				"id": "29527",
 				"username": "xiaoquwl"
 			},
-			"lastRevision": 76657604
+			"lastRevision": 76657604,
+			"collectionId": "2331b642-660a-c670-0032-f81410a58926"
 		}
 	],
 	"timestamp": 0,
@@ -115,6 +117,34 @@
 			"name": "channel filter - get-init",
 			"description": "",
 			"collectionId": "2331b642-660a-c670-0032-f81410a58926"
+		},
+		{
+			"id": "38ebfd2d-26fe-7acb-4ff4-34a072bf968c",
+			"headers": "Content-Type: application/json\nAuthorization: Basic YWRtaW46YWRtaW4=\n",
+			"url": "http://10.75.44.10:8888/v1/peer/10.75.44.228/send/update",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "POST",
+			"collectionId": "2331b642-660a-c670-0032-f81410a58926",
+			"data": [],
+			"dataMode": "raw",
+			"name": "Send update ipv4 flowspec",
+			"description": "if you want to withdraw the prefix we sent, you can use the same url and http method, just use the following as POST data.\n\n```\n{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [1, 133], \n            \"withdraw\": [{\"1\": \"192.88.2.3/24\", \"2\": \"192.89.1.3/24\"}]\n        }\n    }\n}\n```",
+			"descriptionFormat": "html",
+			"time": 1452055692958,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "basicAuth",
+			"helperAttributes": {
+				"username": "admin",
+				"password": "admin",
+				"saveToRequest": true,
+				"id": "basic",
+				"timestamp": 1441674669014
+			},
+			"folder": "3dd8daf1-0a91-6c8a-6234-8834d95cb300",
+			"rawModeData": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [1, 133], \n            \"nexthop\": \"\", \n            \"nlri\": [{\"1\": \"192.88.2.3/24\", \"2\": \"192.89.1.3/24\"}]\n        },\n        \"16\":[[32774, \"100:6250000\"]]\n    }\n}"
 		},
 		{
 			"id": "5c764253-4b1a-736b-eea3-3bca2e7377dd",
@@ -222,7 +252,7 @@
 			},
 			"time": 1451527597977,
 			"name": "send update ipv6 unicast",
-			"description": "if you want to withdraw\n\n```\n{\n    \"attr\": {\n                \"15\": {\n                    \"afi_safi\": [2, 1],\n                    \"nlri\": [\"::2001:db8:2:2/64\", \"::2001:db8:2:1/64\", \"::2001:db8:2:0/64\"]}\n            },\n    \"nlri\":[],\n    \"withdraw\": []\n}\n```",
+			"description": "if you want to withdraw the prefix we sent, you can use the same url and http method, just use the following as POST data.\n\n```\n{\n    \"attr\": {\n                \"15\": {\n                    \"afi_safi\": [2, 1],\n                    \"nlri\": [\"::2001:db8:2:2/64\", \"::2001:db8:2:1/64\", \"::2001:db8:2:0/64\"]}\n            },\n    \"nlri\":[],\n    \"withdraw\": []\n}\n```",
 			"collectionId": "2331b642-660a-c670-0032-f81410a58926",
 			"responses": [],
 			"rawModeData": "{\n    \"attr\": {\n                \"1\": 0,\n                \"2\": [[2, [65502]]],\n                \"4\": 0,\n                \"14\": {\n                    \"afi_safi\": [2, 1],\n                    \"linklocal_nexthop\": \"fe80::c002:bff:fe7e:0\",\n                    \"nexthop\": \"2001:db8::2\",\n                    \"nlri\": [\"::2001:db8:2:2/64\", \"::2001:db8:2:1/64\", \"::2001:db8:2:0/64\"]}\n            },\n    \"nlri\":[],\n    \"withdraw\": []\n}"
