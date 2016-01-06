@@ -65,5 +65,15 @@ class TestMpReachNLRI(unittest.TestCase):
             'nlri': ['::2001:db8:2:2/64', '::2001:db8:2:1/64', '::2001:db8:2:0/64']}
         self.assertEqual(data_hoped, MpReachNLRI.parse(MpReachNLRI.construct(data_hoped)[3:]))
 
+    def test_ipv4_flowspec_parse(self):
+        data_bin = b'\x80\x0e\x10\x00\x01\x85\x00\x00\x0a\x01\x18\xc0\x55\x02\x02\x18\xc0\x55\x01'
+        data_dict = {'afi_safi': (1, 133), 'nexthop': '', 'nlri': [{1: '192.85.2.0/24'}, {2: '192.85.1.0/24'}]}
+        self.assertEqual(data_dict, MpReachNLRI.parse(data_bin[3:]))
+
+    def test_ipv4_flowspec_construct(self):
+        data_bin = b'\x80\x0e\x10\x00\x01\x85\x00\x00\x0a\x01\x18\xc0\x55\x02\x02\x18\xc0\x55\x01'
+        data_dict = {'afi_safi': (1, 133), 'nexthop': '', 'nlri': [{1: '192.85.2.0/24'}, {2: '192.85.1.0/24'}]}
+        self.assertEqual(data_bin, MpReachNLRI.construct(data_dict))
+
 if __name__ == '__main__':
     unittest.main()

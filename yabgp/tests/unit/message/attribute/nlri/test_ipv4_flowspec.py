@@ -74,5 +74,16 @@ class TestIPv4FlowSpec(unittest.TestCase):
         print operator_str_dict(operator_str3)
         print operator_str_dict(operator_str4)
 
+    def test_construct_prefix(self):
+        prefix_bin = b'\x18\xc0\x55\x02'
+        prefix_str = '192.85.2.0/24'
+        self.assertEqual(prefix_bin, IPv4FlowSpec.construct_prefix(prefix_str))
+
+    def test_construct_nlri(self):
+        nlri_bin = b'\x0a\x01\x18\xc0\x55\x02\x02\x18\xc0\x55\x01'
+        nlri_list = [{1: '192.85.2.0/24'}, {2: '192.85.1.0/24'}]
+        self.assertEqual(nlri_bin, IPv4FlowSpec.construct_nlri(nlri_list))
+
+
 if __name__ == '__main__':
     unittest.main()

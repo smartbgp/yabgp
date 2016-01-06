@@ -64,10 +64,14 @@ class MpUnReachNLRI(Attribute):
         if afi == afn.AFNUM_INET:
             # BGP flow spec
             if safi == safn.SAFNUM_FSPEC_RULE:
-                return IPv4FlowSpec().parse(value=nlri_bin)
+                # if nlri length is greater than 240 bytes, it is encoded over 2 bytes
+                if len(nlri_bin) >= 240:
+                    nlri_bin = nlri_bin[2:]
+                else:
+                    nlri_bin = nlri_bin[1:]
+                return dict(afi_safi=(afi, safi), withdraw=IPv4FlowSpec().parse(value=nlri_bin))
             else:
-                return {'afi_safi': (afn.AFNUM_INET, safi),
-                        'withdraw': repr(nlri_bin)}
+                return dict(afi_safi=(afn.AFNUM_INET, safi), withdraw=repr(nlri_bin))
         # for ipv6
         elif afi == afn.AFNUM_INET6:
             # for ipv6 unicast

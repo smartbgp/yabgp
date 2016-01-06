@@ -86,14 +86,11 @@ class IPv4FlowSpec(object):
                     else:
                         nlri_tmp += struct.pack('!B', int(f_type)) + '\x81' + struct.pack('!B', nlri[f_type])
                     # TODO(penxiao) other flow type
-            # nlri_data += struct.pack('!H', len(nlri_tmp)) + nlri_data
-            if len(nlri_tmp) >= 240:
-                nlri_hex = struct.pack('!H', len(nlri_tmp)) + nlri_tmp
-                nlri_data += nlri_hex
-            elif nlri_tmp:
-                nlri_data += struct.pack('!B', len(nlri_tmp)) + nlri_tmp
-        return nlri_data
-        #     return struc
+            nlri_data += nlri_tmp
+        if len(nlri_data) >= 240:
+            return struct.pack('!H', len(nlri_data)) + nlri_data
+        elif nlri_data:
+            return struct.pack('!B', len(nlri_data)) + nlri_data
 
     @staticmethod
     def parse_prefix(data):

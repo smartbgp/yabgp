@@ -38,5 +38,15 @@ class TestMpUnReachNLRI(unittest.TestCase):
             'withdraw': ['2001:3232::1/128', '::2001:3232:1:0/64', '2001:4837:1632::2/127']}
         self.assertEqual(nlri_dict, MpUnReachNLRI.parse(MpUnReachNLRI.construct(nlri_dict)[3:]))
 
+    def test_ipv4_flowspec_parse(self):
+        data_bin = b'\x00\x01\x85\x0a\x01\x18\xc0\x55\x02\x02\x18\xc0\x55\x01'
+        nlri_dict = {'afi_safi': (1, 133), 'withdraw': [{1: '192.85.2.0/24'}, {2: '192.85.1.0/24'}]}
+        self.assertEqual(nlri_dict, MpUnReachNLRI.parse(data_bin))
+
+    def test_ipv4_flowspec_construct(self):
+        data_bin = b'\x00\x01\x85\x0a\x01\x18\xc0\x55\x02\x02\x18\xc0\x55\x01'
+        nlri_dict = {'afi_safi': (1, 133), 'withdraw': [{1: '192.85.2.0/24'}, {2: '192.85.1.0/24'}]}
+        self.assertEqual(data_bin, MpUnReachNLRI.construct(nlri_dict)[3:])
+
 if __name__ == '__main__':
     unittest.main()
