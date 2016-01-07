@@ -163,7 +163,7 @@
 # SECONDARY = 2 Queries are distributed among secondaries. An error is raised if no secondaries are available.
 # SECONDARY_PREFERRED = 3  Queries are distributed among secondaries, or the primary if no secondary is available.
 # NEAREST = 4 Queries are distributed among all members.
-# read_preference = 3
+# read_preference = 0
 
 # write concern (integer or string)If this is a replica set, write operations will block until
 # they have been replicated to the specified number or tagged set of servers. w= always includes
