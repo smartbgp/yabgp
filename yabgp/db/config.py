@@ -38,7 +38,6 @@ database_replica_options = [
                help='the replica set name'),
     cfg.IntOpt('read_preference',
                default=0,
-               choices=[0, 1, 2, 3, 4],
                help='the read preference mode for this instance'),
     cfg.IntOpt('write_concern',
                default=-1,
