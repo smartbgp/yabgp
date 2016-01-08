@@ -1,7 +1,7 @@
 # Copyright 2015 Cisco Systems, Inc.
 # All rights reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    Licensed under the Apache License, version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -33,8 +33,8 @@ class TestOpen(unittest.TestCase):
                   b'\x02\x06\x01\x04\x00\x01\x00\x01\x02\x02\x80\x00\x02\x02\x02\x00\x02\x03' \
                   b'\x83\x01\x00\x02\x06\x41\x04\x00\x01\x04\x6a'
         open_msg = self.open.parse(msg_hex)
-        results = {'bgpID': '3.3.3.9', 'Version': 4, 'holdTime': 180, 'ASN': 66666,
-                   'Capabilities': {
+        results = {'bgp_id': '3.3.3.9', 'version': 4, 'hold_time': 180, 'asn': 66666,
+                   'capabilities': {
                        'cisco_multi_session': True,
                        'cisco_route_refresh': True,
                        'four_bytes_as': True,
@@ -84,11 +84,11 @@ class TestOpen(unittest.TestCase):
                   b'\x02\x02\x00\x02\x02\x46\x00\x02\x06\x45\x04\x00\x01\x01\x03\x02\x06\x41\x04\x00\x00\xfc\x00'
         open_msg = self.open.parse(msg_hex)
         results = {
-            'bgpID': '10.0.0.6',
-            'Version': 4,
-            'holdTime': 180,
-            'ASN': 64512,
-            'Capabilities': {
+            'bgp_id': '10.0.0.6',
+            'version': 4,
+            'hold_time': 180,
+            'asn': 64512,
+            'capabilities': {
                 'cisco_route_refresh': True,
                 'route_refresh': True,
                 'add_path': 'ipv4_both',

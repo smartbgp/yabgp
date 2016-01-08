@@ -180,11 +180,11 @@ class Open(object):
                 self.opt_paras = self.opt_paras[opt_para_length + 2:]
 
             return {
-                'Version': self.version,
-                'ASN': self.asn,
-                'holdTime': self.hold_time,
-                'bgpID': self.bgp_id,
-                'Capabilities': self.capa_dict
+                'version': self.version,
+                'asn': self.asn,
+                'hold_time': self.hold_time,
+                'bgp_id': self.bgp_id,
+                'capabilities': self.capa_dict
             }
 
     @staticmethod
