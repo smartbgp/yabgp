@@ -1,211 +1,298 @@
-Message Format
-==============
+BGP Message Format
+==================
 
-BGP messsage structure
-----------------------
+Basic
+-----
 
-BGP message is a **Python List**, and it contains more than three parts.
+BGP message is **json** format, and it has four keys: ``t``, ``seq``, ``type`` and ``msg``.
 
-[ **timestamp**, **sequence number**, **type**, **other information** (at least one )]
-
-**timestamp** It is a standard unix time stamp, the number of seconds since 00:00:00 UTC on January 1, 1970.
+``t`` is timestamp,  it is a standard unix time stamp, the number of seconds since 00:00:00 UTC on January 1, 1970.
 
 Example:
 
-.. code-block:: python
+.. code-block:: json
     :emphasize-lines: 3,5
 
     timestamp = 1372051151.2572551 # that is Mon Jun 24 13:19:11 2013.
 
-**sequence number**  It is a interger and represents the message number.
+``seq`` is sequence number  It is a interger and represents the message number.
 
-**type** It is a interger and represents the message type.
+``type`` It is a interger that represents the message type.
 
 there are eight types of message now.
 
-Type = 0  ( session information, TCP Connection information)
+============  =============================
+Type          Description
+============  =============================
+0             Session information Message
+1             BGP Open Message
+2             BGP Update Message
+3             BGP Notification Message
+4             BGP Keepalive Message
+5             BGP Route Refresh Message
+128           BGP Cisco Route Refresh Message
+6             Malformed Update Message
+============  =============================
 
-Type = 1  ( open message )
+``msg`` is the message contents, and its format is different according to different message types.
 
-Type = 2  ( update message )
+Session Info Message
+--------------------
 
-Type = 3  ( notification message )
+Session information message (type = 0) always represents the TCP connection is closed by some reason, for example, the connection
+is refused or the connection is reset by the other site.
 
-Type = 4  (keepalive message)
-
-Type = 5  ( route refresh message)
-
-Type = 128 ( cisco route refresh message)
-
-Type = 6  (Malformed update message )
-
-- **1. type = 0**
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    [timestamp, sequence number, type = 0, session information]
-    # Example
-    [1372065358.666234, 141353378, 0, 'Connection lost:Connection to the other side was lost in a non-clean fashion: Connection lost.']
-
-- **2. type = 1**
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    [ timestamp, sequence number, type, decoded_message]
-    # message example
-    [1371604039.783044,
-     1,
-     1,
-     {'ASN': 100,
-      'Capabilities': {'4byteAS': True,
-                       'AFI_SAFI': [(1, 1)],
-                       'GracefulRestart': False,
-                       'ciscoMultiSession': False,
-                       'ciscoRouteRefresh': True,
-                       'routeRefresh': True},
-      'Version': 4,
-      'bgpID': '1.1.1.1',
-      'holdTime': 180}]
-
-- **3. type = 2**
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    [ timestamp, sequence number, type, decoded_message]
-
-Decoded message is a Python dictionary
-
-.. code-block:: python
-    :emphasize-lines: 3,5
+.. code-block:: json
 
     {
-        'attr': {},
-        'withdraw': [],
-        'nlri': []
+        "t": 1372065358.666234,
+        "seq": 12,
+        "type": 0,
+        "msg": "Connection lost:Connection to the other side was lost in a non-clean fashion."
+    }
+    {
+        "t": 1451360038.041204,
+        "seq": 1,
+        "type": 0,
+        "msg": "Client connection failed: Couldn't bind: 49: Can't assign requested address."
     }
 
-The decoded message dictionary has three keys, **attr**, **withdraw**, **nlri**.
+Open Message
+------------
 
-The value of key **attr** is a Python dictionary. it contains the BGP prefix's attribute, the dict's key represent
+BGP Open message (type = 1). for the meaning of the keys, please check RFC 4271 section 4.2.
+
+.. code-block:: json
+
+    {
+        "t": 1452008814.016207,
+        "seq": 1,
+        "type": 1,
+        "msg":{
+            "hold_time": 180,
+            "capabilities": {
+                "cisco_route_refresh": true,
+                "route_refresh": true,
+                "graceful_restart": true,
+                "add_path": "ipv4_both",
+                "four_bytes_as": true,
+                "afi_safi": [[1, 1], [1, 133]]
+            },
+            "bgp_id": "9.9.9.9",
+            "version": 4,
+            "asn": 9308
+        }
+    }
+
+Update Message
+---------------
+
+BGP Update message (type = 2), the value of ``msg`` for a update message is a dict, and it
+has three keys : ``attr``, ``nlri``, ``withdraw``.
+
+=========== ========   ==============
+Key         Value      Description
+=========== ========   ==============
+"attr"      dict       Path Attributes
+"nlri"      list       Network Layer Reachability Information
+"withdraw"  list       Withdrawn Routes
+=========== ========   ==============
+
+simple format:
+
+.. code-block:: json
+
+    {
+        "msg":{
+            "attr": {},
+            "withdraw": [],
+            "nlri": []
+        }
+    }
+
+and here is a full BGP update message example:
+
+.. code-block:: json
+
+    {
+        "t": 1450668281.624188,
+        "seq": 17,
+        "type": 2,
+        "msg": {
+            "attr": {
+                "1": 0,
+                "2": [[2, [209, 2768, 2768, 2768, 2768]]],
+                "3": "1.1.1.2",
+                "5": 500,
+                "8": ["1234:5678", "2345:6789"],
+                "9": "1.1.1.2",
+                "10": ["1.1.1.1", "2.2.2.2", "3.3.3.3"]
+            },
+            "nlri": ["65.122.75.0/24", "65.122.74.0/24"],
+            "withdraw": []
+        }
+    }
+
+and here is a withdraw message:
+
+.. code-block:: json
+
+    {
+        "t": 1450163221.123568,
+        "seq": 17,
+        "type": 2,
+        "msg": {
+            "attr": {},
+            "nlri": [],
+            "withdraw": ["65.122.75.0/24", "65.122.74.0/24"]
+        }
+    }
+
+The ``withdraw`` and ``nlri`` are all List, they contain the particular prefix string.
+Here is one real BGP decoded message example
+
+Example for a ``nlri`` or ``withdraw`` value:
+
+.. code-block:: json
+
+    ["1.1.1.1/32", "2.2.2.2/32"]
+
+The value of key ``attr`` is a dictionary. it contains the BGP prefix's attribute, the dict's key represent
 what of kind of attribute, and the value is this attribute's value.
 
 The attribute we supported now is: (reference by `IANA <http://www.iana.org/assignments/bgp-parameters/bgp-parameters.xml>`_)
 
-.. code-block:: python
+.. code-block:: json
     :emphasize-lines: 3,5
 
     {
-        1: 'ORIGIN',
-        2: 'AS_PATH',
-        3: 'NEXT_HOP',
-        4: 'MULTI_EXIT_DISC',
-        5: 'LOCAL_PREF',
-        6: 'ATOMIC_AGGREGATE',
-        7: 'AGGREGATOR',
-        8: 'COMMUNITY',
-        9: 'ORIGINATOR_ID',
-        10: 'CLUSTER_LIST',
-        14: 'MP_REACH_NLRI',
-        15: 'MP_UNREACH_NLRI',
-        16: 'EXTENDED_COMMUNITY',
-        17: 'AS4_PATH',
-        18: 'AS4_AGGREGATOR',
-        128: 'ATTR_SET'
+        "1": "ORIGIN",
+        "2": "AS_PATH",
+        "3": "NEXT_HOP",
+        "4": "MULTI_EXIT_DISC",
+        "5": "LOCAL_PREF",
+        "6": "ATOMIC_AGGREGATE",
+        "7": "AGGREGATOR",
+        "8: "COMMUNITY",
+        "9": "ORIGINATOR_ID",
+        "10": "CLUSTER_LIST",
+        "14": "MP_REACH_NLRI",
+        "15": "MP_UNREACH_NLRI",
+        "16": "EXTENDED_COMMUNITY",
+        "17": "AS4_PATH",
+        "18": "AS4_AGGREGATOR",
+        "128": "ATTR_SET"
     }
 
-The **withdraw** and **nlri** are all Python List, they contain the particular prefix. Here is one real BGP decoded message example
+Example for ``attr`` value:
 
-.. code-block:: python
-    :emphasize-lines: 3,5
+.. code-block:: json
 
-    # this is decoded update message
-    {'attr': {1: 0,
-              2: [(2, [3356, 20485, 12772])],
-              3: '219.158.1.203',
-              4: 45400,
-              8: ['4837:2110', '4837:3356'],
-              9: '219.158.1.203',
-              10: ['219.158.1.209', '0.0.0.30'],
-              '5': 110},
-     'nlri': ['46.52.204.0/24',
-              '46.52.204.0/23',
-              '94.28.54.0/24',
-              '79.122.216.0/22',
-              '46.52.146.0/23'],
-     'withdraw': []}
-
-     # this is decoded withdraw message
-     {'attr': {},
-      'nlri': [],
-      'withdraw': ['46.52.204.0/24',
-                  '46.52.204.0/23',
-                  '94.28.54.0/24',
-                  '79.122.216.0/22',
-                  '46.52.146.0/23']}
+    {
+        "1": 0,
+        "2": [[2, [209, 2768, 2768, 2768, 2768]]],
+        "3": "1.1.1.2",
+        "5": 500,
+        "8": ["1234:5678", "5678:1234"],
+        "9": "1.1.1.2",
+        "10": ["1.1.1.1", "2.2.2.2", "3.3.3.3"]
+    }
 
 Next, we will explain the detail structure of each attribute.
 
-.. [1] ORIGIN (key = 1)
+ORIGIN
+^^^^^^^
 
-**Origin** value is one Python interger, has three kinds of value (0, 1, 2 )
+``ORIGIN`` value is an interger, has three kinds of value (0, 1, 2 ). it defines the
+origin of the path information.  The data octet can assume the following values:
 
-.. code-block:: python
-    :emphasize-lines: 3,5
+======== ===
+Value    Meaning
+======== ===
+0        IGP
+1        EGP
+2        INCOMPLETE
+======== ===
 
-    {
-        0: 'IGP',
-        1: 'EGP',
-        2: 'INCOMPLETE'
-    }
+AS_PATH
+^^^^^^^
 
-.. [2] AS_PATH (key = 2)
-
-**AS_PATH** value is one Python List, it has one item at least, each item is a Python Tuple and it reprensents one **AS PATH** segment.
-
-[(sgement_1), (segment_2), ......] eg. [(2, [3356, 20485, 12772]), (3, [65501,65502])]
+``AS_PATH`` value is a list, it has one item at least, each item also is a list and it reprensents
+one ``AS PATH`` segment,like [[sgement_1], [segment_2], ......], and each AS path segment is represented
+by [path segment type,  path segment value]. For path sgement value, its a list of interger.
 
 each segment's first item is segment type, it has four kinds of vlaue.
 
-.. code-block:: python
-    :emphasize-lines: 3,5
+====== ===
+Value  Meaning
+====== ===
+1      AS_SET: unordered set of ASes a route in the UPDATE message has traversed
+2      AS_SEQUENCE: ordered set of ASes a route in the UPDATE message has traversed
+====== ===
+
+For example:
+
+.. code-block:: json
 
     {
-        1: 'AS_SET',
-        2: 'AS_SEQUENCE',
-        3: 'AS_CONFED_SEQUENCE',
-        4: 'AS_CONFED_SET'
+        "attr": {
+            "2": [[2, [209, 2768, 2768, 2768, 2768]]]
+        }
     }
 
-.. [3] NEXT_HOP (key = 3)
+For this example, it only has one AS path segment: ``[2, [209, 2768, 2768, 2768, 2768]]``,
+this segment's type is ``AS_SEQUENCE``, and its value is ``[209, 2768, 2768, 2768, 2768]``.
 
-**NEXT_HOP** is one Python string, IPv4 address format, eg: '10.0.0.1'.
+NEXT_HOP
+^^^^^^^^
 
-.. [4] MULTI_EXIT_DISC (key = 4)
+``NEXT_HOP`` is one a string, IPv4 address format, eg: '10.0.0.1'.
 
-**MULTI_EXIT_DISC** is one Python interger.
+MULTI_EXIT_DISC
+^^^^^^^^^^^^^^^
 
-.. [5] LOCAL_PREF (key = 5)
+``MULTI_EXIT_DISC`` is an interger.
 
-**LOCAL_PREF** is one Python interger.
+LOCAL_PREF
+^^^^^^^^^^
 
-.. [6] ATOMIC_AGGREGATE (key = 6)
+``LOCAL_PREF`` is an interger.
 
-**ATOMIC_AGGREGATE** is one empty Python string, "".
+ATOMIC_AGGREGATE
+^^^^^^^^^^^^^^^^
 
-.. [7] AGGREGATOR (key = 7)
+``ATOMIC_AGGREGATE`` is one empty string, ``""``.
 
-**AGGREGATOR** is one Python tuple, it has two items, (asn, aggregator), the first the AS number, the second is IP address. eg: (1239, 10.1.1.2).
+AGGREGATOR
+^^^^^^^^^^
 
-.. [8] COMMUNITY (key = 8)
+``AGGREGATOR`` is a list, it has two items, [asn, aggregator], the first is AS number, the second is IP address.
+eg:
 
-**COMMUNITY** is one Python List, each item of this List is Python String.
+.. code-block:: json
 
-eg: ['NO_EXPORT', '4837:9929']
+    {
+        "attr": {
+            "7": [100, "1.1.1.1"]
+        }
+    }
 
-There are two kinds of **COMMUNITY**, first is "Well-Konwn", second is "The Others".
+COMMUNITY
+^^^^^^^^^
+
+``COMMUNITY`` is a list, each item of this List is a string.
+
+eg:
+
+.. code-block:: json
+
+    {
+        "attr": {
+            "8": ["NO_EXPORT", "1234:5678"]
+        }
+    }
+
+There are two kinds of ``COMMUNITY``, first is "Well-Konwn", second is "The Others".
 
 "Well-known" COMMUNITY
 
@@ -223,120 +310,203 @@ There are two kinds of **COMMUNITY**, first is "Well-Konwn", second is "The Othe
     NO_EXPORT_SUBCONFED        = 0xFFFFFF03
     NOPEER                     = 0xFFFFFF04
 
-.. [9] ORIGINATOR_ID (key = 9)
+ORIGINATOR_ID
+^^^^^^^^^^^^^^
 
-**ORIGINATOR_ID** is one Python string, format as IPv4 address, eg: "0.0.0.1", "10.0.0.1".
+``ORIGINATOR_ID`` is a string, format as IPv4 address, just ``NEXT_HOP`` eg: "10.0.0.1".
 
-.. [10] CLUSTER_LIST (key = 10)
+CLUSTER_LIST
+^^^^^^^^^^^^
 
-**CLUSTER_LIST** is one Python List, each item in this List is one Python string, format as IPv4
-address. eg: ['0.0.0.1', '0.0.0.2', '10.0.0.1'].
+``CLUSTER_LIST`` is a list, each item in this List is a string, format as IPv4 address.
+eg:
 
-.. [14] MP_REACH_NLRI (key = 14)
+.. code-block:: json
 
-**MP_REACH_NLRI** is one complex Python dict which has three key **afi_safi**, **next_hop**, **nlri**.
-and according to difference between the **afi_safi**, the Data structure of **next_hop** and **nlri** are different.
+    {
+        "attr": {
+            "10": ["1.1.1.1", "2.2.2.2", "3.3.3.3"]
+        }
+    }
 
-Here are the details.
+MP_REACH_NLRI
+^^^^^^^^^^^^^^
 
-**a.** afi_safi=(1, 4)
+.. note::
 
-**b.** afi_safi=(1, 128)
+    Only No IPv4 Unicast BGP Update messages have the attributes ``MP_REACH_NLRI`` and ``MP_UNREACH_NLRI``, because
+    for IPv4 Unicast, its NLRI and WITHDRAW informations are contain in ``nlri`` and ``withdraw`` value. So for No
+    IPv4 Unicast BGP messages, its ``nlri`` and ``withdraw`` are empty, and its own nlri and withdraw information
+    contains in ``MP_REACH_NLRI`` and ``MP_UNREACH_NLRI``.
 
-**c.** afi_safi=(2, 1)
+``MP_REACH_NLRI`` is one complex dict which has three key ``afi_safi``, ``next_hop``, ``nlri``.
+and according to differences between the ``afi_safi``, the Data structure of ``next_hop`` and ``nlri`` are different.
 
-**d.** afi_safi=(2, 4)
+``afi_safi`` value and meanings, reference by `Address Family Numbers <http://www.iana.org/assignments/address-family-numbers/address-family-numbers.xhtml>`_ and
+`Subsequent Address Family Identifiers (SAFI) Parameters <http://www.iana.org/assignments/safi-namespace/safi-namespace.xhtml>`_
 
-**e.** afi_safi=(2, 128)
+In addition to IPv4 Unicast, Now we support IPv6 Unicast and IPv4 Flowspec, here are the ``afi_safi`` value example:
 
-**f.** afi_safi=(1, 133)
+========= ===
+Value     Meaning
+========= ===
+[1, 133]  IPv4 Flowspec
+[2, 1]    IPv6 Unicast
+...       ...
+========= ===
+
+IPv4 FlowSpec
+"""""""""""""
+
+.. code-block:: json
+
+    {
+        "attr":{
+            "14": {
+                "afi_safi": [1, 133],
+                "nexthop": "",
+                "nlri": [{"1": "192.88.2.3/24", "2": "192.89.1.3/24"}]
+            }
+        }
+    }
+
+IPv6 Unicast
+""""""""""""
+
+For IPv6 Unicast, it has three or four keys:
+
+.. code-block:: json
+
+    {
+        "attr":
+            "14": {
+                "afi_safi": [2, 1],
+                "linklocal_nexthop": "fe80::c002:bff:fe7e:0",
+                "nexthop": "2001:db8::2",
+                "nlri": ["::2001:db8:2:2/64", "::2001:db8:2:1/64", "::2001:db8:2:0/64"]}
+    }
+
+The value of the Length of Next Hop Network Address field on a ``MP_REACH_NLRI`` attribute shall be set to 16,
+when only a global address is present, or 32 if a link-local address is also included in the Next Hop field.
+
+MP_UNREACH_NLRI
+^^^^^^^^^^^^^^^
+
+The difference between ``MP_REACH_NLRI`` and ``MP_UNREACH_NLRI`` is that ``MP_UNREACH_NLRI`` only has two keys,
+``afi_safi`` and ``withdraw``, and there structure is the same.
+
+IPv4 FlowSpec
+"""""""""""""
+
+.. code-block:: json
+
+    {
+        "attr":{
+            "15": {
+                "afi_safi": [1, 133],
+                "withdraw": [{"1": "192.88.2.3/24", "2": "192.89.1.3/24"}]
+            }
+        }
+    }
+
+IPv6 Unicast
+""""""""""""
+
+.. code-block:: json
+
+    {
+        "attr":
+            "15": {
+                "afi_safi": [2, 1],
+                "withdraw": ["::2001:db8:2:2/64", "::2001:db8:2:1/64", "::2001:db8:2:0/64"]}
+    }
+
+Notification Message
+--------------------
+
+BGP notification message is type 3.
+
+.. code-block:: json
+
+    {
+        "t": 1452236692.201259,
+        "seq": 28,
+        "type": 3,
+        "msg": {
+            "data": "'\\x03\\xe8'",
+            "sub_error": "Bad Peer AS",
+            "error": "OPEN Message Error"
+        }
+    }
+
+Keepalive Message
+-----------------
+
+BGP Keepalive message type is 4.
+Example:
+
+.. code-block:: json
+
+    {
+        "t": 1372065358.666234,
+        "seq": 11,
+        "type": 4,
+        "msg": null
+    }
+
+Route Refresh Message
+----------------------
+
+Route refresh message content is (AFI, SAFI).
+
+.. code-block:: json
+
+    {
+        "t": 1452237198.880322,
+        "seq": 10,
+        "type": 5,
+        "msg": {
+            "res": 0,
+            "afi": 1,
+            "safi": 1
+        }
+    }
 
 
-.. [15] MP_UNREACH_NLRI (key=15)
+Cisco Route Refresh Message
+----------------------------
 
-The difference between **MP_REACH_NLRI** and **MP_UNREACH_NLRI** is that **MP_UNREACH_NLRI** only has two keys,
-**afi_safi** and **withdraw**.
+.. code-block:: json
 
-Here are some examples:
-
-**a.** afi_safi=(1, 4)
-
-**b.** afi_safi=(1, 128)
-
-**c.** afi_safi=(2, 1)
-
-**d.** afi_safi=(2, 4)
-
-**e.** afi_safi=(2, 128)
-
-**f.** afi_safi=(1, 133)
+    {
+        "t": 1452237198.880322,
+        "seq": 10,
+        "type": 128,
+        "msg": {
+            "res": 0,
+            "afi": 1,
+            "safi": 1
+        }
+    }
 
 
-Here are some real BGP Update message examples:
+Malformed Update Message
+-------------------------
 
-.. code-block:: python
-    :emphasize-lines: 3,5
+If the BGP update message's encoding is wrong and some part of it can't be decoded,
+then it will write this message as malformed update message, for example:
 
-    [1372646400.563245, 2, 2, {'attr': {1: 0, 2: [(2, [2914, 45896, 56149])], 3: '10.75.44.224', 4: 37, 5: 500, 9: '219.158.1.153', 10: ['72.163.226.222', '219.158.1.209', '0.0.0.40']}, 'withdraw': [], 'nlri': ['103.3.252.0/22']}, (1, 1)]
-    [1372646400.563346, 3, 2, {'attr': {1: 2, 2: [(2, [4766, 9531])], 3: '10.75.44.224', 5: 500, 9: '219.158.1.151', 10: ['72.163.226.222', '219.158.1.209', '0.0.0.30']}, 'withdraw': [], 'nlri': ['210.218.1.0/24', '210.218.2.0/24', '210.218.6.0/24']}, (1, 1)]
-    [1372646400.563359, 4, 2, {'attr': {1: 0, 2: [(2, [3356, 20485, 49055])], 3: '10.75.44.224', 4: 45400, 5: 110, 9: '219.158.1.203', 10: ['72.163.226.222', '219.158.1.209', '0.0.0.30']},'withdraw': [], 'nlri': ['31.128.32.0/20', '95.215.208.0/22']}, (1, 1)]
-    [1372646400.56337, 5, 2, {'attr': {1: 0, 2: [(2, [3257, 43833])], 3: '10.75.44.224', 4: 0, 5: 500, 9: '219.158.30.2', 10: ['72.163.226.222', '219.158.1.209', '0.0.0.30']}, 'withdraw':[], 'NLRI': ['89.29.203.0/24']}, (1, 1)]
-    [1372646400.563379, 6, 2, {'attr': {1: 0, 2: [(2, [3257, 22773, 22073])], 3: '10.75.44.224', 4: 500, 5: 500, 9: '219.158.1.240', 10: ['72.163.226.222', '219.158.1.209', '0.0.0.30']}, 'withdraw': [], 'nlri': ['208.48.8.0/24']}, (1, 1)]
+.. code-block:: json
 
-- **3. type = 3**
+    {
+        "t": 1452237406.457384,
+        "seq": 21,
+        "type": 6,
+        "msg":{
+            "attr": null,
+            "nlri": ["200.0.0.0/24", "201.0.0.0/24"],
+            "withdraw": [],
+            "hex": "hex": "'\\x00\\x00\\x00*@\\x01\\x01\\x00@\\x02\\x0e\\x02\\x03\\x00\\"
+        }
+    }
 
-type = 3 is BGP notification message.
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    [timestamp, sequence number, type = 3, BGP notification message]
-    # Example
-    [1372065358.666234, 141353378, 3, {'Error': 'ERR_MSG_OPEN', 'Suberror': 'ERR_MSG_OPEN_BAD_PEER_AS', 'Error data':'\x01\xa2\x23\x03'}]
-
-- **4. type = 4**
-
-type = 4 is BGP keepalive message.
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    [timestamp, sequence number, type = 4, BGP keepalive message]
-    # Example
-    [1372065358.666234, 141353378, 4, None]
-
-- **5. type = 5**
-
-type = 5 is BGP route refresh message.
-
-route refresh message content is (AFI, SAFI).
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    [timestamp, sequence number, type = 5, BGP route refresh message]
-    # Example
-    [1372065358.666234, 141353378, 5, (1, 2)]
-
-
-- **6. type = 6**
-
-type = 6 is Malformed update message.
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    [timestamp, sequence number, type = 6, BGP raw hex message, afi_safi]
-    # Example
-    [1372065358.666234, 141353378, 6, '\x0a\x03\xdf\x03\x04\x02\x23\x45\x5d', (1, 1)]
-
-- **7. type = 128**
-
-cisco route refresh message. just like type = 5
-
-.. code-block:: python
-    :emphasize-lines: 3,5
-
-    [timestamp, sequence number, type = 128, Cisco route refresh message]
-    # Example
-    [1372065358.666234, 141353378, 128, (1, 2)]
