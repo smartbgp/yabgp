@@ -74,7 +74,7 @@ class IPv4MPLSVPN(object):
                 prefix_byte_len = int(prefix_bit_len / 8) + 1
 
             label_int = int(binascii.b2a_hex(value[1:4]), 16)
-            nlri_dict['label'] = (label_int >> 4, label_int & 1)
+            nlri_dict['label'] = [label_int >> 4, label_int & 1]
 
             rd = value[4:12]
             rd_type = struct.unpack('!H', rd[0:2])[0]

@@ -25,7 +25,7 @@ class TestIPv4MPLSVPN(unittest.TestCase):
     def test_parse(self):
         nlri_hex = b'\x78\x00\x01\x91\x00\x00\x00\x64\x00\x00\x00\x64\xaa\x00\x00\x00'
         self.assertEqual(
-            [{'label': (25, 1), 'rd': '100:100', 'rd_type': 0, 'str': '170.0.0.0/32'}], IPv4MPLSVPN.parse(nlri_hex))
+            [{'label': [25, 1], 'rd': '100:100', 'rd_type': 0, 'str': '170.0.0.0/32'}], IPv4MPLSVPN.parse(nlri_hex))
 
 if __name__ == '__main__':
     unittest.main()

@@ -16,18 +16,25 @@
 """ Unittest for MPReach NLRI"""
 
 import unittest
-
 from yabgp.message.attribute.mpreachnlri import MpReachNLRI
 
 
 class TestMpReachNLRI(unittest.TestCase):
-
     def setUp(self):
-
         self.maxDiff = None
 
-    def test_ipv6_unicast(self):
+    def test_ipv4_mpls_vpn(self):
+        data_bin = b'\x80\x0e\x21\x00\x01\x80\x0c\x00\x00\x00\x00\x00\x00\x00\x00\x02\x02\x02\x02' \
+                   b'\x00\x78\x00\x01\x91\x00\x00\x00\x64\x00\x00\x00\x64\xaa\x00\x00\x00'
+        data_hoped = {'afi_safi': (1, 128),
+                      'nexthop': {'rd': '0:0', 'str': '2.2.2.2'},
+                      'nlri': [{'label': [25, 1],
+                                'rd': '100:100',
+                                'rd_type': 0,
+                                'str': '170.0.0.0/32'}]}
+        self.assertEqual(data_hoped, MpReachNLRI.parse(data_bin[3:]))
 
+    def test_ipv6_unicast(self):
         data_bin = b"\x00\x02\x01\x10\x20\x01\x32\x32\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
                    b"\x01\x00\x80\x20\x01\x32\x32\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01" \
                    b"\x40\x20\x01\x32\x32\x00\x01\x00\x00\x7f\x20\x01\x48\x37\x16\x32\x00\x00\x00" \
@@ -74,6 +81,7 @@ class TestMpReachNLRI(unittest.TestCase):
         data_bin = b'\x80\x0e\x10\x00\x01\x85\x00\x00\x0a\x01\x18\xc0\x55\x02\x02\x18\xc0\x55\x01'
         data_dict = {'afi_safi': (1, 133), 'nexthop': '', 'nlri': [{1: '192.85.2.0/24'}, {2: '192.85.1.0/24'}]}
         self.assertEqual(data_bin, MpReachNLRI.construct(data_dict))
+
 
 if __name__ == '__main__':
     unittest.main()
