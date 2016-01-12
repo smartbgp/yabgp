@@ -137,6 +137,41 @@ class TestUpdate(unittest.TestCase):
                 msg_dict=value_parse,
                 asn4=True)[HDR_LEN:], True)['attr'], True)
 
+    def test_parse_ipv4_mpls_vpn_update(self):
+        data_bin = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00' \
+                   b'\x74\x02\x00\x00\x00\x5d\x40\x01\x01\x02\x40\x02\x00\x80\x04\x04\x00' \
+                   b'\x00\x00\x00\x40\x05\x04\x00\x00\x00\x64\xc0\x10\x08\x00\x02\x00\x02' \
+                   b'\x00\x00\x00\x02\x80\x0a\x10\xc0\xa8\x01\x01\xc0\xa8\x01\x02\xc0\xa8' \
+                   b'\x01\x03\xc0\xa8\x01\x04\x80\x09\x04\xc0\xa8\x01\x06\x80\x0e\x20\x00' \
+                   b'\x01\x80\x0c\x00\x00\x00\x00\x00\x00\x00\x00\xc0\xa8\x01\x06\x00\x70' \
+                   b'\x00\x01\xd1\x00\x00\x00\x02\x00\x00\x00\x02\xc0\xa8\xc9'
+        data_hoped = {
+            'attr': {1: 2,
+                     2: [],
+                     4: 0,
+                     5: 100,
+                     9: '192.168.1.6',
+                     10: ['192.168.1.1', '192.168.1.2', '192.168.1.3', '192.168.1.4'],
+                     14: {'afi_safi': (1, 128),
+                          'nexthop': {'rd': '0:0', 'str': '192.168.1.6'},
+                          'nlri': [{'label': [29, 1],
+                                    'rd': '2:2',
+                                    'rd_type': 0,
+                                    'str': '192.168.201.0/24'}]},
+                     16: [[2, '2:2']]}}
+        self.maxDiff = None
+        self.assertEqual(data_hoped['attr'], Update.parse(None, data_bin[HDR_LEN:], True)['attr'])
+
+    def test_parse_ipv4_mpls_vpn_withdraw(self):
+        data_bin = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00' \
+                   b'\x2c\x02\x00\x00\x00\x15\x80\x0f\x12\x00\x01\x80\x70\x80\x00\x00\x00' \
+                   b'\x00\x00\x02\x00\x00\x00\x02\xc0\xa8\xc9'
+        data_hoped = {'attr': {15: {'afi_safi': (1, 128),
+                                    'withdraw': [{'label': [524288, 0],
+                                                  'rd': '2:2',
+                                                  'rd_type': 0,
+                                                  'str': '192.168.201.0/24'}]}}}
+        self.assertEqual(data_hoped['attr'], Update.parse(None, data_bin[HDR_LEN:], True)['attr'])
 
 if __name__ == '__main__':
     unittest.main()

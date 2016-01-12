@@ -95,7 +95,7 @@ class IPv4MPLSVPN(object):
                 nlri_dict['rd'] = '%s:%s' % (0, 0)
             prefix = value[12:prefix_byte_len + 1]
             if len(prefix) < 4:
-                prefix += '\x00' * (4 - len(prefix))
+                prefix += b'\x00' * (4 - len(prefix))
             nlri_dict['str'] = str(netaddr.IPAddress(struct.unpack('!I', prefix)[0])) +\
                 '/%s' % (prefix_bit_len - 88)
             value = value[prefix_byte_len + 1:]
