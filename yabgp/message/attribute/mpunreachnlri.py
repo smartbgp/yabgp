@@ -21,6 +21,7 @@ import struct
 from yabgp.message.attribute import Attribute
 from yabgp.message.attribute import AttributeFlag
 from yabgp.message.attribute import AttributeID
+from yabgp.message.attribute.nlri.ipv4_mpls_vpn import IPv4MPLSVPN
 from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
 from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
 from yabgp.common import afn
@@ -62,6 +63,11 @@ class MpUnReachNLRI(Attribute):
 
         # for IPv4
         if afi == afn.AFNUM_INET:
+
+            # VPNv4
+            if safi == safn.SAFNUM_LAB_VPNUNICAST:
+                nlri = IPv4MPLSVPN.parse(nlri_bin)
+                return dict(afi_safi=(afi, safi), withdraw=nlri)
             # BGP flow spec
             if safi == safn.SAFNUM_FSPEC_RULE:
                 # if nlri length is greater than 240 bytes, it is encoded over 2 bytes
