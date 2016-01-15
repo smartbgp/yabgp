@@ -61,6 +61,7 @@ Quickstarts
    tutorial
    msg_format
    restapi
+   tools
    reference
 
 Support
