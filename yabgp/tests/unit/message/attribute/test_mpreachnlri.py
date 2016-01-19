@@ -23,7 +23,7 @@ class TestMpReachNLRI(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
 
-    def test_ipv4_mpls_vpn(self):
+    def test_ipv4_mpls_vpn_parse(self):
         data_bin = b'\x80\x0e\x21\x00\x01\x80\x0c\x00\x00\x00\x00\x00\x00\x00\x00\x02\x02\x02\x02' \
                    b'\x00\x78\x00\x01\x91\x00\x00\x00\x64\x00\x00\x00\x64\xaa\x00\x00\x00'
         data_hoped = {'afi_safi': (1, 128),
@@ -33,6 +33,20 @@ class TestMpReachNLRI(unittest.TestCase):
                                 'rd_type': 0,
                                 'str': '170.0.0.0/32'}]}
         self.assertEqual(data_hoped, MpReachNLRI.parse(data_bin[3:]))
+
+    def test_ipv4_mpsl_vpn_construct_nexthop(self):
+        nexthop = {'rd': '0:0', 'str': '2.2.2.2'}
+        nexthop_bin = b'\x00\x00\x00\x00\x00\x00\x00\x00\x02\x02\x02\x02'
+        self.assertEqual(nexthop_bin, MpReachNLRI.construct_nexthop(nexthop, afi=1, safi=128))
+
+    def test_ipv4_mpls_vpn_construct(self):
+        data_parsed = {'afi_safi': (1, 128),
+                       'nexthop': {'rd': '0:0', 'str': '2.2.2.2'},
+                       'nlri': [{'label': [25, 1],
+                                 'rd': '100:100',
+                                 'rd_type': 0,
+                                 'str': '170.0.0.0/32'}]}
+        self.assertEqual(data_parsed, MpReachNLRI.parse(MpReachNLRI.construct(data_parsed)[3:]))
 
     def test_ipv6_unicast(self):
         data_bin = b"\x00\x02\x01\x10\x20\x01\x32\x32\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \

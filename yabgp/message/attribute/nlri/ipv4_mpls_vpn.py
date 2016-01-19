@@ -103,5 +103,25 @@ class IPv4MPLSVPN(object):
         return nlri_list
 
     @classmethod
-    def contruct(cls, value):
-        pass
+    def construct(cls, value):
+        nlri_bin = b''
+        for nlri in value:
+            # construct label
+            label_hex = struct.pack('!I', (nlri['label'][0] << 4) + 1)[1:]
+            # construct rd
+            rd_hex = b''
+            if 'rd_type' not in nlri:
+                nlri['rd_type'] = bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_0
+            if nlri['rd_type'] == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_0:
+                asn, an = nlri['rd'].split(':')
+                rd_hex = struct.pack('!HI', int(asn), int(an))
+            rd_hex = struct.pack('!H', nlri['rd_type']) + rd_hex
+            # construct prefix
+            prefix_str, prefix_len = nlri['str'].split('/')
+            prefix_len = int(prefix_len)
+            prefix_hex = struct.pack('!I', netaddr.IPAddress(prefix_str).value)
+            prefix_hex = label_hex + rd_hex + prefix_hex
+
+            prefix_len = struct.pack('!B', prefix_len + len(label_hex + rd_hex) * 8)
+            nlri_bin += prefix_len + prefix_hex
+        return nlri_bin
