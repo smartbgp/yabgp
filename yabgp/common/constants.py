@@ -162,12 +162,14 @@ GRACEFUL_RESTART = False
 AFI_SAFI_DICT = {
     (1, 1): 'ipv4',
     (2, 1): 'ipv6',
-    (1, 133): 'flowspec'
+    (1, 133): 'flowspec',
+    (1, 128): 'vpnv4'
 }
 AFI_SAFI_STR_DICT = {
     'ipv6': (2, 1),
     'ipv4': (1, 1),
-    'flowspec': (1, 133)
+    'flowspec': (1, 133),
+    'vpnv4': (1, 128)
 }
 
 ADD_PATH_ACT_DICT = {
@@ -220,11 +222,12 @@ NOTIFICATION_ERROR_CODES_DICT = {
     ERR_CAP: "CAPABILITY Message Error"
 }
 
-# Notification suberror codes
+# Notification suberror codes for ERR_MSG_HDR
 ERR_MSG_HDR_CONN_NOT_SYNC = 1
 ERR_MSG_HDR_BAD_MSG_LEN = 2
 ERR_MSG_HDR_BAD_MSG_TYPE = 3
 
+# Notification suberror codes for ERR_MSG_OPEN
 ERR_MSG_OPEN_UNSUP_VERSION = 1
 ERR_MSG_OPEN_BAD_PEER_AS = 2
 ERR_MSG_OPEN_BAD_BGP_ID = 3
@@ -233,6 +236,7 @@ ERR_MSG_OPEN_UNACCPT_HOLD_TIME = 6
 ERR_MSG_OPEN_UNSUP_CAPA = 7  # RFC 5492
 ERR_MSG_OPEN_UNKNO = 8
 
+# Notification suberror codes for ERR_MSG_UPDATE
 ERR_MSG_UPDATE_MALFORMED_ATTR_LIST = 1
 ERR_MSG_UPDATE_UNRECOGNIZED_WELLKNOWN_ATTR = 2
 ERR_MSG_UPDATE_MISSING_WELLKNOWN_ATTR = 3
@@ -244,6 +248,22 @@ ERR_MSG_UPDATE_OPTIONAL_ATTR = 9
 ERR_MSG_UPDATE_INVALID_NETWORK_FIELD = 10
 ERR_MSG_UPDATE_MALFORMED_ASPATH = 11
 ERR_MSG_UPDATE_UNKOWN_ATTR = 12
+
+# Notification suberror codes for ERR_HOLD_TIMER_EXPIRED
+ERR_SUB_HOLD_TIMER_EXPIRED = 1
+
+# Notification suberror codes for ERR_FSM
+ERR_SUB_FSM_ERROR = 1
+
+# Notification suberror codes for ERR_CEASE
+ERR_MAXIMUM_NUMBER_OF_PREFIXES_REACHED = 1
+ERR_ADMINISTRATIVE_SHUTDOWN = 2
+ERR_PEER_DECONFIGURED = 3
+ERR_ADMINISTRATIVE_RESET = 4
+ERR_CONNECTION_RESET = 5
+ERR_OTHER_CONFIGURATION_CHANGE = 6
+ERR_CONNECTION_COLLISION_RESOLUTION = 7
+ERR_OUT_OF_RESOURCES = 8
 
 NOTIFICATION_SUB_ERROR_CODES_DICT = {
     ERR_MSG_HDR: {
@@ -272,8 +292,23 @@ NOTIFICATION_SUB_ERROR_CODES_DICT = {
         ERR_MSG_UPDATE_INVALID_NETWORK_FIELD: 'Invalid Network Field',
         ERR_MSG_UPDATE_MALFORMED_ASPATH: 'Malformed AS_PATH',
         ERR_MSG_UPDATE_UNKOWN_ATTR: 'NULL'
+    },
+    ERR_HOLD_TIMER_EXPIRED: {
+        ERR_SUB_HOLD_TIMER_EXPIRED: 'Hold timer expired'
+    },
+    ERR_FSM: {
+        ERR_SUB_FSM_ERROR: 'FSM error'
+    },
+    ERR_CEASE: {
+        ERR_MAXIMUM_NUMBER_OF_PREFIXES_REACHED: 'Maximum number of prefixes reached',
+        ERR_ADMINISTRATIVE_SHUTDOWN: 'Administrative shutdown',
+        ERR_PEER_DECONFIGURED: 'Peer reconfigured',
+        ERR_ADMINISTRATIVE_RESET: 'Administrative reset',
+        ERR_CONNECTION_RESET: 'Connection reset',
+        ERR_OTHER_CONFIGURATION_CHANGE: 'Other configuration change',
+        ERR_CONNECTION_COLLISION_RESOLUTION: 'Connection collision resolution',
+        ERR_OUT_OF_RESOURCES: 'Out of resources'
     }
-
 }
 
 ATTRIBUTE_ID_2_STR = {

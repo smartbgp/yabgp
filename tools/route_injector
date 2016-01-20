@@ -66,7 +66,10 @@ bgp_config_ops = [
                help='new originator id'),
     cfg.ListOpt('cluster_list',
                 help='new cluster list'
-                )
+                ),
+    cfg.BoolOpt('no_origin_cluster',
+                default=True,
+                help='remove originator id and cluster list')
 ]
 
 CONF.register_cli_opts(bgp_config_ops, group='attribute')
@@ -125,17 +128,29 @@ def send_update():
     url = 'http://{bind_host}:{bind_port}/v1/peer/{peer_ip}/send/update'
     url = url.format(bind_host=CONF.rest.host, bind_port=CONF.rest.port, peer_ip=CONF.peerip)
     for message in open(CONF.message.json).readlines():
-        message = json.loads(message)
-        if message['type'] != 2:
-            continue
-        if message['NLRI']:
-            post_data = {
-                'nlri': message['NLRI'],
-                'attr': message['ATTR']
-            }
-            get_data_from_agent(url, 'admin', 'admin', 'POST', post_data)
+        if CONF.message.json:
+            message = json.loads(message)
+            if message['type'] != 2:
+                continue
+            if message['nlri']:
+                if CONF.attribute.no_origin_cluster:
+                    if message['attr'].get('9'):
+                        message['attr'].pop('9')
+                    if message['attr'].get('10'):
+                        message['attr'].pop('10')
+                elif CONF.attribute.originator_id and CONF.attribute.cluster_list:
+                    message['attr']['9'] = CONF.attribute.originator_id
+                    message['attr']['10'] = CONF.attribute.cluster_list
+                post_data = {
+                    'nlri': message['nlri'],
+                    'attr': message['attr']
+                }
+                get_data_from_agent(url, 'admin', 'admin', 'POST', post_data)
 
 if __name__ == '__main__':
 
     CONF(args=sys.argv[1:])
-    send_update()
+    try:
+        send_update()
+    except KeyboardInterrupt:
+        sys.exit()
