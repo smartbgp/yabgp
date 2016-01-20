@@ -25,7 +25,25 @@ class TestIPv4MPLSVPN(unittest.TestCase):
     def test_parse(self):
         nlri_hex = b'\x78\x00\x01\x91\x00\x00\x00\x64\x00\x00\x00\x64\xaa\x00\x00\x00'
         self.assertEqual(
-            [{'label': (25, 1), 'rd': '100:100', 'rd_type': 0, 'str': '170.0.0.0/32'}], IPv4MPLSVPN.parse(nlri_hex))
+            [{'label': [25], 'rd': '100:100', 'rd_type': 0, 'str': '170.0.0.0/32'}], IPv4MPLSVPN.parse(nlri_hex))
+
+    def test_construct_1(self):
+        nlri_hex = b'\x76\x00\x01\x41\x00\x00\xfd\xea\x00\x00\x00\x01\x17\x00\x00\x00'
+        nlri_list = [{'label': [20], 'rd': '65002:1', 'rd_type': 0, 'str': '23.0.0.0/30'}]
+        self.assertEqual(nlri_list, IPv4MPLSVPN.parse(nlri_hex))
+        self.assertEqual(nlri_hex, IPv4MPLSVPN.construct(nlri_list), )
+
+    def test_construct_2(self):
+        nlri_hex = b'\x78\x00\x01\x91\x00\x00\x00\x64\x00\x00\x00\x64\xaa\x00\x00\x00'
+        nlri_list = [{'label': [25], 'rd': '100:100', 'rd_type': 0, 'str': '170.0.0.0/32'}]
+        self.assertEqual(nlri_hex, IPv4MPLSVPN.construct(nlri_list))
+
+    def test_construct_multi(self):
+        nlri_list = [
+            {'label': [25], 'rd': '100:100', 'rd_type': 0, 'str': '170.0.0.0/32'},
+            {'label': [20], 'rd': '65002:1', 'rd_type': 0, 'str': '23.0.0.0/30'}
+        ]
+        self.assertEqual(nlri_list, IPv4MPLSVPN.parse(IPv4MPLSVPN.construct(nlri_list)))
 
 if __name__ == '__main__':
     unittest.main()

@@ -350,10 +350,30 @@ In addition to IPv4 Unicast, Now we support IPv6 Unicast and IPv4 Flowspec, here
 ========= ===
 Value     Meaning
 ========= ===
+[1, 128]  IPv4 MPLSVPN
 [1, 133]  IPv4 Flowspec
 [2, 1]    IPv6 Unicast
 ...       ...
 ========= ===
+
+IPv4 MPLSVPN
+""""""""""""
+
+.. code-block:: json
+
+    {
+        "attr":{
+            "14": {
+                "afi_safi": [1, 128],
+                "nexthop": {"rd": "0:0", "str": "2.2.2.2"},
+                "nlri": [
+                    {
+                        "label": [25],
+                        "rd": "100:100",
+                        "rd_type": 0,
+                        "str": "11.11.11.11/32"}]}
+            }
+    }
 
 IPv4 FlowSpec
 """""""""""""
@@ -394,6 +414,23 @@ MP_UNREACH_NLRI
 
 The difference between ``MP_REACH_NLRI`` and ``MP_UNREACH_NLRI`` is that ``MP_UNREACH_NLRI`` only has two keys,
 ``afi_safi`` and ``withdraw``, and there structure is the same.
+
+IPv4 MPLSVPN
+""""""""""""
+
+.. code-block:: json
+
+    {
+        "attr":{
+            "15": {
+                "afi_safi": [1, 128],
+                "withdraw": [
+                    {
+                        "rd": "100:100",
+                        "rd_type": 0,
+                        "str": "11.11.11.11/32"}]}
+            }
+    }
 
 IPv4 FlowSpec
 """""""""""""

@@ -35,7 +35,6 @@ class IPv6Unicast(object):
                 prefix_bit_len = int(nlri_data[0])
             else:
                 prefix_bit_len = struct.unpack('!B', nlri_data[0])[0]
-            print (type(nlri_data))
             if prefix_bit_len % 8 == 0:
                 prefix_byte_len = prefix_bit_len / 8
             else:

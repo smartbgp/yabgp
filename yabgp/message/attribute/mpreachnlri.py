@@ -74,8 +74,21 @@ class MpReachNLRI(Attribute):
         #  Address Family IPv4
         if afi == afn.AFNUM_INET:
             if safi == safn.SAFNUM_LAB_VPNUNICAST:
+                # MPLS VPN
+                # parse nexthop
+                rd_bin = nexthop_bin[0:8]
+                rd_type = struct.unpack('!H', rd_bin[0:2])[0]
+                rd_value_bin = rd_bin[2:]
+                if rd_type == 0:
+                    asn, an = struct.unpack('!HI', rd_value_bin)
+                    ipv4 = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin[8:]), 16)))
+                    nexthop = {'rd': '%s:%s' % (asn, an), 'str': ipv4}
+                # TODO(xiaoquwl) for other RD type decoding
+                else:
+                    nexthop = repr(nexthop_bin[8:])
+                # parse nlri
                 nlri = IPv4MPLSVPN.parse(nlri_bin)
-
+                return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
             elif safi == safn.SAFNUM_FSPEC_RULE:
                 # if nlri length is greater than 240 bytes, it is encoded over 2 bytes
                 if len(nlri_bin) >= 240:
@@ -121,6 +134,21 @@ class MpReachNLRI(Attribute):
         return dict(afi_safi=(afi, safi), nexthop=nexthop_bin, nlri=nlri_bin)
 
     @classmethod
+    def construct_nexthop(cls, nexthop, afi, safi):
+        """
+        construct nexthop to bin
+        :param nexthop:
+        :param afi:
+        :param safi:
+        :return:
+        """
+        if afi == afn.AFNUM_INET:
+            if safi == safn.SAFNUM_LAB_VPNUNICAST:
+                # {'rd': '0:0', 'str': '2.2.2.2'}
+                asn, an = map(int, nexthop['rd'].split(':'))
+                return struct.pack('!H', 0) + struct.pack('!HI', asn, an) + netaddr.IPAddress(nexthop['str']).packed
+
+    @classmethod
     def construct(cls, value):
 
         """Construct a attribute
@@ -133,7 +161,12 @@ class MpReachNLRI(Attribute):
         afi, safi = value['afi_safi']
         if afi == afn.AFNUM_INET:
             if safi == safn.SAFNUM_LAB_VPNUNICAST:  # MPLS VPN
-                pass
+                nexthop_hex = cls.construct_nexthop(value['nexthop'], afi, safi)
+                nlri_hex = IPv4MPLSVPN.construct(value['nlri'])
+                attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) +\
+                    struct.pack('!B', len(nexthop_hex)) + nexthop_hex + b'\x00' + nlri_hex
+                return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
+                    + struct.pack('!B', len(attr_value)) + attr_value
             elif safi == safn.SAFNUM_FSPEC_RULE:  # BGP Flow spec
                 try:
                     try:

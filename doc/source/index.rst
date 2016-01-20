@@ -29,7 +29,7 @@ Features
 
 -  BGP capabilities support: 4 Bytes ASN, Route Refresh(Cisco Route Refresh), Add Path send/receive;
 
--  Address family support: IPv4 unicast, IPv6 unicast, IPv4 Flowspec(limited);
+-  Address family support: IPv4 unicast, IPv6 unicast, IPv4 Flowspec(limited), IPv4 VPNv4;
 
 -  Decode all BGP messages to human readable strings and write files to
    disk(configurable);

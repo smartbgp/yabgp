@@ -21,6 +21,7 @@ import struct
 from yabgp.message.attribute import Attribute
 from yabgp.message.attribute import AttributeFlag
 from yabgp.message.attribute import AttributeID
+from yabgp.message.attribute.nlri.ipv4_mpls_vpn import IPv4MPLSVPN
 from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
 from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
 from yabgp.common import afn
@@ -62,6 +63,11 @@ class MpUnReachNLRI(Attribute):
 
         # for IPv4
         if afi == afn.AFNUM_INET:
+
+            # VPNv4
+            if safi == safn.SAFNUM_LAB_VPNUNICAST:
+                nlri = IPv4MPLSVPN.parse(nlri_bin, iswithdraw=True)
+                return dict(afi_safi=(afi, safi), withdraw=nlri)
             # BGP flow spec
             if safi == safn.SAFNUM_FSPEC_RULE:
                 # if nlri length is greater than 240 bytes, it is encoded over 2 bytes
@@ -95,10 +101,16 @@ class MpUnReachNLRI(Attribute):
         afi, safi = value['afi_safi']
         if afi == afn.AFNUM_INET:
             if safi == safn.SAFNUM_LAB_VPNUNICAST:  # MPLS VPN
-                pass
+                nlri = IPv4MPLSVPN.construct(value['withdraw'], iswithdraw=True)
+                if nlri:
+                    attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri
+                    return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
+                        + struct.pack('!B', len(attr_value)) + attr_value
+                else:
+                    return None
             elif safi == safn.SAFNUM_FSPEC_RULE:
                 try:
-                    nlri = IPv4FlowSpec().construct(value=value['withdraw'])
+                    nlri = IPv4FlowSpec.construct(value=value['withdraw'])
                     if nlri:
                         attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + \
                             nlri
