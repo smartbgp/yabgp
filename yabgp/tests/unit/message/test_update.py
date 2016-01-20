@@ -154,7 +154,7 @@ class TestUpdate(unittest.TestCase):
                      10: ['192.168.1.1', '192.168.1.2', '192.168.1.3', '192.168.1.4'],
                      14: {'afi_safi': (1, 128),
                           'nexthop': {'rd': '0:0', 'str': '192.168.1.6'},
-                          'nlri': [{'label': [29, 1],
+                          'nlri': [{'label': [29],
                                     'rd': '2:2',
                                     'rd_type': 0,
                                     'str': '192.168.201.0/24'}]},
@@ -167,7 +167,7 @@ class TestUpdate(unittest.TestCase):
                    b'\x2c\x02\x00\x00\x00\x15\x80\x0f\x12\x00\x01\x80\x70\x80\x00\x00\x00' \
                    b'\x00\x00\x02\x00\x00\x00\x02\xc0\xa8\xc9'
         data_hoped = {'attr': {15: {'afi_safi': (1, 128),
-                                    'withdraw': [{'label': [524288, 0],
+                                    'withdraw': [{'label': [524288],
                                                   'rd': '2:2',
                                                   'rd_type': 0,
                                                   'str': '192.168.201.0/24'}]}}}

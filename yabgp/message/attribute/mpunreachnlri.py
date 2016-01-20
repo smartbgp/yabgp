@@ -66,7 +66,7 @@ class MpUnReachNLRI(Attribute):
 
             # VPNv4
             if safi == safn.SAFNUM_LAB_VPNUNICAST:
-                nlri = IPv4MPLSVPN.parse(nlri_bin)
+                nlri = IPv4MPLSVPN.parse(nlri_bin, iswithdraw=True)
                 return dict(afi_safi=(afi, safi), withdraw=nlri)
             # BGP flow spec
             if safi == safn.SAFNUM_FSPEC_RULE:
@@ -101,10 +101,16 @@ class MpUnReachNLRI(Attribute):
         afi, safi = value['afi_safi']
         if afi == afn.AFNUM_INET:
             if safi == safn.SAFNUM_LAB_VPNUNICAST:  # MPLS VPN
-                pass
+                nlri = IPv4MPLSVPN.construct(value['withdraw'], iswithdraw=True)
+                if nlri:
+                    attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri
+                    return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
+                        + struct.pack('!B', len(attr_value)) + attr_value
+                else:
+                    return None
             elif safi == safn.SAFNUM_FSPEC_RULE:
                 try:
-                    nlri = IPv4FlowSpec().construct(value=value['withdraw'])
+                    nlri = IPv4FlowSpec.construct(value=value['withdraw'])
                     if nlri:
                         attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + \
                             nlri

@@ -28,7 +28,7 @@ class TestMpReachNLRI(unittest.TestCase):
                    b'\x00\x78\x00\x01\x91\x00\x00\x00\x64\x00\x00\x00\x64\xaa\x00\x00\x00'
         data_hoped = {'afi_safi': (1, 128),
                       'nexthop': {'rd': '0:0', 'str': '2.2.2.2'},
-                      'nlri': [{'label': [25, 1],
+                      'nlri': [{'label': [25],
                                 'rd': '100:100',
                                 'rd_type': 0,
                                 'str': '170.0.0.0/32'}]}
@@ -42,7 +42,7 @@ class TestMpReachNLRI(unittest.TestCase):
     def test_ipv4_mpls_vpn_construct(self):
         data_parsed = {'afi_safi': (1, 128),
                        'nexthop': {'rd': '0:0', 'str': '2.2.2.2'},
-                       'nlri': [{'label': [25, 1],
+                       'nlri': [{'label': [25],
                                  'rd': '100:100',
                                  'rd_type': 0,
                                  'str': '170.0.0.0/32'}]}

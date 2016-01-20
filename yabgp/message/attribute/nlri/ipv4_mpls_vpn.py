@@ -19,16 +19,15 @@
 
 import struct
 import logging
-import binascii
 
 import netaddr
 
-from yabgp.common import constants as bgp_cons
+from yabgp.message.attribute.nlri.mpls_vpn import MPLSVPN
 
 LOG = logging.getLogger(__name__)
 
 
-class IPv4MPLSVPN(object):
+class IPv4MPLSVPN(MPLSVPN):
 
     """
     IPv4 MPLS VPN NLRI
@@ -54,10 +53,11 @@ class IPv4MPLSVPN(object):
     """
 
     @classmethod
-    def parse(cls, value):
+    def parse(cls, value, iswithdraw=False):
         """
         parse nlri
         :param value: the raw hex nlri value
+        :param iswithdraw: if this is parsing withdraw
         :return: nlri list
         """
         nlri_list = []
@@ -73,26 +73,12 @@ class IPv4MPLSVPN(object):
             else:
                 prefix_byte_len = int(prefix_bit_len / 8) + 1
 
-            label_int = int(binascii.b2a_hex(value[1:4]), 16)
-            nlri_dict['label'] = [label_int >> 4, label_int & 1]
-
-            rd = value[4:12]
-            rd_type = struct.unpack('!H', rd[0:2])[0]
-            rd_value = rd[2:8]
-            nlri_dict['rd_type'] = rd_type
-            if rd_type == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_0:
-                asn, an = struct.unpack('!HI', rd_value)
-                nlri_dict['rd'] = '%s:%s' % (asn, an)
-            elif rd_type == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_1:
-                ip = str(netaddr.IPAddress(struct.unpack('!I', rd_value[0:4])[0]))
-                an = struct.unpack('!H', rd_value[4:6])[0]
-                nlri_dict['rd'] = '%s:%s' % (ip, an)
-            elif rd_type == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_2:
-                asn, an = struct.unpack('!IH', rd_value)
-                nlri_dict['rd'] = '%s:%s' % (asn, an)
+            if not iswithdraw:
+                nlri_dict['label'] = cls.parse_mpls_label_stack(value[1:])
             else:
-                LOG.warning('unknow rd type for nlri, type=%s' % rd_type)
-                nlri_dict['rd'] = '%s:%s' % (0, 0)
+                nlri_dict['label'] = [MPLSVPN.WITHDARW_LABEL]
+
+            nlri_dict['rd_type'], nlri_dict['rd'] = MPLSVPN.parse_rd(value[4:12])
             prefix = value[12:prefix_byte_len + 1]
             if len(prefix) < 4:
                 prefix += b'\x00' * (4 - len(prefix))
@@ -103,19 +89,16 @@ class IPv4MPLSVPN(object):
         return nlri_list
 
     @classmethod
-    def construct(cls, value):
+    def construct(cls, value, iswithdraw=False):
         nlri_bin = b''
         for nlri in value:
             # construct label
-            label_hex = struct.pack('!I', (nlri['label'][0] << 4) + 1)[1:]
+            if iswithdraw:
+                label_hex = MPLSVPN.WITHDARW_LABEL_HEX
+            else:
+                label_hex = MPLSVPN.construct_mpls_label_stack(nlri['label'])
             # construct rd
-            rd_hex = b''
-            if 'rd_type' not in nlri:
-                nlri['rd_type'] = bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_0
-            if nlri['rd_type'] == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_0:
-                asn, an = nlri['rd'].split(':')
-                rd_hex = struct.pack('!HI', int(asn), int(an))
-            rd_hex = struct.pack('!H', nlri['rd_type']) + rd_hex
+            rd_hex = MPLSVPN.construct_rd(nlri)
             # construct prefix
             prefix_str, prefix_len = nlri['str'].split('/')
             prefix_len = int(prefix_len)

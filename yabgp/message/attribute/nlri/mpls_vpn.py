@@ -15,6 +15,10 @@
 
 import struct
 
+import netaddr
+
+from yabgp.common import constants as bgp_cons
+
 
 class MPLSVPN(object):
     """The base class for ipv4/ipv6 mpls vpn
@@ -42,3 +46,33 @@ class MPLSVPN(object):
                 continue
             data += struct.pack('!L', label << 4)[1:]
         return data
+
+    @classmethod
+    def parse_rd(cls, data):
+        rd_type = struct.unpack('!H', data[0:2])[0]
+        rd_value = data[2:8]
+        if rd_type == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_0:
+            asn, an = struct.unpack('!HI', rd_value)
+            rd = '%s:%s' % (asn, an)
+        elif rd_type == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_1:
+            ip = str(netaddr.IPAddress(struct.unpack('!I', rd_value[0:4])[0]))
+            an = struct.unpack('!H', rd_value[4:6])[0]
+            rd = '%s:%s' % (ip, an)
+        elif rd_type == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_2:
+            asn, an = struct.unpack('!IH', rd_value)
+            rd = '%s:%s' % (asn, an)
+        else:
+            # fixme(by xiaopeng163) for other rd type process
+            rd = str(rd_value)
+        return rd_type, rd
+
+    @classmethod
+    def construct_rd(cls, data):
+        # fixme(by xiaopeng163) for other rd type process
+        if 'rd_type' not in data:
+            data['rd_type'] = bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_0
+        if data['rd_type'] == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_0:
+            asn, an = data['rd'].split(':')
+            rd_hex = struct.pack('!HI', int(asn), int(an))
+            rd_hex = struct.pack('!H', data['rd_type']) + rd_hex
+            return rd_hex

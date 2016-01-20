@@ -23,14 +23,23 @@ class TestMpUnReachNLRI(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
 
-    def test_ipv4_mpls_vpn(self):
+    def test_ipv4_mpls_vpn_parse(self):
         data_bin = b'\x80\x0f\x12\x00\x01\x80\x70\x80\x00\x00\x00\x00\x00\x02\x00\x00\x00\x02\xc0\xa8\xc9'
         data_hoped = {'afi_safi': (1, 128),
-                      'withdraw': [{'label': [524288, 0],
+                      'withdraw': [{'label': [524288],
                                     'rd': '2:2',
                                     'rd_type': 0,
                                     'str': '192.168.201.0/24'}]}
         self.assertEqual(data_hoped, MpUnReachNLRI.parse(data_bin[3:]))
+
+    def test_ipv4_mpls_vpn_construct(self):
+        data_bin = b'\x80\x0f\x13\x00\x01\x80\x70\x80\x00\x00\x00\x00\x00\x02\x00\x00\x00\x02\xc0\xa8\xc9\x00'
+        data_hoped = {'afi_safi': (1, 128),
+                      'withdraw': [{'label': [524288],
+                                    'rd': '2:2',
+                                    'rd_type': 0,
+                                    'str': '192.168.201.0/24'}]}
+        self.assertEqual(data_bin, MpUnReachNLRI.construct(data_hoped))
 
     def test_ipv6_unicast_parse(self):
         data_bin = b"\x00\x02\x01\x80\x20\x01\x48\x37\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20"
