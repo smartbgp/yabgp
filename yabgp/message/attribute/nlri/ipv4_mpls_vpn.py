@@ -22,12 +22,13 @@ import logging
 
 import netaddr
 
+from yabgp.message.attribute.nlri import NLRI
 from yabgp.message.attribute.nlri.mpls_vpn import MPLSVPN
 
 LOG = logging.getLogger(__name__)
 
 
-class IPv4MPLSVPN(MPLSVPN):
+class IPv4MPLSVPN(MPLSVPN, NLRI):
 
     """
     IPv4 MPLS VPN NLRI
