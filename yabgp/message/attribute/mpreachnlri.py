@@ -128,6 +128,13 @@ class MpReachNLRI(Attribute):
                 else:
                     return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
 
+        # for l2vpn
+        elif afi == afn.AFNUM_L2VPN:
+            if safi == safn.SAFNUM_EVPN:
+                pass
+            else:
+                nlri = repr(nlri_bin)
+
         else:
             nlri = repr(nlri_bin)
 
