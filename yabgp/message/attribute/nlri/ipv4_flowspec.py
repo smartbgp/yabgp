@@ -21,10 +21,11 @@ import binascii
 
 import netaddr
 
+from yabgp.message.attribute.nlri import NLRI
 from yabgp.common import constants as bgp_cons
 
 
-class IPv4FlowSpec(object):
+class IPv4FlowSpec(NLRI):
 
     @classmethod
     def parse(cls, value):
