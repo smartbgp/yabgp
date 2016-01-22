@@ -64,15 +64,18 @@ class MPLSVPN(object):
         else:
             # fixme(by xiaopeng163) for other rd type process
             rd = str(rd_value)
-        return rd_type, rd
+        return rd
 
     @classmethod
     def construct_rd(cls, data):
         # fixme(by xiaopeng163) for other rd type process
-        if 'rd_type' not in data:
-            data['rd_type'] = bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_0
-        if data['rd_type'] == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_0:
-            asn, an = data['rd'].split(':')
-            rd_hex = struct.pack('!HI', int(asn), int(an))
-            rd_hex = struct.pack('!H', data['rd_type']) + rd_hex
-            return rd_hex
+        data = data.split(':')
+        if '.' in data[0]:
+            return struct.pack('!H', bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_1) + netaddr.IPAddress(data[0]).packed + \
+                struct.pack('!H', int(data[1]))
+        else:
+            data = [int(x) for x in data]
+            if data[0] <= 0xffff:
+                return struct.pack('!HHI', bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_0, data[0], data[1])
+            else:
+                return struct.pack('!HIH', bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_2, data[0], data[1])

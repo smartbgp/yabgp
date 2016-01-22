@@ -30,8 +30,7 @@ class TestMpReachNLRI(unittest.TestCase):
                       'nexthop': {'rd': '0:0', 'str': '2.2.2.2'},
                       'nlri': [{'label': [25],
                                 'rd': '100:100',
-                                'rd_type': 0,
-                                'str': '170.0.0.0/32'}]}
+                                'prefix': '170.0.0.0/32'}]}
         self.assertEqual(data_hoped, MpReachNLRI.parse(data_bin[3:]))
 
     def test_ipv4_mpsl_vpn_construct_nexthop(self):
@@ -44,8 +43,7 @@ class TestMpReachNLRI(unittest.TestCase):
                        'nexthop': {'rd': '0:0', 'str': '2.2.2.2'},
                        'nlri': [{'label': [25],
                                  'rd': '100:100',
-                                 'rd_type': 0,
-                                 'str': '170.0.0.0/32'}]}
+                                 'prefix': '170.0.0.0/32'}]}
         self.assertEqual(data_parsed, MpReachNLRI.parse(MpReachNLRI.construct(data_parsed)[3:]))
 
     def test_ipv6_unicast(self):

@@ -156,8 +156,7 @@ class TestUpdate(unittest.TestCase):
                           'nexthop': {'rd': '0:0', 'str': '192.168.1.6'},
                           'nlri': [{'label': [29],
                                     'rd': '2:2',
-                                    'rd_type': 0,
-                                    'str': '192.168.201.0/24'}]},
+                                    'prefix': '192.168.201.0/24'}]},
                      16: [[2, '2:2']]}}
         self.maxDiff = None
         self.assertEqual(data_hoped['attr'], Update.parse(None, data_bin[HDR_LEN:], True)['attr'])
@@ -169,8 +168,7 @@ class TestUpdate(unittest.TestCase):
         data_hoped = {'attr': {15: {'afi_safi': (1, 128),
                                     'withdraw': [{'label': [524288],
                                                   'rd': '2:2',
-                                                  'rd_type': 0,
-                                                  'str': '192.168.201.0/24'}]}}}
+                                                  'prefix': '192.168.201.0/24'}]}}}
         self.assertEqual(data_hoped['attr'], Update.parse(None, data_bin[HDR_LEN:], True)['attr'])
 
 if __name__ == '__main__':
