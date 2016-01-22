@@ -13,11 +13,17 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import struct
+import binascii
+
+import netaddr
+
+from yabgp.common import constants as bgp_cons
 from yabgp.message.attribute.nlri import NLRI
 from yabgp.message.attribute.nlri.mpls_vpn import MPLSVPN
 
 
-class EVPN(MPLSVPN, NLRI):
+class EVPN(NLRI):
     """
       The format of the EVPN NLRI is as follows:
     +-----------------------------------+
@@ -31,8 +37,156 @@ class EVPN(MPLSVPN, NLRI):
 
     @classmethod
     def parse(cls, nlri_data):
-        pass
+        nlri_list = []
+        while nlri_data:
+            route_type = ord(nlri_data[0])
+            offset = ord(nlri_data[1])
+            route_data = nlri_data[2: offset + 2]
+            if route_type == bgp_cons.BGPNLRI_EVPN_ETHERNET_AUTO_DISCOVERY:
+                pass
+            elif route_type == bgp_cons.BGPNLRI_EVPN_MAC_IP_ADVERTISEMENT:
+                route = MacIPAdvertisment.parse(route_data)
+                if route:
+                    nlri_list.append({
+                        'type': bgp_cons.BGPNLRI_EVPN_MAC_IP_ADVERTISEMENT,
+                        'value': route
+                    })
+            elif route_type == bgp_cons.BGPNLRI_EVPN_INCLUSIVE_MULTICAST_ETHERNET_TAG:
+                pass
+            elif route_type == bgp_cons.BGPNLRI_EVPN_ETHERNET_SEGMENT:
+                pass
+            nlri_data = nlri_data[offset + 2:]
+        return nlri_list
 
     @classmethod
     def construct(cls, nlri_list):
-        pass
+        nlri_list_hex = b''
+        for nlri in nlri_list:
+            if nlri['type'] == bgp_cons.BGPNLRI_EVPN_ETHERNET_AUTO_DISCOVERY:
+                pass
+            elif nlri['type'] == bgp_cons.BGPNLRI_EVPN_MAC_IP_ADVERTISEMENT:
+                nlri_hex = MacIPAdvertisment.construct(data=nlri['value'])
+                nlri_list_hex += struct.pack('!2B', bgp_cons.BGPNLRI_EVPN_MAC_IP_ADVERTISEMENT, len(nlri_hex)) \
+                    + nlri_hex
+            elif nlri['type'] == bgp_cons.BGPNLRI_EVPN_INCLUSIVE_MULTICAST_ETHERNET_TAG:
+                pass
+            elif nlri['type'] == bgp_cons.BGPNLRI_EVPN_ETHERNET_SEGMENT:
+                pass
+        return nlri_list_hex
+
+
+class EthernetAutoDiscovery(MPLSVPN):
+    """
+    +---------------------------------------+
+    |  Route Distinguisher (RD) (8 octets)  |
+    +---------------------------------------+
+    |Ethernet Segment Identifier (10 octets)|
+    +---------------------------------------+
+    |  Ethernet Tag ID (4 octets)           |
+    +---------------------------------------+
+    |  MPLS Label (3 octets)                |
+    +---------------------------------------+
+
+    """
+
+
+class MacIPAdvertisment(MPLSVPN):
+    """
+    +---------------------------------------+
+    |  RD (8 octets)                        |
+    +---------------------------------------+
+    |Ethernet Segment Identifier (10 octets)|
+    +---------------------------------------+
+    |  Ethernet Tag ID (4 octets)           |
+    +---------------------------------------+
+    |  MAC Address Length (1 octet)         |
+    +---------------------------------------+
+    |  MAC Address (6 octets)               |
+    +---------------------------------------+
+    |  IP Address Length (1 octet)          |
+    +---------------------------------------+
+    |  IP Address (0, 4, or 16 octets)      |
+    +---------------------------------------+
+    |  MPLS Label1 (3 octets)               |
+    +---------------------------------------+
+    |  MPLS Label2 (0 or 3 octets)          |
+    +---------------------------------------+
+    """
+
+    @classmethod
+    def parse(cls, data):
+        route = dict()
+        # rd
+        offset = 8
+        route['rd'] = cls.parse_rd(data[0:offset])
+        # esi
+        route['esi'] = int(binascii.b2a_hex(data[offset: offset+10]), 16)
+        offset += 10
+        # ethernet tag id
+        route['ethernet_tag_id'] = struct.unpack('!I', data[offset: offset+4])[0]
+        offset += 5
+        # mac address
+        route['mac'] = str(netaddr.EUI(int(binascii.b2a_hex(data[offset: offset+6]), 16)))
+        offset += 6
+        ip_addr_len = ord(data[offset: offset + 1])
+        offset += 1
+        # ip address
+        if ip_addr_len != 0:
+            route['ip'] = str(netaddr.IPAddress(int(binascii.b2a_hex(data[offset: offset+ip_addr_len / 8]), 16)))
+            offset += ip_addr_len / 8
+        # label
+        route['label'] = MPLSVPN.parse_mpls_label_stack(data[offset:])
+        return route
+
+    @classmethod
+    def construct(cls, data):
+        # rd
+        data_hex = b''
+        data_hex += MPLSVPN.construct_rd(data['rd'])
+        # esi
+        data_hex += b'\x00\x00' + struct.pack('!d', data['esi'])
+        # ethernet tag
+        data_hex += struct.pack('!I', data['ethernet_tag_id'])
+        # mac address len and address
+        mac_hex = b''.join([struct.pack('!B', (int(i, 16))) for i in data['mac'].split("-")])
+        data_hex += struct.pack('!B', len(mac_hex) * 8) + mac_hex
+        # ip address len and address
+        if data.get('ip'):
+            ip_hex = netaddr.IPAddress(data['ip']).packed
+            data_hex += struct.pack('!B', len(ip_hex) * 8) + ip_hex
+        else:
+            data_hex += b'\x00'
+        if data.get('label'):
+            data_hex += MPLSVPN.construct_mpls_label_stack(data['label'], bos=False)
+        return data_hex
+
+
+class InclusiveMulticastEthernetTag(MPLSVPN):
+    """
+   +---------------------------------------+
+   |  RD (8 octets)                        |
+   +---------------------------------------+
+   |  Ethernet Tag ID (4 octets)           |
+   +---------------------------------------+
+   |  IP Address Length (1 octet)          |
+   +---------------------------------------+
+   |  Originating Router's IP Address      |
+   |          (4 or 16 octets)             |
+   +---------------------------------------+
+    """
+
+
+class EthernetSegment(MPLSVPN):
+    """
+   +---------------------------------------+
+   |  RD (8 octets)                        |
+   +---------------------------------------+
+   |Ethernet Segment Identifier (10 octets)|
+   +---------------------------------------+
+   |  IP Address Length (1 octet)          |
+   +---------------------------------------+
+   |  Originating Router's IP Address      |
+   |          (4 or 16 octets)             |
+   +---------------------------------------+
+
+    """
