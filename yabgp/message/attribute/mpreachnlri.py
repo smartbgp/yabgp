@@ -31,6 +31,7 @@ from yabgp.common import constants as bgp_cons
 from yabgp.message.attribute.nlri.ipv4_mpls_vpn import IPv4MPLSVPN
 from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
 from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
+from yabgp.message.attribute.nlri.evpn import EVPN
 
 
 class MpReachNLRI(Attribute):
@@ -131,7 +132,9 @@ class MpReachNLRI(Attribute):
         # for l2vpn
         elif afi == afn.AFNUM_L2VPN:
             if safi == safn.SAFNUM_EVPN:
-                pass
+                nexthop = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin), 16)))
+                nlri = EVPN.parse(nlri_bin)
+                return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
             else:
                 nlri = repr(nlri_bin)
 
@@ -211,7 +214,15 @@ class MpReachNLRI(Attribute):
                     nexthop_bin + b'\x00' + nlri_bin
                 return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID)\
                     + struct.pack('!B', len(attr_value)) + attr_value
-
+        # for l2vpn
+        elif afi == afn.AFNUM_L2VPN:
+            if safi == safn.SAFNUM_EVPN:
+                nexthop_bin = netaddr.IPAddress(value['nexthop']).packed
+                nlri_bin = EVPN.construct(nlri_list=value['nlri'])
+                attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + struct.pack('!B', len(nexthop_bin)) + \
+                    nexthop_bin + b'\x00' + nlri_bin
+                return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID)\
+                    + struct.pack('!B', len(attr_value)) + attr_value
         else:
             raise excep.ConstructAttributeFailed(
                 reason='unsupport this sub address family',

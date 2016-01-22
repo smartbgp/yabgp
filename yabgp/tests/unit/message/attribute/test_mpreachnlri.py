@@ -94,6 +94,47 @@ class TestMpReachNLRI(unittest.TestCase):
         data_dict = {'afi_safi': (1, 133), 'nexthop': '', 'nlri': [{1: '192.85.2.0/24'}, {2: '192.85.1.0/24'}]}
         self.assertEqual(data_bin, MpReachNLRI.construct(data_dict))
 
+    def test_l2vpn_evpn_parse_route_type2(self):
+        data_bin = b'\x80\x0e\x30\x00\x19\x46\x04\xac\x11\x00\x03\x00\x02\x25\x00\x01\xac\x11' \
+                   b'\x00\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x6c' \
+                   b'\x30\x00\x11\x22\x33\x44\x55\x20\x0b\x0b\x0b\x01\x00\x00\x00'
+        data_dict = {
+            'afi_safi': (25, 70),
+            'nexthop': '172.17.0.3',
+            'nlri': [
+                {
+                    'type': 2,
+                    'value': {
+                        'eth_tag_id': 108,
+                        'ip': '11.11.11.1',
+                        'label': [0],
+                        'rd': '172.17.0.3:2',
+                        'mac': '00-11-22-33-44-55',
+                        'esi': 0}}]
+        }
+
+        self.assertEqual(data_dict, MpReachNLRI.parse(data_bin[3:]))
+
+    def test_l2vpn_evpn_construct_route_type2(self):
+        data_bin = b'\x80\x0e\x30\x00\x19\x46\x04\xac\x11\x00\x03\x00\x02\x25\x00\x01\xac\x11' \
+                   b'\x00\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x6c' \
+                   b'\x30\x00\x11\x22\x33\x44\x55\x20\x0b\x0b\x0b\x01\x00\x00\x00'
+        data_dict = {
+            'afi_safi': (25, 70),
+            'nexthop': '172.17.0.3',
+            'nlri': [
+                {
+                    'type': 2,
+                    'value': {
+                        'eth_tag_id': 108,
+                        'ip': '11.11.11.1',
+                        'label': [0],
+                        'rd': '172.17.0.3:2',
+                        'mac': '00-11-22-33-44-55',
+                        'esi': 0}}]
+        }
+
+        self.assertEqual(data_bin, MpReachNLRI.construct(data_dict))
 
 if __name__ == '__main__':
     unittest.main()

@@ -28,7 +28,7 @@ class TestEVPN(unittest.TestCase):
             'value': {
                 'rd': '172.17.0.3:2',
                 'mac': '00-11-22-33-44-55',
-                'ethernet_tag_id': 108,
+                'eth_tag_id': 108,
                 'esi': 0,
                 'ip': '11.11.11.1',
                 'label': [0]}
@@ -43,13 +43,90 @@ class TestEVPN(unittest.TestCase):
             'value': {
                 'rd': '172.17.0.3:2',
                 'mac': '00-11-22-33-44-55',
-                'ethernet_tag_id': 108,
+                'eth_tag_id': 108,
                 'esi': 0,
                 'ip': '11.11.11.1',
                 'label': [0]}
         }]
         self.assertEqual(data_hex, EVPN.construct(data_list))
 
+    def test_parse_eth_auto_dis(self):
+        data_hex = b'\x01\x19\x00\x01\x01\x01\x01\x01\x80\x63\x00\x00\x00' \
+                   b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x64\x00\x00\xa0'
+        data_list = [{
+            'type': bgp_cons.BGPNLRI_EVPN_ETHERNET_AUTO_DISCOVERY,
+            'value': {
+                'rd': '1.1.1.1:32867',
+                'esi': 0,
+                'eth_tag_id': 100,
+                'label': [10]
+            }
+        }]
+        self.assertEqual(data_list, EVPN.parse(data_hex))
+
+    def test_construct_eth_auto_dis(self):
+        data_hex = b'\x01\x19\x00\x01\x01\x01\x01\x01\x80\x63\x00\x00\x00' \
+                   b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x64\x00\x00\xa0'
+        data_list = [{
+            'type': bgp_cons.BGPNLRI_EVPN_ETHERNET_AUTO_DISCOVERY,
+            'value': {
+                'rd': '1.1.1.1:32867',
+                'esi': 0,
+                'eth_tag_id': 100,
+                'label': [10]
+            }
+        }]
+        self.assertEqual(data_hex, EVPN.construct(data_list))
+
+    def test_parse_in_mul_eth_tag(self):
+        data_hex = b'\x03\x11\x00\x01\xac\x10\x00\x01\x17\x10\x00\x00\x00\x64\x20\xc0\xa8\x00\x01'
+        data_list = [{
+            'type': bgp_cons.BGPNLRI_EVPN_INCLUSIVE_MULTICAST_ETHERNET_TAG,
+            'value': {
+                'rd': '172.16.0.1:5904',
+                'eth_tag_id': 100,
+                'ip': '192.168.0.1'
+            }
+        }]
+        self.assertEqual(data_list, EVPN.parse(data_hex))
+
+    def test_construct_in_mul_eth_tag(self):
+        data_hex = b'\x03\x11\x00\x01\xac\x10\x00\x01\x17\x10\x00\x00\x00\x64\x20\xc0\xa8\x00\x01'
+        data_list = [{
+            'type': bgp_cons.BGPNLRI_EVPN_INCLUSIVE_MULTICAST_ETHERNET_TAG,
+            'value': {
+                'rd': '172.16.0.1:5904',
+                'eth_tag_id': 100,
+                'ip': '192.168.0.1'
+            }
+        }]
+        self.assertEqual(data_hex, EVPN.construct(data_list))
+
+    def test_parse_eth_segment(self):
+        data_hex = b'\x04\x17\x00\x01\xac\x10\x00\x01\x17\x10\x00\x00' \
+                   b'\x00\x00\x00\x00\x00\x00\x00\x00\x20\xc0\xa8\x00\x01'
+        data_list = [{
+            'type': bgp_cons.BGPNLRI_EVPN_ETHERNET_SEGMENT,
+            'value': {
+                'rd': '172.16.0.1:5904',
+                'esi': 0,
+                'ip': '192.168.0.1'
+            }
+        }]
+        self.assertEqual(data_list, EVPN.parse(data_hex))
+
+    def test_construct_eth_segment(self):
+        data_hex = b'\x04\x17\x00\x01\xac\x10\x00\x01\x17\x10\x00\x00' \
+                   b'\x00\x00\x00\x00\x00\x00\x00\x00\x20\xc0\xa8\x00\x01'
+        data_list = [{
+            'type': bgp_cons.BGPNLRI_EVPN_ETHERNET_SEGMENT,
+            'value': {
+                'rd': '172.16.0.1:5904',
+                'esi': 0,
+                'ip': '192.168.0.1'
+            }
+        }]
+        self.assertEqual(data_hex, EVPN.construct(data_list))
 
 if __name__ == '__main__':
     unittest.main()
