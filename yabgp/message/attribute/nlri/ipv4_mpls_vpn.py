@@ -79,11 +79,11 @@ class IPv4MPLSVPN(MPLSVPN, NLRI):
             else:
                 nlri_dict['label'] = [MPLSVPN.WITHDARW_LABEL]
 
-            nlri_dict['rd_type'], nlri_dict['rd'] = MPLSVPN.parse_rd(value[4:12])
+            nlri_dict['rd'] = MPLSVPN.parse_rd(value[4:12])
             prefix = value[12:prefix_byte_len + 1]
             if len(prefix) < 4:
                 prefix += b'\x00' * (4 - len(prefix))
-            nlri_dict['str'] = str(netaddr.IPAddress(struct.unpack('!I', prefix)[0])) +\
+            nlri_dict['prefix'] = str(netaddr.IPAddress(struct.unpack('!I', prefix)[0])) +\
                 '/%s' % (prefix_bit_len - 88)
             value = value[prefix_byte_len + 1:]
             nlri_list.append(nlri_dict)
@@ -99,9 +99,9 @@ class IPv4MPLSVPN(MPLSVPN, NLRI):
             else:
                 label_hex = MPLSVPN.construct_mpls_label_stack(nlri['label'])
             # construct rd
-            rd_hex = MPLSVPN.construct_rd(nlri)
+            rd_hex = MPLSVPN.construct_rd(nlri['rd'])
             # construct prefix
-            prefix_str, prefix_len = nlri['str'].split('/')
+            prefix_str, prefix_len = nlri['prefix'].split('/')
             prefix_len = int(prefix_len)
             prefix_hex = struct.pack('!I', netaddr.IPAddress(prefix_str).value)
             prefix_hex = label_hex + rd_hex + prefix_hex

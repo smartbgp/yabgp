@@ -34,5 +34,25 @@ class TestMPLSVPN(unittest.TestCase):
         label_bin = b'\x00\x01\x41'
         self.assertEqual(label_bin, MPLSVPN.construct_mpls_label_stack(labels=[20]))
 
+    def test_parse_and_construct_rd_type0(self):
+        # for rd type 0
+        rd_bin = b'\x00\x00\xfd\xea\x00\x00\x00\x01'
+        rd_parsed = '65002:1'
+        self.assertEqual(rd_parsed, MPLSVPN.parse_rd(rd_bin))
+        self.assertEqual(rd_bin, MPLSVPN.construct_rd(rd_parsed))
+
+    def test_parse_and_construct_rd_type1(self):
+
+        rd_bin = b'\x00\x01\xac\x11\x00\x03\x00\x02'
+        rd_parsed = '172.17.0.3:2'
+        self.assertEqual(rd_parsed, MPLSVPN.parse_rd(rd_bin))
+        self.assertEqual(rd_bin, MPLSVPN.construct_rd(rd_parsed))
+
+    def test_parse_and_construct_rd_type2(self):
+        rd_bin = b'\x00\x02\x00\x01\x00\x00\x00\x02'
+        rd_parsed = '65536:2'
+        self.assertEqual(rd_parsed, MPLSVPN.parse_rd(rd_bin))
+        self.assertEqual(rd_bin, MPLSVPN.construct_rd(rd_parsed))
+
 if __name__ == '__main__':
     unittest.main()

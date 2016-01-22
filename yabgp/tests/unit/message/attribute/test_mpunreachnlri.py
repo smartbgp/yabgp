@@ -28,8 +28,7 @@ class TestMpUnReachNLRI(unittest.TestCase):
         data_hoped = {'afi_safi': (1, 128),
                       'withdraw': [{'label': [524288],
                                     'rd': '2:2',
-                                    'rd_type': 0,
-                                    'str': '192.168.201.0/24'}]}
+                                    'prefix': '192.168.201.0/24'}]}
         self.assertEqual(data_hoped, MpUnReachNLRI.parse(data_bin[3:]))
 
     def test_ipv4_mpls_vpn_construct(self):
@@ -37,8 +36,7 @@ class TestMpUnReachNLRI(unittest.TestCase):
         data_hoped = {'afi_safi': (1, 128),
                       'withdraw': [{'label': [524288],
                                     'rd': '2:2',
-                                    'rd_type': 0,
-                                    'str': '192.168.201.0/24'}]}
+                                    'prefix': '192.168.201.0/24'}]}
         self.assertEqual(data_bin, MpUnReachNLRI.construct(data_hoped))
 
     def test_ipv6_unicast_parse(self):
