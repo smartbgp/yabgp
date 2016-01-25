@@ -335,7 +335,7 @@ ATTRIBUTE_ID_2_STR = {
     18: 'AS4_AGGREGATOR'
 }
 
-ATTRIBUTE_STR_2_ID = dict([(k, v) for (k, v) in ATTRIBUTE_ID_2_STR.items()])
+ATTRIBUTE_STR_2_ID = dict([(v, k) for (k, v) in ATTRIBUTE_ID_2_STR.items()])
 
 
 WELL_KNOW_COMMUNITY_INT_2_STR = {
