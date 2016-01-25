@@ -10,8 +10,7 @@ BGP message is **json** format, and it has four keys: ``t``, ``seq``, ``type`` a
 
 Example:
 
-.. code-block:: json
-    :emphasize-lines: 3,5
+.. code-block:: python
 
     timestamp = 1372051151.2572551 # that is Mon Jun 24 13:19:11 2013.
 
@@ -173,7 +172,7 @@ The attribute we supported now is: (reference by `IANA <http://www.iana.org/assi
         "5": "LOCAL_PREF",
         "6": "ATOMIC_AGGREGATE",
         "7": "AGGREGATOR",
-        "8: "COMMUNITY",
+        "8": "COMMUNITY",
         "9": "ORIGINATOR_ID",
         "10": "CLUSTER_LIST",
         "14": "MP_REACH_NLRI",

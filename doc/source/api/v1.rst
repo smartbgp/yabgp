@@ -1,0 +1,300 @@
+==========
+Version 1
+==========
+
+The  REST API lives at the ``/v1`` endpoint and responsds to GET, POST, PUT, and DELETE.
+
+Root
+~~~~
+
+Used to check the API status, if it can work.
+
+
+**Example request**:
+
+.. code-block:: bash
+
+    GET /v1
+
+**Example response**:
+
+It will return the status of this version of API.
+
+.. code-block:: json
+
+  {
+    "status": "stable",
+    "updated": "2015-01-22T00:00:00Z",
+    "version": "v1"
+  }
+
+
+Peer's Information
+~~~~~~~~~~~~~~~~~~
+
+Try to get peer's configuration and running information.
+
+All Peers
++++++++++
+
+Get all peers configuration and running information.
+
+==============   ===============================================================================================
+Property         Description
+==============   ===============================================================================================
+fsm	             The Finite State Machine, represent the current status of the peer. an be: ``IDLE``, ``CONNECT``, ``ACTIVE``, ``OPENSENT``, ``OPENCONFIRM`` and ``ESTABLISHED`` |
+local_addr       The local IP address used to establish BGP connection
+local_as         The local BGP AS number
+remote_addr      The remote IP address used to connect with
+remote_as        The remote BGP AS number
+uptime           The BGP session uptime, unit is second. It starts when fsm is ``ESTABLISHED``
+==============   ===============================================================================================
+
+**Example request**:
+
+.. code-block:: bash
+
+    GET /v1/peers
+
+
+**Example response**:
+
+    .. code-block:: json
+
+      {
+          "peers": [
+              {
+                  "fsm": "ESTABLISHED",
+                  "local_addr": "100.100.0.1",
+                  "local_as": 65022,
+                  "remote_addr": "100.100.9.1",
+                  "remote_as": 65022,
+                  "uptime": 106810.47324299812
+              },
+              {
+                  "fsm": "ESTABLISHED",
+                  "local_addr": "100.100.0.1",
+                  "local_as": 65022,
+                  "remote_addr": "100.100.9.1",
+                  "remote_as": 65022,
+                  "uptime": 106810.47324299812
+              }
+          ]
+      }
+
+One Peers
++++++++++
+
+Get one peer's configuration and running information.
+
+.. code-block:: bash
+
+    GET /v1/peer/<peer_ip_address>
+
+**Example response**:
+
+.. code-block:: json
+
+    {
+        "peer": {
+            "fsm": "ESTABLISHED",
+            "local_addr": "10.75.44.11",
+            "local_as": 23650,
+            "remote_addr": "10.124.1.245",
+            "remote_as": 23650,
+            "uptime": 7.913731813430786
+        }
+    }
+
+Message Statistic
++++++++++++++++++
+
+Get the BGP message sending and receiving number statistic.
+
+.. code-block:: bash
+
+    GET /v1/peer/<peer_ip_address>/statistic
+
+**Example response**:
+
+.. code-block:: json
+
+      {
+          "receive": {
+              "Keepalives": 3,
+              "Notifications": 0,
+              "Opens": 1,
+              "Route Refresh": 0,
+              "Updates": 5
+          },
+          "send": {
+              "Keepalives": 3,
+              "Notifications": 0,
+              "Opens": 1,
+              "Route Refresh": 0,
+              "Updates": 0
+          }
+      }
+
+RIB Information
+~~~~~~~~~~~~~~~
+
+adj rib in
+++++++++++
+
+.. code-block:: bash
+
+    GET /v1/adj-rib-in/ipv4/<peer_ip_address>
+
+**Example response**:
+
+.. code-block:: json
+
+    {
+        "prefixes": [
+            "1.1.1.1/32",
+            "2.2.2.2/32",
+            "3.3.3.3/32"
+        ]
+    }
+
+Also, you can get the attribute for a prefix.
+
+.. code-block:: bash
+
+    GET /v1/adj-rib-in/ipv4/<peer_ip_address>?prefix=<prefix>
+
+**Example response**:
+
+.. code-block:: json
+
+    {
+      "attr": {
+        "1": 0,
+        "2": [],
+        "3": "10.124.1.221",
+        "4": 0,
+        "5": 100
+      }
+    }
+
+
+adj rib out
++++++++++++
+
+.. code-block:: bash
+
+    GET /v1/adj-rib-out/ipv4/<peer_ip_address>
+
+**Example response**:
+
+.. code-block:: json
+
+    {
+        "prefixes": [
+            "1.1.1.1/32",
+            "2.2.2.2/32",
+            "3.3.3.3/32"
+        ]
+    }
+
+Also, you can get the attribute for a prefix.
+
+.. code-block:: bash
+
+    GET /v1/adj-rib-out/ipv4/<peer_ip_address>?prefix=<prefix>
+
+**Example response**:
+
+.. code-block:: json
+
+    {
+      "attr": {
+        "1": 0,
+        "2": [],
+        "3": "10.124.1.221",
+        "4": 0,
+        "5": 100
+      }
+    }
+
+
+Send Message
+~~~~~~~~~~~~
+
+Route Refresh
++++++++++++++
+
+Send BGP route refresh message to peer.
+
+==== ====== ===========
+afi  safi   Description
+==== ====== ===========
+1    1      IPv4 unicast
+1    128    IPv4 MPLS VPN
+2    1      IPv6 unicast
+2    128    IPv6 MPLS VPN
+==== ====== ===========
+
+.. code-block:: bash
+
+    POST /v1/peer/<peer_ip_address>/send/route-refresh
+
+POST data format
+
+.. code-block:: json
+
+    {
+        "afi": 1,
+        "safi": 1,
+        "res": 0
+    }
+
+**Example response**:
+
+.. code-block:: json
+
+    {
+        "status": true
+    }
+
+Update
+++++++
+
+Send BGP update message to peer
+
+.. code-block:: bash
+
+    POST /v1/peer/<peer_ip_address>/send/update
+
+
+POST data format for update
+
+.. code-block:: json
+
+    {
+        "attr":{
+            "1": 0,
+            "2": [],
+            "3": "192.0.2.1",
+            "5": 100,
+            "8": ["NO_EXPORT"]
+    },
+        "nlri": ["172.20.1.0/24", "172.20.2.0/24"]
+    }
+
+POST data format for withdraw
+
+.. code-block:: json
+
+    {
+        "withdraw": ["172.20.1.0/24", "172.20.2.0/24"]
+    }
+
+**Example response**:
+
+.. code-block:: json
+
+    {
+        "status": true
+    }
