@@ -42,29 +42,6 @@ def get_pw(username):
 def root():
     """
     v1 api root. Get the api status.
-
-    **Example request**:
-
-    .. sourcecode:: http
-
-      GET /v1 HTTP/1.1
-      Host: example.com
-      Accept: application/json
-
-    **Example response**:
-
-    .. sourcecode:: http
-
-      HTTP/1.1 200 OK
-      Vary: Accept
-      Content-Type: text/json
-      {
-        "status": "stable",
-        "updated": "2015-01-22T00:00:00Z",
-        "version": "v1"
-      }
-
-    :status 200: the api can work.
     """
     intro = {
         "status": "stable",
@@ -79,45 +56,6 @@ def root():
 def peers():
     """
     Get all peers realtime running information, include basic configurations and fsm state.
-
-    **Example request**
-
-    .. sourcecode:: http
-
-      GET /v1/peers HTTP/1.1
-      Host: example.com
-      Accept: application/json
-
-    **Example response**:
-
-    .. sourcecode:: http
-
-      HTTP/1.1 200 OK
-      Vary: Accept
-      Content-Type: text/json
-
-      {
-          "peers": [
-              {
-                  "fsm": "ESTABLISHED",
-                  "local_addr": "100.100.0.1",
-                  "local_as": 65022,
-                  "remote_addr": "100.100.9.1",
-                  "remote_as": 65022,
-                  "uptime": 106810.47324299812
-              },
-              {
-                  "fsm": "ESTABLISHED",
-                  "local_addr": "100.100.0.1",
-                  "local_as": 65022,
-                  "remote_addr": "100.100.9.1",
-                  "remote_as": 65022,
-                  "uptime": 106810.47324299812
-              }
-          ]
-      }
-
-    :status 200: the api can work.
     """
     return flask.jsonify(api_utils.get_peer_conf_and_state())
 
@@ -128,36 +66,6 @@ def peers():
 def peer(peer_ip):
     """
     Get one peer's running information, include basic configurations and fsm state.
-
-    **Example request**
-
-    .. sourcecode:: http
-
-      GET /v1/peer/10.124.1.245/state HTTP/1.1
-      Host: example.com
-      Accept: application/json
-
-    **Example response**:
-
-    .. sourcecode:: http
-
-      HTTP/1.1 200 OK
-      Vary: Accept
-      Content-Type: text/json
-      {
-        "peer": {
-            "fsm": "ESTABLISHED",
-            "local_addr": "10.75.44.11",
-            "local_as": 23650,
-            "remote_addr": "10.124.1.245",
-            "remote_as": 23650,
-            "uptime": 7.913731813430786
-            }
-        }
-
-    :param peer_ip: peer ip address
-    :status 200: the api can work.
-
     """
     return flask.jsonify(api_utils.get_peer_conf_and_state(peer_ip))
 
@@ -168,42 +76,6 @@ def peer(peer_ip):
 def get_peer_statistic(peer_ip):
     """
     Get one peer's message statistic, include sending and receiving.
-
-    **Example request**
-
-    .. sourcecode:: http
-
-      GET /v1/peer/10.124.1.245/statistic HTTP/1.1
-      Host: example.com
-      Accept: application/json
-
-    **Example response**:
-
-    .. sourcecode:: http
-
-      HTTP/1.1 200 OK
-      Vary: Accept
-      Content-Type: text/json
-      {
-          "receive": {
-              "Keepalives": 3,
-              "Notifications": 0,
-              "Opens": 1,
-              "Route Refresh": 0,
-              "Updates": 5
-          },
-          "send": {
-              "Keepalives": 3,
-              "Notifications": 0,
-              "Opens": 1,
-              "Route Refresh": 0,
-              "Updates": 0
-          }
-      }
-
-    :param peer_ip: peer ip address
-    :status 200: the api can work.
-
     """
     return flask.jsonify(api_utils.get_peer_msg_statistic(peer_ip))
 
@@ -215,45 +87,6 @@ def get_peer_statistic(peer_ip):
 def send_route_refresh(peer_ip):
     """
     Try to send BGP Route Refresh message to a peer
-
-    **Example request**
-
-    .. sourcecode:: http
-
-      POST /v1/peer/10.124.1.245/send/route-refresh HTTP/1.1
-      Host: example.com
-      Accept: application/json
-      POST Data:
-      {
-        "afi": 1,
-        "safi": 1,
-        "res": 0
-      }
-      `res` is optional, the default value is 0.
-
-    **Example response**:
-
-    .. sourcecode:: http
-
-      HTTP/1.1 200 OK
-      Vary: Accept
-      Content-Type: text/json
-      {
-        "status": True
-      }
-
-    Success f the status is `True` in the reponse, otherwise, the status is `False`. If the status is
-    Flase, there will be a code tell you why. like:
-
-    .. sourcecode:: http
-
-        {
-            "status": False,
-            "code": "please check your post data"
-        }
-
-    :param peer_ip: peer ip address
-    :status 200: the api can work.
     """
     LOG.debug('Try to send route refresh to peer %s', peer_ip)
     json_request = flask.request.get_json()
@@ -278,60 +111,6 @@ def send_route_refresh(peer_ip):
 def send_update_message(peer_ip):
     """
     Try to send BGP update message to the peer. Both update nlri and withdraw nlri treated as Update.
-
-    **Example request**
-
-    .. sourcecode:: http
-
-      POST /v1/peer/10.124.1.245/send/update HTTP/1.1
-      Host: example.com
-      Accept: application/json
-
-    Post data example for IPv4 update and withdraw
-
-    .. sourcecode:: http
-
-        # update
-        {
-            "attr":{
-                "1": 0,
-                "2": [],
-                "3": "192.0.2.1",
-                "5": 100,
-                "8": ["NO_EXPORT"]
-        },
-            "nlri": ["172.20.1.0/24", "172.20.2.0/24"]
-        }
-        # withdraw
-        {
-            "withdraw": ["172.20.1.0/24", "172.20.2.0/24"]
-        }
-
-
-    **Example response**:
-
-    .. sourcecode:: http
-
-      HTTP/1.1 200 OK
-      Vary: Accept
-      Content-Type: text/json
-      {
-        "status": True
-      }
-
-    Success f the status is `True` in the reponse, otherwise, the status is `False`. If the status is
-    Flase, there will be a code tell you why. like:
-
-    .. sourcecode:: http
-
-        {
-            "status": False,
-            "code": "please check your post data"
-        }
-
-    :param peer_ip: peer ip address
-    :status 200: the api can work.
-
     """
     LOG.debug('Try to send update message to peer %s', peer_ip)
     json_request = flask.request.get_json()
@@ -449,55 +228,6 @@ def manage_channel_filter():
 def get_adj_rib_in(afi_safi, peer_ip):
     """
     Try to get BGP adj rib in
-
-    **Example request**
-
-    .. sourcecode:: http
-
-      GET /v1/adj-rib-in/ipv4/10.75.44.242  HTTP/1.1
-      Host: example.com
-      Accept: application/json
-
-    **Example response**:
-
-    .. sourcecode:: http
-
-      HTTP/1.1 200 OK
-      Vary: Accept
-      Content-Type: text/json
-      {
-        "prefixes": [
-          "1.1.1.1/32",
-          "2.2.2.2/32",
-          "3.3.3.3/32"
-        ]
-      }
-
-    **Example request**
-
-    .. sourcecode:: http
-
-      GET /v1/adj-rib-in/ipv4/10.75.44.242?prefix=1.1.1.1/32  HTTP/1.1
-      Host: example.com
-      Accept: application/json
-
-    **Example response**:
-
-    .. sourcecode:: http
-
-      HTTP/1.1 200 OK
-      Vary: Accept
-      Content-Type: text/json
-      {
-          "attr": {
-            "1": 0,
-            "2": [],
-            "3": "10.124.1.221",
-            "4": 0,
-            "5": 100
-          }
-      }
-
     :param afi_safi: address and sub address family, now only suport ipv4
     :param peer_ip: peer ip address
     :status 200: the api can work, otherwise the peer is not established maybe.
@@ -522,57 +252,6 @@ def get_adj_rib_in(afi_safi, peer_ip):
 def get_adj_rib_out(afi_safi, peer_ip):
     """
     Try to get BGP adj rib out
-
-    **Example request**
-
-    .. sourcecode:: http
-
-      GET /v1/adj-rib-out/ipv4/10.75.44.242  HTTP/1.1
-      Host: example.com
-      Accept: application/json
-
-    **Example response**:
-
-    .. sourcecode:: http
-
-      HTTP/1.1 200 OK
-      Vary: Accept
-      Content-Type: text/json
-      {
-        "prefixes": [
-          "4.4.4.4/32",
-          "5.5.5.5/32",
-          "6.6.6.6/32"
-        ]
-      }
-
-    **Example request**
-
-    .. sourcecode:: http
-
-      GET /v1/adj-rib-out/ipv4/10.75.44.242?prefix=4.4.4.4/32  HTTP/1.1
-      Host: example.com
-      Accept: application/json
-
-    **Example response**:
-
-    .. sourcecode:: http
-
-      HTTP/1.1 200 OK
-      Vary: Accept
-      Content-Type: text/json
-      {
-          "attr": {
-            "1": 0,
-            "2": [],
-            "3": "10.75.44.225",
-            "5": 100,
-            "8": [
-              "NO_EXPORT"
-            ]
-          }
-      }
-
     :param afi_safi: address and sub address family, now only suport ipv4
     :param peer_ip: peer ip address
     :status 200: the api can work, otherwise the peer is not established maybe.
