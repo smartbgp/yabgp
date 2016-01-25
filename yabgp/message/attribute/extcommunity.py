@@ -132,6 +132,22 @@ class ExtCommunity(Attribute):
                 mark = struct.unpack('!B', value_tmp[-1])[0]
                 ext_community.append([bgp_cons.BGP_EXT_TRA_MARK, mark])
 
+            # Transitive Opaque
+            elif comm_code == bgp_cons.BGP_EXT_COM_ENCAP:
+                ext_community.append([bgp_cons.BGP_EXT_COM_ENCAP, struct.unpack('!I', value_tmp[2:])[0]])
+            # EVPN
+            elif comm_code == bgp_cons.BGP_EXT_COM_EVPN_ES_IMPORT:
+                mac = str(netaddr.EUI(int(binascii.b2a_hex(value_tmp), 16)))
+                ext_community.append([comm_code, mac])
+            elif comm_code == bgp_cons.BGP_EXT_COM_EVPN_MAC_MOBIL:
+                flag = ord(value_tmp[0:1])
+                seq = struct.unpack('!I', value_tmp[2:])[0]
+                ext_community.append([comm_code, flag, seq])
+            elif comm_code == bgp_cons.BGP_EXT_COM_EVPN_ESI_MPLS_LABEL:
+                flag = ord(value_tmp[0:1])
+                label = struct.unpack('!L', b'\00'+value_tmp[3:])[0]
+                label >>= 4
+                ext_community.append([comm_code, flag, label])
             else:
                 ext_community.append([bgp_cons.BGP_EXT_COM_UNKNOW, repr(value_tmp)])
                 LOG.warn('unknow bgp extended community, type=%s, value=%s', comm_code, repr(value_tmp))
@@ -190,6 +206,21 @@ class ExtCommunity(Attribute):
                 asn, rate = item[1].split(':')
                 ext_community_hex += struct.pack('!HHf', bgp_cons.BGP_EXT_TRA_RATE, int(asn), int(rate))
 
+            # Transitive Opaque
+            elif item[0] == bgp_cons.BGP_EXT_COM_ENCAP:
+                ext_community_hex += struct.pack('!HHI', bgp_cons.BGP_EXT_COM_ENCAP, 0, item[1])
+            # EVPN
+            elif item[0] == bgp_cons.BGP_EXT_COM_EVPN_ES_IMPORT:
+                mac = b''.join([struct.pack('!B', (int(i, 16))) for i in item[1].split("-")])
+                ext_community_hex += struct.pack('!H', item[0]) + mac
+            elif item[0] == bgp_cons.BGP_EXT_COM_EVPN_ESI_MPLS_LABEL:
+                flag = struct.pack('!B', item[1])
+                label = struct.pack('!L', (item[2] << 4 | 1))[1:]
+                ext_community_hex += struct.pack('!H', item[0]) + flag + b'\x00\x00' + label
+            elif item[0] == bgp_cons.BGP_EXT_COM_EVPN_MAC_MOBIL:
+                flag = struct.pack('!B', item[1])
+                seq = struct.pack('!I', item[2])
+                ext_community_hex += struct.pack('!H', item[0]) + flag + b'\x00' + seq
             else:
                 LOG.warn('unknow bgp extended community for construct, type=%s, value=%s', item[0], item[1])
 
