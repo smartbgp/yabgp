@@ -171,5 +171,35 @@ class TestUpdate(unittest.TestCase):
                                                   'prefix': '192.168.201.0/24'}]}}}
         self.assertEqual(data_hoped['attr'], Update.parse(None, data_bin[HDR_LEN:], True)['attr'])
 
+    def test_parse_construct_l2vpn_evpn(self):
+        data_bin = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x63\x02\x00\x00\x00' \
+                   b'\x4c\xc0\x10\x08\x06\x00\x01\x00\x00\x00\x01\xf4\x40\x01\x01\x00\x40\x02\x00\x40\x05\x04' \
+                   b'\x00\x00\x00\x64\x80\x0e\x30\x00\x19\x46\x04\x0a\x4b\x2c\xfe\x00\x02\x25\x00\x01\xac\x11' \
+                   b'\x00\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x6c\x30\x00\x11\x22' \
+                   b'\x33\x44\x55\x20\x0b\x0b\x0b\x01\x00\x00\x00'
+        data_dict = {
+            "attr": {
+                1: 0,
+                2: [],
+                5: 100,
+                14: {
+                    "afi_safi": (25, 70),
+                    "nexthop": "10.75.44.254",
+                    "nlri": [
+                        {
+                            "type": 2,
+                            "value": {
+                                "eth_tag_id": 108,
+                                "ip": "11.11.11.1",
+                                "label": [0],
+                                "rd": "172.17.0.3:2",
+                                "mac": "00-11-22-33-44-55",
+                                "esi": 0}}]
+                },
+                16: [[1536, 1, 500]]
+            }}
+        self.assertEqual(data_bin, Update.construct(msg_dict=data_dict))
+        self.assertEqual(data_dict['attr'], Update.parse(None, data_bin[HDR_LEN:])['attr'])
+
 if __name__ == '__main__':
     unittest.main()

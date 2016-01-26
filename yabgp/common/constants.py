@@ -90,6 +90,22 @@ BGPTYPE_TUNNEL_ENCAPS_ATTR = 23  # RFC5512
 BGPTYPE_LINK_STATE = 99
 BGPTYPE_ATTRIBUTE_SET = 128
 
+# BGP Tunnel Encapsulation Attribute Tunnel Types
+BGP_TUNNEL_ENCAPS_RESERVED = 0
+BGP_TUNNEL_ENCAPS_L2TPV3_OVER_IP = 1
+BGP_TUNNEL_ENCAPS_GRE = 2
+BGP_TUNNEL_ENCAPS_TRANSMIT_TUNNEL_ENDPOINT = 3
+BGP_TUNNEL_ENCAPS_IPSEC_TUNNEL_MODE = 4
+BGP_TUNNEL_ENCAPS_IP_IN_IP_TUNNEL_WITH_IPSEC = 5
+BGP_TUNNEL_ENCAPS_MPLS_IN_IP_TUNNEL_WITH_IPSEC = 6
+BGP_TUNNEL_ENCAPS_IP_IN_IP = 7
+BGP_TUNNEL_ENCAPS_VXLAN = 8
+BGP_TUNNEL_ENCAPS_NVGRE = 9
+BGP_TUNNEL_ENCAPS_MPLS = 10
+BGP_TUNNEL_ENCAPS_MPLS_IN_GRE = 11
+BGP_TUNNEL_ENCAPS_VXLAN_GRE = 12
+BGP_TUNNEL_ENCAPS_MPLS_IN_UDP = 13
+
 #  VPN Route Target  #
 BGP_EXT_COM_RT_0 = 0x0002  # Route Target,Format AS(2bytes):AN(4bytes)
 BGP_EXT_COM_RT_1 = 0x0102  # Route Target,Format IPv4 address(4bytes):AN(2bytes)
@@ -106,6 +122,18 @@ BGP_EXT_TRA_RATE = 0x8006  # traffic-rate 2-byte as#, 4-byte float
 BGP_EXT_TRA_ACTION = 0x8007  # traffic-action bitmask
 BGP_EXT_REDIRECT_VRF = 0x8008  # redirect 6-byte Route Target
 BGP_EXT_TRA_MARK = 0x8009  # traffic-marking DSCP value
+
+# Transitive Opaque
+BGP_EXT_COM_OSPF_ROUTE_TYPE = 0x0306  # OSPF Route Type
+BGP_EXT_COM_COLOR = 0x030b  # Color
+BGP_EXT_COM_ENCAP = 0x030c  # BGP_EXT_COM_ENCAP = 0x030c
+BGP_EXT_COM_DEFAULT_GATEWAY = 0x030d  # Default Gateway
+
+# BGP EVPN
+BGP_EXT_COM_EVPN_MAC_MOBIL = 0x0600  # Mac Mobility
+BGP_EXT_COM_EVPN_ESI_MPLS_LABEL = 0x0601  # ESI MPLS Label
+BGP_EXT_COM_EVPN_ES_IMPORT = 0x0602  # ES Import
+
 
 # BGP cost cummunity
 BGP_EXT_COM_COST = 0x4301
@@ -169,13 +197,15 @@ AFI_SAFI_DICT = {
     (1, 1): 'ipv4',
     (2, 1): 'ipv6',
     (1, 133): 'flowspec',
-    (1, 128): 'vpnv4'
+    (1, 128): 'vpnv4',
+    (25, 70): 'evpn'
 }
 AFI_SAFI_STR_DICT = {
     'ipv6': (2, 1),
     'ipv4': (1, 1),
     'flowspec': (1, 133),
-    'vpnv4': (1, 128)
+    'vpnv4': (1, 128),
+    'evpn': (25, 70)
 }
 
 ADD_PATH_ACT_DICT = {

@@ -111,5 +111,29 @@ class TestExtCommunity(unittest.TestCase):
         self.assertEqual([[bgp_cons.BGP_EXT_TRA_RATE, "100:6250000"]],
                          ExtCommunity.parse(value=b'\x80\x06\x00dJ\xbe\xbc '))
 
+    def test_parse_construct_transitive_opaque_encap(self):
+        community_list = [[bgp_cons.BGP_EXT_COM_ENCAP, 8]]
+        community_hex = b'\x03\x0c\x00\x00\x00\x00\x00\x08'
+        self.assertEqual(community_list, ExtCommunity.parse(community_hex))
+        self.assertEqual(community_hex, ExtCommunity.construct(community_list)[3:])
+
+    def test_parse_construct_es_import(self):
+        community_list = [[bgp_cons.BGP_EXT_COM_EVPN_ES_IMPORT, '00-11-22-33-44-55']]
+        community_hex = b'\x06\x02\x00\x11\x22\x33\x44\x55'
+        self.assertEqual(community_list, ExtCommunity.parse(community_hex))
+        self.assertEqual(community_hex, ExtCommunity.construct(community_list)[3:])
+
+    def test_parse_construct_els_label(self):
+        community_list = [[bgp_cons.BGP_EXT_COM_EVPN_ESI_MPLS_LABEL, 1, 20]]
+        community_hex = b'\x06\x01\x01\x00\x00\x00\x01\x41'
+        self.assertEqual(community_hex, ExtCommunity.construct(community_list)[3:])
+        self.assertEqual(community_list, ExtCommunity.parse(community_hex))
+
+    def test_parse_construct_mac_mobil(self):
+        community_list = [[bgp_cons.BGP_EXT_COM_EVPN_MAC_MOBIL, 1, 500]]
+        community_hex = b'\x06\x00\x01\x00\x00\x00\x01\xf4'
+        self.assertEqual(community_hex, ExtCommunity.construct(community_list)[3:])
+        self.assertEqual(community_list, ExtCommunity.parse(community_hex))
+
 if __name__ == '__main__':
     unittest.main()

@@ -24,6 +24,7 @@ from yabgp.message.attribute import AttributeID
 from yabgp.message.attribute.nlri.ipv4_mpls_vpn import IPv4MPLSVPN
 from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
 from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
+from yabgp.message.attribute.nlri.evpn import EVPN
 from yabgp.common import afn
 from yabgp.common import safn
 from yabgp.common import exception as excep
@@ -85,6 +86,13 @@ class MpUnReachNLRI(Attribute):
                 return dict(afi_safi=(afi, safi), withdraw=IPv6Unicast.parse(nlri_data=nlri_bin))
             else:
                 return dict(afi_safi=(afi, safi), withdraw=repr(nlri_bin))
+        # for l2vpn
+        elif afi == afn.AFNUM_L2VPN:
+            # for evpn
+            if safi == safn.SAFNUM_EVPN:
+                return dict(afi_safi=(afi, safi), withdraw=EVPN.parse(nlri_data=nlri_bin))
+            else:
+                return dict(afi_safi=(afi, safi), withdraw=repr(nlri_bin))
 
         else:
             return dict(afi_safi=(afi, safi), withdraw=repr(nlri_bin))
@@ -137,6 +145,17 @@ class MpUnReachNLRI(Attribute):
                         + struct.pack('!B', len(attr_value)) + attr_value
                 else:
                     return None
+        # for l2vpn
+        elif afi == afn.AFNUM_L2VPN:
+            # for evpn
+            if safi == safn.SAFNUM_EVPN:
+                nlri = EVPN.construct(nlri_list=value['withdraw'])
+                if nlri:
+                    attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri
+                    return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
+                        + struct.pack('!B', len(attr_value)) + attr_value
+            else:
+                return None
         else:
             raise excep.ConstructAttributeFailed(
                 reason='unsupport this sub address family',
