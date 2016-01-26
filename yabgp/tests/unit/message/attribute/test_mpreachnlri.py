@@ -94,6 +94,22 @@ class TestMpReachNLRI(unittest.TestCase):
         data_dict = {'afi_safi': (1, 133), 'nexthop': '', 'nlri': [{1: '192.85.2.0/24'}, {2: '192.85.1.0/24'}]}
         self.assertEqual(data_bin, MpReachNLRI.construct(data_dict))
 
+    def test_l2vpn_evpn_parse_construct_route_type1(self):
+        data_dict = {
+            "afi_safi": (25, 70),
+            "nexthop": "10.75.44.254",
+            "nlri": [{
+                "type": 1,
+                "value": {
+                    "rd": "1.1.1.1:32867",
+                    "esi": 0,
+                    "eth_tag_id": 100,
+                    "label": [10]
+                }
+            }]
+        }
+        self.assertEqual(data_dict, MpReachNLRI.parse(MpReachNLRI.construct(data_dict)[3:]))
+
     def test_l2vpn_evpn_parse_route_type2(self):
         data_bin = b'\x80\x0e\x30\x00\x19\x46\x04\xac\x11\x00\x03\x00\x02\x25\x00\x01\xac\x11' \
                    b'\x00\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x6c' \
@@ -135,6 +151,41 @@ class TestMpReachNLRI(unittest.TestCase):
         }
 
         self.assertEqual(data_bin, MpReachNLRI.construct(data_dict))
+
+    def test_l2vpn_evpn_parse_construct_route_type3(self):
+        data_dict = {
+            "afi_safi": (25, 70),
+            "nexthop": "10.75.44.254",
+            "nlri": [
+                {
+                    "type": 3,
+                    "value": {
+                        "rd": "172.16.0.1:5904",
+                        "eth_tag_id": 100,
+                        "ip": "192.168.0.1"
+                    }
+                }
+            ]
+        }
+        self.assertEqual(data_dict, MpReachNLRI.parse(MpReachNLRI.construct(data_dict)[3:]))
+
+    def test_l2vpn_evpn_parse_construct_route_type4(self):
+        data_dict = {
+            "afi_safi": (25, 70),
+            "nexthop": "10.75.44.254",
+            "nlri": [
+                {
+                    "type": 4,
+                    "value": {
+                        "rd": "172.16.0.1:8888",
+                        "esi": 0,
+                        "ip": "192.168.0.1"
+                    }
+                }
+            ]
+        }
+        self.assertEqual(data_dict, MpReachNLRI.parse(MpReachNLRI.construct(data_dict)[3:]))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -39,8 +39,8 @@ class EVPN(NLRI):
     def parse(cls, nlri_data):
         nlri_list = []
         while nlri_data:
-            route_type = ord(nlri_data[0])
-            offset = ord(nlri_data[1])
+            route_type = ord(nlri_data[0:1])
+            offset = ord(nlri_data[1:2])
             route_data = nlri_data[2: offset + 2]
             route = {}
             if route_type == bgp_cons.BGPNLRI_EVPN_ETHERNET_AUTO_DISCOVERY:
@@ -158,8 +158,8 @@ class MacIPAdvertisment(MPLSVPN):
         offset += 1
         # ip address
         if ip_addr_len != 0:
-            route['ip'] = str(netaddr.IPAddress(int(binascii.b2a_hex(data[offset: offset+ip_addr_len / 8]), 16)))
-            offset += ip_addr_len / 8
+            route['ip'] = str(netaddr.IPAddress(int(binascii.b2a_hex(data[offset: offset + int(ip_addr_len / 8)]), 16)))
+            offset += int(ip_addr_len / 8)
         # label
         route['label'] = MPLSVPN.parse_mpls_label_stack(data[offset:])
         return route
