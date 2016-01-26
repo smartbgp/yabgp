@@ -34,7 +34,8 @@
 				"5c764253-4b1a-736b-eea3-3bca2e7377dd",
 				"ab79e54d-c442-9f71-9e8c-940523c41ef1",
 				"38ebfd2d-26fe-7acb-4ff4-34a072bf968c",
-				"94cd3abf-a102-cb05-c671-6268ef489c02"
+				"94cd3abf-a102-cb05-c671-6268ef489c02",
+				"92c25f28-fb90-920d-94cb-9968839f3286"
 			],
 			"owner": "29527",
 			"lastUpdatedBy": {
@@ -42,6 +43,23 @@
 				"username": "xiaoquwl"
 			},
 			"lastRevision": 76657604,
+			"collectionId": "2331b642-660a-c670-0032-f81410a58926"
+		},
+		{
+			"id": "6efa4ea6-4ddc-b22b-65e5-976a2794a340",
+			"name": "evpn",
+			"description": "",
+			"order": [
+				"9ce9366c-1593-8623-3af9-91e55e9f4a75",
+				"7daa9afb-5c6c-690b-3e27-7ba823494163",
+				"fd1df45b-26bc-5002-f784-88bae0047f55",
+				"b38e2371-51f4-f898-77db-a67e1f1d7a44",
+				"d803da55-49f3-747b-c332-ab87d3b5a4f6",
+				"e0929834-dc20-7f9f-8ce1-31cac78ea0b6",
+				"76095e7d-e82f-b830-8480-21aca45cd0cb",
+				"23fe2031-44f5-a821-5726-0495ce008542"
+			],
+			"owner": "29527",
 			"collectionId": "2331b642-660a-c670-0032-f81410a58926"
 		}
 	],
@@ -93,6 +111,32 @@
 			"folder": "682ce0ca-ef74-d9af-a512-159ff1bc4cba",
 			"isFromCollection": true,
 			"rawModeData": "{\n    \"filter\": [\n    {\n        \"type\": \"prefix\",\n        \"value\": \"2.2.2.2/32\"\n    }\n]\n}"
+		},
+		{
+			"id": "23fe2031-44f5-a821-5726-0495ce008542",
+			"headers": "Authorization: Basic YWRtaW46YWRtaW4=\nContent-Type: application/json\n",
+			"url": "http://10.75.44.120:8888/v1/peer/10.75.44.228/send/update",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "basicAuth",
+			"helperAttributes": {
+				"username": "admin",
+				"password": "admin",
+				"saveToRequest": true,
+				"id": "basic",
+				"timestamp": 1441674669014
+			},
+			"time": 1453778507607,
+			"name": "route type 4  withdraw",
+			"description": "",
+			"collectionId": "2331b642-660a-c670-0032-f81410a58926",
+			"responses": [],
+			"rawModeData": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [25, 70],\n            \"withdraw\": [\n                {\n                    \"type\": 4,\n                    \"value\": {\n                        \"rd\": \"172.16.0.1:8888\",\n                        \"esi\": 0,\n                        \"ip\": \"192.168.0.1\"\n                    }\n                }\n            ]\n        }\n}}"
 		},
 		{
 			"id": "29edf5f0-58a8-4bd9-05a2-cc7a39f8f0d1",
@@ -168,6 +212,58 @@
 			"rawModeData": "{\r\n    \"attr\":{\r\n        \"1\": 0, \r\n        \"2\": [[2,[1,2,3]]],\r\n        \"3\": \"192.0.2.1\",\r\n        \"5\": 500,\r\n        \"8\": [\"NO_EXPORT\",\"123:456\"]\r\n    },\r\n  \"nlri\":[\"172.20.1.0/24\",\"172.20.2.0/24\"]\r\n}"
 		},
 		{
+			"id": "76095e7d-e82f-b830-8480-21aca45cd0cb",
+			"headers": "Authorization: Basic YWRtaW46YWRtaW4=\nContent-Type: application/json\n",
+			"url": "http://10.75.44.120:8888/v1/peer/10.75.44.228/send/update",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "basicAuth",
+			"helperAttributes": {
+				"username": "admin",
+				"password": "admin",
+				"saveToRequest": true,
+				"id": "basic",
+				"timestamp": 1441674669014
+			},
+			"time": 1453778405608,
+			"name": "route type 3  withdraw",
+			"description": "",
+			"collectionId": "2331b642-660a-c670-0032-f81410a58926",
+			"responses": [],
+			"rawModeData": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [25, 70],\n            \"withdraw\": [\n                {\n                    \"type\": 3,\n                    \"value\": {\n                        \"rd\": \"172.16.0.1:5904\",\n                        \"eth_tag_id\": 100,\n                        \"ip\": \"192.168.0.1\"\n                    }\n                }\n            ]\n        }\n}}"
+		},
+		{
+			"id": "7daa9afb-5c6c-690b-3e27-7ba823494163",
+			"headers": "Authorization: Basic YWRtaW46YWRtaW4=\nContent-Type: application/json\n",
+			"url": "http://10.75.44.120:8888/v1/peer/10.75.44.228/send/update",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "basicAuth",
+			"helperAttributes": {
+				"username": "admin",
+				"password": "admin",
+				"saveToRequest": true,
+				"id": "basic",
+				"timestamp": 1441674669014
+			},
+			"time": 1453788632230,
+			"name": "route type 2 update",
+			"description": "",
+			"collectionId": "2331b642-660a-c670-0032-f81410a58926",
+			"responses": [],
+			"rawModeData": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [25, 70],\n            \"nexthop\": \"10.75.44.254\",\n            \"nlri\": [\n                {\n                    \"type\": 2,\n                    \"value\": {\n                        \"eth_tag_id\": 108,\n                        \"ip\": \"11.11.11.1\",\n                        \"label\": [0],\n                        \"rd\": \"172.17.0.3:2\",\n                        \"mac\": \"00-11-22-33-44-55\",\n                        \"esi\": 0}}]},\n        \"16\":[[1536, 1, 500]]\n}}"
+		},
+		{
 			"id": "880d2f0a-17ba-1add-ff7d-fd19dd0728a3",
 			"headers": "Authorization: Basic YWRtaW46YWRtaW4=\n",
 			"url": "http://10.75.44.11:8801/v1/peer/10.75.44.204/state",
@@ -210,6 +306,32 @@
 			"isFromCollection": true
 		},
 		{
+			"id": "92c25f28-fb90-920d-94cb-9968839f3286",
+			"headers": "Authorization: Basic YWRtaW46YWRtaW4=\nContent-Type: application/json\n",
+			"url": "http://10.75.44.10:8804/v1/peer/10.75.44.228/send/update",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "basicAuth",
+			"helperAttributes": {
+				"username": "admin",
+				"password": "admin",
+				"saveToRequest": true,
+				"id": "basic",
+				"timestamp": 1441674669014
+			},
+			"time": 1453281408245,
+			"name": "Send update ipv4 mpls vpn",
+			"description": "if you want to send withdraw\n\n```\n{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [1, 128],\n            \"withdraw\": [\n                {\n                    \"rd\": \"100:100\",\n                    \"rd_type\": 0,\n                    \"str\": \"11.11.11.11/32\"}]}\n        }\n}\n```",
+			"collectionId": "2331b642-660a-c670-0032-f81410a58926",
+			"responses": [],
+			"rawModeData": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [1, 128],\n            \"nexthop\": {\"rd\": \"0:0\", \"str\": \"2.2.2.2\"},\n            \"nlri\": [\n                {\n                    \"label\": [25],\n                    \"rd\": \"100:100\",\n                    \"rd_type\": 0,\n                    \"str\": \"11.11.11.11/32\"}]}\n        },\n        \"16\": [[2, \"2:2\"]]\n}"
+		},
+		{
 			"id": "94cd3abf-a102-cb05-c671-6268ef489c02",
 			"headers": "Authorization: Basic YWRtaW46YWRtaW4=\nContent-Type: application/json\n",
 			"url": "http://10.75.44.10:8801/v1/peer/10.75.44.204/send/route-refresh",
@@ -230,6 +352,32 @@
 			"folder": "3dd8daf1-0a91-6c8a-6234-8834d95cb300",
 			"isFromCollection": true,
 			"rawModeData": "      {\n        \"afi\": 1,\n        \"safi\": 1,\n        \"res\": 0\n      }"
+		},
+		{
+			"id": "9ce9366c-1593-8623-3af9-91e55e9f4a75",
+			"headers": "Authorization: Basic YWRtaW46YWRtaW4=\nContent-Type: application/json\n",
+			"url": "http://10.75.44.120:8888/v1/peer/10.75.44.228/send/update",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "basicAuth",
+			"helperAttributes": {
+				"username": "admin",
+				"password": "admin",
+				"saveToRequest": true,
+				"id": "basic",
+				"timestamp": 1441674669014
+			},
+			"time": 1453776806569,
+			"name": "route type 1 update",
+			"description": "",
+			"collectionId": "2331b642-660a-c670-0032-f81410a58926",
+			"responses": [],
+			"rawModeData": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [25, 70],\n            \"nexthop\": \"10.75.44.254\",\n            \"nlri\": [{\n                \"type\": 1,\n                \"value\": {\n                    \"rd\": \"1.1.1.1:32867\",\n                    \"esi\": 0,\n                    \"eth_tag_id\": 100,\n                    \"label\": [10]\n                }\n            }]},\n        \"16\":[[1537, 0, 500]]\n}}"
 		},
 		{
 			"id": "ab79e54d-c442-9f71-9e8c-940523c41ef1",
@@ -258,6 +406,34 @@
 			"rawModeData": "{\n    \"attr\": {\n                \"1\": 0,\n                \"2\": [[2, [65502]]],\n                \"4\": 0,\n                \"14\": {\n                    \"afi_safi\": [2, 1],\n                    \"linklocal_nexthop\": \"fe80::c002:bff:fe7e:0\",\n                    \"nexthop\": \"2001:db8::2\",\n                    \"nlri\": [\"::2001:db8:2:2/64\", \"::2001:db8:2:1/64\", \"::2001:db8:2:0/64\"]}\n            },\n    \"nlri\":[],\n    \"withdraw\": []\n}"
 		},
 		{
+			"id": "b38e2371-51f4-f898-77db-a67e1f1d7a44",
+			"headers": "Authorization: Basic YWRtaW46YWRtaW4=\nContent-Type: application/json\n",
+			"url": "http://10.75.44.120:8888/v1/peer/10.75.44.228/send/update",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "POST",
+			"collectionId": "2331b642-660a-c670-0032-f81410a58926",
+			"data": [],
+			"dataMode": "raw",
+			"name": "route type 4 update",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1453778469007,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "basicAuth",
+			"helperAttributes": {
+				"username": "admin",
+				"password": "admin",
+				"saveToRequest": true,
+				"id": "basic",
+				"timestamp": 1441674669014
+			},
+			"folder": "6efa4ea6-4ddc-b22b-65e5-976a2794a340",
+			"rawModeData": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [25, 70],\n            \"nexthop\": \"10.75.44.254\",\n            \"nlri\": [\n                {\n                    \"type\": 4,\n                    \"value\": {\n                        \"rd\": \"172.16.0.1:8888\",\n                        \"esi\": 0,\n                        \"ip\": \"192.168.0.1\"\n                    }\n                }\n            ]\n        },\n         \"16\":[[1538, \"00-11-22-33-44-55\"]]\n}}"
+		},
+		{
 			"id": "b40a1f8b-c142-1f09-0109-f068bcf844b3",
 			"headers": "Content-Type: application/json\nAuthorization: Basic YWRtaW46YWRtaW4=\n",
 			"url": "http://10.75.44.11:8801/v1/adj-rib-in/ipv4/10.75.44.204",
@@ -278,6 +454,84 @@
 			"descriptionFormat": null,
 			"folder": "c15d8fe3-1abc-0c5e-0bbf-4979ab393cb4",
 			"isFromCollection": true
+		},
+		{
+			"id": "d803da55-49f3-747b-c332-ab87d3b5a4f6",
+			"headers": "Authorization: Basic YWRtaW46YWRtaW4=\nContent-Type: application/json\n",
+			"url": "http://10.75.44.120:8888/v1/peer/10.75.44.228/send/update",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "basicAuth",
+			"helperAttributes": {
+				"username": "admin",
+				"password": "admin",
+				"saveToRequest": true,
+				"id": "basic",
+				"timestamp": 1441674669014
+			},
+			"time": 1453778299558,
+			"name": "route type 1 withdraw",
+			"description": "",
+			"collectionId": "2331b642-660a-c670-0032-f81410a58926",
+			"responses": [],
+			"rawModeData": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [25, 70],\n            \"withdraw\": [{\n                \"type\": 1,\n                \"value\": {\n                    \"rd\": \"1.1.1.1:32867\",\n                    \"esi\": 0,\n                    \"eth_tag_id\": 100,\n                    \"label\": [10]\n                }\n            }]}\n}}"
+		},
+		{
+			"id": "e0929834-dc20-7f9f-8ce1-31cac78ea0b6",
+			"headers": "Authorization: Basic YWRtaW46YWRtaW4=\nContent-Type: application/json\n",
+			"url": "http://10.75.44.120:8888/v1/peer/10.75.44.228/send/update",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "basicAuth",
+			"helperAttributes": {
+				"username": "admin",
+				"password": "admin",
+				"saveToRequest": true,
+				"id": "basic",
+				"timestamp": 1441674669014
+			},
+			"time": 1453778442563,
+			"name": "route type 2 withdraw",
+			"description": "",
+			"collectionId": "2331b642-660a-c670-0032-f81410a58926",
+			"responses": [],
+			"rawModeData": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [25, 70],\n            \"withdraw\": [\n                {\n                    \"type\": 2,\n                    \"value\": {\n                        \"eth_tag_id\": 108,\n                        \"ip\": \"11.11.11.1\",\n                        \"label\": [0],\n                        \"rd\": \"172.17.0.3:2\",\n                        \"mac\": \"00-11-22-33-44-55\",\n                        \"esi\": 0}}]\n        }\n        }\n}"
+		},
+		{
+			"id": "fd1df45b-26bc-5002-f784-88bae0047f55",
+			"headers": "Authorization: Basic YWRtaW46YWRtaW4=\nContent-Type: application/json\n",
+			"url": "http://10.75.44.120:8888/v1/peer/10.75.44.228/send/update",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "basicAuth",
+			"helperAttributes": {
+				"username": "admin",
+				"password": "admin",
+				"saveToRequest": true,
+				"id": "basic",
+				"timestamp": 1441674669014
+			},
+			"time": 1453777787026,
+			"name": "route type 3  update",
+			"description": "",
+			"collectionId": "2331b642-660a-c670-0032-f81410a58926",
+			"responses": [],
+			"rawModeData": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [25, 70],\n            \"nexthop\": \"10.75.44.254\",\n            \"nlri\": [\n                {\n                    \"type\": 3,\n                    \"value\": {\n                        \"rd\": \"172.16.0.1:5904\",\n                        \"eth_tag_id\": 100,\n                        \"ip\": \"192.168.0.1\"\n                    }\n                }\n            ]\n        }\n}}"
 		}
 	]
 }

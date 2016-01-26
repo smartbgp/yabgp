@@ -30,3 +30,10 @@ We want to send all the BGP message received from peer ``1.1.1.1`` to ``2.2.2.2`
     $ python route_injector --rest-host=127.0.0.1 --rest-port=8801 --message-json=/home/yabgp/data/bgp/1.1.1.1/msg/1450668274.82.msg --peerip=2.2.2.2
 
 Then, route-injector will read bgp message file and try to send all bgp messages to peer ``2.2.2.2`` through REST API.
+
+
+Postman Collection
+~~~~~~~~~~~~~~~~~~~
+
+Located in ``/yabgp/tools/Yabgp.json.postman_collection``. You can import this collection into POSTMAN(http://www.getpostman.com/)
+and there are some REST API request examples.

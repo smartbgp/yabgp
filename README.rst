@@ -29,10 +29,19 @@ Features
 
 -  BGP capabilities support: 4 Bytes ASN, Route Refresh(Cisco Route Refresh), Add Path send/receive;
 
--  Address family support: IPv4 unicast, IPv4 Flowspec(limited),IPv6 unicast, IPv4 MPLSVPN;
+-  Address family support:
 
--  Decode all BGP messages to json format and write files to
-   disk(configurable);
+   - IPv4 unicast
+
+   - IPv4 Flowspec(limited)
+
+   - IPv6 unicast
+
+   - IPv4 MPLSVPN
+
+   - EVPN (partially supported)
+
+-  Decode all BGP messages to json format and write them into files in local disk(configurable);
 
 -  Support basic RESTFUL API for getting running information and sending BGP messages.
 
