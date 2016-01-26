@@ -60,6 +60,22 @@ class TestMpUnReachNLRI(unittest.TestCase):
         nlri_dict = {'afi_safi': (1, 133), 'withdraw': [{1: '192.85.2.0/24'}, {2: '192.85.1.0/24'}]}
         self.assertEqual(data_bin, MpUnReachNLRI.construct(nlri_dict)[3:])
 
+    def test_l2vpn_evpn_route_type_2_parse_construct(self):
+        data_dict = {
+            'afi_safi': (25, 70),
+            'withdraw': [
+                {
+                    'type': 2,
+                    'value': {
+                        'eth_tag_id': 108,
+                        'ip': '11.11.11.1',
+                        'label': [0],
+                        'rd': '172.17.0.3:2',
+                        'mac': '00-11-22-33-44-55',
+                        'esi': 0}}]
+        }
+        self.assertEqual(data_dict, MpUnReachNLRI.parse(MpUnReachNLRI.construct(data_dict)[3:]))
+
 
 if __name__ == '__main__':
     unittest.main()

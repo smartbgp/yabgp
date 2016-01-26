@@ -38,13 +38,15 @@ class MPLSVPN(object):
         return labels
 
     @classmethod
-    def construct_mpls_label_stack(cls, labels, bos=True):
+    def construct_mpls_label_stack(cls, labels):
         data = b''
-        for label in labels:
-            if bos:
-                data += struct.pack('!L', (label << 4 | 1))[1:]
-                continue
+        last_label = labels[-1]
+        for label in labels[:-1]:
             data += struct.pack('!L', label << 4)[1:]
+        if last_label != 0:
+            data += struct.pack('!L', (last_label << 4 | 1))[1:]
+        else:
+            data += b'\x00\x00\x00'
         return data
 
     @classmethod

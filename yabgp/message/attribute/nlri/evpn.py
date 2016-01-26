@@ -112,7 +112,7 @@ class EthernetAutoDiscovery(MPLSVPN):
         data_hex += b'\x00\x00' + struct.pack('!d', data['esi'])
         # ethernet tag
         data_hex += struct.pack('!I', data['eth_tag_id'])
-        data_hex += MPLSVPN.construct_mpls_label_stack(data['label'], bos=False)
+        data_hex += MPLSVPN.construct_mpls_label_stack(data['label'])
         return data_hex
 
 
@@ -183,7 +183,7 @@ class MacIPAdvertisment(MPLSVPN):
         else:
             data_hex += b'\x00'
         if data.get('label'):
-            data_hex += MPLSVPN.construct_mpls_label_stack(data['label'], bos=False)
+            data_hex += MPLSVPN.construct_mpls_label_stack(data['label'])
         return data_hex
 
 

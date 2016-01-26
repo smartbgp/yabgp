@@ -52,7 +52,7 @@ class TestEVPN(unittest.TestCase):
 
     def test_parse_eth_auto_dis(self):
         data_hex = b'\x01\x19\x00\x01\x01\x01\x01\x01\x80\x63\x00\x00\x00' \
-                   b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x64\x00\x00\xa0'
+                   b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x64\x00\x00\xa1'
         data_list = [{
             'type': bgp_cons.BGPNLRI_EVPN_ETHERNET_AUTO_DISCOVERY,
             'value': {
@@ -66,7 +66,7 @@ class TestEVPN(unittest.TestCase):
 
     def test_construct_eth_auto_dis(self):
         data_hex = b'\x01\x19\x00\x01\x01\x01\x01\x01\x80\x63\x00\x00\x00' \
-                   b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x64\x00\x00\xa0'
+                   b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x64\x00\x00\xa1'
         data_list = [{
             'type': bgp_cons.BGPNLRI_EVPN_ETHERNET_AUTO_DISCOVERY,
             'value': {
