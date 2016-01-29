@@ -14,58 +14,14 @@ future analysis.
 Support sending BGP messages(route refresh/update) to the peer through RESTful API. YABGP can't send any BGP update messages
 by itself, it's just a agent, so there can be many agents and they can be controlled by a contoller.
 
-We write it in strict accordance with the specifications of RFCs.
 
-This software can be used on Linux/Unix, Mac OS and Windows systems.
-
-Features
-========
-
--  It can establish BGP session based on IPv4 address (TCP Layer) in
-   active mode(as TCP client);
-
--  Support TCP MD5 authentication(IPv4 and does not support Windows
-   now);
-
--  BGP capabilities support: 4 Bytes ASN, Route Refresh(Cisco Route Refresh), Add Path send/receive;
-
--  Address family support:
-
-   - IPv4 unicast
-
-   - IPv4 Flowspec(limited)
-
-   - IPv6 unicast
-
-   - IPv4 MPLSVPN
-
-   - EVPN (partially supported)
-
--  Decode all BGP messages to json format and write them into files in local disk(configurable);
-
--  Support basic RESTFUL API for getting running information and sending BGP messages.
-
-.. note::
-
-  yabgp is a light weight BGP agent used for connecting network devices. It only can be
-  TCP client in one BGP peering connection and can't send any update messages by itself(send through REST API).
-  We recommend that each yabgp process connect only one BGP neighbor, so each process is independent with each other,
-  we can start many yabgp processes within the same machine or in different machines. There can be a central controller
-  which can controll all yabgp processes through REST API to send BGP update messages.
-
-Application
-===========
-
-There are many jobs need to do in future.
-
-We are working hardly on that. So any of your ideas is welcome.
-
-Quickstarts
-===========
+Table of Contents
+=================
 
 .. toctree::
    :maxdepth: 2
 
+   feature
    install
    tutorial
    msg_format
@@ -75,6 +31,9 @@ Quickstarts
 
 Support
 =======
+
+There are many jobs need to do in future.
+We are working hardly on that. So any of your ideas is welcome.
 
 Please use GitHub issue system or submit pull request.
 
