@@ -103,7 +103,7 @@ class IPv4MPLSVPN(MPLSVPN, NLRI):
             # construct prefix
             prefix_str, prefix_len = nlri['prefix'].split('/')
             prefix_len = int(prefix_len)
-            prefix_hex = struct.pack('!I', netaddr.IPAddress(prefix_str).value)
+            prefix_hex = cls.construct_prefix_v4(prefix_len, prefix_str)
             prefix_hex = label_hex + rd_hex + prefix_hex
 
             prefix_len = struct.pack('!B', prefix_len + len(label_hex + rd_hex) * 8)

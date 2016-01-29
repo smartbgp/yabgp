@@ -13,6 +13,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import struct
+
+import netaddr
+
 
 class NLRI(object):
 
@@ -24,3 +28,14 @@ class NLRI(object):
     @classmethod
     def construct(cls, *args):
         raise NotImplementedError
+
+    @staticmethod
+    def construct_prefix_v4(masklen, prefix_str):
+        ip_hex = struct.pack('!I', netaddr.IPNetwork(prefix_str).value)
+        if 16 < masklen <= 24:
+            ip_hex = ip_hex[0:3]
+        elif 8 < masklen <= 16:
+            ip_hex = ip_hex[0:2]
+        elif masklen <= 8:
+            ip_hex = ip_hex[0:1]
+        return ip_hex

@@ -39,12 +39,14 @@ class TestMpReachNLRI(unittest.TestCase):
         self.assertEqual(nexthop_bin, MpReachNLRI.construct_nexthop(nexthop, afi=1, safi=128))
 
     def test_ipv4_mpls_vpn_construct(self):
+        data_bin = b'\x80\x0e\x21\x00\x01\x80\x0c\x00\x00\x00\x00\x00\x00\x00\x00\x02\x02\x02\x02' \
+                   b'\x00\x78\x00\x01\x91\x00\x00\x00\x64\x00\x00\x00\x64\xaa\x00\x00\x00'
         data_parsed = {'afi_safi': (1, 128),
                        'nexthop': {'rd': '0:0', 'str': '2.2.2.2'},
                        'nlri': [{'label': [25],
                                  'rd': '100:100',
                                  'prefix': '170.0.0.0/32'}]}
-        self.assertEqual(data_parsed, MpReachNLRI.parse(MpReachNLRI.construct(data_parsed)[3:]))
+        self.assertEqual(data_bin, MpReachNLRI.construct(data_parsed))
 
     def test_ipv6_unicast(self):
         data_bin = b"\x00\x02\x01\x10\x20\x01\x32\x32\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \

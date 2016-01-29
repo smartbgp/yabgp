@@ -137,7 +137,7 @@ class TestUpdate(unittest.TestCase):
                 msg_dict=value_parse,
                 asn4=True)[HDR_LEN:], True)['attr'], True)
 
-    def test_parse_ipv4_mpls_vpn_update(self):
+    def test_parse_and_construct_ipv4_mpls_vpn_update(self):
         data_bin = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00' \
                    b'\x74\x02\x00\x00\x00\x5d\x40\x01\x01\x02\x40\x02\x00\x80\x04\x04\x00' \
                    b'\x00\x00\x00\x40\x05\x04\x00\x00\x00\x64\xc0\x10\x08\x00\x02\x00\x02' \
@@ -157,11 +157,15 @@ class TestUpdate(unittest.TestCase):
                           'nlri': [{'label': [29],
                                     'rd': '2:2',
                                     'prefix': '192.168.201.0/24'}]},
-                     16: [[2, '2:2']]}}
+                     16: [[2, '2:2']]
+                     }
+        }
         self.maxDiff = None
         self.assertEqual(data_hoped['attr'], Update.parse(None, data_bin[HDR_LEN:], True)['attr'])
+        self.assertEqual(data_hoped['attr'],
+                         Update.parse(None, Update.construct(msg_dict=data_hoped)[HDR_LEN:], True)['attr'])
 
-    def test_parse_ipv4_mpls_vpn_withdraw(self):
+    def test_parse_and_construct_ipv4_mpls_vpn_withdraw(self):
         data_bin = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00' \
                    b'\x2c\x02\x00\x00\x00\x15\x80\x0f\x12\x00\x01\x80\x70\x80\x00\x00\x00' \
                    b'\x00\x00\x02\x00\x00\x00\x02\xc0\xa8\xc9'
@@ -170,6 +174,7 @@ class TestUpdate(unittest.TestCase):
                                                   'rd': '2:2',
                                                   'prefix': '192.168.201.0/24'}]}}}
         self.assertEqual(data_hoped['attr'], Update.parse(None, data_bin[HDR_LEN:], True)['attr'])
+        self.assertEqual(data_bin, Update.construct(msg_dict=data_hoped))
 
     def test_parse_construct_l2vpn_evpn(self):
         data_bin = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x63\x02\x00\x00\x00' \

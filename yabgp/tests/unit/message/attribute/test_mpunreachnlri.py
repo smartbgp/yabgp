@@ -32,7 +32,7 @@ class TestMpUnReachNLRI(unittest.TestCase):
         self.assertEqual(data_hoped, MpUnReachNLRI.parse(data_bin[3:]))
 
     def test_ipv4_mpls_vpn_construct(self):
-        data_bin = b'\x80\x0f\x13\x00\x01\x80\x70\x80\x00\x00\x00\x00\x00\x02\x00\x00\x00\x02\xc0\xa8\xc9\x00'
+        data_bin = b'\x80\x0f\x12\x00\x01\x80\x70\x80\x00\x00\x00\x00\x00\x02\x00\x00\x00\x02\xc0\xa8\xc9'
         data_hoped = {'afi_safi': (1, 128),
                       'withdraw': [{'label': [524288],
                                     'rd': '2:2',
