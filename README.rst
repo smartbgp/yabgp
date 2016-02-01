@@ -31,13 +31,11 @@ Features
 
 -  Address family support:
 
-   - IPv4 unicast
+   - IPv4/IPv6 unicast
 
    - IPv4 Flowspec(limited)
 
-   - IPv6 unicast
-
-   - IPv4 MPLSVPN
+   - IPv4/IPv6 MPLSVPN
 
    - EVPN (partially supported)
 

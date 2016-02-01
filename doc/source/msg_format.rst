@@ -396,16 +396,44 @@ For IPv6 Unicast, it has three or four keys:
 .. code-block:: json
 
     {
-        "attr":
+        "attr":{
             "14": {
                 "afi_safi": [2, 1],
                 "linklocal_nexthop": "fe80::c002:bff:fe7e:0",
                 "nexthop": "2001:db8::2",
                 "nlri": ["::2001:db8:2:2/64", "::2001:db8:2:1/64", "::2001:db8:2:0/64"]}
+        }
     }
 
 The value of the Length of Next Hop Network Address field on a ``MP_REACH_NLRI`` attribute shall be set to 16,
 when only a global address is present, or 32 if a link-local address is also included in the Next Hop field.
+
+IPv6 MPLSVPN
+"""""""""""""
+
+.. code-block:: json
+
+    {
+        "attr":{
+            "14": {
+                "afi_safi": [2, 128],
+                "nexthop": {"rd": "100:12", "str": "::ffff:172.16.4.12"},
+                "nlri": [
+                    {
+                        "label": [54],
+                        "rd": "100:12",
+                        "prefix": "2010:0:12:4::/64"},
+                    {
+                        "label": [55],
+                        "rd": "100:12",
+                        "prefix": "2010:1:12::/64"
+                    }
+                ]
+            },
+            "16": [[2, "100:12"]]
+            }
+    }
+
 
 MP_UNREACH_NLRI
 ^^^^^^^^^^^^^^^
@@ -454,6 +482,28 @@ IPv6 Unicast
                 "afi_safi": [2, 1],
                 "withdraw": ["::2001:db8:2:2/64", "::2001:db8:2:1/64", "::2001:db8:2:0/64"]}
     }
+
+IPv6 MPLSVPN
+""""""""""""
+
+.. code-block:: json
+
+    {
+        "attr":{
+            "15": {
+                "afi_safi": [2, 128],
+                "withdraw": [
+                    {
+                        "label": [54],
+                        "rd": "100:12",
+                        "prefix": "2010:0:12:4::/64"},
+                    {
+                        "label": [55],
+                        "rd": "100:12",
+                        "prefix": "2010:1:12::/64"
+                    }
+                ]}
+    }}
 
 Notification Message
 --------------------
