@@ -89,6 +89,16 @@
 			"owner": "29527"
 		},
 		{
+			"id": "ac4676df-0b9b-90e9-4954-105af1418940",
+			"name": "ipv6_mpls_vpn",
+			"description": "",
+			"order": [
+				"f6f4c195-9e5b-27f2-d328-70967e8b7b1c",
+				"0176151f-d9bd-17d8-7eb2-2f10e1520160"
+			],
+			"owner": "29527"
+		},
+		{
 			"id": "1b512739-7802-27a6-8e58-44b8fe39e565",
 			"name": "ipv6_unicast",
 			"description": "",
@@ -104,6 +114,32 @@
 	"remoteLink": null,
 	"public": false,
 	"requests": [
+		{
+			"id": "0176151f-d9bd-17d8-7eb2-2f10e1520160",
+			"headers": "Content-Type: application/json\nAuthorization: Basic YWRtaW46YWRtaW4=\n",
+			"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "basicAuth",
+			"helperAttributes": {
+				"username": "admin",
+				"password": "admin",
+				"saveToRequest": true,
+				"id": "basic",
+				"timestamp": 1441674669014
+			},
+			"time": 1454314938694,
+			"name": "Send withdraw ipv6 mpls vpn",
+			"description": "",
+			"collectionId": "2331b642-660a-c670-0032-f81410a58926",
+			"responses": [],
+			"rawModeData": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [2, 128],\n            \"withdraw\": [\n                {\n                    \"label\": [54],\n                    \"rd\": \"100:12\",\n                    \"prefix\": \"2010:0:12:4::/64\"},\n                {\n                    \"label\": [55],\n                    \"rd\": \"100:12\",\n                    \"prefix\": \"2010:1:12::/64\"\n                }\n            ]}\n}}"
+		},
 		{
 			"id": "0a02e0cf-35b2-fc55-b94b-65a5fde07236",
 			"headers": "Authorization: Basic YWRtaW46YWRtaW4=\n",
@@ -644,6 +680,34 @@
 			"collectionId": "2331b642-660a-c670-0032-f81410a58926",
 			"responses": [],
 			"rawModeData": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [25, 70],\n            \"withdraw\": [\n                {\n                    \"type\": 2,\n                    \"value\": {\n                        \"eth_tag_id\": 108,\n                        \"ip\": \"11.11.11.1\",\n                        \"label\": [0],\n                        \"rd\": \"172.17.0.3:2\",\n                        \"mac\": \"00-11-22-33-44-55\",\n                        \"esi\": 0}}]\n        }\n        }\n}"
+		},
+		{
+			"id": "f6f4c195-9e5b-27f2-d328-70967e8b7b1c",
+			"headers": "Content-Type: application/json\nAuthorization: Basic YWRtaW46YWRtaW4=\n",
+			"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "POST",
+			"collectionId": "2331b642-660a-c670-0032-f81410a58926",
+			"data": [],
+			"dataMode": "raw",
+			"name": "Send update ipv6 mpls vpn",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1454314878098,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "basicAuth",
+			"helperAttributes": {
+				"username": "admin",
+				"password": "admin",
+				"saveToRequest": true,
+				"id": "basic",
+				"timestamp": 1441674669014
+			},
+			"folder": "ac4676df-0b9b-90e9-4954-105af1418940",
+			"rawModeData": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [2, 128],\n            \"nexthop\": {\"rd\": \"100:12\", \"str\": \"::ffff:172.16.4.12\"},\n            \"nlri\": [\n                {\n                    \"label\": [54],\n                    \"rd\": \"100:12\",\n                    \"prefix\": \"2010:0:12:4::/64\"},\n                {\n                    \"label\": [55],\n                    \"rd\": \"100:12\",\n                    \"prefix\": \"2010:1:12::/64\"\n                }\n            ]},\n        \"16\": [[2, \"100:12\"]]\n}}"
 		},
 		{
 			"id": "fd1df45b-26bc-5002-f784-88bae0047f55",

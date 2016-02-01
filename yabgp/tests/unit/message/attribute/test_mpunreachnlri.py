@@ -34,8 +34,7 @@ class TestMpUnReachNLRI(unittest.TestCase):
     def test_ipv4_mpls_vpn_construct(self):
         data_bin = b'\x80\x0f\x12\x00\x01\x80\x70\x80\x00\x00\x00\x00\x00\x02\x00\x00\x00\x02\xc0\xa8\xc9'
         data_hoped = {'afi_safi': (1, 128),
-                      'withdraw': [{'label': [524288],
-                                    'rd': '2:2',
+                      'withdraw': [{'rd': '2:2',
                                     'prefix': '192.168.201.0/24'}]}
         self.assertEqual(data_bin, MpUnReachNLRI.construct(data_hoped))
 
@@ -49,6 +48,20 @@ class TestMpUnReachNLRI(unittest.TestCase):
             'afi_safi': (2, 1),
             'withdraw': ['2001:3232::1/128', '::2001:3232:1:0/64', '2001:4837:1632::2/127']}
         self.assertEqual(nlri_dict, MpUnReachNLRI.parse(MpUnReachNLRI.construct(nlri_dict)[3:]))
+
+    def test_ipv6_mpls_vpn_parse_construct(self):
+        data_dict = {
+            'afi_safi': (2, 128),
+            'withdraw': [
+                {'label': [524288], 'rd': '100:10', 'prefix': '2001:3232::1/128'},
+                {'label': [524288], 'rd': '100:11', 'prefix': '2001:4837:1632::2/127'}
+            ]
+        }
+        self.assertEqual(
+            data_dict,
+            MpUnReachNLRI.parse(
+                value=MpUnReachNLRI.construct(value=data_dict)[3:]
+            ))
 
     def test_ipv4_flowspec_parse(self):
         data_bin = b'\x00\x01\x85\x0a\x01\x18\xc0\x55\x02\x02\x18\xc0\x55\x01'

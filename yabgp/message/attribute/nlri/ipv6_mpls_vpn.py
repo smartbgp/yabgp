@@ -1,8 +1,7 @@
-# coding=utf-8
-# Copyright 2015 Cisco Systems, Inc.
+# Copyright 2016 Cisco Systems, Inc.
 # All rights reserved.
 #
-# Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -15,22 +14,21 @@
 #    under the License.
 
 from yabgp.message.attribute.nlri.mpls_vpn import MPLSVPN
-from yabgp.common.afn import AFNUM_INET
+from yabgp.common.afn import AFNUM_INET6
 from yabgp.common.safn import SAFNUM_LAB_VPNUNICAST
 
 
-class IPv4MPLSVPN(MPLSVPN):
-
+class IPv6MPLSVPN(MPLSVPN):
     """
-    IPv4 MPLS VPN NLRI
+    IPv6 MPLS VPN NLRI
     """
-    AFI = AFNUM_INET
+    AFI = AFNUM_INET6
     SAFI = SAFNUM_LAB_VPNUNICAST
 
     @classmethod
     def parse(cls, value, iswithdraw=False):
-        return super(IPv4MPLSVPN, cls).parse(value, iswithdraw=iswithdraw)
+        return super(IPv6MPLSVPN, cls).parse(value, iswithdraw=iswithdraw)
 
     @classmethod
     def construct(cls, value, iswithdraw=False):
-        return super(IPv4MPLSVPN, cls).construct(value, iswithdraw=iswithdraw)
+        return super(IPv6MPLSVPN, cls).construct(value, iswithdraw=iswithdraw)

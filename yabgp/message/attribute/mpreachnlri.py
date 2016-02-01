@@ -29,6 +29,7 @@ from yabgp.common import safn
 from yabgp.common import exception as excep
 from yabgp.common import constants as bgp_cons
 from yabgp.message.attribute.nlri.ipv4_mpls_vpn import IPv4MPLSVPN
+from yabgp.message.attribute.nlri.ipv6_mpls_vpn import IPv6MPLSVPN
 from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
 from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
 from yabgp.message.attribute.nlri.evpn import EVPN
@@ -128,6 +129,24 @@ class MpReachNLRI(Attribute):
                     return dict(afi_safi=(afi, safi), nexthop=nexthop, linklocal_nexthop=linklocal_nexthop, nlri=nlri)
                 else:
                     return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
+            elif safi == safn.SAFNUM_LAB_VPNUNICAST:
+                # IPv6 MPLS VPN
+                # parse nexthop
+                rd_bin = nexthop_bin[0:8]
+                rd_type = struct.unpack('!H', rd_bin[0:2])[0]
+                rd_value_bin = rd_bin[2:]
+                if rd_type == 0:
+                    asn, an = struct.unpack('!HI', rd_value_bin)
+                    ipv6 = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin[8:]), 16)))
+                    nexthop = {'rd': '%s:%s' % (asn, an), 'str': ipv6}
+                # TODO(xiaoquwl) for other RD type decoding
+                else:
+                    nexthop = repr(nexthop_bin[8:])
+                # parse nlri
+                nlri = IPv6MPLSVPN.parse(nlri_bin)
+                return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
+            else:
+                return dict(afi_safi=(afi, safi), nexthop=nexthop_bin, nlri=nlri_bin)
 
         # for l2vpn
         elif afi == afn.AFNUM_L2VPN:
@@ -144,19 +163,14 @@ class MpReachNLRI(Attribute):
         return dict(afi_safi=(afi, safi), nexthop=nexthop_bin, nlri=nlri_bin)
 
     @classmethod
-    def construct_nexthop(cls, nexthop, afi, safi):
+    def construct_mpls_vpn_nexthop(cls, nexthop):
         """
         construct nexthop to bin
         :param nexthop:
-        :param afi:
-        :param safi:
         :return:
         """
-        if afi == afn.AFNUM_INET:
-            if safi == safn.SAFNUM_LAB_VPNUNICAST:
-                # {'rd': '0:0', 'str': '2.2.2.2'}
-                asn, an = map(int, nexthop['rd'].split(':'))
-                return struct.pack('!H', 0) + struct.pack('!HI', asn, an) + netaddr.IPAddress(nexthop['str']).packed
+        asn, an = map(int, nexthop['rd'].split(':'))
+        return struct.pack('!H', 0) + struct.pack('!HI', asn, an) + netaddr.IPAddress(nexthop['str']).packed
 
     @classmethod
     def construct(cls, value):
@@ -171,7 +185,7 @@ class MpReachNLRI(Attribute):
         afi, safi = value['afi_safi']
         if afi == afn.AFNUM_INET:
             if safi == safn.SAFNUM_LAB_VPNUNICAST:  # MPLS VPN
-                nexthop_hex = cls.construct_nexthop(value['nexthop'], afi, safi)
+                nexthop_hex = cls.construct_mpls_vpn_nexthop(value['nexthop'])
                 nlri_hex = IPv4MPLSVPN.construct(value['nlri'])
                 attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) +\
                     struct.pack('!B', len(nexthop_hex)) + nexthop_hex + b'\x00' + nlri_hex
@@ -201,7 +215,16 @@ class MpReachNLRI(Attribute):
 
         # ipv6 unicast
         elif afi == afn.AFNUM_INET6:
-            if safi == safn.SAFNUM_UNICAST:
+
+            if safi == safn.SAFNUM_LAB_VPNUNICAST:  # MPLS VPN
+                nexthop_hex = cls.construct_mpls_vpn_nexthop(value['nexthop'])
+                nlri_hex = IPv6MPLSVPN.construct(value['nlri'])
+                attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) +\
+                    struct.pack('!B', len(nexthop_hex)) + nexthop_hex + b'\x00' + nlri_hex
+                return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
+                    + struct.pack('!B', len(attr_value)) + attr_value
+
+            elif safi == safn.SAFNUM_UNICAST:
                 nexthop_len = 16
                 nexthop_bin = netaddr.IPAddress(value['nexthop']).packed
                 if value.get('linklocal_nexthop'):

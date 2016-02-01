@@ -22,6 +22,7 @@ from yabgp.message.attribute import Attribute
 from yabgp.message.attribute import AttributeFlag
 from yabgp.message.attribute import AttributeID
 from yabgp.message.attribute.nlri.ipv4_mpls_vpn import IPv4MPLSVPN
+from yabgp.message.attribute.nlri.ipv6_mpls_vpn import IPv6MPLSVPN
 from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
 from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
 from yabgp.message.attribute.nlri.evpn import EVPN
@@ -70,7 +71,7 @@ class MpUnReachNLRI(Attribute):
                 nlri = IPv4MPLSVPN.parse(nlri_bin, iswithdraw=True)
                 return dict(afi_safi=(afi, safi), withdraw=nlri)
             # BGP flow spec
-            if safi == safn.SAFNUM_FSPEC_RULE:
+            elif safi == safn.SAFNUM_FSPEC_RULE:
                 # if nlri length is greater than 240 bytes, it is encoded over 2 bytes
                 if len(nlri_bin) >= 240:
                     nlri_bin = nlri_bin[2:]
@@ -84,6 +85,8 @@ class MpUnReachNLRI(Attribute):
             # for ipv6 unicast
             if safi == safn.SAFNUM_UNICAST:
                 return dict(afi_safi=(afi, safi), withdraw=IPv6Unicast.parse(nlri_data=nlri_bin))
+            elif safi == safn.SAFNUM_LAB_VPNUNICAST:
+                return dict(afi_safi=(afi, safi), withdraw=IPv6MPLSVPN.parse(value=nlri_bin, iswithdraw=True))
             else:
                 return dict(afi_safi=(afi, safi), withdraw=repr(nlri_bin))
         # for l2vpn
@@ -139,6 +142,12 @@ class MpUnReachNLRI(Attribute):
         elif afi == afn.AFNUM_INET6:
             if safi == safn.SAFNUM_UNICAST:
                 nlri = IPv6Unicast.construct(nlri_list=value['withdraw'])
+                if nlri:
+                    attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri
+                    return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
+                        + struct.pack('!B', len(attr_value)) + attr_value
+            elif safi == safn.SAFNUM_LAB_VPNUNICAST:
+                nlri = IPv6MPLSVPN.construct(value=value['withdraw'], iswithdraw=True)
                 if nlri:
                     attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri
                     return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \

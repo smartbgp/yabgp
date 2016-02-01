@@ -14,6 +14,7 @@
 #    under the License.
 
 import struct
+import binascii
 
 import netaddr
 
@@ -39,3 +40,13 @@ class NLRI(object):
         elif masklen <= 8:
             ip_hex = ip_hex[0:1]
         return ip_hex
+
+    @staticmethod
+    def construct_prefix_v6(prefix):
+        mask = int(prefix.split('/')[1])
+        prefix_hex = binascii.unhexlify(hex(netaddr.IPNetwork(prefix).ip)[2:])
+        offset = mask / 8
+        offset_re = mask % 8
+        if offset == 0:
+            return prefix_hex[0: 1]
+        return prefix_hex[0: offset + offset_re]

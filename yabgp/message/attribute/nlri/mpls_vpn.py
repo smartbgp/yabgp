@@ -14,17 +14,109 @@
 #    under the License.
 
 import struct
+import binascii
 
 import netaddr
 
+from yabgp.common import afn
+from yabgp.common import safn
 from yabgp.common import constants as bgp_cons
+from yabgp.message.attribute.nlri import NLRI
 
 
-class MPLSVPN(object):
-    """The base class for ipv4/ipv6 mpls vpn
+class MPLSVPN(NLRI):
     """
+    IPv4/IPv6 MPLS VPN NLRI
+    +---------------------------+
+    | Length (1 octet)          |
+    +---------------------------+
+    | Label  (3 octet)          |
+    +---------------------------+
+    |...........................|
+    +---------------------------+
+    | Prefix (variable)         |
+    +---------------------------+
+    a) Length: The Length field indicates the length, in bits, of the address prefix.
+    b) Label: (24 bits) Carries one or more labels in a stack, although a BGP update
+    has only one label. This field carries the following parts of the MPLS shim header:
+        Label Value-20 Bits
+        Experimental bits-3 Bits
+        Bottom of stack bit-1 bit
+    c) Prefix: different coding way according to different SAFI
+    Route Distinguisher (8 bytes) plus IPv4  prefix (32 bits) or IPv6 prefix(128 bits)
+    rd (Route Distinguisher) structure (RFC 4364)
+    """
+
     WITHDARW_LABEL_HEX = b'\x80\x00\x00'
     WITHDARW_LABEL = 524288
+    AFI = None
+    SAFI = None
+
+    @classmethod
+    def parse(cls, value, iswithdraw=False):
+        """
+        parse nlri
+        :param value: the raw hex nlri value
+        :param iswithdraw: if this is parsing withdraw
+        :return: nlri list
+        """
+        nlri_list = []
+        while value:
+            nlri_dict = {}
+            # for python2 and python3
+            if isinstance(value[0], int):
+                prefix_bit_len = value[0]
+            else:
+                prefix_bit_len = ord(value[0])
+            if prefix_bit_len % 8 == 0:
+                prefix_byte_len = int(prefix_bit_len / 8)
+            else:
+                prefix_byte_len = int(prefix_bit_len / 8) + 1
+
+            if not iswithdraw:
+                nlri_dict['label'] = cls.parse_mpls_label_stack(value[1:])
+            else:
+                nlri_dict['label'] = [MPLSVPN.WITHDARW_LABEL]
+
+            nlri_dict['rd'] = MPLSVPN.parse_rd(value[4:12])
+            prefix = value[12:prefix_byte_len + 1]
+            if cls.AFI == afn.AFNUM_INET and cls.SAFI == safn.SAFNUM_LAB_VPNUNICAST:
+                if len(prefix) < 4:
+                    prefix += b'\x00' * (4 - len(prefix))
+                nlri_dict['prefix'] = str(netaddr.IPAddress(struct.unpack('!I', prefix)[0])) +\
+                    '/%s' % (prefix_bit_len - 88)
+            elif cls.AFI == afn.AFNUM_INET6 and cls.SAFI == safn.SAFNUM_LAB_VPNUNICAST:
+                if len(prefix) < 16:
+                    prefix += b'\x00' * (16 - len(prefix))
+                nlri_dict['prefix'] = str(netaddr.IPAddress(int(binascii.b2a_hex(prefix), 16))) +\
+                    '/%s' % (prefix_bit_len - 88)
+            value = value[prefix_byte_len + 1:]
+            nlri_list.append(nlri_dict)
+        return nlri_list
+
+    @classmethod
+    def construct(cls, value, iswithdraw=False):
+        nlri_bin = b''
+        for nlri in value:
+            # construct label
+            if iswithdraw:
+                label_hex = MPLSVPN.WITHDARW_LABEL_HEX
+            else:
+                label_hex = MPLSVPN.construct_mpls_label_stack(nlri['label'])
+            # construct rd
+            rd_hex = MPLSVPN.construct_rd(nlri['rd'])
+            # construct prefix
+            prefix_str, prefix_len = nlri['prefix'].split('/')
+            prefix_len = int(prefix_len)
+            prefix_hex = b''
+            if cls.AFI == afn.AFNUM_INET and cls.SAFI == safn.SAFNUM_LAB_VPNUNICAST:
+                prefix_hex = cls.construct_prefix_v4(prefix_len, prefix_str)
+            elif cls.AFI == afn.AFNUM_INET6 and cls.SAFI == safn.SAFNUM_LAB_VPNUNICAST:
+                prefix_hex = cls.construct_prefix_v6(nlri['prefix'])
+            prefix_hex = label_hex + rd_hex + prefix_hex
+            prefix_len = struct.pack('!B', prefix_len + len(label_hex + rd_hex) * 8)
+            nlri_bin += prefix_len + prefix_hex
+        return nlri_bin
 
     @classmethod
     def parse_mpls_label_stack(cls, data):

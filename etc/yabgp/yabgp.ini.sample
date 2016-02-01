@@ -54,7 +54,7 @@
 
 # The Global config for address family and sub address family
 # if you want to support more than one address family, you can set afi_safi = ipv4, ipv6, ....
-# we support: ipv4, ipv6, flowspec, vpnv4, evpn
+# we support: ipv4, ipv6, flowspec, vpnv4, evpn, vpnv6
 # afi_safi = ipv4
 
 # role tag
