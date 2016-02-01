@@ -198,6 +198,7 @@ AFI_SAFI_DICT = {
     (2, 1): 'ipv6',
     (1, 133): 'flowspec',
     (1, 128): 'vpnv4',
+    (2, 128): 'vpnv6',
     (25, 70): 'evpn'
 }
 AFI_SAFI_STR_DICT = {
@@ -205,6 +206,7 @@ AFI_SAFI_STR_DICT = {
     'ipv4': (1, 1),
     'flowspec': (1, 133),
     'vpnv4': (1, 128),
+    'vpnv6': (2, 128),
     'evpn': (25, 70)
 }
 

@@ -36,7 +36,13 @@ class TestMpReachNLRI(unittest.TestCase):
     def test_ipv4_mpsl_vpn_construct_nexthop(self):
         nexthop = {'rd': '0:0', 'str': '2.2.2.2'}
         nexthop_bin = b'\x00\x00\x00\x00\x00\x00\x00\x00\x02\x02\x02\x02'
-        self.assertEqual(nexthop_bin, MpReachNLRI.construct_nexthop(nexthop, afi=1, safi=128))
+        self.assertEqual(nexthop_bin, MpReachNLRI.construct_mpls_vpn_nexthop(nexthop))
+
+    def test_ipv6_mpls_vpn_construct_nexthop(self):
+        nexthop = {'rd': '0:0', 'str': '::ffff:172.16.4.12'}
+        nexthop_bin = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
+                      b'\x00\x00\x00\x00\x00\x00\xff\xff\xac\x10\x04\x0c'
+        self.assertEqual(nexthop_bin, MpReachNLRI.construct_mpls_vpn_nexthop(nexthop))
 
     def test_ipv4_mpls_vpn_construct(self):
         data_bin = b'\x80\x0e\x21\x00\x01\x80\x0c\x00\x00\x00\x00\x00\x00\x00\x00\x02\x02\x02\x02' \
@@ -85,6 +91,36 @@ class TestMpReachNLRI(unittest.TestCase):
             'nexthop': '2001:db8::2',
             'nlri': ['::2001:db8:2:2/64', '::2001:db8:2:1/64', '::2001:db8:2:0/64']}
         self.assertEqual(data_hoped, MpReachNLRI.parse(MpReachNLRI.construct(data_hoped)[3:]))
+
+    def test_ipv6_mpls_vpn_parse(self):
+        data_bin = b'\x80\x0e\x45\x00\x02\x80\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
+                   b'\x00\x00\x00\x00\x00\x00\xff\xff\xac\x10\x04\x0c\x00\x98\x00\x03\x61\x00\x00' \
+                   b'\x00\x64\x00\x00\x00\x0c\x20\x10\x00\x00\x00\x12\x00\x04\x98\x00\x03\x71\x00' \
+                   b'\x00\x00\x64\x00\x00\x00\x0c\x20\x10\x00\x01\x00\x12\x00\x00'
+        data_hoped = {
+            'afi_safi': (2, 128),
+            'nexthop': {'rd': '0:0', 'str': '::ffff:172.16.4.12'},
+            'nlri': [
+                {'label': [54], 'rd': '100:12', 'prefix': '2010:0:12:4::/64'},
+                {'label': [55], 'rd': '100:12', 'prefix': '2010:1:12::/64'}
+            ]
+        }
+        self.assertEqual(data_hoped, MpReachNLRI.parse(data_bin[3:]))
+
+    def test_ipv6_mpls_vpn_construct(self):
+        data_bin = b'\x80\x0e\x45\x00\x02\x80\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
+                   b'\x00\x00\x00\x00\x00\x00\xff\xff\xac\x10\x04\x0c\x00\x98\x00\x03\x61\x00\x00' \
+                   b'\x00\x64\x00\x00\x00\x0c\x20\x10\x00\x00\x00\x12\x00\x04\x98\x00\x03\x71\x00' \
+                   b'\x00\x00\x64\x00\x00\x00\x0c\x20\x10\x00\x01\x00\x12\x00\x00'
+        data_hoped = {
+            'afi_safi': (2, 128),
+            'nexthop': {'rd': '0:0', 'str': '::ffff:172.16.4.12'},
+            'nlri': [
+                {'label': [54], 'rd': '100:12', 'prefix': '2010:0:12:4::/64'},
+                {'label': [55], 'rd': '100:12', 'prefix': '2010:1:12::/64'}
+            ]
+        }
+        self.assertEqual(data_bin, MpReachNLRI.construct(data_hoped))
 
     def test_ipv4_flowspec_parse(self):
         data_bin = b'\x80\x0e\x10\x00\x01\x85\x00\x00\x0a\x01\x18\xc0\x55\x02\x02\x18\xc0\x55\x01'
