@@ -16,11 +16,10 @@
 """ Test Open message"""
 
 import unittest
-
 import netaddr
-
 from yabgp.message.open import Open
 from yabgp.common.constants import VERSION
+from yabgp.common.constants import HDR_LEN
 
 
 class TestOpen(unittest.TestCase):
@@ -96,6 +95,25 @@ class TestOpen(unittest.TestCase):
                 'afi_safi': [(1, 1)],
                 'enhanced_route_refresh': True}}
         self.assertEqual(results, open_msg)
+
+    def test_parse_llgr(self):
+        msg_hex = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x4e\x01' \
+                  b'\x04\x01\x2c\x00\xb4\x03\x03\x03\x03\x31\x02\x06\x01\x04\x00\x01\x00\x01\x02' \
+                  b'\x06\x01\x04\x00\x01\x00\x85\x02\x02\x80\x00\x02\x02\x02\x00\x02\x06\x41\x04' \
+                  b'\x00\x00\x01\x2c\x02\x04\x40\x02\x80\x78\x02\x09\x47\x07\x00\x01\x85\x80\x00\x01\x68'
+        results = {
+            'asn': 300,
+            'bgp_id': '3.3.3.3',
+            'capabilities': {
+                'LLGR': [{'afi_safi': [1, 133], 'time': 360}],
+                'afi_safi': [(1, 1), (1, 133)],
+                'cisco_route_refresh': True,
+                'four_bytes_as': True,
+                'graceful_restart': True,
+                'route_refresh': True},
+            'hold_time': 180,
+            'version': 4}
+        self.assertEqual(results, self.open.parse(msg_hex[HDR_LEN:]))
 
 
 if __name__ == '__main__':

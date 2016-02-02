@@ -171,8 +171,19 @@ class Open(object):
                         afi, safi, send_rev = struct.unpack('!HBB', capability.capa_value)
                         self.capa_dict['add_path'] = '%s_%s' % (
                             bgp_cons.AFI_SAFI_DICT[(afi, safi)], bgp_cons.ADD_PATH_ACT_DICT[send_rev])
+                    # (9) Long-Lived Graceful Restart (LLGR) Capability
+                    elif capability.capa_code == capability.LLGR:
+                        self.capa_dict['LLGR'] = []
+                        while len(capability.capa_value) >= 7:
+                            afi, safi, flag = struct.unpack('!HBB', capability.capa_value[:4])
+                            time = struct.unpack('!I', b'\x00' + capability.capa_value[4:7])[0]
+                            self.capa_dict['LLGR'].append({
+                                'afi_safi': [afi, safi],
+                                'time': time
+                            })
+                            capability.capa_value = capability.capa_value[7:]
                     else:
-                        self.capa_dict[str(capability.capa_code)] = capability.capa_value
+                        self.capa_dict[str(capability.capa_code)] = repr(capability.capa_value)
 
                     capabilities = capabilities[2 + capability.capa_length:]
 
@@ -316,6 +327,7 @@ class Capability(object):
     MULTISESSION_BGP = 0x44  # [Appanna]
     ADD_PATH = 0x45  # [draft-ietf-idr-add-paths]
     ENHANCED_ROUTE_REFRESH = 0x46
+    LLGR = 0x47   # [draft-uttaro-idr-bgp-persistence]
     # 70-127    Unassigned
     CISCO_ROUTE_REFRESH = 0x80  # I Can only find reference to this in the router logs
     # 128-255   Reserved for Private Use [RFC5492]
