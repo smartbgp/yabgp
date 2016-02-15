@@ -127,7 +127,7 @@ class BGP(protocol.Protocol):
                 'msg': None
             }
             self.factory.channel.send_message(
-                exchange='', routing_key=self.factory.peer_addr, message=str(send_to_channel_msg))
+                exchange='', routing_key=self.factory.peer_addr, message=send_to_channel_msg)
         # Don't do anything if we closed the connection explicitly ourselves
         if self.disconnected:
             self.factory.connection_closed(self)
@@ -403,7 +403,7 @@ class BGP(protocol.Protocol):
             }
         if send_to_channel_msg['msg']:
             self.factory.channel.send_message(
-                exchange='', routing_key=self.factory.peer_addr, message=str(send_to_channel_msg))
+                exchange='', routing_key=self.factory.peer_addr, message=send_to_channel_msg)
 
     def send_update(self, msg):
         """
@@ -497,7 +497,7 @@ class BGP(protocol.Protocol):
                     'msg': None
                 }
                 self.factory.channel.send_message(
-                    exchange='', routing_key=self.factory.peer_addr, message=str(send_to_channel_msg))
+                    exchange='', routing_key=self.factory.peer_addr, message=send_to_channel_msg)
 
         LOG.info("[%s]A BGP KeepAlive message was received from peer.", self.factory.peer_addr)
         KeepAlive().parse(msg)

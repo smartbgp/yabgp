@@ -18,6 +18,7 @@ reference from https://github.com/pika/pika/blob/master/examples/twisted_service
 """
 
 import logging
+import json
 
 from pika import spec
 from pika.adapters import twisted_connection
@@ -69,7 +70,8 @@ class PikaProtocol(twisted_connection.TwistedProtocolConnection):
         # yield self.channel.exchange_declare(exchange=exchange, type='topic', durable=True, auto_delete=False)
         prop = spec.BasicProperties(delivery_mode=2)
         try:
-            yield self.channel.basic_publish(exchange=exchange, routing_key=routing_key, body=msg, properties=prop)
+            message = json.dumps(msg)
+            yield self.channel.basic_publish(exchange=exchange, routing_key=routing_key, body=message, properties=prop)
         except Exception as error:
             LOG.error('Error while sending message: %s', error)
 
