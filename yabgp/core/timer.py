@@ -24,8 +24,10 @@ class BGPTimer(object):
     Twisted DelayedCall interface
     """
 
-    def __init__(self, call_able):
+    def __init__(self, call_able, name):
 
+        self.name = name
+        self.status = False
         self.delayed_call = None
         self.callable = call_able
 
@@ -35,6 +37,7 @@ class BGPTimer(object):
 
         try:
             self.delayed_call.cancel()
+            self.status = False
         except (AttributeError, error.AlreadyCalled, error.AlreadyCancelled):
             pass
 
@@ -45,6 +48,7 @@ class BGPTimer(object):
         """
 
         try:
+            self.status = True
             self.delayed_call.reset(seconds_fromnow)
         except (AttributeError, error.AlreadyCalled, error.AlreadyCancelled):
             self.delayed_call = reactor.callLater(seconds_fromnow, self.callable)
@@ -53,6 +57,7 @@ class BGPTimer(object):
         """Returns True if the timer was running, False otherwise."""
 
         try:
+            self.status = True
             return self.delayed_call.active()
         except AttributeError:
             return False
