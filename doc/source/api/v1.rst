@@ -298,3 +298,54 @@ POST data format for withdraw
     {
         "status": true
     }
+
+
+Peer Management
+~~~~~~~~~~~~~~~
+
+Peer Stop
++++++++++
+
+.. code-block:: bash
+
+    GET /v1/peer/<peer_ip_address>/stop
+
+**Example response**:
+
+.. code-block:: json
+
+    {
+        "status": true
+    }
+
+Peer Start
+++++++++++
+
+.. code-block:: bash
+
+    GET /v1/peer/<peer_ip_address>/start
+
+**Example response**:
+
+.. code-block:: json
+
+    {
+        "status": true
+    }
+
+
+Peer Restart
+++++++++++++
+
+.. code-block:: bash
+
+    GET /v1/peer/<peer_ip_address>/restart
+
+**Example response**:
+
+.. code-block:: json
+
+    {
+        "status": true
+    }
+
