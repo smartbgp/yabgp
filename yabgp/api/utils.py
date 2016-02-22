@@ -180,3 +180,16 @@ def get_adj_rib_out(peer_ip, afi_safi, prefix=None):
         else:
             return attr
     return rib_table.keys()
+
+
+def close_bgp_connection(peer_ip):
+    cfg.CONF.bgp.running_config[peer_ip]['factory'].manual_stop()
+
+
+def start_bgp_connection(peer_ip, idle_hold=False):
+    cfg.CONF.bgp.running_config[peer_ip]['factory'].manual_start(idle_hold=idle_hold)
+
+
+def restart_bgp_connection(peer_ip):
+    close_bgp_connection(peer_ip)
+    start_bgp_connection(peer_ip)

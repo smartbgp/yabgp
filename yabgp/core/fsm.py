@@ -47,20 +47,20 @@ class FSM(object):
         self.state = bgp_cons.ST_IDLE
         self.connect_retry_counter = 0
         self.connect_retry_time = bgp_cons.CONNECT_RETRY_TIME
-        self.connect_retry_timer = BGPTimer(self.connect_retry_time_event)
+        self.connect_retry_timer = BGPTimer(self.connect_retry_time_event, 'connect retry timer')
         self.hold_time = bgp_cons.HOLD_TIME
 
-        self.hold_timer = BGPTimer(self.hold_time_event)
+        self.hold_timer = BGPTimer(self.hold_time_event, 'hold timer')
         self.keep_alive_time = self.hold_time / 3
-        self.keep_alive_timer = BGPTimer(self.keep_alive_time_event)
+        self.keep_alive_timer = BGPTimer(self.keep_alive_time_event, 'keep alive timer')
 
         self.allow_automatic_start = True
         self.allow_automatic_stop = False
         self.delay_open = False
         self.delay_open_time = bgp_cons.DELAY_OPEN_TIME
-        self.delay_open_timer = BGPTimer(self.delay_open_time_event)
+        self.delay_open_timer = BGPTimer(self.delay_open_time_event, 'delay open timer')
         self.idle_hold_time = bgp_cons.IDLEHOLD_TIME
-        self.idle_hold_timer = BGPTimer(self.idle_hold_time_event)
+        self.idle_hold_timer = BGPTimer(self.idle_hold_time_event, 'idle hold timer')
 
         self.uptime = None
 
@@ -72,7 +72,7 @@ class FSM(object):
                 self.uptime = time.time()
         super(FSM, self).__setattr__(name, value)
 
-    def manual_start(self):
+    def manual_start(self, idle_hold=False):
 
         """
         Event 1: ManualStart
@@ -82,9 +82,17 @@ class FSM(object):
         Status: Mandatory
         """
         LOG.info('Manual start.')
-        if self.state == bgp_cons.ST_IDLE:
-            self.connect_retry_counter = 0
+        self.allow_automatic_start = True
+        if idle_hold:
+            LOG.info('Idle Hold, please wait time=%s', self.idle_hold_time)
+            self.idle_hold_timer.reset(self.idle_hold_time)
+            return False
+        else:
+            LOG.info('Do not need Idle Hold, start right now.')
             self.connect_retry_timer.reset(self.connect_retry_time)
+            LOG.info('Connect retry timer, time=%s', self.connect_retry_time)
+            self.state = bgp_cons.ST_CONNECT
+            return True
 
     def manual_stop(self):
 
@@ -101,8 +109,9 @@ class FSM(object):
             LOG.info('Stop all timers')
             for timer in (self.connect_retry_timer, self.hold_timer, self.keep_alive_timer,
                           self.delay_open_timer, self.idle_hold_timer):
-                timer.cancel()
-                LOG.info('-- Stop timer %s', timer)
+                if timer.status:
+                    timer.cancel()
+                    LOG.info('-- Stop timer %s', timer.name)
             self._close_connection()
             self.connect_retry_counter = 0
             self.allow_automatic_start = False
@@ -257,6 +266,7 @@ class FSM(object):
                 self.delay_open_timer.reset(self.delay_open_time)
             else:
                 self.connect_retry_timer.cancel()
+                self.idle_hold_timer.cancel()
                 self.protocol.send_open()
                 self.hold_timer.reset(self.large_hold_time)
                 self.state = bgp_cons.ST_OPENSENT

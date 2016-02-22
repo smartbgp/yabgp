@@ -131,6 +131,7 @@ class BGPPeering(BGPFactory):
         p = BGPFactory.buildProtocol(self, addr)
         if p is not None:
             self._initProtocol(p, addr)
+        self.estab_protocol = p
         return p
 
     def _initProtocol(self, protocol, addr):
@@ -265,17 +266,21 @@ class BGPPeering(BGPFactory):
                 # Create outbound connection as a client
                 self.connect()
 
+    def manual_start(self, idle_hold=False):
+        if self.fsm.state == bgp_cons.ST_IDLE:
+            if self.fsm.manual_start(idle_hold=idle_hold):
+                self.status = True
+                self.connect()
+
     def manual_stop(self):
 
         """BGP ManualStop event (event 2) Returns a DeferredList that
         will fire once the connection(s) have closed"""
 
-        for c in self.in_connections + self.out_connections:
-            # Catch a possible NotificationSent exception
-            try:
-                c.fsm.manual_stop()
-            except Exception as e:
-                LOG.error(e)
+        try:
+            self.estab_protocol.fsm.manual_stop()
+        except Exception as e:
+            LOG.error(e)
 
     def connection_closed(self, pro, disconnect=False):
         """
