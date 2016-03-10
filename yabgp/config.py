@@ -53,9 +53,6 @@ bgp_config_opts = [
     cfg.IntOpt('peer_start_interval',
                default=10,
                help='The interval to start each BGP peer'),
-    cfg.ListOpt('afi_safi',
-                default=['ipv4'],
-                help='The Global config for address family and sub address family'),
     cfg.BoolOpt('four_bytes_as',
                 default=True,
                 help='If support 4bytes AS'),
@@ -105,7 +102,10 @@ bgp_peer_conf_cli_opts = [
     cfg.StrOpt('tag',
                choices=['SRC', 'DST', 'BOTH'],
                help='The agent role tag'
-               )
+               ),
+    cfg.ListOpt('afi_safi',
+                default=['ipv4'],
+                help='The Global config for address family and sub address family')
 ]
 
 CONF.register_cli_opts(bgp_peer_conf_cli_opts, group='bgp')
