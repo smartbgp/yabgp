@@ -96,8 +96,14 @@ def check_msg_config():
     LOG.info('Check configurations about message process')
     if CONF.message.write_disk:
         if not os.path.exists(CONF.message.write_dir):
-            os.makedirs(CONF.message.write_dir)
-            LOG.info('Create dir %s', CONF.message.write_dir)
+            try:
+                os.makedirs(CONF.message.write_dir)
+                LOG.info('Create dir %s', CONF.message.write_dir)
+            except OSError:
+                # sencond try
+                if not os.path.exists(CONF.message.write_dir):
+                    LOG.error(traceback.format_exc())
+                    sys.exit()
         CONF.message.write_msg_max_size = CONF.message.write_msg_max_size * 1024 * 1024
 
 
