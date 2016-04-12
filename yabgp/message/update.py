@@ -37,6 +37,7 @@ from yabgp.message.attribute.clusterlist import ClusterList
 from yabgp.message.attribute.mpreachnlri import MpReachNLRI
 from yabgp.message.attribute.mpunreachnlri import MpUnReachNLRI
 from yabgp.message.attribute.extcommunity import ExtCommunity
+from yabgp.message.attribute.pmsitunnel import PMSITunnel
 
 LOG = logging.getLogger()
 
@@ -364,6 +365,8 @@ class Update(object):
 
             elif type_code == bgp_cons.BGPTYPE_EXTENDED_COMMUNITY:
                 decode_value = ExtCommunity.parse(value=attr_value)
+            elif type_code == bgp_cons.BGPTYPE_PMSI_TUNNEL:
+                decode_value = PMSITunnel.parse(value=attr_value)
             else:
                 decode_value = repr(attr_value)
             attributes[type_code] = decode_value
