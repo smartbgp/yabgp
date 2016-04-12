@@ -148,6 +148,8 @@ class ExtCommunity(Attribute):
                 label = struct.unpack('!L', b'\00'+value_tmp[3:])[0]
                 label >>= 4
                 ext_community.append([comm_code, flag, label])
+            elif comm_code == bgp_cons.BGP_EXT_COM_EVPN_ROUTE_MAC:
+                ext_community.append([comm_code, str(netaddr.EUI(int(binascii.b2a_hex(value_tmp), 16)))])
             else:
                 ext_community.append([bgp_cons.BGP_EXT_COM_UNKNOW, repr(value_tmp)])
                 LOG.warn('unknow bgp extended community, type=%s, value=%s', comm_code, repr(value_tmp))
@@ -221,6 +223,9 @@ class ExtCommunity(Attribute):
                 flag = struct.pack('!B', item[1])
                 seq = struct.pack('!I', item[2])
                 ext_community_hex += struct.pack('!H', item[0]) + flag + b'\x00' + seq
+            elif item[0] == bgp_cons.BGP_EXT_COM_EVPN_ROUTE_MAC:
+                ext_community_hex += struct.pack('!H', item[0]) + \
+                    b''.join([struct.pack('!B', (int(i, 16))) for i in item[1].split("-")])
             else:
                 LOG.warn('unknow bgp extended community for construct, type=%s, value=%s', item[0], item[1])
 

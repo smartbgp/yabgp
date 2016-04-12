@@ -135,5 +135,11 @@ class TestExtCommunity(unittest.TestCase):
         self.assertEqual(community_hex, ExtCommunity.construct(community_list)[3:])
         self.assertEqual(community_list, ExtCommunity.parse(community_hex))
 
+    def test_parse_construct_evpn_route_mac(self):
+        comunity_list = [[1539, '74-A0-2F-DE-FE-FB']]
+        community_hex = b'\x06\x03\x74\xa0\x2f\xde\xfe\xfb'
+        self.assertEqual(comunity_list, ExtCommunity.parse(community_hex))
+        self.assertEqual(community_hex, ExtCommunity.construct(comunity_list)[3:])
+
 if __name__ == '__main__':
     unittest.main()
