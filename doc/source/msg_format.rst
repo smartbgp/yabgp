@@ -84,7 +84,7 @@ BGP Open message (type = 1). for the meaning of the keys, please check RFC 4271 
     }
 
 Update Message
----------------
+--------------
 
 BGP Update message (type = 2), the value of ``msg`` for a update message is a dict, and it
 has three keys : ``attr``, ``nlri``, ``withdraw``.
@@ -180,6 +180,7 @@ The attribute we supported now is: (reference by `IANA <http://www.iana.org/assi
         "16": "EXTENDED_COMMUNITY",
         "17": "AS4_PATH",
         "18": "AS4_AGGREGATOR",
+        "22": "PMSI_TUNNEL",
         "128": "ATTR_SET"
     }
 
@@ -199,8 +200,8 @@ Example for ``attr`` value:
 
 Next, we will explain the detail structure of each attribute.
 
-ORIGIN
-^^^^^^^
+1. ORIGIN
+^^^^^^^^^
 
 ``ORIGIN`` value is an interger, has three kinds of value (0, 1, 2 ). it defines the
 origin of the path information.  The data octet can assume the following values:
@@ -213,8 +214,8 @@ Value    Meaning
 2        INCOMPLETE
 ======== ===
 
-AS_PATH
-^^^^^^^
+2. AS_PATH
+^^^^^^^^^^
 
 ``AS_PATH`` value is a list, it has one item at least, each item also is a list and it reprensents
 one ``AS PATH`` segment,like [[sgement_1], [segment_2], ......], and each AS path segment is represented
@@ -242,28 +243,28 @@ For example:
 For this example, it only has one AS path segment: ``[2, [209, 2768, 2768, 2768, 2768]]``,
 this segment's type is ``AS_SEQUENCE``, and its value is ``[209, 2768, 2768, 2768, 2768]``.
 
-NEXT_HOP
-^^^^^^^^
+3. NEXT_HOP
+^^^^^^^^^^^
 
 ``NEXT_HOP`` is one a string, IPv4 address format, eg: '10.0.0.1'.
 
-MULTI_EXIT_DISC
-^^^^^^^^^^^^^^^
+4. MULTI_EXIT_DISC
+^^^^^^^^^^^^^^^^^^
 
 ``MULTI_EXIT_DISC`` is an interger.
 
-LOCAL_PREF
-^^^^^^^^^^
+5. LOCAL_PREF
+^^^^^^^^^^^^^
 
 ``LOCAL_PREF`` is an interger.
 
-ATOMIC_AGGREGATE
-^^^^^^^^^^^^^^^^
+6. ATOMIC_AGGREGATE
+^^^^^^^^^^^^^^^^^^^
 
 ``ATOMIC_AGGREGATE`` is one empty string, ``""``.
 
-AGGREGATOR
-^^^^^^^^^^
+7. AGGREGATOR
+^^^^^^^^^^^^^
 
 ``AGGREGATOR`` is a list, it has two items, [asn, aggregator], the first is AS number, the second is IP address.
 eg:
@@ -276,8 +277,8 @@ eg:
         }
     }
 
-COMMUNITY
-^^^^^^^^^
+8. COMMUNITY
+^^^^^^^^^^^^
 
 ``COMMUNITY`` is a list, each item of this List is a string.
 
@@ -309,13 +310,13 @@ There are two kinds of ``COMMUNITY``, first is "Well-Konwn", second is "The Othe
     NO_EXPORT_SUBCONFED        = 0xFFFFFF03
     NOPEER                     = 0xFFFFFF04
 
-ORIGINATOR_ID
-^^^^^^^^^^^^^^
+9. ORIGINATOR_ID
+^^^^^^^^^^^^^^^^
 
 ``ORIGINATOR_ID`` is a string, format as IPv4 address, just ``NEXT_HOP`` eg: "10.0.0.1".
 
-CLUSTER_LIST
-^^^^^^^^^^^^
+10. CLUSTER_LIST
+^^^^^^^^^^^^^^^^
 
 ``CLUSTER_LIST`` is a list, each item in this List is a string, format as IPv4 address.
 eg:
@@ -328,8 +329,8 @@ eg:
         }
     }
 
-MP_REACH_NLRI
-^^^^^^^^^^^^^^
+11. MP_REACH_NLRI
+^^^^^^^^^^^^^^^^^
 
 .. note::
 
@@ -344,7 +345,7 @@ and according to differences between the ``afi_safi``, the Data structure of ``n
 ``afi_safi`` value and meanings, reference by `Address Family Numbers <http://www.iana.org/assignments/address-family-numbers/address-family-numbers.xhtml>`_ and
 `Subsequent Address Family Identifiers (SAFI) Parameters <http://www.iana.org/assignments/safi-namespace/safi-namespace.xhtml>`_
 
-In addition to IPv4 Unicast, Now we support IPv6 Unicast and IPv4 Flowspec, here are the ``afi_safi`` value example:
+In addition to IPv4 Unicast, here are the ``afi_safi`` we support:
 
 ========= ===
 Value     Meaning
@@ -352,6 +353,8 @@ Value     Meaning
 [1, 128]  IPv4 MPLSVPN
 [1, 133]  IPv4 Flowspec
 [2, 1]    IPv6 Unicast
+[2, 128]  IPv6 MPLSVPN
+[25, 70]  EVPN
 ...       ...
 ========= ===
 
@@ -409,7 +412,7 @@ The value of the Length of Next Hop Network Address field on a ``MP_REACH_NLRI``
 when only a global address is present, or 32 if a link-local address is also included in the Next Hop field.
 
 IPv6 MPLSVPN
-"""""""""""""
+""""""""""""
 
 .. code-block:: json
 
@@ -434,9 +437,36 @@ IPv6 MPLSVPN
             }
     }
 
+EVPN
+""""
 
-MP_UNREACH_NLRI
-^^^^^^^^^^^^^^^
+.. code-block:: json
+
+    {
+        "attr": {
+            "1": 0,
+            "2": [],
+            "5": 100,
+            "14": {
+                "afi_safi": [25, 70],
+                "nexthop": "10.75.44.254",
+                "nlri": [
+                    {
+                        "type": 2,
+                        "value": {
+                            "eth_tag_id": 108,
+                            "ip": "11.11.11.1",
+                            "label": [0],
+                            "rd": "172.17.0.3:2",
+                            "mac": "00-11-22-33-44-55",
+                            "esi": 0}}]
+            }
+        }
+    }
+
+
+12. MP_UNREACH_NLRI
+^^^^^^^^^^^^^^^^^^^
 
 The difference between ``MP_REACH_NLRI`` and ``MP_UNREACH_NLRI`` is that ``MP_UNREACH_NLRI`` only has two keys,
 ``afi_safi`` and ``withdraw``, and there structure is the same.
@@ -505,6 +535,97 @@ IPv6 MPLSVPN
                 ]}
     }}
 
+EVPN
+""""
+
+.. code-block:: json
+
+    {
+        "attr": {
+            "15": {
+                "afi_safi": [25, 70],
+                "withdraw": [
+                    {
+                        "type": 2,
+                        "value": {
+                            "eth_tag_id": 108,
+                            "ip": "11.11.11.1",
+                            "label": [0],
+                            "rd": "172.17.0.3:2",
+                            "mac": "00-11-22-33-44-55",
+                            "esi": 0}}]
+            }
+        }
+    }
+
+13. EXTENDED_COMMUNITY
+^^^^^^^^^^^^^^^^^^^^^^
+
+Extended community we supported:
+
+.. code-block:: Python
+
+    #  VPN Route Target  #
+    BGP_EXT_COM_RT_0 = 0x0002  # Route Target,Format AS(2bytes):AN(4bytes)
+    BGP_EXT_COM_RT_1 = 0x0102  # Route Target,Format IPv4 address(4bytes):AN(2bytes)
+    BGP_EXT_COM_RT_2 = 0x0202  # Route Target,Format AS(4bytes):AN(2bytes)
+
+    # Route Origin (SOO site of Origin)
+    BGP_EXT_COM_RO_0 = 0x0003  # Route Origin,Format AS(2bytes):AN(4bytes)
+    BGP_EXT_COM_RO_1 = 0x0103  # Route Origin,Format IP address:AN(2bytes)
+    BGP_EXT_COM_RO_2 = 0x0203  # Route Origin,Format AS(2bytes):AN(4bytes)
+
+    # BGP Flow Spec
+    BGP_EXT_REDIRECT_NH = 0x0800  # redirect to ipv4/v6 nexthop
+    BGP_EXT_TRA_RATE = 0x8006  # traffic-rate 2-byte as#, 4-byte float
+    BGP_EXT_TRA_ACTION = 0x8007  # traffic-action bitmask
+    BGP_EXT_REDIRECT_VRF = 0x8008  # redirect 6-byte Route Target
+    BGP_EXT_TRA_MARK = 0x8009  # traffic-marking DSCP value
+
+    # Transitive Opaque
+    BGP_EXT_COM_OSPF_ROUTE_TYPE = 0x0306  # OSPF Route Type
+    BGP_EXT_COM_COLOR = 0x030b  # Color
+    BGP_EXT_COM_ENCAP = 0x030c  # BGP_EXT_COM_ENCAP = 0x030c
+    BGP_EXT_COM_DEFAULT_GATEWAY = 0x030d  # Default Gateway
+
+    # BGP EVPN
+    BGP_EXT_COM_EVPN_MAC_MOBIL = 0x0600  # Mac Mobility
+    BGP_EXT_COM_EVPN_ESI_MPLS_LABEL = 0x0601  # ESI MPLS Label
+    BGP_EXT_COM_EVPN_ES_IMPORT = 0x0602  # ES Import
+    BGP_EXT_COM_EVPN_ROUTE_MAC = 0x0603  # EVPN Router MAC Extended Community
+
+    # BGP cost cummunity
+    BGP_EXT_COM_COST = 0x4301
+
+    # BGP link bandwith
+    BGP_EXT_COM_LINK_BW = 0x4004
+
+
+
+14. AS4_PATH
+^^^^^^^^^^^^
+
+4 bytes AS PATH same as ``AS_PATH``.
+
+15. AS4_AGGREGATOR
+^^^^^^^^^^^^^^^^^^
+
+4 bytes AS same as ``AGGREGATOR``.
+
+16. PMSI_TUNNEL
+^^^^^^^^^^^^^^^
+
+"P-Multicast Service Interface Tunnel (PMSI Tunnel) attribute".  This is an optional transitive BGP attribute.  The format of this attribute is defined as follows:
+
+.. code-block:: json
+
+    {
+        "mpsl_label": 625,
+        "tunnel_id": "4.4.4.4",
+        "tunnel_type": 6,
+        "leaf_info_required": 0
+    }
+
 Notification Message
 --------------------
 
@@ -539,7 +660,7 @@ Example:
     }
 
 Route Refresh Message
-----------------------
+---------------------
 
 Route refresh message content is (AFI, SAFI).
 
@@ -558,7 +679,7 @@ Route refresh message content is (AFI, SAFI).
 
 
 Cisco Route Refresh Message
-----------------------------
+---------------------------
 
 .. code-block:: json
 
@@ -575,7 +696,7 @@ Cisco Route Refresh Message
 
 
 Malformed Update Message
--------------------------
+------------------------
 
 If the BGP update message's encoding is wrong and some part of it can't be decoded,
 then it will write this message as malformed update message, for example:

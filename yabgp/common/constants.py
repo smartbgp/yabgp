@@ -375,7 +375,8 @@ ATTRIBUTE_ID_2_STR = {
     15: 'MP_UNREACH_NLRI',
     16: 'EXTENDED_COMMUNITY',
     17: 'AS4_PATH',
-    18: 'AS4_AGGREGATOR'
+    18: 'AS4_AGGREGATOR',
+    22: 'PMSI_TUNNEL'
 }
 
 ATTRIBUTE_STR_2_ID = dict([(v, k) for (k, v) in ATTRIBUTE_ID_2_STR.items()])
