@@ -613,9 +613,9 @@ class BGP(protocol.Protocol):
         :param res: reserve, default is 0
         """
         # check if the peer support route refresh
-        if cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']['cisco_route_refresh']:
+        if 'cisco_route_refresh' in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']:
             type_code = bgp_cons.MSG_CISCOROUTEREFRESH
-        elif cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']['route_refresh']:
+        elif 'route_refresh' in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']:
             type_code = bgp_cons.MSG_ROUTEREFRESH
         else:
             return False
