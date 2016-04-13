@@ -14,7 +14,8 @@ The simple way to start a yabgp agent is (There are four mandatory parameters):
 
 .. code:: bash
 
-    $ yabgpd --bgp-local_addr=10.75.44.11 --bgp-local_as=23650 --bgp-remote_addr=10.124.1.245 --bgp-remote_as=23650
+    $ yabgpd --bgp-local_addr=10.75.44.11 --bgp-local_as=23650 \
+             --bgp-remote_addr=10.124.1.245 --bgp-remote_as=23650
 
 Configuration
 ~~~~~~~~~~~~~
@@ -29,7 +30,8 @@ If you change the default setting (like change the ``write_dir``), please start 
 .. code:: bash
 
     $ cp etc/yabgp/yabgp.ini.sample etc/yabgp/yabgp.ini
-    $ yabgpd --bgp-local_addr=10.75.44.11 --bgp-local_as=23650 --bgp-remote_addr=10.124.1.245 --bgp-remote_as=23650 --bgp-md5=cisco --config-file=../etc/yabgp/yabgp.ini
+    $ yabgpd --bgp-local_addr=10.75.44.11 --bgp-local_as=23650 --bgp-remote_addr=10.124.1.245 \
+             --bgp-remote_as=23650 --bgp-md5=cisco --config-file=../etc/yabgp/yabgp.ini
 
 Running Mode
 ~~~~~~~~~~~~
@@ -45,10 +47,12 @@ The default setting is loggint to console, if you want to write log files and no
 
 .. code:: bash
 
-    $ yabgpd --bgp-local_addr=10.75.44.11 --bgp-local_as=23650 --bgp-remote_addr=10.124.1.245 --bgp-remote_as=23650 --bgp-md5=cisco --nouse-stderr --log-file=test.log
+    $ yabgpd --bgp-local_addr=10.75.44.11 --bgp-local_as=23650 --bgp-remote_addr=10.124.1.245 \
+             --bgp-remote_as=23650 --bgp-md5=cisco --nouse-stderr --log-file=test.log
 
 If you want to change the log level to debug, use `--verbose` option.
 
 .. code:: bash
 
-    $ yabgpd --bgp-local_addr=10.75.44.11 --bgp-local_as=23650 --bgp-remote_addr=10.124.1.245 --bgp-remote_as=23650 --bgp-md5=cisco --verbose
+    $ yabgpd --bgp-local_addr=10.75.44.11 --bgp-local_as=23650 --bgp-remote_addr=10.124.1.245 \
+             --bgp-remote_as=23650 --bgp-md5=cisco --verbose
