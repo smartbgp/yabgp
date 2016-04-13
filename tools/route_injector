@@ -123,12 +123,28 @@ def get_data_from_agent(url, username, password, method='GET', data=None):
     return None
 
 
+def linecount():
+    count = 0
+    with open(CONF.message.json) as f:
+        for line in f.xreadlines():
+            count += 1
+    return count
+
+
 def send_update():
-    # get the message file
+    # get the message count
+    message_count = float(linecount())
     url = 'http://{bind_host}:{bind_port}/v1/peer/{peer_ip}/send/update'
     url = url.format(bind_host=CONF.rest.host, bind_port=CONF.rest.port, peer_ip=CONF.peerip)
-    for message in open(CONF.message.json).readlines():
-        if CONF.message.json:
+    bar_length = 50
+    message_send_count = 0
+    current_percent = 0.00
+    percent_step = 0.01
+    with open(CONF.message.json) as f:
+        sys.stdout.write("\rPercent: [%s] %.2f%%" % ('' + ' ' * bar_length, current_percent))
+        current_percent += percent_step
+        sys.stdout.flush()
+        for message in f.xreadlines():
             message = json.loads(message)
             if message['type'] != 2:
                 continue
@@ -146,6 +162,18 @@ def send_update():
                     'attr': message['attr']
                 }
                 get_data_from_agent(url, 'admin', 'admin', 'POST', post_data)
+            while message_send_count/message_count >= current_percent/100:
+                hashes = '#' * int(message_send_count/message_count * bar_length)
+                spaces = ' ' * (bar_length - len(hashes))
+                sys.stdout.write("\rPercent: [%s] %.2f%%" % (hashes + spaces, current_percent))
+                sys.stdout.flush()
+                current_percent += percent_step
+            message_send_count += 1
+    hashes = '#' * bar_length
+    spaces = ''
+    sys.stdout.write("\rPercent: [%s] %.2f%%"%(hashes + spaces, 100.00))
+    sys.stdout.flush()
+    print '\nTotal message send out: %s' % message_send_count
 
 if __name__ == '__main__':
 

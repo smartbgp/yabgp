@@ -28,9 +28,14 @@ We want to send all the BGP message received from peer ``1.1.1.1`` to ``2.2.2.2`
 .. code-block:: bash
 
     $ python route_injector --rest-host=127.0.0.1 --rest-port=8801 --message-json=/home/yabgp/data/bgp/1.1.1.1/msg/1450668274.82.msg --peerip=2.2.2.2
+    Percent: [########################################          ] 81.05%
 
-Then, route-injector will read bgp message file and try to send all bgp messages to peer ``2.2.2.2`` through REST API.
+Then, route-injector will read bgp message file and try to send all bgp messages to peer ``2.2.2.2`` through REST API. When finised:
 
+.. code-block:: bash
+
+    Percent: [##################################################] 100.00%
+    Total message send out: 12344
 
 Postman Collection
 ~~~~~~~~~~~~~~~~~~~
