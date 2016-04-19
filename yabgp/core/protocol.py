@@ -23,6 +23,7 @@ import time
 import netaddr
 from oslo_config import cfg
 from twisted.internet import protocol
+from twisted.internet import threads
 
 from yabgp.common import constants as bgp_cons
 from yabgp.message.open import Open
@@ -413,7 +414,8 @@ class BGP(protocol.Protocol):
         """
         try:
             msg_update = Update().construct(msg, self.fourbytesas, self.add_path_ipv4_send)
-            self.transport.write(msg_update)
+            threads.deferToThread(self.transport.write, msg_update)
+            # self.transport.write(msg_update)
             self.msg_sent_stat['Updates'] += 1
             return True
         except Exception as e:
