@@ -414,7 +414,7 @@ class BGP(protocol.Protocol):
         """
         try:
             msg_update = Update().construct(msg, self.fourbytesas, self.add_path_ipv4_send)
-            reactor.callFromThread(self.write_tcp, msg_update)
+            reactor.callFromThread(self.write_tcp_thread, msg_update)
             self.msg_sent_stat['Updates'] += 1
             return True
         except Exception as e:
