@@ -38,10 +38,12 @@ Then, route-injector will read bgp message file and try to send all bgp messages
 .. code-block:: bash
 
     Percent: [##################################################] 100.00%
-    Total message send out: 12344
+    Total messages:   128444.
+    Success send out: 15109
+    Failed send out:  113335
 
 Postman Collection
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 Located in ``/yabgp/tools/Yabgp.json.postman_collection``. You can import this collection into POSTMAN(http://www.getpostman.com/)
 and there are some REST API request examples.
