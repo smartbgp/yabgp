@@ -117,10 +117,9 @@ def get_data_from_agent(url, username, password, method='GET', data=None):
     opener_v1 = get_api_opener_v1(url, username, password)
     try:
         res = json.loads(opener_v1.open(request).read())
-        return res
-    except Exception as e:
-        print(e)
-    return None
+        return True
+    except Exception:
+        return False
 
 
 def linecount():
@@ -137,7 +136,9 @@ def send_update():
     url = 'http://{bind_host}:{bind_port}/v1/peer/{peer_ip}/send/update'
     url = url.format(bind_host=CONF.rest.host, bind_port=CONF.rest.port, peer_ip=CONF.peerip)
     bar_length = 50
-    message_send_count = 0
+    message_pass_send = 0
+    send_success = 0
+    send_failed = 0
     current_percent = 0.00
     percent_step = 0.01
     with open(CONF.message.json) as f:
@@ -147,6 +148,7 @@ def send_update():
         for message in f.xreadlines():
             message = json.loads(message)
             if message['type'] != 2:
+                message_count -= 1
                 continue
             if message['nlri']:
                 if CONF.attribute.no_origin_cluster:
@@ -161,19 +163,29 @@ def send_update():
                     'nlri': message['nlri'],
                     'attr': message['attr']
                 }
-                get_data_from_agent(url, 'admin', 'admin', 'POST', post_data)
-            while message_send_count/message_count >= current_percent/100:
-                hashes = '#' * int(message_send_count/message_count * bar_length)
-                spaces = ' ' * (bar_length - len(hashes))
-                sys.stdout.write("\rPercent: [%s] %.2f%%" % (hashes + spaces, current_percent))
-                sys.stdout.flush()
-                current_percent += percent_step
-            message_send_count += 1
+                res = get_data_from_agent(url, 'admin', 'admin', 'POST', post_data)
+                if res:
+                    send_success += 1
+                else:
+                    send_failed += 1
+                while message_pass_send/message_count >= current_percent/100:
+                    hashes = '#' * int(message_pass_send/message_count * bar_length)
+                    spaces = ' ' * (bar_length - len(hashes))
+                    sys.stdout.write("\rPercent: [%s] %.2f%%" % (hashes + spaces, current_percent))
+                    sys.stdout.flush()
+                    current_percent += percent_step
+                message_pass_send += 1
+            else:
+                # TODO support other address family
+                message_count -= 1
+                continue
     hashes = '#' * bar_length
     spaces = ''
     sys.stdout.write("\rPercent: [%s] %.2f%%"%(hashes + spaces, 100.00))
     sys.stdout.flush()
-    print '\nTotal message send out: %s' % message_send_count
+    print '\nTotal messages:   %s' % int(message_count)
+    print 'Success send out: %s' % send_success
+    print 'Failed send out:  %s' % send_failed
 
 if __name__ == '__main__':
 
