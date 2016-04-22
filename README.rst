@@ -88,6 +88,11 @@ Documentation
 
 More information please see the documentation http://yabgp.readthedocs.org
 
+Related Projects
+~~~~~~~~~~~~~~~~
+
+https://github.com/trungdtbk/bgp-update-gen
+
 Support
 ~~~~~~~
 
