@@ -314,3 +314,25 @@ def get_adj_rib_out(afi_safi, peer_ip):
     return flask.jsonify({
         'prefixes': api_utils.get_adj_rib_out(peer_ip, afi_safi)}
     )
+
+
+@blueprint.route('/adj-rib-all/<afi_safi>/<peer_ip>', methods=['GET'])
+@auth.login_required
+@api_utils.log_request
+@api_utils.makesure_peer_establish
+def get_adj_rib_all(afi_safi, peer_ip):
+    """
+    Try to get BGP adj rib all
+    :param afi_safi: address and sub address family, now only suport ipv4
+    :param peer_ip: peer ip address
+    :status 200: the api can work, otherwise the peer is not established maybe.
+    """
+
+    # data = dict()
+    #
+    # prefixes = api_utils.get_adj_rib_in(peer_ip, afi_safi)
+    #
+    # for prefix in prefixes:
+    #     data[prefix] = api_utils.get_adj_rib_in(peer_ip, afi_safi, prefix)
+
+    return flask.jsonify(api_utils.get_adj_rib_all(peer_ip, afi_safi))

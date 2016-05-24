@@ -193,3 +193,9 @@ def start_bgp_connection(peer_ip, idle_hold=False):
 def restart_bgp_connection(peer_ip):
     close_bgp_connection(peer_ip)
     start_bgp_connection(peer_ip)
+
+
+def get_adj_rib_all(peer_ip, afi_safi):
+    rib_table = cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.get_rib_in().get(afi_safi)
+
+    return rib_table
