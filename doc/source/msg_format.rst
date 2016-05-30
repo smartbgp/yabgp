@@ -87,7 +87,7 @@ Update Message
 --------------
 
 BGP Update message (type = 2), the value of ``msg`` for a update message is a dict, and it
-has three keys : ``attr``, ``nlri``, ``withdraw``.
+has four keys : ``attr``, ``nlri``, ``withdraw`` and ``afi_safi``.
 
 =========== ========   ==============
 Key         Value      Description
@@ -95,6 +95,7 @@ Key         Value      Description
 "attr"      dict       Path Attributes
 "nlri"      list       Network Layer Reachability Information
 "withdraw"  list       Withdrawn Routes
+"afi_safi"  string     address family
 =========== ========   ==============
 
 simple format:
@@ -105,7 +106,8 @@ simple format:
         "msg":{
             "attr": {},
             "withdraw": [],
-            "nlri": []
+            "nlri": [],
+            "afi_safi": "ipv4"
         }
     }
 
@@ -128,7 +130,8 @@ and here is a full BGP update message example:
                 "10": ["1.1.1.1", "2.2.2.2", "3.3.3.3"]
             },
             "nlri": ["65.122.75.0/24", "65.122.74.0/24"],
-            "withdraw": []
+            "withdraw": [],
+            "afi_safi": "ipv4"
         }
     }
 
@@ -144,6 +147,7 @@ and here is a withdraw message:
             "attr": {},
             "nlri": [],
             "withdraw": ["65.122.75.0/24", "65.122.74.0/24"]
+            "afi_safi": "ipv4"
         }
     }
 
