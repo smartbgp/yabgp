@@ -143,6 +143,12 @@ class MPLSVPN(NLRI):
 
     @classmethod
     def parse_rd(cls, data):
+        """
+        For Cisco: The BGP route distinguisher can be derived automatically
+        from the VNI and BGP router ID of the VTEP switch
+        :param data:
+        :return:
+        """
         rd_type = struct.unpack('!H', data[0:2])[0]
         rd_value = data[2:8]
         if rd_type == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_0:
