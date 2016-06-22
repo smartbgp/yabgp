@@ -22,14 +22,17 @@
 import sys
 import urllib2
 import json
+import time
 
 from oslo_config import cfg
 
 
 CONF = cfg.CONF
 
-CONF.register_cli_opt(
-    cfg.StrOpt('peerip', help='The BGP peer address'))
+CONF.register_cli_opts([
+    cfg.StrOpt('peerip', help='The BGP peer address'),
+    cfg.IntOpt('interval',default=0, help='time interval when sending message')]
+)
 
 rest_server_ops = [
     cfg.StrOpt('host',
@@ -122,6 +125,10 @@ def get_data_from_agent(url, username, password, method='GET', data=None):
         return False
 
 
+def interval():
+    time.sleep(CONF.interval)
+
+
 def linecount():
     count = 0
     with open(CONF.message.json) as f:
@@ -166,6 +173,7 @@ def send_update():
                 res = get_data_from_agent(url, 'admin', 'admin', 'POST', post_data)
                 if res:
                     send_success += 1
+                    interval()
                 else:
                     send_failed += 1
                 while message_pass_send/message_count >= current_percent/100:
