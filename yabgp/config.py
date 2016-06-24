@@ -100,7 +100,7 @@ bgp_peer_conf_cli_opts = [
                 default=False,
                 help='Whether maintain BGP rib table'),
     cfg.StrOpt('tag',
-               choices=['SRC', 'DST', 'BOTH'],
+               choices=['SRC', 'DST', 'BOTH', 'MON'],
                help='The agent role tag'
                ),
     cfg.ListOpt('afi_safi',
