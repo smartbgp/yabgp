@@ -152,11 +152,12 @@ def send_update():
         sys.stdout.write("\rPercent: [%s] %.2f%%" % ('' + ' ' * bar_length, current_percent))
         current_percent += percent_step
         sys.stdout.flush()
-        for message in f.xreadlines():
-            message = json.loads(message)
-            if message['type'] != 2:
+        for _message in f.xreadlines():
+            message_json = json.loads(_message)
+            if message_json['type'] != 2:
                 message_count -= 1
                 continue
+            message = message_json['msg']
             if message['nlri']:
                 if CONF.attribute.no_origin_cluster:
                     if message['attr'].get('9'):
