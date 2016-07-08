@@ -98,7 +98,11 @@ class MpReachNLRI(Attribute):
                 else:
                     nlri_bin = nlri_bin[1:]
                 nlri = IPv4FlowSpec.parse(nlri_bin)
-                return dict(afi_safi=(afi, safi), nexthop=nexthop_bin, nlri=nlri)
+                if nexthop_bin:
+                    nexthop = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin), 16)))
+                else:
+                    nexthop = ''
+                return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
             else:
                 nlri = repr(nlri_bin)
 
