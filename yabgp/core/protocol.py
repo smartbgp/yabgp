@@ -308,9 +308,9 @@ class BGP(protocol.Protocol):
         if result['nlri'] or result['withdraw']:
             afi_safi = 'ipv4'
         elif result['attr'].get(14):
-            afi_safi = bgp_cons.AFI_SAFI_DICT(result['attr'][14]['afi_safi'])
+            afi_safi = bgp_cons.AFI_SAFI_DICT[result['attr'][14]['afi_safi']]
         elif result['attr'].get(15):
-            afi_safi = bgp_cons.AFI_SAFI_DICT(result['attr'][15]['afi_safi'])
+            afi_safi = bgp_cons.AFI_SAFI_DICT[result['attr'][15]['afi_safi']]
         msg = {
             'attr': result['attr'],
             'nlri': result['nlri'],
