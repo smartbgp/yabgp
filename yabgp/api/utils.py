@@ -161,7 +161,7 @@ def send_update(peer_ip, attr, nlri, withdraw):
 
 
 def get_adj_rib_in(peer_ip, afi_safi, prefix=None):
-    rib_table = cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.get_rib_in().get(afi_safi)
+    rib_table = cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.get_rib_in().get(afi_safi) or {}
     if prefix:
         attr = rib_table.get(prefix)
         if not attr:
@@ -172,7 +172,7 @@ def get_adj_rib_in(peer_ip, afi_safi, prefix=None):
 
 
 def get_adj_rib_out(peer_ip, afi_safi, prefix=None):
-    rib_table = cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.get_rib_out().get(afi_safi)
+    rib_table = cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.get_rib_out().get(afi_safi) or {}
     if prefix:
         attr = rib_table.get(prefix)
         if not attr:
@@ -196,6 +196,6 @@ def restart_bgp_connection(peer_ip):
 
 
 def get_adj_rib_all(peer_ip, afi_safi):
-    rib_table = cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.get_rib_in().get(afi_safi)
+    rib_table = cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.get_rib_in().get(afi_safi) or {}
 
     return rib_table
