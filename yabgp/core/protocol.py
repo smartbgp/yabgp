@@ -19,6 +19,8 @@ import logging
 import traceback
 import struct
 import time
+import copy
+import json
 
 import netaddr
 from oslo_config import cfg
@@ -182,6 +184,29 @@ class BGP(protocol.Protocol):
                 self._adj_rib_in['ipv4'].pop(prefix)
             else:
                 LOG.warning('withdraw prefix which does not exist in rib table!')
+        # for none ipv4 address family
+        mpreach_dict = msg['attr'].get(14) or {}
+        afi_safi = mpreach_dict.get('afi_safi')
+        if afi_safi == (1, 133):  # ipv4 flowspec
+            new_attr = copy.copy(msg['attr'])
+            nlri_dict = new_attr.pop(14)
+            new_attr[3] = nlri_dict['nexthop']
+            for prefix in nlri_dict.get('nlri'):
+                prefix = json.dumps(prefix)
+                self._adj_rib_in['flowspec'][str(prefix)] = new_attr
+
+        mpunreach_dict = msg['attr'].get(15) or {}
+        if not mpunreach_dict:
+            return
+        afi_safi = mpunreach_dict.get('afi_safi')
+        if afi_safi == (1, 133):
+            for prefix in mpunreach_dict.get('withdraw'):
+                prefix = json.dumps(prefix)
+                if str(prefix) in self._adj_rib_in['flowspec']:
+                    print str(prefix)
+                    self._adj_rib_in['flowspec'].pop(str(prefix))
+                else:
+                    LOG.warning('withdraw prefix which does not exist in rib table')
 
     def dataReceived(self, data):
 
