@@ -73,11 +73,21 @@ class MpUnReachNLRI(Attribute):
             # BGP flow spec
             elif safi == safn.SAFNUM_FSPEC_RULE:
                 # if nlri length is greater than 240 bytes, it is encoded over 2 bytes
-                if len(nlri_bin) >= 240:
-                    nlri_bin = nlri_bin[2:]
-                else:
-                    nlri_bin = nlri_bin[1:]
-                return dict(afi_safi=(afi, safi), withdraw=IPv4FlowSpec().parse(value=nlri_bin))
+                withdraw_list = []
+                while nlri_bin:
+                    length = ord(nlri_bin[0])
+                    if length >> 4 == 0xf and len(nlri_bin) > 2:
+                        length = struct.unpack('!H', nlri_bin[:2])[0]
+                        nlri_tmp = nlri_bin[2: length + 2]
+                        nlri_bin = nlri_bin[length + 2:]
+                    else:
+                        nlri_tmp = nlri_bin[1: length + 1]
+                        nlri_bin = nlri_bin[length + 1:]
+                    nlri = IPv4FlowSpec.parse(nlri_tmp)
+                    if nlri:
+                        withdraw_list.append(nlri)
+
+                return dict(afi_safi=(afi, safi), withdraw=withdraw_list)
             else:
                 return dict(afi_safi=(afn.AFNUM_INET, safi), withdraw=repr(nlri_bin))
         # for ipv6
@@ -121,15 +131,16 @@ class MpUnReachNLRI(Attribute):
                     return None
             elif safi == safn.SAFNUM_FSPEC_RULE:
                 try:
-                    nlri = IPv4FlowSpec.construct(value=value['withdraw'])
-                    if nlri:
-                        attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + \
-                            nlri
-                        return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
-                            + struct.pack('!B', len(attr_value)) + attr_value
-                    else:
+                    nlri_list = value.get('withdraw') or []
+                    if not nlri_list:
                         return None
-                    pass
+                    nlri_hex = b''
+                    for nlri in nlri_list:
+                        nlri_hex += IPv4FlowSpec.construct(value=nlri)
+                    attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri_hex
+                    return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
+                        + struct.pack('!B', len(attr_value)) + attr_value
+
                 except Exception:
                     raise excep.ConstructAttributeFailed(
                         reason='failed to construct attributes',

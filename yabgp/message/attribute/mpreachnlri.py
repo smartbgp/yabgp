@@ -93,16 +93,24 @@ class MpReachNLRI(Attribute):
                 return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
             elif safi == safn.SAFNUM_FSPEC_RULE:
                 # if nlri length is greater than 240 bytes, it is encoded over 2 bytes
-                if len(nlri_bin) >= 240:
-                    nlri_bin = nlri_bin[2:]
-                else:
-                    nlri_bin = nlri_bin[1:]
-                nlri = IPv4FlowSpec.parse(nlri_bin)
+                nlri_list = []
+                while nlri_bin:
+                    length = ord(nlri_bin[0])
+                    if length >> 4 == 0xf and len(nlri_bin) > 2:
+                        length = struct.unpack('!H', nlri_bin[:2])[0]
+                        nlri_tmp = nlri_bin[2: length + 2]
+                        nlri_bin = nlri_bin[length + 2:]
+                    else:
+                        nlri_tmp = nlri_bin[1: length + 1]
+                        nlri_bin = nlri_bin[length + 1:]
+                    nlri = IPv4FlowSpec.parse(nlri_tmp)
+                    if nlri:
+                        nlri_list.append(nlri)
                 if nexthop_bin:
                     nexthop = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin), 16)))
                 else:
                     nexthop = ''
-                return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
+                return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri_list)
             else:
                 nlri = repr(nlri_bin)
 
@@ -201,10 +209,12 @@ class MpReachNLRI(Attribute):
                         nexthop = netaddr.IPAddress(value['nexthop']).packed
                     except netaddr.core.AddrFormatError:
                         nexthop = ''
-                    nlri = IPv4FlowSpec.construct(value=value['nlri'])
-                    if nlri:
+                    nlri_hex = b''
+                    for nlri in value['nlri']:
+                        nlri_hex += IPv4FlowSpec.construct(value=nlri)
+                    if nlri_hex:
                         attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + \
-                            struct.pack('!B', len(nexthop)) + nexthop + b'\x00' + nlri
+                            struct.pack('!B', len(nexthop)) + nexthop + b'\x00' + nlri_hex
                         return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
                             + struct.pack('!B', len(attr_value)) + attr_value
                 except Exception as e:

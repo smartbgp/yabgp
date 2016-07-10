@@ -303,7 +303,7 @@ class BGP(protocol.Protocol):
             self.msg_recv_stat['Updates'] += 1
             self.fsm.update_received()
             return
-
+        afi_safi = None
         # process messages
         if result['nlri'] or result['withdraw']:
             afi_safi = 'ipv4'
