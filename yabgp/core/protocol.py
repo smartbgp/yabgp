@@ -122,7 +122,8 @@ class BGP(protocol.Protocol):
 
         # send msg to rabbit mq
         if not CONF.standalone and self.factory.tag in \
-                [channel_cons.SOURCE_ROUTER_TAG, channel_cons.SOURCE_AND_TARGET_ROUTER_TAG]:
+                [channel_cons.SOURCE_ROUTER_TAG,
+                 channel_cons.SOURCE_AND_TARGET_ROUTER_TAG, channel_cons.TARGET_ROUTER_TAG]:
             agent_id = "%s:%s" % (CONF.rest.bind_host, CONF.rest.bind_port)
             send_to_channel_msg = {
                 'agent_id': agent_id,
