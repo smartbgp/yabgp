@@ -91,7 +91,7 @@ bgp_peer_conf_cli_opts = [
     cfg.IPOpt('remote_addr',
               help='The remote address of the peer'),
     cfg.IPOpt('local_addr',
-              default='0.0.0.0',
+              default='127.0.0.1',
               help='The local address of the BGP'),
     cfg.StrOpt('md5',
                help='The MD5 string use to auth',

@@ -16,7 +16,6 @@
 import sys
 import os
 import logging
-import contextlib
 import traceback
 
 from oslo_config import cfg
@@ -31,9 +30,6 @@ from yabgp.api.app import app
 from yabgp.channel.config import rabbit_mq
 from yabgp.channel.config import channle_filter
 from yabgp.channel.factory import PikaFactory
-from yabgp.db import config as db_config
-from yabgp.db.mongodb import MongoApi
-from yabgp.db import constants as db_cons
 
 
 log.early_init_log(logging.DEBUG)
@@ -41,41 +37,6 @@ log.early_init_log(logging.DEBUG)
 CONF = cfg.CONF
 
 LOG = logging.getLogger(__name__)
-
-
-@contextlib.contextmanager
-def mongo_operation(mongo_conn, connection_name):
-    mongo_conn.collection_name = connection_name
-    db = mongo_conn.get_collection()
-    yield db
-    mongo_conn._close_db()
-
-
-def load_channel_filter_from_db(peer_ip, mongo_api):
-    """
-    load rabbitmq channle filter from mongodb
-    :return:
-    """
-    LOG.info('try to load yabgp rabbitmq channel filter from mongodb')
-    mongo_api.collection_name = db_cons.MONGO_COLLECTION_RABBIT_CHANNEL_FILTER
-    try:
-        filter_list = mongo_api.get_collection().find({'peer_ip': peer_ip})
-        for item in filter_list:
-            if item['value'] not in CONF.rabbit_mq.filter[item['type']]:
-                CONF.rabbit_mq.filter[item['type']][item['value']] = None
-    except Exception as e:
-        LOG.debug(traceback.format_exc())
-        LOG.error('load failed, %s', e)
-        sys.exit()
-    pass
-
-
-def load_bgp_policy_from_db(mongo_conn, connection_name):
-    """
-    load bgp policy from mongodb
-    :return:
-    """
-    pass
 
 
 def check_running_mode():
@@ -86,9 +47,8 @@ def check_running_mode():
 
     if not CONF.standalone:
         # not standalone?
-        CONF.register_opts(rabbit_mq, group='rabbit_mq')
+        CONF.register_cli_opt(rabbit_mq, group='rabbit_mq')
         CONF.register_opts(channle_filter, group='rabbit_mq')
-        db_config.register_options()
 
 
 def check_msg_config():
@@ -107,34 +67,6 @@ def check_msg_config():
         CONF.message.write_msg_max_size = CONF.message.write_msg_max_size * 1024 * 1024
 
 
-def register_to_db(peer_ip, mongo_api):
-    """
-    register peer configuration to database
-    :return:
-    """
-    LOG.info('try to register yabgp agent to database')
-    peer_config = {
-        '_id': '%s:%s:%s' % (CONF.rest.bind_host, CONF.rest.bind_port, peer_ip),
-        'peer_ip': peer_ip,
-        'bind_host': CONF.rest.bind_host,
-        'bind_port': CONF.rest.bind_port,
-        'local_as': CONF.bgp.running_config[peer_ip]['local_as'],
-        'local_addr': CONF.bgp.running_config[peer_ip]['local_addr'],
-        'remote_as': CONF.bgp.running_config[peer_ip]['remote_as'],
-        'remote_addr': CONF.bgp.running_config[peer_ip]['remote_addr'],
-        'afi_safi': CONF.bgp.afi_safi,
-        'tag': CONF.bgp.running_config[peer_ip]['tag']
-
-    }
-    mongo_api.collection_name = db_cons.MONGO_COLLECTION_BGP_AGENT
-    try:
-        mongo_api.get_collection().save(peer_config)
-    except Exception as e:
-        LOG.debug(traceback.format_exc())
-        LOG.error('register failed, %s', e)
-        sys.exit()
-
-
 def prepare_twisted_service():
     LOG.info('Prepare twisted services')
     # check all peers
@@ -143,41 +75,16 @@ def prepare_twisted_service():
     # check running mode
     if not CONF.standalone:
         # rabbitmq factory
-        rabbit_mq_factory = PikaFactory(
-            host=CONF.rabbit_mq.rabbit_host,
-            port=CONF.rabbit_mq.rabbit_port,
-            userid=CONF.rabbit_mq.rabbit_userid,
-            password=CONF.rabbit_mq.rabbit_password
-        )
+        rabbit_mq_factory = PikaFactory(url=CONF.rabbit_mq.rabbit_url)
         rabbit_mq_factory.peer_list = CONF.bgp.running_config.keys()
         rabbit_mq_factory.connect()
-        # mongodb connection
-        if CONF.database.use_replica:
-            mongo_connection = MongoApi(
-                connection_url=CONF.database.connection,
-                db_name=CONF.database.dbname,
-                use_replica=CONF.database.use_replica,
-                replica_name=CONF.database.replica_name,
-                read_preference=CONF.database.read_preference,
-                write_concern=CONF.database.write_concern,
-                w_timeout=CONF.database.write_concern_timeout
-            )
-        else:
-            mongo_connection = MongoApi(connection_url=CONF.database.connection, db_name=CONF.database.dbname)
-        # check api bind host
-        if CONF.rest.bind_host == '0.0.0.0':
-            LOG.error('please use the exactly rest host ip address when not running in standalone mode')
-            sys.exit()
-        # TODO load channel filter and peer policy
+
     else:
         rabbit_mq_factory = None
         mongo_connection = None
     for peer in CONF.bgp.running_config:
         LOG.info('Get peer %s configuration', peer)
-        if not CONF.standalone:
-            if CONF.bgp.running_config[peer]['local_addr'] == '0.0.0.0':
-                LOG.error('please use the exactly local bgp ip address when not running in standalone mode')
-                sys.exit()
+
         if CONF.message.write_disk:
             msg_file_path_for_peer = os.path.join(
                 CONF.message.write_dir,
@@ -211,11 +118,9 @@ def prepare_twisted_service():
 
         # register to database and check agent role
         if not CONF.standalone:
-            register_to_db(peer_ip=peer, mongo_api=mongo_connection)
             if not CONF.bgp.running_config[peer]['tag']:
                 LOG.error('Please point out the role tag(SRC,DST or BOTH)for not running in standalone mode')
                 sys.exit()
-            load_channel_filter_from_db(peer_ip=peer, mongo_api=mongo_connection)
 
     # Starting api server
     if sys.version_info[0] == 2:

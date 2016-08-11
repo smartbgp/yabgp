@@ -22,26 +22,13 @@ from yabgp.channel.filter import FILTER_TYPR_INIT_DICT
 CONF = cfg.CONF
 
 rabbit_mq = [
-    cfg.StrOpt('rabbit_host',
-               default='localhost',
-               help='The RabbitMQ broker address where a single node is used'),
-    cfg.IntOpt('rabbit_port',
-               default=5672,
-               help='The RabbitMQ broker port where a single node is used'),
-    cfg.BoolOpt('rabbit_use_ssl',
-                default=False,
-                help='Connect over SSL for RabbitMQ.'),
-    cfg.StrOpt('rabbit_userid',
-               default='guest',
-               help='The RabbitMQ userid.'),
-    cfg.StrOpt('rabbit_password',
-               default='guest',
-               help='The RabbitMQ password.',
-               secret=True),
+    cfg.StrOpt('rabbit_url',
+               default='amqp://admin:admin@127.0.0.1:5672//',
+               help='The RabbitMQ broker url')
 ]
 
 channle_filter = [
     cfg.DictOpt('filter',
                 default=FILTER_TYPR_INIT_DICT,
-                help='the community and prefix filter dict'),
+                help='the community and prefix filter dict')
 ]

@@ -30,11 +30,8 @@ LOG = logging.getLogger(__name__)
 
 class PikaFactory(protocol.ReconnectingClientFactory):
 
-    def __init__(self, host='localhost', port=5672, userid='guest', password='guest'):
-        self.parameters = pika.ConnectionParameters(
-            host=host, port=port,
-            credentials=pika.PlainCredentials(userid, password)
-        )
+    def __init__(self, url):
+        self.parameters = pika.URLParameters(url)
         self.client = None
         self.queued_messages = []
         self.peer_list = []

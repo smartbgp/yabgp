@@ -34,7 +34,6 @@ from yabgp.message.update import Update
 from yabgp.message.notification import Notification
 from yabgp.message.route_refresh import RouteRefresh
 from yabgp.common import exception as excep
-from yabgp.db import constants as channel_cons
 
 LOG = logging.getLogger(__name__)
 
@@ -122,8 +121,8 @@ class BGP(protocol.Protocol):
 
         # send msg to rabbit mq
         if not CONF.standalone and self.factory.tag in \
-                [channel_cons.SOURCE_ROUTER_TAG,
-                 channel_cons.SOURCE_AND_TARGET_ROUTER_TAG, channel_cons.TARGET_ROUTER_TAG]:
+                [bgp_cons.SOURCE_ROUTER_TAG,
+                 bgp_cons.SOURCE_AND_TARGET_ROUTER_TAG, bgp_cons.TARGET_ROUTER_TAG]:
             agent_id = "%s:%s" % (CONF.rest.bind_host, CONF.rest.bind_port)
             send_to_channel_msg = {
                 'agent_id': agent_id,
@@ -356,7 +355,7 @@ class BGP(protocol.Protocol):
 
         # check channel filter
         if not CONF.standalone and self.factory.tag in \
-                [channel_cons.SOURCE_ROUTER_TAG, channel_cons.SOURCE_AND_TARGET_ROUTER_TAG]:
+                [bgp_cons.SOURCE_ROUTER_TAG, bgp_cons.SOURCE_AND_TARGET_ROUTER_TAG]:
             self.channel_filter(msg=msg)
         # update rib
         self.update_rib(msg)
@@ -527,7 +526,7 @@ class BGP(protocol.Protocol):
         if self.msg_recv_stat['Keepalives'] == 1:
             # agent online
             if not CONF.standalone and self.factory.tag in \
-                    [channel_cons.TARGET_ROUTER_TAG, channel_cons.SOURCE_AND_TARGET_ROUTER_TAG]:
+                    [bgp_cons.TARGET_ROUTER_TAG, bgp_cons.SOURCE_AND_TARGET_ROUTER_TAG]:
                 send_to_channel_msg = {
                     'agent_id': '%s:%s' % (CONF.rest.bind_host, CONF.rest.bind_port),
                     'type': bgp_cons.MSG_KEEPALIVE,
