@@ -15,6 +15,8 @@
 
 """ message queue config """
 
+import os
+
 from oslo_config import cfg
 
 from yabgp.channel.filter import FILTER_TYPR_INIT_DICT
@@ -23,7 +25,7 @@ CONF = cfg.CONF
 
 rabbit_mq = [
     cfg.StrOpt('rabbit_url',
-               default='amqp://guest:guest@localhost:5672/%2F',
+               default=os.environ.get('RABBITMQ_URL', 'amqp://guest:guest@localhost:5672/%2F'),
                help='The RabbitMQ connection url')
 ]
 

@@ -15,26 +15,28 @@
 
 """ database config """
 
+import os
+
 from oslo_config import cfg
 
 CONF = cfg.CONF
 
 database_base_options = [
     cfg.StrOpt('connection',
-               default='mongodb://127.0.0.1:27017',
+               default=os.environ.get('MONGODB_URL', 'mongodb://127.0.0.1:27017'),
                help='Database connection'),
     cfg.StrOpt('dbname',
-               default='yabgp',
+               default=os.environ.get('MONGODB_NAME', 'yabgp'),
                help='database name'),
     cfg.BoolOpt('use_replica',
-                default=False,
+                default=os.environ.get('MONGODB_REPLICA', False),
                 help='if use replica set')
 ]
 
 database_replica_options = [
 
     cfg.StrOpt('replica_name',
-               default='rs1',
+               default=os.environ.get('MONGODB_REPLICA_NAME', 'rs1'),
                help='the replica set name'),
     cfg.IntOpt('read_preference',
                default=0,
