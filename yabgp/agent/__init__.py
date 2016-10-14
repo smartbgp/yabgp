@@ -143,12 +143,7 @@ def prepare_twisted_service():
     # check running mode
     if not CONF.standalone:
         # rabbitmq factory
-        rabbit_mq_factory = PikaFactory(
-            host=CONF.rabbit_mq.rabbit_host,
-            port=CONF.rabbit_mq.rabbit_port,
-            userid=CONF.rabbit_mq.rabbit_userid,
-            password=CONF.rabbit_mq.rabbit_password
-        )
+        rabbit_mq_factory = PikaFactory(url=CONF.rabbit_mq.rabbit_url)
         rabbit_mq_factory.peer_list = CONF.bgp.running_config.keys()
         rabbit_mq_factory.connect()
         # mongodb connection

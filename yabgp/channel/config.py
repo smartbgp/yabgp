@@ -22,22 +22,9 @@ from yabgp.channel.filter import FILTER_TYPR_INIT_DICT
 CONF = cfg.CONF
 
 rabbit_mq = [
-    cfg.StrOpt('rabbit_host',
-               default='localhost',
-               help='The RabbitMQ broker address where a single node is used'),
-    cfg.IntOpt('rabbit_port',
-               default=5672,
-               help='The RabbitMQ broker port where a single node is used'),
-    cfg.BoolOpt('rabbit_use_ssl',
-                default=False,
-                help='Connect over SSL for RabbitMQ.'),
-    cfg.StrOpt('rabbit_userid',
-               default='guest',
-               help='The RabbitMQ userid.'),
-    cfg.StrOpt('rabbit_password',
-               default='guest',
-               help='The RabbitMQ password.',
-               secret=True),
+    cfg.StrOpt('rabbit_url',
+               default='amqp://guest:guest@localhost:5672/%2F',
+               help='The RabbitMQ connection url')
 ]
 
 channle_filter = [
