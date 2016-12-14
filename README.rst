@@ -91,7 +91,9 @@ More information please see the documentation http://yabgp.readthedocs.org
 Related Projects
 ~~~~~~~~~~~~~~~~
 
-https://github.com/trungdtbk/bgp-update-gen
+Routewatch brings automated alerting to YABGP. https://github.com/nerdalize/routewatch
+
+A BGP update generator based on YaBGP https://github.com/trungdtbk/bgp-update-gen
 
 Support
 ~~~~~~~
@@ -131,9 +133,9 @@ https://github.com/Exa-Networks/exabgp
 .. |Documentation Status| image:: https://readthedocs.org/projects/yabgp/badge/?version=latest
    :target: https://readthedocs.org/projects/yabgp/?badge=latest
 
-.. |Test Coverage| image:: https://coveralls.io/repos/smartbgp/yabgp/badge.svg?branch=master 
+.. |Test Coverage| image:: https://coveralls.io/repos/smartbgp/yabgp/badge.svg?branch=master
    :target: https://coveralls.io/r/smartbgp/yabgp
-   
+
 .. |Version| image:: https://img.shields.io/pypi/v/yabgp.svg?
    :target: http://badge.fury.io/py/yabgp
 
