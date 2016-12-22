@@ -208,6 +208,8 @@ GRACEFUL_RESTART = False
 AFI_SAFI_DICT = {
     (1, 1): 'ipv4',
     (2, 1): 'ipv6',
+    (1, 4): 'ipv4_lu',
+    (2, 4): 'ipv6_lu',
     (1, 133): 'flowspec',
     (1, 128): 'vpnv4',
     (2, 128): 'vpnv6',
@@ -216,6 +218,8 @@ AFI_SAFI_DICT = {
 AFI_SAFI_STR_DICT = {
     'ipv6': (2, 1),
     'ipv4': (1, 1),
+    'ipv4_lu': (1, 4),
+    'ipv6_lu': (2, 4),
     'flowspec': (1, 133),
     'vpnv4': (1, 128),
     'vpnv6': (2, 128),

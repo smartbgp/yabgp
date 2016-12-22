@@ -242,6 +242,26 @@ class TestMpReachNLRI(unittest.TestCase):
         }
         self.assertEqual(data_dict, MpReachNLRI.parse(MpReachNLRI.construct(data_dict)[3:]))
 
+    def test_ipv4_labeled_unicast_parse_construct(self):
+        data_dict = {
+            'afi_safi': (1, 4),
+            'nexthop': "10.75.44.254",
+            'nlri': [
+                {'prefix': '34.1.41.0/24', 'label': [321]},
+                {'prefix': '34.1.42.0/24', 'label': [322]}]
+        }
+        self.assertEqual(data_dict, MpReachNLRI.parse(MpReachNLRI.construct(data_dict)[3:]))
+
+    def test_ipv6_labeled_unicast_parse_construct(self):
+        data_dict = {
+            'afi_safi': (2, 4),
+            'nexthop': '::ffff:20.1.1.18',
+            'nlri': [
+                {'label': [91], 'prefix': '2001:2121::1/128'},
+                {'label': [92], 'prefix': '::2001:2121:1:0/64'},
+                {'label': [93], 'prefix': '2001:4837:1821::2/127'}]
+            }
+        self.assertEqual(data_dict, MpReachNLRI.parse(MpReachNLRI.construct(data_dict)[3:]))
 
 if __name__ == '__main__':
     unittest.main()

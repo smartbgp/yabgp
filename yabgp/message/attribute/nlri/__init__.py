@@ -50,3 +50,26 @@ class NLRI(object):
         if offset == 0:
             return prefix_hex[0: 1]
         return prefix_hex[0: offset + offset_re]
+
+    @classmethod
+    def parse_mpls_label_stack(cls, data):
+        labels = []
+        while len(data) >= 3:
+            label = struct.unpack('!L', b'\00'+data[:3])[0]
+            data = data[3:]
+            labels.append(label >> 4)
+            if label & 0x001:
+                break
+        return labels
+
+    @classmethod
+    def construct_mpls_label_stack(cls, labels):
+        data = b''
+        last_label = labels[-1]
+        for label in labels[:-1]:
+            data += struct.pack('!L', label << 4)[1:]
+        if last_label != 0:
+            data += struct.pack('!L', (last_label << 4 | 1))[1:]
+        else:
+            data += b'\x00\x00\x00'
+        return data

@@ -32,6 +32,8 @@ from yabgp.message.attribute.nlri.ipv4_mpls_vpn import IPv4MPLSVPN
 from yabgp.message.attribute.nlri.ipv6_mpls_vpn import IPv6MPLSVPN
 from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
 from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
+from yabgp.message.attribute.nlri.labeled_unicast.ipv4 import IPv4LabeledUnicast
+from yabgp.message.attribute.nlri.labeled_unicast.ipv6 import IPv6LabeledUnicast
 from yabgp.message.attribute.nlri.evpn import EVPN
 
 
@@ -90,6 +92,13 @@ class MpReachNLRI(Attribute):
                     nexthop = repr(nexthop_bin[8:])
                 # parse nlri
                 nlri = IPv4MPLSVPN.parse(nlri_bin)
+                return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
+            elif safi == safn.SAFNUM_MPLS_LABEL:
+                if nexthop_bin:
+                    nexthop = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin), 16)))
+                else:
+                    nexthop = ''
+                nlri = IPv4LabeledUnicast.parse(nlri_bin)
                 return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
             elif safi == safn.SAFNUM_FSPEC_RULE:
                 # if nlri length is greater than 240 bytes, it is encoded over 2 bytes
@@ -157,6 +166,13 @@ class MpReachNLRI(Attribute):
                 # parse nlri
                 nlri = IPv6MPLSVPN.parse(nlri_bin)
                 return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
+            elif safi == safn.SAFNUM_MPLS_LABEL:
+                if nexthop_bin:
+                    nexthop = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin), 16)))
+                else:
+                    nexthop = ''
+                nlri = IPv6LabeledUnicast.parse(nlri_bin)
+                return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
             else:
                 return dict(afi_safi=(afi, safi), nexthop=nexthop_bin, nlri=nlri_bin)
 
@@ -195,6 +211,8 @@ class MpReachNLRI(Attribute):
          'nlri': []
         """
         afi, safi = value['afi_safi']
+
+        # for ipv4 unicast
         if afi == afn.AFNUM_INET:
             if safi == safn.SAFNUM_LAB_VPNUNICAST:  # MPLS VPN
                 nexthop_hex = cls.construct_mpls_vpn_nexthop(value['nexthop'])
@@ -212,6 +230,24 @@ class MpReachNLRI(Attribute):
                     nlri_hex = b''
                     for nlri in value['nlri']:
                         nlri_hex += IPv4FlowSpec.construct(value=nlri)
+                    if nlri_hex:
+                        attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + \
+                            struct.pack('!B', len(nexthop)) + nexthop + b'\x00' + nlri_hex
+                        return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
+                            + struct.pack('!B', len(attr_value)) + attr_value
+                except Exception as e:
+                    raise excep.ConstructAttributeFailed(
+                        reason='failed to construct attributes: %s' % e,
+                        data=value
+                    )
+            elif safi == safn.SAFNUM_MPLS_LABEL:
+                try:
+                    try:
+                        nexthop = netaddr.IPAddress(value['nexthop']).packed
+                    except netaddr.core.AddrFormatError:
+                        nexthop = ''
+                    nlri_hex = b''
+                    nlri_hex += IPv4LabeledUnicast.construct(value['nlri'])
                     if nlri_hex:
                         attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + \
                             struct.pack('!B', len(nexthop)) + nexthop + b'\x00' + nlri_hex
@@ -251,6 +287,24 @@ class MpReachNLRI(Attribute):
                     nexthop_bin + b'\x00' + nlri_bin
                 return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID)\
                     + struct.pack('!B', len(attr_value)) + attr_value
+            elif safi == safn.SAFNUM_MPLS_LABEL:
+                try:
+                    try:
+                        nexthop = netaddr.IPAddress(value['nexthop']).packed
+                    except netaddr.core.AddrFormatError:
+                        nexthop = ''
+                    nlri_hex = b''
+                    nlri_hex += IPv6LabeledUnicast.construct(value['nlri'])
+                    if nlri_hex:
+                        attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + \
+                            struct.pack('!B', len(nexthop)) + nexthop + b'\x00' + nlri_hex
+                        return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
+                            + struct.pack('!B', len(attr_value)) + attr_value
+                except Exception as e:
+                    raise excep.ConstructAttributeFailed(
+                        reason='failed to construct attributes: %s' % e,
+                        data=value
+                    )
         # for l2vpn
         elif afi == afn.AFNUM_L2VPN:
             if safi == safn.SAFNUM_EVPN:
