@@ -33,6 +33,8 @@ Features
 
    - IPv4/IPv6 unicast
 
+   - IPv4/IPv6 Labeled Unicast
+
    - IPv4 Flowspec(limited)
 
    - IPv4/IPv6 MPLSVPN
