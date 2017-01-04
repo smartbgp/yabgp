@@ -50,4 +50,4 @@ AFNUM_EIGRP_COMMON = 16384  # EIGRP Common Service Family
 AFNUM_EIGRP_IPV4 = 16385  # EIGRP IPv4 Service Family
 AFNUM_EIGRP_IPV6 = 16386  # EIGRP IPv6 Service Family
 AFNUM_LCAF = 16387  # LISP Canonical Address Format
-AFNUM_BGPLS = 16388  # draft BGP-LS
+AFNUM_BGPLS = 16388  # rfc7752

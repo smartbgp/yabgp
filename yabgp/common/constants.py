@@ -213,7 +213,8 @@ AFI_SAFI_DICT = {
     (1, 133): 'flowspec',
     (1, 128): 'vpnv4',
     (2, 128): 'vpnv6',
-    (25, 70): 'evpn'
+    (25, 70): 'evpn',
+    (16388, 71): 'bgpls'
 }
 AFI_SAFI_STR_DICT = {
     'ipv6': (2, 1),
@@ -223,7 +224,8 @@ AFI_SAFI_STR_DICT = {
     'flowspec': (1, 133),
     'vpnv4': (1, 128),
     'vpnv6': (2, 128),
-    'evpn': (25, 70)
+    'evpn': (25, 70),
+    'bgpls': (16388, 71)
 }
 
 ADD_PATH_ACT_DICT = {
