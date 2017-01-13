@@ -73,7 +73,7 @@ class MpReachNLRI(Attribute):
             # error when lenght is wrong
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
-                data=repr(value))
+                data=str(value))
 
         #  Address Family IPv4
         if afi == afn.AFNUM_INET:
@@ -89,7 +89,7 @@ class MpReachNLRI(Attribute):
                     nexthop = {'rd': '%s:%s' % (asn, an), 'str': ipv4}
                 # TODO(xiaoquwl) for other RD type decoding
                 else:
-                    nexthop = repr(nexthop_bin[8:])
+                    nexthop = binascii.b2a_hex((nexthop_bin[8:]))
                 # parse nlri
                 nlri = IPv4MPLSVPN.parse(nlri_bin)
                 return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
@@ -121,7 +121,7 @@ class MpReachNLRI(Attribute):
                     nexthop = ''
                 return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri_list)
             else:
-                nlri = repr(nlri_bin)
+                nlri = binascii.b2a_hex(nlri_bin)
 
         # #  Address Family IPv6
         elif afi == afn.AFNUM_INET6:
@@ -162,7 +162,7 @@ class MpReachNLRI(Attribute):
                     nexthop = {'rd': '%s:%s' % (asn, an), 'str': ipv6}
                 # TODO(xiaoquwl) for other RD type decoding
                 else:
-                    nexthop = repr(nexthop_bin[8:])
+                    nexthop = binascii.b2a_hex(nexthop_bin[8:])
                 # parse nlri
                 nlri = IPv6MPLSVPN.parse(nlri_bin)
                 return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
@@ -183,12 +183,12 @@ class MpReachNLRI(Attribute):
                 nlri = EVPN.parse(nlri_bin)
                 return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
             else:
-                nlri = repr(nlri_bin)
+                nlri = binascii.b2a_hex(nlri_bin)
 
         else:
-            nlri = repr(nlri_bin)
+            nlri = binascii.b2a_hex(nlri_bin)
 
-        return dict(afi_safi=(afi, safi), nexthop=nexthop_bin, nlri=nlri_bin)
+        return dict(afi_safi=(afi, safi), nexthop=binascii.b2a_hex(nexthop_bin), nlri=binascii.b2a_hex(nlri_bin))
 
     @classmethod
     def construct_mpls_vpn_nexthop(cls, nexthop):

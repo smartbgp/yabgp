@@ -15,7 +15,7 @@
 
 """BGP Attribute MP_UNREACH_NLRI
 """
-
+import binascii
 import struct
 
 from yabgp.message.attribute import Attribute
@@ -94,7 +94,7 @@ class MpUnReachNLRI(Attribute):
                 withdraw_list = IPv4LabeledUnicast.parse(nlri_bin)
                 return dict(afi_safi=(afi, safi), withdraw=withdraw_list)
             else:
-                return dict(afi_safi=(afn.AFNUM_INET, safi), withdraw=repr(nlri_bin))
+                return dict(afi_safi=(afn.AFNUM_INET, safi), withdraw=binascii.b2a_hex(nlri_bin))
         # for ipv6
         elif afi == afn.AFNUM_INET6:
             # for ipv6 unicast
@@ -105,17 +105,17 @@ class MpUnReachNLRI(Attribute):
             elif safi == safn.SAFNUM_MPLS_LABEL:
                 return dict(afi_safi=(afi, safi), withdraw=IPv6LabeledUnicast.parse(nlri_bin))
             else:
-                return dict(afi_safi=(afi, safi), withdraw=repr(nlri_bin))
+                return dict(afi_safi=(afi, safi), withdraw=binascii.b2a_hex(nlri_bin))
         # for l2vpn
         elif afi == afn.AFNUM_L2VPN:
             # for evpn
             if safi == safn.SAFNUM_EVPN:
                 return dict(afi_safi=(afi, safi), withdraw=EVPN.parse(nlri_data=nlri_bin))
             else:
-                return dict(afi_safi=(afi, safi), withdraw=repr(nlri_bin))
+                return dict(afi_safi=(afi, safi), withdraw=binascii.b2a_hex(nlri_bin))
 
         else:
-            return dict(afi_safi=(afi, safi), withdraw=repr(nlri_bin))
+            return dict(afi_safi=(afi, safi), withdraw=binascii.b2a_hex(nlri_bin))
 
     @classmethod
     def construct(cls, value):

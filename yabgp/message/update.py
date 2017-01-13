@@ -18,6 +18,7 @@
 import struct
 import traceback
 import logging
+import binascii
 
 import netaddr
 
@@ -38,6 +39,7 @@ from yabgp.message.attribute.mpreachnlri import MpReachNLRI
 from yabgp.message.attribute.mpunreachnlri import MpUnReachNLRI
 from yabgp.message.attribute.extcommunity import ExtCommunity
 from yabgp.message.attribute.pmsitunnel import PMSITunnel
+from yabgp.message.attribute.linkstate.linkstate import LinkState
 
 LOG = logging.getLogger()
 
@@ -349,6 +351,9 @@ class Update(object):
 
                 decode_value = ClusterList.parse(value=attr_value)
 
+            elif type_code == bgp_cons.BGPTYPE_LINK_STATE:
+                decode_value = LinkState.parse(value=attr_value).dict()[29]
+
             elif type_code == bgp_cons.BGPTYPE_NEW_AS_PATH:
 
                 decode_value = ASPath.parse(value=attr_value, asn4=True)
@@ -368,7 +373,7 @@ class Update(object):
             elif type_code == bgp_cons.BGPTYPE_PMSI_TUNNEL:
                 decode_value = PMSITunnel.parse(value=attr_value)
             else:
-                decode_value = repr(attr_value)
+                decode_value = binascii.b2a_hex(attr_value)
             attributes[type_code] = decode_value
 
         return attributes

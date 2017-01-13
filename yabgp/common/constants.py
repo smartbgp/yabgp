@@ -88,7 +88,7 @@ BGPTYPE_NEW_AGGREGATOR = 18  # draft-ietf-idr-as4bytes
 BGPTYPE_SAFI_SPECIFIC_ATTR = 19  # draft-kapoor-nalawade-idr-bgp-ssa-00.txt
 BGPTYPE_PMSI_TUNNEL = 22  # RFC 6514
 BGPTYPE_TUNNEL_ENCAPS_ATTR = 23  # RFC5512
-BGPTYPE_LINK_STATE = 99
+BGPTYPE_LINK_STATE = 29
 BGPTYPE_ATTRIBUTE_SET = 128
 
 # BGP Tunnel Encapsulation Attribute Tunnel Types

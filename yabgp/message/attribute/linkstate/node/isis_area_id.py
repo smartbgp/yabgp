@@ -15,22 +15,18 @@
 
 import binascii
 
+from yabgp.message.attribute.linkstate.linkstate import LinkState
+from yabgp.message import TLV
 
-class TLV(object):
-    """TLV basic class
-    """
-    TYPE = -1
-    TYPE_STR = "UNKNOWN"
 
-    def __init__(self, value):
-        self.value = value
+@LinkState.register()
+class ISISAreaID(TLV):
 
-    def __str__(self):
-        return '%s: %s' % (self.TYPE_STR, self.value)
+    TYPE = 1027
+    TYPE_STR = "isis-area-id"
 
     @classmethod
     def parse(cls, value):
-        return cls(value=binascii.b2a_hex(value))
-
-    def dict(self):
-        return {self.TYPE_STR: self.value}
+        """
+        """
+        return cls(value='0x%s' % binascii.b2a_hex(value))

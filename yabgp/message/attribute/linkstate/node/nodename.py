@@ -13,24 +13,19 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import binascii
+from yabgp.message.attribute.linkstate.linkstate import LinkState
+from yabgp.message import TLV
 
 
-class TLV(object):
-    """TLV basic class
-    """
-    TYPE = -1
-    TYPE_STR = "UNKNOWN"
+@LinkState.register()
+class NodeName(TLV):
 
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return '%s: %s' % (self.TYPE_STR, self.value)
+    TYPE = 1026
+    TYPE_STR = "node-name"
 
     @classmethod
     def parse(cls, value):
-        return cls(value=binascii.b2a_hex(value))
-
-    def dict(self):
-        return {self.TYPE_STR: self.value}
+        """
+        """
+        nodename = value.decode('ascii')
+        return cls(value=nodename)

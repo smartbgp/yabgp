@@ -13,24 +13,19 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import binascii
+import unittest
+
+from yabgp.message.attribute.linkstate.linkstate import LinkState
 
 
-class TLV(object):
-    """TLV basic class
-    """
-    TYPE = -1
-    TYPE_STR = "UNKNOWN"
+class TestLinkBW(unittest.TestCase):
 
-    def __init__(self, value):
-        self.value = value
+    def test_max_link_bw_parse(self):
+        hex_value = b'\x04\x41\x00\x04\x4c\xee\x6b\x28'
+        ls = {29: [{'maximum-link-bandwidth': 125000000.0}]}
+        self.assertEqual(ls, LinkState.parse(hex_value).dict())
 
-    def __str__(self):
-        return '%s: %s' % (self.TYPE_STR, self.value)
-
-    @classmethod
-    def parse(cls, value):
-        return cls(value=binascii.b2a_hex(value))
-
-    def dict(self):
-        return {self.TYPE_STR: self.value}
+    def test_max_rsvp_link_bw(self):
+        hex_value = b'\x04\x42\x00\x04\x00\x00\x00\x00'
+        ls = {29: [{'maximum-link-bandwidth': 0.0}]}
+        self.assertEqual(ls, LinkState.parse(hex_value).dict())

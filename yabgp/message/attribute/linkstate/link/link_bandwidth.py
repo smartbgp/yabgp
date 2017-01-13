@@ -13,24 +13,18 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import binascii
+import struct
+
+from yabgp.message.attribute.linkstate.linkstate import LinkState
+from yabgp.message import TLV
 
 
-class TLV(object):
-    """TLV basic class
-    """
-    TYPE = -1
-    TYPE_STR = "UNKNOWN"
-
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return '%s: %s' % (self.TYPE_STR, self.value)
+@LinkState.register(typecode=1089, typestr='maximum-link-bandwidth')
+@LinkState.register(typecode=1090, typestr='maximum-reserved-link-bandwidth')
+class LinkBandWidth(TLV):
 
     @classmethod
     def parse(cls, value):
-        return cls(value=binascii.b2a_hex(value))
-
-    def dict(self):
-        return {self.TYPE_STR: self.value}
+        """
+        """
+        return cls(value=struct.unpack('!f', value)[0])

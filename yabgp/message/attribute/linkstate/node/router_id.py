@@ -15,22 +15,19 @@
 
 import binascii
 
+from yabgp.message.attribute.linkstate.linkstate import LinkState
+from yabgp.message import TLV
 
-class TLV(object):
-    """TLV basic class
+import netaddr
+
+
+@LinkState.register(typecode=1028, typestr='local-router-id')
+@LinkState.register(typecode=1029, typestr='local-router-id')
+@LinkState.register(typecode=1030, typestr='remote-router-id')
+@LinkState.register(typecode=1031, typestr='remote-router-id')
+class RouterID(TLV):
+    """ Router ID
     """
-    TYPE = -1
-    TYPE_STR = "UNKNOWN"
-
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return '%s: %s' % (self.TYPE_STR, self.value)
-
     @classmethod
     def parse(cls, value):
-        return cls(value=binascii.b2a_hex(value))
-
-    def dict(self):
-        return {self.TYPE_STR: self.value}
+        return cls(value=str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16))))

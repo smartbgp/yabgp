@@ -15,22 +15,20 @@
 
 import binascii
 
+from yabgp.message.attribute.linkstate.linkstate import LinkState
+from yabgp.message import TLV
 
-class TLV(object):
-    """TLV basic class
-    """
-    TYPE = -1
-    TYPE_STR = "UNKNOWN"
+import netaddr
 
-    def __init__(self, value):
-        self.value = value
 
-    def __str__(self):
-        return '%s: %s' % (self.TYPE_STR, self.value)
+@LinkState.register()
+class OspfForwardingAddr(TLV):
+
+    TYPE = 1156
+    TYPE_STR = "ospf-forwarding-address"
 
     @classmethod
     def parse(cls, value):
-        return cls(value=binascii.b2a_hex(value))
-
-    def dict(self):
-        return {self.TYPE_STR: self.value}
+        """
+        """
+        return cls(value=str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16))))

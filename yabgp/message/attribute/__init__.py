@@ -107,6 +107,7 @@ class AttributeID(int):
     IPv6_Address_Specific_Extended_Community = 0x19  # 25  [RFC5701]
     # AIGP                                    = 0x1a  # 26  [draft-ietf-idr-aigp](TEMPORARY - expires 2012-03-14)
 
+    LINK_STATE = 0x1d
     ATTR_SET = 0x80  # 128 [RFC6368]
 
     Unassigned = list(range(27, 127)) + list(range(129, 254))
@@ -141,6 +142,8 @@ class AttributeID(int):
             return "AS4_PATH"
         if self == 0x12:
             return "AS4_AGGREGATOR"
+        if self == 0x1d:
+            return "LINK_STATE"
         if self == 0x0e:
             return "MP_REACH_NLRI"
         if self == 0x0f:

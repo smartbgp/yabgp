@@ -13,24 +13,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import binascii
-
-
-class TLV(object):
-    """TLV basic class
-    """
-    TYPE = -1
-    TYPE_STR = "UNKNOWN"
-
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return '%s: %s' % (self.TYPE_STR, self.value)
-
-    @classmethod
-    def parse(cls, value):
-        return cls(value=binascii.b2a_hex(value))
-
-    def dict(self):
-        return {self.TYPE_STR: self.value}
+# import unittest
+#
+# from yabgp.message.attribute.linkstate.link.adj_sid import AdjSID
+#
+#
+# class TestAdjSid(unittest.TestCase):
+#
+#     def test_parse(self):
+#         hex_value = b'\x04\x4b\x00\x07\x70\x00\x00\x00\x00\x61\xa8'
