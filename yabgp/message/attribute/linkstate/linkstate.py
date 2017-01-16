@@ -18,7 +18,7 @@ import struct
 from yabgp.message.attribute import Attribute
 from yabgp.message.attribute import AttributeFlag
 from yabgp.message.attribute import AttributeID
-from yabgp.message import TLV
+from yabgp.common.tlv import TLV
 
 
 class LinkState(Attribute):
@@ -59,7 +59,7 @@ class LinkState(Attribute):
             if type_code in cls.registered_tlvs:
                 klass = cls.registered_tlvs[type_code].parse(value[4:length + 4])
             else:
-                klass = TLV.parse(value=value[4:length + 4])
+                klass = TLV.parse(value=value[4:length + 4], typecode=type_code)
             klass.TLV = type_code
             ls_tlvs.append(klass)
             value = value[length + 4:]

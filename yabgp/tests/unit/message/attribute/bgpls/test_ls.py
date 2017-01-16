@@ -27,8 +27,8 @@ class TestLinkState(unittest.TestCase):
                     {'local-router-id': '2.2.2.2'},
                     {'te-default-metric': 10},
                     {'igp-link-metric': 10},
-                    {'UNKNOWN': '700000000061a8'},
-                    {'UNKNOWN': '300000000061a9'}
+                    {'UNKNOWN': {'type': 1099, 'value': '700000000061a8'}},
+                    {'UNKNOWN': {'type': 1099, 'value': '300000000061a9'}}
                 ]
         }
         hex_value = b'\x04\x06\x00\x04\x02\x02\x02\x02\x04\x44\x00\x04\x00\x00\x00\x0a' \

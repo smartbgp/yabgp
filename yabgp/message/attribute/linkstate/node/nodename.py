@@ -14,7 +14,7 @@
 #    under the License.
 
 from yabgp.message.attribute.linkstate.linkstate import LinkState
-from yabgp.message import TLV
+from yabgp.common.tlv import TLV
 
 
 @LinkState.register()

@@ -16,7 +16,7 @@
 import binascii
 
 from yabgp.message.attribute.linkstate.linkstate import LinkState
-from yabgp.message import TLV
+from yabgp.common.tlv import TLV
 
 
 # The IGP Metric TLV carries the metric for this link.  The length of
