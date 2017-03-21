@@ -23,12 +23,7 @@ from oslo_config import cfg
 
 CONF = cfg.CONF
 
-CONF.register_cli_opts([
-    cfg.BoolOpt('standalone', default=True, help='The BGP Agent running mode'),
-    cfg.StrOpt('pid-file', default=None, help='pid file name')
-])
-
-msg_process_opts = [
+MSG_PROCESS_OPTS = [
     cfg.BoolOpt('write_disk',
                 default=True,
                 help='Whether the BGP message is written to disk'),
@@ -40,16 +35,12 @@ msg_process_opts = [
                help='The Max size of one BGP message file, the unit is MB'),
     cfg.BoolOpt('write_keepalive',
                 default=False,
-                help='Whether write keepalive message to disk'),
-    cfg.StrOpt('format',
-               default='json',
-               choices=['json', 'list'],
-               help='The output format of bgp messagees.')
+                help='Whether write keepalive message to disk')
 ]
 
-CONF.register_opts(msg_process_opts, group='message')
+CONF.register_opts(MSG_PROCESS_OPTS, group='message')
 
-bgp_config_opts = [
+BGP_CONFIG_OPTS = [
     cfg.IntOpt('peer_start_interval',
                default=10,
                help='The interval to start each BGP peer'),
@@ -76,14 +67,12 @@ bgp_config_opts = [
                 help='if support cisco multi session'),
     cfg.DictOpt('running_config',
                 default={},
-                help='The running configuration for BGP'),
-    cfg.StrOpt('config_file',
-               help='BGP peers configuration file')
+                help='The running configuration for BGP')
 ]
 
-CONF.register_opts(bgp_config_opts, group='bgp')
+CONF.register_opts(BGP_CONFIG_OPTS, group='bgp')
 
-bgp_peer_conf_cli_opts = [
+BGP_PEER_CONFIG_OPTS = [
     cfg.IntOpt('remote_as',
                help='The remote BGP peer AS number'),
     cfg.IntOpt('local_as',
@@ -96,19 +85,12 @@ bgp_peer_conf_cli_opts = [
     cfg.StrOpt('md5',
                help='The MD5 string use to auth',
                secret=True),
-    cfg.BoolOpt('rib',
-                default=False,
-                help='Whether maintain BGP rib table'),
-    cfg.StrOpt('tag',
-               choices=['SRC', 'DST', 'BOTH', 'MON'],
-               help='The agent role tag'
-               ),
     cfg.ListOpt('afi_safi',
                 default=['ipv4'],
                 help='The Global config for address family and sub address family')
 ]
 
-CONF.register_cli_opts(bgp_peer_conf_cli_opts, group='bgp')
+CONF.register_cli_opts(BGP_PEER_CONFIG_OPTS, group='bgp')
 
 LOG = logging.getLogger(__name__)
 
@@ -118,51 +100,42 @@ def get_bgp_config():
     Get BGP running config
     :return:
     """
-    # check bgp_conf_file
-    if CONF.bgp.config_file:
-        LOG.info('Try to load BGP configuration from %s', CONF.bgp.config_file)
-        LOG.error('Failed to load BGP configuration')
-        # TODO parse xml config file to get multi bgp config
-        # will be supported in future
-        sys.exit()
-    else:
-        # check bgp configuration from CLI input
-        LOG.info('Try to load BGP configuration from CLI input')
-        if CONF.bgp.local_as and CONF.bgp.remote_as and CONF.bgp.local_addr and CONF.bgp.remote_addr:
-            CONF.bgp.running_config[CONF.bgp.remote_addr] = {
-                'remote_as': CONF.bgp.remote_as,
-                'remote_addr': CONF.bgp.remote_addr,
-                'local_as': CONF.bgp.local_as,
-                'local_addr': CONF.bgp.local_addr,
-                'md5': CONF.bgp.md5,
-                'afi_safi': CONF.bgp.afi_safi,
-                'capability': {
-                    'local': {
-                        'four_bytes_as': CONF.bgp.four_bytes_as,
-                        'route_refresh': CONF.bgp.route_refresh,
-                        'cisco_route_refresh': CONF.bgp.cisco_route_refresh,
-                        'enhanced_route_refresh': CONF.bgp.enhanced_route_refresh,
-                        'graceful_restart': CONF.bgp.graceful_restart,
-                        'cisco_multi_session': CONF.bgp.cisco_multi_session,
-                        'add_path': CONF.bgp.add_path},
-                    'remote': {}
-                },
-                'tag': CONF.bgp.tag
+    # check bgp configuration from CLI input
+    LOG.info('Try to load BGP configuration from CLI input')
+    if CONF.bgp.local_as and CONF.bgp.remote_as and CONF.bgp.local_addr and CONF.bgp.remote_addr:
+        CONF.bgp.running_config[CONF.bgp.remote_addr] = {
+            'remote_as': CONF.bgp.remote_as,
+            'remote_addr': CONF.bgp.remote_addr,
+            'local_as': CONF.bgp.local_as,
+            'local_addr': CONF.bgp.local_addr,
+            'md5': CONF.bgp.md5,
+            'afi_safi': CONF.bgp.afi_safi,
+            'capability': {
+                'local': {
+                    'four_bytes_as': CONF.bgp.four_bytes_as,
+                    'route_refresh': CONF.bgp.route_refresh,
+                    'cisco_route_refresh': CONF.bgp.cisco_route_refresh,
+                    'enhanced_route_refresh': CONF.bgp.enhanced_route_refresh,
+                    'graceful_restart': CONF.bgp.graceful_restart,
+                    'cisco_multi_session': CONF.bgp.cisco_multi_session,
+                    'add_path': CONF.bgp.add_path},
+                'remote': {}
             }
+        }
 
-            LOG.info('Get BGP running configuration for peer %s', CONF.bgp.remote_addr)
-            for item in CONF.bgp.running_config[CONF.bgp.remote_addr]:
-                if item == 'capability':
-                    LOG.info('capability local:')
-                    for capa in CONF.bgp.running_config[CONF.bgp.remote_addr][item]['local']:
-                        LOG.info('-- %s: %s' % (
-                            capa,
-                            CONF.bgp.running_config[CONF.bgp.remote_addr][item]['local'][capa]
-                        ))
-                    continue
+        LOG.info('Get BGP running configuration for peer %s', CONF.bgp.remote_addr)
+        for item in CONF.bgp.running_config[CONF.bgp.remote_addr]:
+            if item == 'capability':
+                LOG.info('capability local:')
+                for capa in CONF.bgp.running_config[CONF.bgp.remote_addr][item]['local']:
+                    LOG.info(
+                        '-- %s: %s',
+                        capa,
+                        CONF.bgp.running_config[CONF.bgp.remote_addr][item]['local'][capa])
+                continue
 
-                LOG.info("%s = %s", item, CONF.bgp.running_config[CONF.bgp.remote_addr][item])
-            return
-        else:
-            LOG.error('Please provide enough parameters!')
-            sys.exit()
+            LOG.info("%s = %s", item, CONF.bgp.running_config[CONF.bgp.remote_addr][item])
+        return
+    else:
+        LOG.error('Please provide enough parameters!')
+        sys.exit()

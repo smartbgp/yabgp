@@ -27,9 +27,6 @@ from yabgp.core.factory import BGPPeering
 from yabgp.config import get_bgp_config
 from yabgp.common import constants as bgp_cons
 from yabgp.api.app import app
-from yabgp.channel.config import rabbit_mq
-from yabgp.channel.config import channle_filter
-from yabgp.channel.factory import PikaFactory
 
 
 log.early_init_log(logging.DEBUG)
@@ -39,20 +36,9 @@ CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
 
-def check_running_mode():
-    """
-    before start the bgp peering, we should check the running mode
-    :return:
-    """
-
-    if not CONF.standalone:
-        # not standalone?
-        CONF.register_cli_opt(rabbit_mq, group='rabbit_mq')
-        CONF.register_opts(channle_filter, group='rabbit_mq')
-
-
 def check_msg_config():
-
+    """check message configuration
+    """
     LOG.info('Check configurations about message process')
     if CONF.message.write_disk:
         if not os.path.exists(CONF.message.write_dir):
@@ -68,20 +54,12 @@ def check_msg_config():
 
 
 def prepare_twisted_service():
+    """prepare twsited service
+    """
     LOG.info('Prepare twisted services')
     # check all peers
     all_peers = {}
 
-    # check running mode
-    if not CONF.standalone:
-        # rabbitmq factory
-        rabbit_mq_factory = PikaFactory(url=CONF.rabbit_mq.rabbit_url)
-        rabbit_mq_factory.peer_list = CONF.bgp.running_config.keys()
-        rabbit_mq_factory.connect()
-
-    else:
-        rabbit_mq_factory = None
-        mongo_connection = None
     for peer in CONF.bgp.running_config:
         LOG.info('Get peer %s configuration', peer)
 
@@ -106,21 +84,13 @@ def prepare_twisted_service():
             myaddr=CONF.bgp.running_config[peer]['local_addr'],
             peerasn=CONF.bgp.running_config[peer]['remote_as'],
             peeraddr=CONF.bgp.running_config[peer]['remote_addr'],
-            tag=CONF.bgp.running_config[peer]['tag'],
             afisafi=CONF.bgp.running_config[peer]['afi_safi'],
             msgpath=msg_file_path_for_peer,
-            md5=CONF.bgp.running_config[peer]['md5'],
-            channel=rabbit_mq_factory,
-            mongo_conn=mongo_connection
+            md5=CONF.bgp.running_config[peer]['md5']
         )
         all_peers[peer] = bgp_peering
         CONF.bgp.running_config[peer]['factory'] = bgp_peering
 
-        # register to database and check agent role
-        if not CONF.standalone:
-            if not CONF.bgp.running_config[peer]['tag']:
-                LOG.error('Please point out the role tag(SRC,DST or BOTH)for not running in standalone mode')
-                sys.exit()
 
     # Starting api server
     if sys.version_info[0] == 2:
@@ -148,7 +118,6 @@ def prepare_service(args=None):
     except cfg.ConfigFilesNotFoundError:
         CONF(args=args, project='yabgp', version=version)
 
-    check_running_mode()
     log.init_log()
     LOG.info('Log (Re)opened.')
     LOG.info("Configuration:")
@@ -161,11 +130,6 @@ def prepare_service(args=None):
         LOG.debug(traceback.format_exc())
         sys.exit()
 
-    LOG.info('Starting server in PID %s' % os.getpid())
+    LOG.info('Starting server in PID %s', os.getpid())
 
-    # write pid file
-    if CONF.pid_file:
-        with open(CONF.pid_file, 'w') as pid_file:
-            pid_file.write(str(os.getpid()))
-            LOG.info('create pid file: %s' % CONF.pid_file)
     prepare_twisted_service()
