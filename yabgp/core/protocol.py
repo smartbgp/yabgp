@@ -457,7 +457,7 @@ class BGP(protocol.Protocol):
                     if cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']['add_path'] in \
                             ['ipv4_receive', 'ipv4_both']:
                         self.add_path_ipv4_receive = True
-                    CONF.bgp.rib = False
+
             LOG.info("--%s = %s", key, cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote'][key])
 
         # write bgp message
@@ -472,7 +472,6 @@ class BGP(protocol.Protocol):
 
         self.negotiate_hold_time(open_msg.hold_time)
         self.fsm.open_received()
-        self.reset_rib_in()
 
     def send_route_refresh(self, afi, safi, res=0):
         """

@@ -216,9 +216,9 @@ class BGPPeering(BGPFactory):
             msg_record = {
                 't': timestamp,
                 'seq': self.msg_seq,
-                'type': msg_type
+                'type': msg_type,
+                'msg': msg
             }
-            msg_record.update(msg)
             json.dump(msg_record, self.msg_file)
             self.msg_file.write('\n')
             self.msg_seq += 1
