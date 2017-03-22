@@ -91,7 +91,6 @@ def prepare_twisted_service():
         all_peers[peer] = bgp_peering
         CONF.bgp.running_config[peer]['factory'] = bgp_peering
 
-
     # Starting api server
     if sys.version_info[0] == 2:
         from twisted.web.wsgi import WSGIResource

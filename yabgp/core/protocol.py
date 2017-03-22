@@ -19,8 +19,6 @@ import logging
 import traceback
 import struct
 import time
-import copy
-import json
 
 import netaddr
 from oslo_config import cfg
@@ -312,7 +310,7 @@ class BGP(protocol.Protocol):
         """
         self.msg_sent_stat['Notifications'] += 1
         LOG.info(
-            "[%s]Send a BGP Notification message to the peer "\
+            "[%s]Send a BGP Notification message to the peer "
             "[Error: %s, Suberror: %s, Error data: %s ]",
             self.factory.peer_addr, error, sub_error, repr(data))
         # message statistic

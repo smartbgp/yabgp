@@ -1,5 +1,5 @@
-pbr==1.6
-oslo.config>=2.1.0
+pbr==2.0.0
+oslo.config==2.1.0
 Twisted==15.0.0
 Flask==0.10.1
 Flask-HTTPAuth==2.5.0
