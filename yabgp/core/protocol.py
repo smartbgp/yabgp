@@ -244,7 +244,7 @@ class BGP(protocol.Protocol):
             self.factory.write_msg(
                 timestamp=result['time'],
                 msg_type=6,
-                msg={'msg': msg},
+                msg=msg,
                 flush=True
             )
             LOG.error(
@@ -272,7 +272,7 @@ class BGP(protocol.Protocol):
         self.factory.write_msg(
             timestamp=result['time'],
             msg_type=bgp_cons.MSG_UPDATE,
-            msg={"msg": msg}
+            msg=msg
         )
         if self.factory.flush_and_check_file_size():
             for afi, safi in CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']['afi_safi']:
@@ -337,7 +337,7 @@ class BGP(protocol.Protocol):
         self.factory.write_msg(
             timestamp=time.time(),
             msg_type=3,
-            msg={"msg": nofi_msg},
+            msg=nofi_msg,
             flush=True
         )
         self.fsm.notification_received(msg[0], msg[1])
@@ -375,7 +375,7 @@ class BGP(protocol.Protocol):
             self.factory.write_msg(
                 timestamp=timestamp,
                 msg_type=4,
-                msg={"msg": None},
+                msg=None,
                 flush=True
             )
         self.fsm.keep_alive_received()
@@ -464,7 +464,7 @@ class BGP(protocol.Protocol):
         self.factory.write_msg(
             timestamp=timestamp,
             msg_type=1,
-            msg={"msg": parse_result},
+            msg=parse_result,
             flush=True
         )
         self.peer_id = open_msg.bgp_id
@@ -513,7 +513,7 @@ class BGP(protocol.Protocol):
         self.factory.write_msg(
             timestamp=time.time(),
             msg_type=msg_type,
-            msg={"msg": nofi_msg},
+            msg=nofi_msg,
             flush=True
         )
 
