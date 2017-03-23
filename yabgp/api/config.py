@@ -20,7 +20,7 @@ CONF = cfg.CONF
 
 rest_server_ops = [
     cfg.StrOpt('bind_host',
-               default='127.0.0.1',
+               default='0.0.0.0',
                help='Address to bind the API server to'),
     cfg.IntOpt('bind_port',
                default=8801,
