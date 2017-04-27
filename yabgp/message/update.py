@@ -18,6 +18,7 @@
 import struct
 import traceback
 import logging
+import binascii
 
 import netaddr
 
@@ -368,7 +369,7 @@ class Update(object):
             elif type_code == bgp_cons.BGPTYPE_PMSI_TUNNEL:
                 decode_value = PMSITunnel.parse(value=attr_value)
             else:
-                decode_value = repr(attr_value)
+                decode_value = binascii.b2a_hex(attr_value)
             attributes[type_code] = decode_value
 
         return attributes

@@ -242,6 +242,29 @@ class TestMpReachNLRI(unittest.TestCase):
         }
         self.assertEqual(data_dict, MpReachNLRI.parse(MpReachNLRI.construct(data_dict)[3:]))
 
+    def test_linkstate(self):
+        data = b"\x90\x0e\x00\x62\x40\x04\x47\x04\x0a\x7c\x01\x7e\x00\x00\x02\x00" \
+               b"\x55\x02\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x1a\x02\x00" \
+               b"\x00\x04\x00\x00\xff\xfe\x02\x01\x00\x04\x00\x00\x00\x00\x02\x03" \
+               b"\x00\x06\x00\x00\x00\x00\x00\x01\x01\x01\x00\x1a\x02\x00\x00\x04" \
+               b"\x00\x00\xff\xfe\x02\x01\x00\x04\x00\x00\x00\x00\x02\x03\x00\x06" \
+               b"\x00\x00\x00\x00\x00\x03\x01\x03\x00\x04\x01\x03\x00\x01\x01\x04" \
+               b"\x00\x04\x01\x03\x00\x02"
+        data_dict = {
+            'afi_safi': (16388, 71),
+            'nexthop': '10.124.1.126',
+            'nlri': [
+                {
+                    'type': 'link',
+                    'value': [
+                        {'type': 'link_local_ipv4', 'value': '1.3.0.1'},
+                        {'type': 'link_remote_ipv4', 'value': '1.3.0.2'}
+                        ]
+                }
+            ]
+        }
+        self.assertEqual(data_dict, MpReachNLRI.parse(data[4:]))
+
 
 if __name__ == '__main__':
     unittest.main()
