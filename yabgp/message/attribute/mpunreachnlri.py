@@ -26,6 +26,7 @@ from yabgp.message.attribute.nlri.ipv6_mpls_vpn import IPv6MPLSVPN
 from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
 from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
 from yabgp.message.attribute.nlri.evpn import EVPN
+from yabgp.message.attribute.nlri.linkstate import BGPLS
 from yabgp.common import afn
 from yabgp.common import safn
 from yabgp.common import exception as excep
@@ -106,7 +107,13 @@ class MpUnReachNLRI(Attribute):
                 return dict(afi_safi=(afi, safi), withdraw=EVPN.parse(nlri_data=nlri_bin))
             else:
                 return dict(afi_safi=(afi, safi), withdraw=repr(nlri_bin))
-
+        # BGP LS
+        elif afi == afn.AFNUM_BGPLS:
+            if safi == safn.SAFNUM_BGPLS:
+                withdraw = BGPLS.parse(nlri_bin)
+                return dict(afi_safi=(afi, safi), withdraw=withdraw)
+            else:
+                pass
         else:
             return dict(afi_safi=(afi, safi), withdraw=repr(nlri_bin))
 
