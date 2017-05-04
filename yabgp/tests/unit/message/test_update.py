@@ -246,7 +246,7 @@ class TestUpdate(unittest.TestCase):
                  'nlri': [{'type': 'link',
                            'value': [{'type': 'link_local_ipv4', 'value': '1.3.0.1'},
                                      {'type': 'link_remote_ipv4', 'value': '1.3.0.2'}]}]},
-            29: b'044400040000000a0447000300000a044b0007700000000061aa044b0007300000000061ab'}
+            29: {1099: b'300000000061ab', 'igp-metric': 10, 'te-metric': 10}}
         self.assertEqual(data_dict, Update.parse(None, data_bin[HDR_LEN:])['attr'])
 
 if __name__ == '__main__':
