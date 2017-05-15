@@ -242,26 +242,38 @@ class TestMpReachNLRI(unittest.TestCase):
         }
         self.assertEqual(data_dict, MpReachNLRI.parse(MpReachNLRI.construct(data_dict)[3:]))
 
-    def test_ipv4_labeled_unicast_parse_construct(self):
+    def test_linkstate(self):
+        self.maxDiff = None
+        data = b"\x90\x0e\x00\x62\x40\x04\x47\x04\x0a\x7c\x01\x7e\x00\x00\x02\x00" \
+               b"\x55\x02\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x1a\x02\x00" \
+               b"\x00\x04\x00\x00\xff\xfe\x02\x01\x00\x04\x00\x00\x00\x00\x02\x03" \
+               b"\x00\x06\x00\x00\x00\x00\x00\x01\x01\x01\x00\x1a\x02\x00\x00\x04" \
+               b"\x00\x00\xff\xfe\x02\x01\x00\x04\x00\x00\x00\x00\x02\x03\x00\x06" \
+               b"\x00\x00\x00\x00\x00\x03\x01\x03\x00\x04\x01\x03\x00\x01\x01\x04" \
+               b"\x00\x04\x01\x03\x00\x02"
         data_dict = {
-            'afi_safi': (1, 4),
-            'nexthop': "10.75.44.254",
+            'afi_safi': (16388, 71),
+            'nexthop': '10.124.1.126',
             'nlri': [
-                {'prefix': '34.1.41.0/24', 'label': [321]},
-                {'prefix': '34.1.42.0/24', 'label': [322]}]
-        }
-        self.assertEqual(data_dict, MpReachNLRI.parse(MpReachNLRI.construct(data_dict)[3:]))
+                {
+                    'type': 'link',
+                    'value': [
+                        {
+                            'type': 'local_node',
+                            'value': {
+                                'as': 65534,
+                                'bgpls_id': '0.0.0.0',
+                                'igp_id': '0.0.0.1'}},
+                        {
+                            'type': 'remote_node',
+                            'value': {
+                                'as': 65534,
+                                'bgpls_id': '0.0.0.0',
+                                'igp_id': '0.0.0.3'}},
+                        {'type': 'link_local_ipv4', 'value': '1.3.0.1'},
+                        {'type': 'link_remote_ipv4', 'value': '1.3.0.2'}]}]}
+        self.assertEqual(data_dict, MpReachNLRI.parse(data[4:]))
 
-    def test_ipv6_labeled_unicast_parse_construct(self):
-        data_dict = {
-            'afi_safi': (2, 4),
-            'nexthop': '::ffff:20.1.1.18',
-            'nlri': [
-                {'label': [91], 'prefix': '2001:2121::1/128'},
-                {'label': [92], 'prefix': '::2001:2121:1:0/64'},
-                {'label': [93], 'prefix': '2001:4837:1821::2/127'}]
-            }
-        self.assertEqual(data_dict, MpReachNLRI.parse(MpReachNLRI.construct(data_dict)[3:]))
 
 if __name__ == '__main__':
     unittest.main()

@@ -20,14 +20,14 @@ from ..linkstate import LinkState
 
 
 @LinkState.register()
-class PrefixMetric(TLV):
+class MaxResvBandwidth(TLV):
     """
-    prefix metric
+    max reserved bandwidth
     """
-    TYPE = 1155
-    TYPE_STR = 'prefix-metric'
+    TYPE = 1090
+    TYPE_STR = 'max-rsv-bandwidth'
 
     @classmethod
     def unpack(cls, data):
 
-        return cls(value=struct.unpack('!L', data)[0])
+        return cls(value=struct.unpack('!f', data)[0])

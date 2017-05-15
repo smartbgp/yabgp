@@ -13,21 +13,37 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import struct
-
-from yabgp.tlv import TLV
-from ..linkstate import LinkState
+import binascii
 
 
-@LinkState.register()
-class PrefixMetric(TLV):
+class TLV(object):
+    """TLV basic class
     """
-    prefix metric
-    """
-    TYPE = 1155
-    TYPE_STR = 'prefix-metric'
+    TYPE = -1
+    TYPE_STR = "UNKNOWN"
+
+    __slots__ = ['value']
+
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return '%s: %s' % (self.TYPE_STR, self.value)
 
     @classmethod
-    def unpack(cls, data):
+    def unpack(cls, value):
+        """unpack binary data
+        """
+        return cls(value=binascii.b2a_hex(value))
 
-        return cls(value=struct.unpack('!L', data)[0])
+    def dict(self, str_key=True):
+        """return dict format
+        """
+        if str_key:
+            return {
+                'type': self.TYPE_STR,
+                'value': self.value}
+        return {
+            'type': self.TYPE,
+            'value': self.value
+        }

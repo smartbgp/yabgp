@@ -90,7 +90,7 @@ class Open(object):
             self.asn = str(self.asn).split('.')
             self.asn = 65536 * (int(self.asn[0])) + int(self.asn[1])
 
-        if self.asn in (0, 2 ** 16 - 1):
+        if self.asn == 0:
             # bad peer asn
             raise excp.OpenMessageError(
                 sub_error=bgp_cons.ERR_MSG_OPEN_BAD_PEER_AS,

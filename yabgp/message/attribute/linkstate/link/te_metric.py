@@ -15,18 +15,19 @@
 
 import struct
 
-from yabgp.message.attribute.linkstate.linkstate import LinkState
-from yabgp.common.tlv import TLV
+from yabgp.tlv import TLV
+from ..linkstate import LinkState
 
 
 @LinkState.register()
-class TEMetric(TLV):
-
+class TeMetric(TLV):
+    """
+    TE metric
+    """
     TYPE = 1092
-    TYPE_STR = "te-default-metric"
+    TYPE_STR = 'te-metric'
 
     @classmethod
-    def parse(cls, value):
-        """
-        """
-        return cls(value=struct.unpack('!L', value)[0])
+    def unpack(cls, data):
+
+        return cls(value=struct.unpack('!L', data)[0])

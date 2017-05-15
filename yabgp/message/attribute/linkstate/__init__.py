@@ -1,4 +1,4 @@
-# Copyright 2015 Cisco Systems, Inc.
+# Copyright 2015-2017 Cisco Systems, Inc.
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -13,18 +13,18 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-
 from .linkstate import LinkState  # noqa
-
-# https://tools.ietf.org/html/rfc7752
-
-from yabgp.message.attribute.linkstate.node.nodename import NodeName  # noqa
-from yabgp.message.attribute.linkstate.node.isis_area_id import ISISAreaID  # noqa
-from yabgp.message.attribute.linkstate.node.router_id import RouterID  # noqa
-from yabgp.message.attribute.linkstate.link.te_metric import TEMetric  # noqa
-from yabgp.message.attribute.linkstate.link.igp_metric import IGPMetric  # noqa
-from yabgp.message.attribute.linkstate.prefix.prefix_metric import PrefixMetric  # noqa
-from yabgp.message.attribute.linkstate.prefix.ospf_forward_addr import OspfForwardingAddr  # noqa
-from yabgp.message.attribute.linkstate.link.admin_group import AdminGroup  # noqa
-from yabgp.message.attribute.linkstate.link.link_bandwidth import LinkBandWidth  # noqa
-from yabgp.message.attribute.linkstate.link.unrsvp_bandwitdth import UnrsvpLinkBW  # noqa
+from .node.local_router_id import LocalRouterID   # noqa
+from .node.name import NodeName   # noqa
+from .node.isisarea import ISISArea   # noqa
+from .link.admingroup import AdminGroup   # noqa
+from .link.remote_router_id import RemoteRouterID   # noqa
+from .link.max_bw import MaxBandwidth   # noqa
+from .link.max_rsv_bw import MaxResvBandwidth   # noqa
+from .link.unsrv_bw import UnrsvBandwidth    # noqa
+from .link.te_metric import TeMetric   # noqa
+from .link.link_name import LinkName   # noqa
+from .link.igp_metric import IGPMetric   # noqa
+from .link.adj_seg_id import AdjSegID   # noqa
+from .prefix.prefix_metric import PrefixMetric   # noqa
+from .prefix.prefix_sid import PrefixSID  # noqa

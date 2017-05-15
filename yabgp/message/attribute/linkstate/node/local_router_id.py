@@ -13,21 +13,21 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import struct
-
 from yabgp.tlv import TLV
+from yabgp.net import IPAddress
 from ..linkstate import LinkState
 
 
-@LinkState.register()
-class PrefixMetric(TLV):
+@LinkState.register(_type=1028)
+@LinkState.register(_type=1029)
+class LocalRouterID(TLV):
     """
-    prefix metric
+    local ipv4 or ipv6 router id
     """
-    TYPE = 1155
-    TYPE_STR = 'prefix-metric'
+    TYPE_STR = 'local-router-id'
 
     @classmethod
     def unpack(cls, data):
 
-        return cls(value=struct.unpack('!L', data)[0])
+        router_id = IPAddress.unpack(data)
+        return cls(value=router_id)

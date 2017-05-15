@@ -1,8 +1,7 @@
-pbr==1.6
-oslo.config>=2.1.0
+pbr==2.0.0
+oslo.config==2.1.0
 Twisted==15.0.0
 Flask==0.10.1
 Flask-HTTPAuth==2.5.0
 netaddr>=0.7.12
 pika==0.9.14
-pymongo==3.0.3

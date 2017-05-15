@@ -13,35 +13,26 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import struct
 import binascii
 
-from yabgp.message.attribute.linkstate.linkstate import LinkState
-from yabgp.common.tlv import TLV
-
-
-# The IGP Metric TLV carries the metric for this link.  The length of
-#    this TLV is variable, depending on the metric width of the underlying
-#    protocol.  IS-IS small metrics have a length of 1 octet (the two most
-#    significant bits are ignored).  OSPF link metrics have a length of 2
-#    octets.  IS-IS wide metrics have a length of 3 octets.
-#
-#       0                   1                   2                   3
-#       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-#      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-#      |              Type             |             Length            |
-#      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-#      //      IGP Link Metric (variable length)      //
-#      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+from yabgp.tlv import TLV
+from ..linkstate import LinkState
 
 
 @LinkState.register()
 class IGPMetric(TLV):
-
+    """
+    IGP Metric
+    """
     TYPE = 1095
-    TYPE_STR = "igp-link-metric"
+    TYPE_STR = 'igp-metric'
 
     @classmethod
-    def parse(cls, value):
-        """
-        """
-        return cls(value=int(binascii.b2a_hex(value), 16))
+    def unpack(cls, data):
+        if len(data) == 2:
+            return cls(value=struct.unpack('!H', data)[0])
+        elif len(data) == 1:
+            return cls(value=struct.unpack('!B', data)[0])
+        elif len(data) == 3:
+            return cls(value=int(binascii.b2a_hex(data), 16))

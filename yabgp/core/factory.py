@@ -75,20 +75,17 @@ class BGPPeering(BGPFactory):
     One connection, One BGPPeering class.
     """
 
-    def __init__(self, myasn=None, myaddr=None, peerasn=None, peeraddr=None, tag=None,
-                 msgpath=None, afisafi=None, md5=None, channel=None, mongo_conn=None):
+    def __init__(self, myasn=None, myaddr=None, peerasn=None, peeraddr=None,
+                 msgpath=None, afisafi=None, md5=None):
         """Initial a BGPPeering instance.
 
         :param myasn: local bgp as number.
         :param myaddr: local ip address.
         :param peerasn: remote bgp peer as number
         :param peeraddr: remote peer ip address.
-        :param tag: bgp agent tag
         :param msgpath: the path to store bgp message file.
         :param afisafi: afi and safi
         :param md5: TCP md5 string
-        :param channel: rabbitmq channel
-        :param mongo_conn: mongodb connection
         """
         LOG.info('Init BGPPeering for peer %s', peeraddr)
         self.my_asn = myasn
@@ -99,9 +96,6 @@ class BGPPeering(BGPFactory):
         self.peer_asn = peerasn
         self.afi_safi = afisafi
         self.md5 = md5
-        self.channel = channel
-        self.mongo_conn = mongo_conn
-        self.tag = tag
 
         self.status = False
         self.fsm = BGPFactory.FSM(self)
@@ -219,21 +213,14 @@ class BGPPeering(BGPFactory):
         :return:
         """
         if self.msg_path:
-            if CONF.message.format == 'list':
-                msg_record = [timestamp, self.msg_seq, msg_type, msg]
-                self.msg_file.write(str(msg_record) + '\n')
-            elif CONF.message.format == 'json':
-                msg_record = {
-                    't': timestamp,
-                    'seq': self.msg_seq,
-                    'type': msg_type
-                }
-                msg_record.update(msg)
-                json.dump(msg_record, self.msg_file)
-                self.msg_file.write('\n')
-            else:
-                LOG.error('unknow message format %s', CONF.message.format)
-                sys.exit()
+            msg_record = {
+                't': timestamp,
+                'seq': self.msg_seq,
+                'type': msg_type,
+                'msg': msg
+            }
+            json.dump(msg_record, self.msg_file)
+            self.msg_file.write('\n')
             self.msg_seq += 1
             if flush:
                 self.msg_file.flush()
@@ -350,7 +337,8 @@ class BGPPeering(BGPFactory):
             if isinstance(self.md5, str) and self.md5:
                 md5sig = self.get_tcp_md5sig(self.md5, self.peer_addr, bgp_cons.PORT)
                 if md5sig:
-                    connector.transport.getHandle().setsockopt(socket.IPPROTO_TCP, bgp_cons.TCP_MD5SIG, md5sig)
+                    connector.transport.getHandle().setsockopt(
+                        socket.IPPROTO_TCP, bgp_cons.TCP_MD5SIG, md5sig)
                 else:
                     sys.exit()
             return True
@@ -359,7 +347,8 @@ class BGPPeering(BGPFactory):
 
     @staticmethod
     def get_tcp_md5sig(md5_str, host, port):
-
+        """set tcp md5
+        """
         os_type = platform.system()
         if os_type != 'Linux':
             LOG.error('YABGP has no MD5 support for %s', os_type)
@@ -371,7 +360,6 @@ class BGPPeering(BGPFactory):
             afi = AFNUM_INET
         elif netaddr.IPAddress(host).version == 6:
             # ipv6 address
-            # TODO support IPv6
             LOG.error("Does not support ipv6 address family")
             sys.exit()
         else:
@@ -381,11 +369,13 @@ class BGPPeering(BGPFactory):
             n_port = socket.htons(port)
             if afi == AFNUM_INET:
                 n_addr = socket.inet_pton(socket.AF_INET, host)
-                tcp_md5sig = 'HH4s%dx2xH4x%ds' % (bgp_cons.SS_PADSIZE_IPV4, bgp_cons.TCP_MD5SIG_MAXKEYLEN)
-                md5sig = struct.pack(tcp_md5sig, socket.AF_INET, n_port, n_addr, len(md5_str), md5_str.encode())
+                tcp_md5sig = 'HH4s%dx2xH4x%ds' % (
+                    bgp_cons.SS_PADSIZE_IPV4, bgp_cons.TCP_MD5SIG_MAXKEYLEN)
+                md5sig = struct.pack(
+                    tcp_md5sig, socket.AF_INET, n_port, n_addr, len(md5_str), md5_str.encode())
                 return md5sig
             else:
                 return None
         except socket.error as e:
-            LOG.error('This linux machine does not support TCP_MD5SIG, you can not use MD5 (%s)', str(e))
+            LOG.error('This linux machine does not support TCP_MD5SIG: (%s)', str(e))
             return None

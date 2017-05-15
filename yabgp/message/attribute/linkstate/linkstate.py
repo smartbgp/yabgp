@@ -1,4 +1,4 @@
-# Copyright 2015 Cisco Systems, Inc.
+# Copyright 2015-2017 Cisco Systems, Inc.
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -14,57 +14,60 @@
 #    under the License.
 
 import struct
+import binascii
 
-from yabgp.message.attribute import Attribute
-from yabgp.message.attribute import AttributeFlag
-from yabgp.message.attribute import AttributeID
-from yabgp.common.tlv import TLV
+from yabgp.message.attribute import Attribute, AttributeFlag, AttributeID
 
 
 class LinkState(Attribute):
+    """BGP linksate attribute
     """
-    The BGP-LS attribute is an optional, non-transitive BGP attribute
-    that is used to carry link, node, and prefix parameters and
-    attributes.  It is defined as a set of Type/Length/Value (TLV)
-    triplets, described in the following section.  This attribute SHOULD
-    only be included with Link-State NLRIs.  This attribute MUST be
-    ignored for all other address families."""
-
-    ID = AttributeID.LINK_STATE
-    ID_STR = str(AttributeID(ID))
+    ID = AttributeID.LINKSTATE
     FLAG = AttributeFlag.OPTIONAL
 
-    registered_tlvs = {}
+    registered_tlvs = dict()
 
-    def __init__(self, ls_tlvs):
-        self.ls_tlvs = ls_tlvs
+    def __init__(self, value, hex_value=None):
+        self.value = value
+        self.hex_value = hex_value
 
     @classmethod
-    def register(cls, typecode=None, typestr=None):
+    def register(cls, _type=None):
+        """register tlvs
+        """
         def decorator(klass):
-            if typecode:
-                klass.TYPE = typecode
-            if typestr:
-                klass.TYPE_STR = typestr
-            cls.registered_tlvs[klass.TYPE] = klass
+            """decorator
+            """
+            _id = klass.TYPE if _type is None else _type
+            if _id in cls.registered_tlvs:
+                raise RuntimeError('duplicated attribute type')
+            cls.registered_tlvs[_id] = klass
             return klass
-
         return decorator
 
-    @classmethod
-    def parse(cls, value):
-        ls_tlvs = []
-        while value:
-            type_code, length = struct.unpack('!HH', value[:4])
-            if type_code in cls.registered_tlvs:
-                klass = cls.registered_tlvs[type_code].parse(value[4:length + 4])
-            else:
-                klass = TLV.parse(value=value[4:length + 4], typecode=type_code)
-            klass.TLV = type_code
-            ls_tlvs.append(klass)
-            value = value[length + 4:]
-
-        return cls(ls_tlvs=ls_tlvs)
-
     def dict(self):
-        return {self.ID: [tlv.dict() for tlv in self.ls_tlvs]}
+        """return dict
+        """
+        return {self.ID: self.value}
+
+    @classmethod
+    def unpack(cls, data):
+        """unpack binary data
+        """
+        tlvs = []
+        while data:
+            type_code, length = struct.unpack('!HH', data[:4])
+            value = data[4: 4+length]
+            if type_code in cls.registered_tlvs:
+                tlvs.append(cls.registered_tlvs[type_code].unpack(value).dict())
+            else:
+                tlvs.append(
+                    {
+                        'type': type_code,
+                        'value': binascii.b2a_hex(value)
+
+                    }
+                )
+            data = data[4+length:]
+
+        return cls(value=tlvs)

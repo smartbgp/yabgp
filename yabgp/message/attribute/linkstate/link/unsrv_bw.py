@@ -20,14 +20,15 @@ from ..linkstate import LinkState
 
 
 @LinkState.register()
-class PrefixMetric(TLV):
+class UnrsvBandwidth(TLV):
     """
-    prefix metric
+    un reserved bandwidth
     """
-    TYPE = 1155
-    TYPE_STR = 'prefix-metric'
+    TYPE = 1091
+    TYPE_STR = 'unrsv-bandwidth'
 
     @classmethod
     def unpack(cls, data):
 
-        return cls(value=struct.unpack('!L', data)[0])
+        value = [p for p in struct.unpack('!ffffffff', data)]
+        return cls(value=value)

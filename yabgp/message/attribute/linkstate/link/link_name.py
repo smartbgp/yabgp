@@ -13,21 +13,21 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import struct
+import binascii
 
 from yabgp.tlv import TLV
 from ..linkstate import LinkState
 
 
 @LinkState.register()
-class PrefixMetric(TLV):
+class LinkName(TLV):
     """
-    prefix metric
+    link name
     """
-    TYPE = 1155
-    TYPE_STR = 'prefix-metric'
+    TYPE = 1098
+    TYPE_STR = 'link-name'
 
     @classmethod
     def unpack(cls, data):
 
-        return cls(value=struct.unpack('!L', data)[0])
+        return cls(value=binascii.b2a_uu(data))

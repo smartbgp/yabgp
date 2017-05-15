@@ -13,21 +13,31 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import struct
+import binascii
 
 from yabgp.tlv import TLV
 from ..linkstate import LinkState
 
 
+# 0                   1                   2                   3
+# 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+# |               Type            |              Length           |
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+# | Flags         |     Weight    |             Reserved          |
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+# |                   SID/Label/Index (variable)                  |
+# +---------------------------------------------------------------+
+
+
 @LinkState.register()
-class PrefixMetric(TLV):
+class AdjSegID(TLV):
     """
-    prefix metric
+    Adjacency Segment id
     """
-    TYPE = 1155
-    TYPE_STR = 'prefix-metric'
+    TYPE = 1099
+    TYPE_STR = 'adj-segment-id'
 
     @classmethod
     def unpack(cls, data):
-
-        return cls(value=struct.unpack('!L', data)[0])
+        return cls(value=int(binascii.b2a_hex(data[4:]), 16))

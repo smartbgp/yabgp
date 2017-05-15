@@ -1,7 +1,7 @@
-# Copyright 2015 Cisco Systems, Inc.
+# Copyright 2015-2017 Cisco Systems, Inc.
 # All rights reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -13,10 +13,21 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-FILTER_TYPE_PREFIX = 'prefix'
-FILTER_TYPE_COMMUNITY = 'community'
-FILTER_TYPE_AS_PATH = 'as_path'
+from yabgp.tlv import TLV
+from yabgp.net import IPAddress
+from ..linkstate import LinkState
 
-FILTER_TYPE_LIST = [FILTER_TYPE_PREFIX, FILTER_TYPE_COMMUNITY, FILTER_TYPE_AS_PATH]
 
-FILTER_TYPR_INIT_DICT = dict([(k, {}) for k in FILTER_TYPE_LIST])
+@LinkState.register(_type=1030)
+@LinkState.register(_type=1031)
+class RemoteRouterID(TLV):
+    """
+    remote ipv4 or ipv6 router id
+    """
+    TYPE_STR = 'remote-router-id'
+
+    @classmethod
+    def unpack(cls, data):
+
+        router_id = IPAddress.unpack(data)
+        return cls(value=router_id)

@@ -13,31 +13,31 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from yabgp.message.attribute.linkstate.linkstate import LinkState
-from yabgp.common.tlv import TLV
+import binascii
 
-# https://tools.ietf.org/html/draft-ietf-isis-segment-routing-extensions-09
+from yabgp.tlv import TLV
+from ..linkstate import LinkState
+
+#     0                   1                   2                   3
+#     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+#    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+#    |               Type            |            Length             |
+#    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+#    |     Flags     |   Algorithm   |           Reserved            |
+#    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+#    |                       SID/Index/Label (variable)              |
+#    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 
 @LinkState.register()
 class PrefixSID(TLV):
-
+    """
+    prefix sid
+    """
     TYPE = 1158
-    TYPE_STR = "prefix-segment-identifier "
+    TYPE_STR = 'prefix-sid'
 
-    # @classmethod
-    # def parse(cls, value):
-    #     """
-    #     """
-    #     flags = ['R', 'N', 'P', 'E', 'V', 'L']
-    #     flags_int = struct.unpack('!B', value[0])[0]
-    #     bit_list = []
-    #     for i in xrange(8):
-    #         bit_list.append((flags_int >> i) & 1)
-    #     bit_list.reverse()
-    #
-    #     return cls(value=dict(zip(flags, bit_list[0:6])))
-    #
-    # @classmethod
-    # def algorithm(cls, value):
-    #     pass
+    @classmethod
+    def unpack(cls, data):
+
+        return cls(value=int(binascii.b2a_hex(data[4:]), 16))
