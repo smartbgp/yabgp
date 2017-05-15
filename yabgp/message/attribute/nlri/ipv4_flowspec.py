@@ -15,18 +15,17 @@
 
 """IPv4 Flowspec NLRI
 """
-import struct
-import math
 import binascii
+import math
+import struct
 
 import netaddr
 
-from yabgp.message.attribute.nlri import NLRI
 from yabgp.common import constants as bgp_cons
+from yabgp.message.attribute.nlri import NLRI
 
 
 class IPv4FlowSpec(NLRI):
-
     @classmethod
     def parse(cls, value):
         """
@@ -52,7 +51,7 @@ class IPv4FlowSpec(NLRI):
                 value = value[offset:]
             elif flowspec_type in [bgp_cons.BGPNLRI_FSPEC_IP_PROTO, bgp_cons.BGPNLRI_FSPEC_DST_PORT,
                                    bgp_cons.BGPNLRI_FSPEC_SRC_PORT, bgp_cons.BGPNLRI_FSPEC_ICMP_TP,
-                                   bgp_cons.BGPNLRI_FSPEC_ICMP_CD,
+                                   bgp_cons.BGPNLRI_FSPEC_ICMP_CD, bgp_cons.BGPNLRI_FSPEC_DSCP,
                                    bgp_cons.BGPNLRI_FSPEC_PCK_LEN]:
                 operator_list, offset = cls.parse_operators(value[offset:])
                 nlri_dict[flowspec_type] = operator_dict_to_str(operator_list)
@@ -71,19 +70,24 @@ class IPv4FlowSpec(NLRI):
     def construct_nlri(cls, data):
         """ Construct NLRI """
         # there may have many filters in each nlri
+        data = dict([(int(l), r) for (l, r) in data.items()])
         nlri_tmp = b''
-        for f_type in data:
-            if int(f_type) in [bgp_cons.BGPNLRI_FSPEC_DST_PFIX, bgp_cons.BGPNLRI_FSPEC_SRC_PFIX]:
-                nlri_tmp += struct.pack('!B', int(f_type)) + cls.construct_prefix(data[f_type])
-            elif int(f_type) in [bgp_cons.BGPNLRI_FSPEC_IP_PROTO, bgp_cons.BGPNLRI_FSPEC_DST_PORT,
-                                 bgp_cons.BGPNLRI_FSPEC_SRC_PORT, bgp_cons.BGPNLRI_FSPEC_ICMP_TP,
-                                 bgp_cons.BGPNLRI_FSPEC_ICMP_CD, bgp_cons.BGPNLRI_FSPEC_PCK_LEN]:
-                # translate from expression to binary
-                # expr = '>8080&<8088|=3128'
-                if data[f_type] > 255:
-                    nlri_tmp += struct.pack('!B', int(f_type)) + '\x91' + struct.pack('!H', data[f_type])
-                else:
-                    nlri_tmp += struct.pack('!B', int(f_type)) + '\x81' + struct.pack('!B', data[f_type])
+        for type_tmp in [bgp_cons.BGPNLRI_FSPEC_DST_PFIX, bgp_cons.BGPNLRI_FSPEC_SRC_PFIX]:
+            if data.get(type_tmp):
+                nlri_tmp += struct.pack('!B', type_tmp) + cls.construct_prefix(data[type_tmp])
+        for type_tmp in [bgp_cons.BGPNLRI_FSPEC_IP_PROTO, bgp_cons.BGPNLRI_FSPEC_DST_PORT,
+                         bgp_cons.BGPNLRI_FSPEC_SRC_PORT, bgp_cons.BGPNLRI_FSPEC_ICMP_TP,
+                         bgp_cons.BGPNLRI_FSPEC_ICMP_CD, bgp_cons.BGPNLRI_FSPEC_PCK_LEN,
+                         bgp_cons.BGPNLRI_FSPEC_DSCP]:
+            if not data.get(type_tmp):
+                continue
+
+            # translate from expression to binary
+            # expr = '>8080&<8088|=3128'
+            if data[type_tmp] > 255:
+                nlri_tmp += struct.pack('!B', type_tmp) + '\x91' + struct.pack('!H', data[type_tmp])
+            else:
+                nlri_tmp += struct.pack('!B', type_tmp) + '\x81' + struct.pack('!B', data[type_tmp])
                 # TODO(penxiao) other flow type
         if len(nlri_tmp) >= 240:
             return struct.pack('!H', len(nlri_tmp)) + nlri_tmp

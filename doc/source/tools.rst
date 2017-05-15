@@ -45,5 +45,5 @@ Then, route-injector will read bgp message file and try to send all bgp messages
 Postman Collection
 ~~~~~~~~~~~~~~~~~~
 
-Located in ``/yabgp/tools/Yabgp.json.postman_collection``. You can import this collection into POSTMAN(http://www.getpostman.com/)
+Located in ``/yabgp/tools/Yabgp.postman_collection.json``. You can import this collection into POSTMAN(http://www.getpostman.com/)
 and there are some REST API request examples.

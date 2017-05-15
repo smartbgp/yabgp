@@ -351,6 +351,9 @@ class Update(object):
 
                 decode_value = ClusterList.parse(value=attr_value)
 
+            elif type_code == bgp_cons.BGPTYPE_LINK_STATE:
+                decode_value = LinkState.parse(value=attr_value).dict()[29]
+
             elif type_code == bgp_cons.BGPTYPE_NEW_AS_PATH:
 
                 decode_value = ASPath.parse(value=attr_value, asn4=True)

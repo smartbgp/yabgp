@@ -1,7 +1,7 @@
-# Copyright 2015 Cisco Systems, Inc.
+# Copyright 2015-2017 Cisco Systems, Inc.
 # All rights reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -13,7 +13,19 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""version information"""
+from yabgp.message.attribute.linkstate.linkstate import LinkState
+from yabgp.common.tlv import TLV
 
-version_info = (0, 2, 6)
-version = '.'.join(map(str, version_info))
+
+@LinkState.register()
+class NodeName(TLV):
+
+    TYPE = 1026
+    TYPE_STR = "node-name"
+
+    @classmethod
+    def parse(cls, value):
+        """
+        """
+        nodename = value.decode('ascii')
+        return cls(value=nodename)

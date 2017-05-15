@@ -33,6 +33,8 @@ Features
 
    - IPv4/IPv6 unicast
 
+   - IPv4/IPv6 Labeled Unicast
+
    - IPv4 Flowspec(limited)
 
    - IPv4/IPv6 MPLSVPN
@@ -91,12 +93,14 @@ More information please see the documentation http://yabgp.readthedocs.org
 Related Projects
 ~~~~~~~~~~~~~~~~
 
-https://github.com/trungdtbk/bgp-update-gen
+Routewatch brings automated alerting to YABGP. https://github.com/nerdalize/routewatch
+
+A BGP update generator based on YaBGP https://github.com/trungdtbk/bgp-update-gen
 
 Support
 ~~~~~~~
 
-|Join Chat|
+Please join our Slack http://smartbgp.slack.com/ for questions, discussion, suggestions, etc
 
 Send email to xiaoquwl@gmail.com, or use GitHub issue system.
 
@@ -122,18 +126,15 @@ https://github.com/Exa-Networks/exabgp
 .. |Build Status| image:: https://travis-ci.org/smartbgp/yabgp.svg?branch=master
    :target: https://travis-ci.org/smartbgp/yabgp
 
-.. |Join Chat| image:: https://badges.gitter.im/Join%20Chat.svg
-   :target: https://gitter.im/smartbgp/yabgp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-
 .. |Code Health| image:: https://landscape.io/github/smartbgp/yabgp/master/landscape.svg?style=flat
    :target: https://landscape.io/github/smartbgp/yabgp/master
 
 .. |Documentation Status| image:: https://readthedocs.org/projects/yabgp/badge/?version=latest
    :target: https://readthedocs.org/projects/yabgp/?badge=latest
 
-.. |Test Coverage| image:: https://coveralls.io/repos/smartbgp/yabgp/badge.svg?branch=master 
+.. |Test Coverage| image:: https://coveralls.io/repos/smartbgp/yabgp/badge.svg?branch=master
    :target: https://coveralls.io/r/smartbgp/yabgp
-   
+
 .. |Version| image:: https://img.shields.io/pypi/v/yabgp.svg?
    :target: http://badge.fury.io/py/yabgp
 

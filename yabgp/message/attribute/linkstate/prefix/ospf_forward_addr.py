@@ -1,7 +1,7 @@
-# Copyright 2015 Cisco Systems, Inc.
+# Copyright 2015-2017 Cisco Systems, Inc.
 # All rights reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -13,7 +13,22 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""version information"""
+import binascii
 
-version_info = (0, 2, 6)
-version = '.'.join(map(str, version_info))
+from yabgp.message.attribute.linkstate.linkstate import LinkState
+from yabgp.common.tlv import TLV
+
+import netaddr
+
+
+@LinkState.register()
+class OspfForwardingAddr(TLV):
+
+    TYPE = 1156
+    TYPE_STR = "ospf-forwarding-address"
+
+    @classmethod
+    def parse(cls, value):
+        """
+        """
+        return cls(value=str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16))))

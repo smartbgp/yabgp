@@ -274,9 +274,7 @@ class BGP(protocol.Protocol):
             msg_type=bgp_cons.MSG_UPDATE,
             msg=msg
         )
-        if self.factory.flush_and_check_file_size():
-            for afi, safi in CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']['afi_safi']:
-                self.send_route_refresh(afi=afi, safi=safi)
+        self.factory.flush_and_check_file_size()
 
         self.msg_recv_stat['Updates'] += 1
         self.fsm.update_received()

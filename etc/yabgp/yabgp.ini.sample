@@ -126,20 +126,8 @@
 
 [rabbit_mq]
 
-# The RabbitMQ broker address where a single node is used. (string value)
-# rabbit_host = localhost
-
-# The RabbitMQ broker port where a single node is used. (integer value)
-# rabbit_port = 5672
-
-# Connect over SSL for RabbitMQ. (boolean value)
-# rabbit_use_ssl = false
-
-# The RabbitMQ userid. (string value)
-# rabbit_userid = guest
-
-# The RabbitMQ password. (string value)
-# rabbit_password = guest
+# The RabbitMQ connection url
+# rabbit_url = amqp://guest:guest@localhost:5672/%2F
 
 [database]
 

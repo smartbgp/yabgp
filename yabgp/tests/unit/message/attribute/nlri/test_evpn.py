@@ -128,5 +128,75 @@ class TestEVPN(unittest.TestCase):
         }]
         self.assertEqual(data_hex, EVPN.construct(data_list))
 
+    def test_parse_ip_route_prefix_v4(self):
+        data_hex = b'\x05\x22\x00\x02\x00\x01\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
+                   b'\x00\x00\x00\x01\x18\x01\x01\x01\x00\x01\x01\x01\x01\x00\x00\xa1'
+        data_list = [{
+            'type': 5,
+            'value': {
+                'esi': 0,
+                'eth_tag_id': 1,
+                'gateway': '1.1.1.1',
+                'label': [10],
+                'prefix': '1.1.1.0/24',
+                'rd': '65536:2'}}]
+        self.assertEqual(data_list, EVPN.parse(data_hex))
+
+    def test_construct_ip_route_prefix_v4(self):
+        data_hex = b'\x05\x22\x00\x02\x00\x01\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
+                   b'\x00\x00\x00\x01\x18\x01\x01\x01\x00\x01\x01\x01\x01\x00\x00\xa1'
+        data_list = [{
+            'type': 5,
+            'value': {
+                'esi': 0,
+                'eth_tag_id': 1,
+                'gateway': '1.1.1.1',
+                'label': [10],
+                'prefix': '1.1.1.0/24',
+                'rd': '65536:2'}}]
+        self.assertEqual(data_hex, EVPN.construct(data_list))
+
+    def test_parse_ip_route_prefix_v6(self):
+        data_hex = b'\x05' \
+                   b'\x3a' \
+                   b'\x00\x02\x00\x01\x00\x00\x00\x02' \
+                   b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
+                   b'\x00\x00\x00\x01' \
+                   b'\x40' \
+                   b'\x20\x01\x32\x32\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01' \
+                   b'\x20\x01\x32\x32\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01' \
+                   b'\x00\x00\xa1'
+        data_list = [{
+            'type': 5,
+            'value': {
+                'esi': 0,
+                'eth_tag_id': 1,
+                'gateway': '2001:3232::1',
+                'label': [10],
+                'prefix': '2001:3232::1/64',
+                'rd': '65536:2'}}]
+        self.assertEqual(data_list, EVPN.parse(data_hex))
+
+    def test_construct_ip_route_prefix_v6(self):
+        data_hex = b'\x05' \
+                   b'\x3a' \
+                   b'\x00\x02\x00\x01\x00\x00\x00\x02' \
+                   b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
+                   b'\x00\x00\x00\x01' \
+                   b'\x40' \
+                   b'\x20\x01\x32\x32\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01' \
+                   b'\x20\x01\x32\x32\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01' \
+                   b'\x00\x00\xa1'
+        data_list = [{
+            'type': 5,
+            'value': {
+                'esi': 0,
+                'eth_tag_id': 1,
+                'gateway': '2001:3232::1',
+                'label': [10],
+                'prefix': '2001:3232::1/64',
+                'rd': '65536:2'}}]
+        self.assertEqual(data_hex, EVPN.construct(data_list))
+
 if __name__ == '__main__':
     unittest.main()

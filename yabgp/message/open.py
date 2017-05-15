@@ -97,7 +97,7 @@ class Open(object):
                 data=self.asn)
         # Hold Time negotiation is out of this scope
 
-        if self.bgp_id in (0, 2 ** 32 - 1):
+        if self.bgp_id == 0:
             raise excp.OpenMessageError(
                 sub_error=bgp_cons.ERR_MSG_OPEN_BAD_BGP_ID,
                 data=self.bgp_id)

@@ -1,7 +1,7 @@
-# Copyright 2015 Cisco Systems, Inc.
+# Copyright 2015-2017 Cisco Systems, Inc.
 # All rights reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -13,7 +13,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""version information"""
+import unittest
 
-version_info = (0, 2, 6)
-version = '.'.join(map(str, version_info))
+from yabgp.message.attribute.linkstate.linkstate import LinkState
+
+
+class TestNodeName(unittest.TestCase):
+
+    def test_parse(self):
+        hex_value = b'\x04\x02\x00\x06\x78\x72\x76\x36\x31\x32'
+        ls = {29: [{'node-name': u'xrv612'}]}
+        self.assertEqual(ls, LinkState.parse(hex_value).dict())

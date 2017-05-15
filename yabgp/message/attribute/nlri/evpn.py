@@ -51,6 +51,8 @@ class EVPN(NLRI):
                 route = InclusiveMulticastEthernetTag.parse(route_value)
             elif route_type == bgp_cons.BGPNLRI_EVPN_ETHERNET_SEGMENT:
                 route = EthernetSegment.parse(route_value)
+            elif route_type == bgp_cons.BGPNLRI_EVPN_IP_ROUTE_PREFIX:
+                route = IPRoutePrefix.parse(route_value)
             if route:
                 nlri_list.append({
                     'type': route_type,
@@ -72,6 +74,8 @@ class EVPN(NLRI):
                 nlri_hex = InclusiveMulticastEthernetTag.construct(value=nlri['value'])
             elif nlri['type'] == bgp_cons.BGPNLRI_EVPN_ETHERNET_SEGMENT:
                 nlri_hex = EthernetSegment.construct(value=nlri['value'])
+            elif nlri['type'] == bgp_cons.BGPNLRI_EVPN_IP_ROUTE_PREFIX:
+                nlri_hex = IPRoutePrefix.construct(value=nlri['value'])
             if nlri_hex:
                 nlri_list_hex += struct.pack('!2B', nlri['type'], len(nlri_hex)) + nlri_hex
         return nlri_list_hex
@@ -273,4 +277,72 @@ class EthernetSegment(MPLSVPN):
             value_hex += struct.pack('!B', len(ip_hex) * 8) + ip_hex
         else:
             value_hex += b'\x00'
+        return value_hex
+
+
+class IPRoutePrefix(MPLSVPN):
+    """
+    # http://tools.ietf.org/html/draft-ietf-bess-evpn-prefix-advertisement-01
+    +---------------------------------------+
+    |      RD   (8 octets)                  |
+    +---------------------------------------+
+    |Ethernet Segment Identifier (10 octets)|
+    +---------------------------------------+
+    |  Ethernet Tag ID (4 octets)           |
+    +---------------------------------------+
+    |  IP Prefix Length (1 octet)           |
+    +---------------------------------------+
+    |  IP Prefix (4 or 16 octets)           |
+    +---------------------------------------+
+    |  GW IP Address (4 or 16 octets)       |
+    +---------------------------------------+
+    |  MPLS Label (3 octets)                |
+    +---------------------------------------+
+    """
+    @classmethod
+    def parse(cls, value, iswithdraw=False):
+        route = dict()
+        offset = 8
+        route['rd'] = cls.parse_rd(value[0:offset])
+        # esi
+        route['esi'] = int(binascii.b2a_hex(value[offset: offset+10]), 16)
+        offset += 10
+
+        route['eth_tag_id'] = struct.unpack('!I', value[offset: offset+4])[0]
+        offset += 4
+
+        ip_addr_len = ord(value[offset: offset + 1])
+        offset += 1
+
+        value = value[offset:]
+        # The IP Prefix Length can be set to a value between 0 and 32
+        #   (bits) for ipv4 and between 0 and 128 for ipv6.
+        # The IP Prefix will be a 32 or 128-bit field (ipv4 or ipv6).
+
+        # # ip address
+        if len(value) == 11:
+            # ipv4
+            offset = 4
+        elif len(value) == 35:
+            # ipv6
+            offset = 16
+
+        route['prefix'] = '%s/%s' % (str(netaddr.IPAddress(int(binascii.b2a_hex(value[0: offset]), 16))), ip_addr_len)
+        value = value[offset:]
+        route['gateway'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value[0: offset]), 16)))
+        value = value[offset:]
+
+        route['label'] = cls.parse_mpls_label_stack(value)
+        return route
+
+    @classmethod
+    def construct(cls, value, iswithdraw=False):
+        value_hex = b''
+        value_hex += cls.construct_rd(value['rd'])
+        value_hex += b'\x00\x00' + struct.pack('!d', value['esi'])
+        value_hex += struct.pack('!I', value['eth_tag_id'])
+        value_hex += struct.pack('!B', int(value['prefix'].split('/')[1]))
+        value_hex += netaddr.IPAddress(value['prefix'].split('/')[0]).packed
+        value_hex += netaddr.IPAddress(value['gateway']).packed
+        value_hex += cls.construct_mpls_label_stack(value['label'])
         return value_hex

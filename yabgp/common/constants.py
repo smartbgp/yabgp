@@ -179,6 +179,7 @@ BGPNLRI_EVPN_ETHERNET_AUTO_DISCOVERY = 1
 BGPNLRI_EVPN_MAC_IP_ADVERTISEMENT = 2
 BGPNLRI_EVPN_INCLUSIVE_MULTICAST_ETHERNET_TAG = 3
 BGPNLRI_EVPN_ETHERNET_SEGMENT = 4
+BGPNLRI_EVPN_IP_ROUTE_PREFIX = 5
 
 # BGP message Constants
 VERSION = 4
@@ -207,6 +208,8 @@ GRACEFUL_RESTART = False
 AFI_SAFI_DICT = {
     (1, 1): 'ipv4',
     (2, 1): 'ipv6',
+    (1, 4): 'ipv4_lu',
+    (2, 4): 'ipv6_lu',
     (1, 133): 'flowspec',
     (1, 128): 'vpnv4',
     (2, 128): 'vpnv6',
@@ -216,6 +219,8 @@ AFI_SAFI_DICT = {
 AFI_SAFI_STR_DICT = {
     'ipv6': (2, 1),
     'ipv4': (1, 1),
+    'ipv4_lu': (1, 4),
+    'ipv6_lu': (2, 4),
     'flowspec': (1, 133),
     'vpnv4': (1, 128),
     'vpnv6': (2, 128),
@@ -391,6 +396,7 @@ WELL_KNOW_COMMUNITY_INT_2_STR = {
     0xFFFF0003: 'ROUTE_FILTER_v4',
     0xFFFF0004: 'ROUTE_FILTER_TRANSLATED_v6',
     0xFFFF0005: 'ROUTE_FILTER_v6',
+    0xFFFF029A: 'BLACKHOLE',
     0xFFFFFF01: 'NO_EXPORT',
     0xFFFFFF02: 'NO_ADVERTISE',
     0xFFFFFF03: 'NO_EXPORT_SUBCONFED',
