@@ -25,3 +25,6 @@ from .link.unsrv_bw import UnrsvBandwidth    # noqa
 from .link.te_metric import TeMetric   # noqa
 from .link.link_name import LinkName   # noqa
 from .link.igp_metric import IGPMetric   # noqa
+from .link.adj_seg_id import AdjSegID   # noqa
+from .prefix.prefix_metric import PrefixMetric   # noqa
+from .prefix.prefix_sid import PrefixSID  # noqa

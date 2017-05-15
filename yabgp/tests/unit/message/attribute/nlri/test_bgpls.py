@@ -21,7 +21,7 @@ from yabgp.message.attribute.nlri.linkstate import BGPLS
 class TestBGPLS(unittest.TestCase):
 
     def test_parse(self):
-
+        self.maxDiff = None
         data_bin = b"\x00\x02\x00" \
                    b"\x55\x02\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x1a\x02\x00" \
                    b"\x00\x04\x00\x00\xff\xfe\x02\x01\x00\x04\x00\x00\x00\x00\x02\x03" \
@@ -31,10 +31,27 @@ class TestBGPLS(unittest.TestCase):
                    b"\x00\x04\x01\x03\x00\x01"
         data_dict = [
             {
+                'type': 'link',
                 'value': [
-                    {'value': '1.3.0.2', 'type': 'link_local_ipv4'},
-                    {'value': '1.3.0.1', 'type': 'link_remote_ipv4'}],
-                'type': 'link'
+                    {
+                        'type': 'local_node',
+                        'value': {
+                            'as': 65534,
+                            'bgpls_id': '0.0.0.0',
+                            'igp_id': '0.0.0.3'}},
+                    {
+                        'type': 'remote_node',
+                        'value': {
+                            'as': 65534,
+                            'bgpls_id': '0.0.0.0',
+                            'igp_id': '0.0.0.1'}},
+                    {
+                        'type': 'link_local_ipv4',
+                        'value': '1.3.0.2'},
+                    {
+                        'type': 'link_remote_ipv4',
+                        'value': '1.3.0.1'},
+                ]
             }
         ]
         self.assertEqual(data_dict, BGPLS.parse(data_bin))

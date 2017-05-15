@@ -225,6 +225,7 @@ class TestUpdate(unittest.TestCase):
         self.assertEqual(data_dict['attr'], Update.parse(None, data_bin[HDR_LEN:])['attr'])
 
     def test_parse_link_state(self):
+        self.maxDiff = None
         data_bin = b"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff" \
                    b"\x00\xb3\x02\x00\x00\x00\x9c\x90\x0e\x00\x62\x40\x04\x47\x04\x0a" \
                    b"\x7c\x01\x7e\x00\x00\x02\x00\x55\x02\x00\x00\x00\x00\x00\x00\x00" \
@@ -243,10 +244,36 @@ class TestUpdate(unittest.TestCase):
             5: 100,
             14: {'afi_safi': (16388, 71),
                  'nexthop': '10.124.1.126',
-                 'nlri': [{'type': 'link',
-                           'value': [{'type': 'link_local_ipv4', 'value': '1.3.0.1'},
-                                     {'type': 'link_remote_ipv4', 'value': '1.3.0.2'}]}]},
-            29: {1099: b'300000000061ab', 'igp-metric': 10, 'te-metric': 10}}
+                 'nlri': [
+                     {
+                         'type': 'link',
+                         'value': [
+                             {
+                                 'type': 'local_node',
+                                 'value':
+                                 {
+                                     'as': 65534,
+                                     'bgpls_id': '0.0.0.0',
+                                     'igp_id': '0.0.0.1'
+                                 }
+                             },
+                             {
+                                 'type': 'remote_node',
+                                 'value': {
+                                     'as': 65534,
+                                     'bgpls_id': '0.0.0.0',
+                                     'igp_id': '0.0.0.3'}},
+                             {
+                                 'type': 'link_local_ipv4',
+                                 'value': '1.3.0.1'},
+                             {
+                                 'type': 'link_remote_ipv4',
+                                 'value': '1.3.0.2'}]}]},
+            29: [
+                {'type': 'te-metric', 'value': 10},
+                {'type': 'igp-metric', 'value': 10},
+                {'type': 'adj-segment-id', 'value': 25002},
+                {'type': 'adj-segment-id', 'value': 25003}]}
         self.assertEqual(data_dict, Update.parse(None, data_bin[HDR_LEN:])['attr'])
 
 if __name__ == '__main__':

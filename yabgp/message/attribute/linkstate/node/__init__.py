@@ -21,3 +21,12 @@
 #    |     1029    | IPv6 Router-ID of    |       16 | [RFC6119]/4.1     |
 #    |             | Local Node           |          |                   |
 #    +-------------+----------------------+----------+-------------------+
+
+# +----------------+-----------------+----------+---------------+
+# | TLV Code Point | Description     | Length   |       Section |
+# +----------------+-----------------+----------+---------------+
+# |      1034      | SR Capabilities | variable | Section 2.1.1 |
+# |      1035      | SR Algorithm    | variable | Section 2.1.2 |
+# |      1036      | SR Local Block  | variable | Section 2.1.3 |
+# |      1037      | SRMS Preference | variable | Section 2.1.4 |
+# +----------------+-----------------+----------+---------------+

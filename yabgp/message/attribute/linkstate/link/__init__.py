@@ -32,3 +32,13 @@
 #    +-----------+---------------------+--------------+------------------+
 
 #                        Table 9: Link Attribute TLVs
+
+#    +-----------+----------------------------+----------+---------------+
+#    |  TLV Code | Description                |   Length |       Section |
+#    |   Point   |                            |          |               |
+#    +-----------+----------------------------+----------+---------------+
+#    |    1099   | Adjacency Segment          | variable | Section 2.2.1 |
+#    |           | Identifier (Adj-SID) TLV   |          |               |
+#    |    1100   | LAN Adjacency Segment      | variable | Section 2.2.2 |
+#    |           | Identifier (Adj-SID) TLV   |          |               |
+#    +-----------+----------------------------+----------+---------------+

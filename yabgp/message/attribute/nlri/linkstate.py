@@ -41,8 +41,17 @@ class BGPLS(NLRI):
             nlri = dict()
             if _type == cls.LINK_NLRI:
                 nlri['type'] = 'link'
-                nlri['value'] = cls.parse_nlri(value)
-                nlri_list.append(nlri)
+            elif _type == cls.NODE_NLRI:
+                nlri['type'] = 'node'
+            elif _type == cls.IPv4_TOPO_PREFIX_NLRI:
+                nlri['type'] = 'ipv4_topo_prefix'
+            elif _type == cls.IPv6_TOPO_PREFIX_NLRI:
+                nlri['type'] = 'ipv6_topo_prefix'
+            else:
+                nlri['type'] = 'unknown'
+                continue
+            nlri['value'] = cls.parse_nlri(value)
+            nlri_list.append(nlri)
         return nlri_list
 
     @classmethod
@@ -73,22 +82,31 @@ class BGPLS(NLRI):
             descriptors = descriptors[4+length:]
             descriptor = dict()
             if _type == 256:  # local node
-                pass
-            elif _type == 257:
-                pass
-            elif _type == 258:  # link local/remote identifier
-                pass
+                descriptor['type'] = 'local_node'
+                descriptor['value'] = cls.parse_node_descriptor(value)
+
+            elif _type == 257:  # remote node
+                descriptor['type'] = 'remote_node'
+                descriptor['value'] = cls.parse_node_descriptor(value)
+            # elif _type == 258:  # link local/remote identifier
+            #     pass
             elif _type == 259:  # ipv4 interface address
                 ipv4_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
                 descriptor['type'] = 'link_local_ipv4'
                 descriptor['value'] = ipv4_addr
-                return_data.append(descriptor)
             elif _type == 260:  # ipv4 neighbor address
                 ipv4_neighbor_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
                 descriptor['type'] = 'link_remote_ipv4'
                 descriptor['value'] = ipv4_neighbor_addr
-                return_data.append(descriptor)
-
+            elif _type == 265:   # IP Reachability Information
+                descriptor['type'] = 'prefix'
+                mask = struct.unpack('!B', value[0])[0]
+                ip = str(netaddr.IPAddress(int(binascii.b2a_hex(value[1:]), 16)))
+                descriptor['value'] = "%s/%s" % (ip, mask)
+            else:
+                descriptor['type'] = _type
+                descriptor['value'] = binascii.b2a_hex(value)
+            return_data.append(descriptor)
         return return_data
 
     @classmethod
@@ -107,13 +125,14 @@ class BGPLS(NLRI):
             _type, length = struct.unpack('!HH', data[0: 4])
             value = data[4: 4+length]
             data = data[4+length:]
-
             if _type == 512:
-                pass
+                return_data['as'] = int(binascii.b2a_hex(value), 16)
             elif _type == 513:
                 return_data['bgpls_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
             elif _type == 514:
-                pass
+                return_data['ospf_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
+            elif _type == 515:
+                return_data['igp_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
         return return_data
 
     @classmethod

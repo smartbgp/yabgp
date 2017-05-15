@@ -40,5 +40,10 @@ class TLV(object):
         """return dict format
         """
         if str_key:
-            return {self.TYPE_STR: self.value}
-        return {self.TYPE: self.value}
+            return {
+                'type': self.TYPE_STR,
+                'value': self.value}
+        return {
+            'type': self.TYPE,
+            'value': self.value
+        }
