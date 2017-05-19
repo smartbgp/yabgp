@@ -44,9 +44,9 @@ class BGPLS(NLRI):
             elif _type == cls.NODE_NLRI:
                 nlri['type'] = 'node'
             elif _type == cls.IPv4_TOPO_PREFIX_NLRI:
-                nlri['type'] = 'ipv4_topo_prefix'
+                nlri['type'] = 'ipv4-topo-prefix'
             elif _type == cls.IPv6_TOPO_PREFIX_NLRI:
-                nlri['type'] = 'ipv6_topo_prefix'
+                nlri['type'] = 'ipv6-topo-prefix'
             else:
                 nlri['type'] = 'unknown'
                 continue
@@ -82,21 +82,21 @@ class BGPLS(NLRI):
             descriptors = descriptors[4+length:]
             descriptor = dict()
             if _type == 256:  # local node
-                descriptor['type'] = 'local_node'
+                descriptor['type'] = 'local-node'
                 descriptor['value'] = cls.parse_node_descriptor(value)
 
             elif _type == 257:  # remote node
-                descriptor['type'] = 'remote_node'
+                descriptor['type'] = 'remote-node'
                 descriptor['value'] = cls.parse_node_descriptor(value)
             # elif _type == 258:  # link local/remote identifier
             #     pass
             elif _type == 259:  # ipv4 interface address
                 ipv4_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
-                descriptor['type'] = 'link_local_ipv4'
+                descriptor['type'] = 'link-local-ipv4'
                 descriptor['value'] = ipv4_addr
             elif _type == 260:  # ipv4 neighbor address
                 ipv4_neighbor_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
-                descriptor['type'] = 'link_remote_ipv4'
+                descriptor['type'] = 'link-remote-ipv4'
                 descriptor['value'] = ipv4_neighbor_addr
             elif _type == 265:   # IP Reachability Information
                 descriptor['type'] = 'prefix'
@@ -128,11 +128,11 @@ class BGPLS(NLRI):
             if _type == 512:
                 return_data['as'] = int(binascii.b2a_hex(value), 16)
             elif _type == 513:
-                return_data['bgpls_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
+                return_data['bgpls-id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
             elif _type == 514:
-                return_data['ospf_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
+                return_data['ospf-id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
             elif _type == 515:
-                return_data['igp_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
+                return_data['igp-id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
         return return_data
 
     @classmethod

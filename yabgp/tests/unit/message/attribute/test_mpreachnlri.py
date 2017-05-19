@@ -259,19 +259,19 @@ class TestMpReachNLRI(unittest.TestCase):
                     'type': 'link',
                     'value': [
                         {
-                            'type': 'local_node',
+                            'type': 'local-node',
                             'value': {
                                 'as': 65534,
-                                'bgpls_id': '0.0.0.0',
-                                'igp_id': '0.0.0.1'}},
+                                'bgpls-id': '0.0.0.0',
+                                'igp-id': '0.0.0.1'}},
                         {
-                            'type': 'remote_node',
+                            'type': 'remote-node',
                             'value': {
                                 'as': 65534,
-                                'bgpls_id': '0.0.0.0',
-                                'igp_id': '0.0.0.3'}},
-                        {'type': 'link_local_ipv4', 'value': '1.3.0.1'},
-                        {'type': 'link_remote_ipv4', 'value': '1.3.0.2'}]}]}
+                                'bgpls-id': '0.0.0.0',
+                                'igp-id': '0.0.0.3'}},
+                        {'type': 'link-local-ipv4', 'value': '1.3.0.1'},
+                        {'type': 'link-remote-ipv4', 'value': '1.3.0.2'}]}]}
         self.assertEqual(data_dict, MpReachNLRI.parse(data[4:]))
 
 
