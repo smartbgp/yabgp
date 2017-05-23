@@ -32,12 +32,12 @@ class RouteRefresh(object):
         # |      AFI      | Res.  | SAFI  |
         # +-------+-------+-------+-------+
         """
-        :param afi  - Address Family Identifier (16 bit)
+        :param afi: - Address Family Identifier (16 bit)
                http://www.iana.org/assignments/address-family-numbers/address-family-numbers.xml
-        :param safi: . - Reserved (8 bit) field. Should be set to 0 by the
-               sender and ignored by the receiver.
-        :param res:  - Subsequent Address Family Identifier (8 bit).
+        :param safi: - Subsequent Address Family Identifier (8 bit).
                http://www.iana.org/assignments/safi-namespace/safi-namespace.xml
+        :param res: - Reserved (8 bit) field. Should be set to 0 by the
+               sender and ignored by the receiver.
         """
         self.afi = afi
         self.res = res
