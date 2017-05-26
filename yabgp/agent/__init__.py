@@ -231,6 +231,11 @@ def prepare_twisted_service():
     reactor.run()
 
 
+def register_callback_handler(handler):
+    CONF.handler['class'] = handler
+    LOG.info('Registered callback handler `%s`', handler)
+
+
 def prepare_service(args=None):
     try:
         CONF(args=args, project='yabgp', version=version,
