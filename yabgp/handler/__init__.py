@@ -17,6 +17,10 @@ class BaseHandler(object):
         pass
 
     @abc.abstractmethod
+    def on_update_error(self, peer, timestamp, msg):
+        raise NotImplemented
+
+    @abc.abstractmethod
     def update_received(self, peer, timestamp, msg):
         raise NotImplemented
 
@@ -40,6 +44,14 @@ class BaseHandler(object):
 class DefaultHandler(BaseHandler):
     def __init__(self):
         super(DefaultHandler, self).__init__()
+
+    def on_update_error(self, peer, timestamp, msg):
+        peer.factory.write_msg(
+            timestamp=timestamp,
+            msg_type=6,
+            msg={'msg': msg},
+            flush=True
+        )
 
     def update_received(self, peer, timestamp, msg):
         # write message to disk

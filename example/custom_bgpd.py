@@ -15,6 +15,9 @@ class CliHandler(BaseHandler):
     def __init__(self):
         super(CliHandler, self).__init__()
 
+    def on_update_error(self, peer, timestamp, msg):
+        print '[-] UPDATE ERROR,', msg
+
     def route_refresh_received(self, peer, msg, msg_type):
         print '[+] ROUTE_REFRESH received,', msg
 
@@ -28,7 +31,7 @@ class CliHandler(BaseHandler):
         print '[+] UPDATE received,', msg
 
     def notification_received(self, peer, msg):
-        print '[-] NOTFICATION received,', msg
+        print '[-] NOTIFICATION received,', msg
 
 
 def main():
