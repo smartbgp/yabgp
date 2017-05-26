@@ -34,7 +34,7 @@ CONF.register_cli_opts([
 
 msg_process_opts = [
     cfg.BoolOpt('write_disk',
-                default=False,
+                default=True,
                 help='Whether the BGP message is written to disk'),
     cfg.StrOpt('write_dir',
                default=os.path.join(os.environ['HOME'], 'data/bgp/'),
