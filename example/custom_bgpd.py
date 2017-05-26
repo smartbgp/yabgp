@@ -5,7 +5,7 @@ import sys
 from yabgp.agent import prepare_service, register_callback_handler
 from yabgp.handler import BaseHandler
 
-from yabgp.common import constants as bgp_cons
+# from yabgp.common import constants as bgp_cons
 from oslo_config import cfg
 
 CONF = cfg.CONF

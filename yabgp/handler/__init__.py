@@ -65,7 +65,6 @@ class DefaultHandler(BaseHandler):
     def keepalive_received(self, peer, timestamp):
         """
         keepalive message default handler
-    
         :param peer:
         :param timestamp:
         :return:
