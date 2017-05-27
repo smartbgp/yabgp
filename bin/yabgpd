@@ -24,13 +24,16 @@ import sys
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(__file__),
                                                 os.pardir,
                                                 os.pardir))
+
 if os.path.exists(os.path.join(possible_topdir,
                                'yabgp',
                                '__init__.py')):
+    # use the module in current work dir if applicable
     sys.path.insert(0, possible_topdir)
-
 else:
-    possible_topdir = '/'
+    # seems has no effect
+    # possible_topdir = '/'
+    pass
 
 from yabgp.agent.cmd import main
 

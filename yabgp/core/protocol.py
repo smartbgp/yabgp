@@ -49,10 +49,12 @@ class BGP(protocol.Protocol):
         self.peer_id = None
 
         self.disconnected = False
-        self.receive_buffer = b''
+        self._receive_buffer = b''
         self.fourbytesas = False
         self.add_path_ipv4_receive = False
         self.add_path_ipv4_send = False
+
+        self.handler = CONF.handler['class']
 
         # statistic
         self.msg_sent_stat = {
@@ -140,7 +142,7 @@ class BGP(protocol.Protocol):
         """
 
         # Buffer possibly incomplete data first
-        self.receive_buffer += data
+        self._receive_buffer += data
         while self.parse_buffer():
             pass
 
@@ -150,7 +152,7 @@ class BGP(protocol.Protocol):
 
         :return: True or False
         """
-        buf = self.receive_buffer
+        buf = self._receive_buffer
 
         if len(buf) < bgp_cons.HDR_LEN:
             # Every BGP message is at least 19 octets. Maybe the rest
@@ -182,7 +184,7 @@ class BGP(protocol.Protocol):
         try:
             if msg_type == bgp_cons.MSG_OPEN:
                 try:
-                    self.open_received(timestamp=t, msg=msg)
+                    self._open_received(timestamp=t, msg=msg)
                 except excep.MessageHeaderError as e:
                     LOG.error(e)
                     self.fsm.header_error(suberror=e.sub_error)
@@ -193,24 +195,21 @@ class BGP(protocol.Protocol):
                     return False
 
             elif msg_type == bgp_cons.MSG_UPDATE:
-                self.update_received(timestamp=t, msg=msg)
+                self._update_received(timestamp=t, msg=msg)
 
             elif msg_type == bgp_cons.MSG_NOTIFICATION:
-                self.notification_received(Notification().parse(msg))
+                self._notification_received(Notification().parse(msg))
 
             elif msg_type == bgp_cons.MSG_KEEPALIVE:
                 try:
-                    self.keepalive_received(timestamp=t, msg=msg)
+                    self._keepalive_received(timestamp=t, msg=msg)
                 except excep.MessageHeaderError as e:
                     LOG.error(e)
                     self.fsm.header_error(suberror=e.sub_error)
                     return False
-            elif msg_type == bgp_cons.MSG_ROUTEREFRESH:
+            elif msg_type in (bgp_cons.MSG_ROUTEREFRESH, bgp_cons.MSG_CISCOROUTEREFRESH):
                 route_refresh_msg = RouteRefresh().parse(msg)
-                self.route_refresh_received(msg=route_refresh_msg, msg_type=msg_type)
-            elif msg_type == bgp_cons.MSG_CISCOROUTEREFRESH:
-                route_refresh_msg = RouteRefresh().parse(msg)
-                self.route_refresh_received(msg=route_refresh_msg, msg_type=msg_type)
+                self._route_refresh_received(msg=route_refresh_msg, msg_type=msg_type)
             else:
                 # unknown message type
                 self.fsm.header_error(
@@ -219,7 +218,7 @@ class BGP(protocol.Protocol):
             LOG.error(e)
             error_str = traceback.format_exc()
             LOG.debug(error_str)
-        self.receive_buffer = self.receive_buffer[length:]
+        self._receive_buffer = self._receive_buffer[length:]
         return True
 
     def closeConnection(self):
@@ -229,7 +228,7 @@ class BGP(protocol.Protocol):
             self.transport.loseConnection()
             self.disconnected = True
 
-    def update_received(self, timestamp, msg):
+    def _update_received(self, timestamp, msg):
 
         """Called when a BGP Update message was received."""
         result = Update().parse(
@@ -241,18 +240,14 @@ class BGP(protocol.Protocol):
                 'withdraw': result['withdraw'],
                 'hex': repr(result['hex'])
             }
-            self.factory.write_msg(
-                timestamp=result['time'],
-                msg_type=6,
-                msg=msg,
-                flush=True
-            )
-            LOG.error(
-                '[%s] Update message error: sub error=%s',
-                self.factory.peer_addr, result['sub_error'])
+
+            self.handler.on_update_error(self, timestamp, msg)
+
+            LOG.error('[%s] Update message error: sub error=%s', self.factory.peer_addr, result['sub_error'])
             self.msg_recv_stat['Updates'] += 1
             self.fsm.update_received()
             return
+
         afi_safi = None
         # process messages
         if result['nlri'] or result['withdraw']:
@@ -261,6 +256,7 @@ class BGP(protocol.Protocol):
             afi_safi = bgp_cons.AFI_SAFI_DICT[result['attr'][14]['afi_safi']]
         elif result['attr'].get(15):
             afi_safi = bgp_cons.AFI_SAFI_DICT[result['attr'][15]['afi_safi']]
+
         msg = {
             'attr': result['attr'],
             'nlri': result['nlri'],
@@ -268,13 +264,7 @@ class BGP(protocol.Protocol):
             'afi_safi': afi_safi
         }
 
-        # write message to disk
-        self.factory.write_msg(
-            timestamp=result['time'],
-            msg_type=bgp_cons.MSG_UPDATE,
-            msg=msg
-        )
-        self.factory.flush_and_check_file_size()
+        self.handler.update_received(self, timestamp, msg)
 
         self.msg_recv_stat['Updates'] += 1
         self.fsm.update_received()
@@ -318,7 +308,7 @@ class BGP(protocol.Protocol):
         # send message
         self.transport.write(msg_notification)
 
-    def notification_received(self, msg):
+    def _notification_received(self, msg):
         """
         BGP notification message received.
         """
@@ -331,13 +321,11 @@ class BGP(protocol.Protocol):
         LOG.info(
             '[%s]Notification message received, error: %s, sub error: %s, data=%s',
             self.factory.peer_addr, error_str, sub_error_str, msg[2])
+
         nofi_msg = {'error': error_str, 'sub_error': sub_error_str, 'data': repr(msg[2])}
-        self.factory.write_msg(
-            timestamp=time.time(),
-            msg_type=3,
-            msg=nofi_msg,
-            flush=True
-        )
+
+        self.handler.notification_received(self, nofi_msg)
+
         self.fsm.notification_received(msg[0], msg[1])
 
         LOG.debug('offline')
@@ -355,27 +343,21 @@ class BGP(protocol.Protocol):
         # send message
         self.transport.write(msg_keepalive)
 
-    def keepalive_received(self, timestamp, msg):
+    def _keepalive_received(self, timestamp, msg):
         """
-        process keepalive message
+            process keepalive message
 
-        :param timestamp:
-        :param msg:
-        :return:
+            :param timestamp:
+            :param msg:
+            :return:
         """
         self.msg_recv_stat['Keepalives'] += 1
+
+        self.handler.keepalive_received(self, timestamp)
 
         LOG.info("[%s]A BGP KeepAlive message was received from peer.", self.factory.peer_addr)
         KeepAlive().parse(msg)
 
-        if CONF.message.write_keepalive:
-            # write bgp message
-            self.factory.write_msg(
-                timestamp=timestamp,
-                msg_type=4,
-                msg=None,
-                flush=True
-            )
         self.fsm.keep_alive_received()
 
     def capability_negotiate(self):
@@ -423,7 +405,7 @@ class BGP(protocol.Protocol):
         for key in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']:
             LOG.info("--%s = %s", key, cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local'][key])
 
-    def open_received(self, timestamp, msg):
+    def _open_received(self, timestamp, msg):
         """
         porcess open message
 
@@ -458,18 +440,13 @@ class BGP(protocol.Protocol):
 
             LOG.info("--%s = %s", key, cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote'][key])
 
-        # write bgp message
-        self.factory.write_msg(
-            timestamp=timestamp,
-            msg_type=1,
-            msg=parse_result,
-            flush=True
-        )
         self.peer_id = open_msg.bgp_id
         self.bgp_peering.set_peer_id(open_msg.bgp_id)
 
         self.negotiate_hold_time(open_msg.hold_time)
         self.fsm.open_received()
+
+        self.handler.open_received(self, timestamp, parse_result)
 
     def send_route_refresh(self, afi, safi, res=0):
         """
@@ -496,7 +473,7 @@ class BGP(protocol.Protocol):
         LOG.info("[%s]Send BGP RouteRefresh message to the peer.", self.factory.peer_addr)
         return True
 
-    def route_refresh_received(self, msg, msg_type):
+    def _route_refresh_received(self, msg, msg_type):
         """
         Route Refresh message received.
 
@@ -508,12 +485,8 @@ class BGP(protocol.Protocol):
             '[%s]Route Refresh message received, afi=%s, res=%s, safi=%s',
             self.factory.peer_addr, msg[0], msg[1], msg[2])
         nofi_msg = {'afi': msg[0], 'res': msg[1], 'safi': msg[2]}
-        self.factory.write_msg(
-            timestamp=time.time(),
-            msg_type=msg_type,
-            msg=nofi_msg,
-            flush=True
-        )
+
+        self.handler.route_refresh_received(self, nofi_msg, msg_type)
 
     def negotiate_hold_time(self, hold_time):
 
