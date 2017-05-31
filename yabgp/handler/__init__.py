@@ -61,10 +61,6 @@ class DefaultHandler(BaseHandler):
         '''
         self.msg_sequence = {}
 
-    @property
-    def file_writer(self):
-        return True
-
     def init_msg_file(self, peer_addr):
         msg_file_path_for_peer = os.path.join(
             CONF.message.write_dir,
@@ -133,9 +129,10 @@ class DefaultHandler(BaseHandler):
         :param flush: flush after write or not
         :return:
         """
-        msg_path, msg_file = self.peer_files[peer.lower()]
-        msg_seq = self.msg_sequence[peer.lower()]
+        msg_path, msg_file = self.peer_files.get(peer.lower(), (None, None))
         if msg_path:
+            msg_seq = self.msg_sequence[peer.lower()]
+
             msg_record = {
                 't': timestamp,
                 'seq': msg_seq,
@@ -149,7 +146,7 @@ class DefaultHandler(BaseHandler):
                 msg_file.flush()
 
     def flush_and_check_file_size(self, peer):
-        msg_path, cur_file = self.peer_files[peer.lower()]
+        msg_path, cur_file = self.peer_files.get(peer.lower(), (None, None))
         if msg_path:
             # Flush message log file
             cur_file.flush()
