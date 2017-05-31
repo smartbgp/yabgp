@@ -1,4 +1,4 @@
-# Copyright 2015 Cisco Systems, Inc.
+# Copyright 2015-2017 Cisco Systems, Inc.
 # All rights reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -13,24 +13,19 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-""" message queue config """
+import socket
 
-import os
 
-from oslo_config import cfg
+class IPAddress(object):
 
-from yabgp.channel.filter import FILTER_TYPR_INIT_DICT
+    @staticmethod
+    def unpack(data):
+        return socket.inet_ntop(socket.AF_INET if len(data) == 4 else socket.AF_INET6, data)
 
-CONF = cfg.CONF
+    @staticmethod
+    def pack(data):
+        return socket.inet_pton(socket.AF_INET if len(data.split('.')) == 4 else socket.AF_INET6, data)
 
-rabbit_mq = [
-    cfg.StrOpt('rabbit_url',
-               default=os.environ.get('RABBITMQ_URL', 'amqp://guest:guest@localhost:5672/%2F'),
-               help='The RabbitMQ connection url')
-]
 
-channle_filter = [
-    cfg.DictOpt('filter',
-                default=FILTER_TYPR_INIT_DICT,
-                help='the community and prefix filter dict'),
-]
+class IPNetwork(object):
+    pass

@@ -1,7 +1,7 @@
-# Copyright 2015 Cisco Systems, Inc.
+# Copyright 2015-2017 Cisco Systems, Inc.
 # All rights reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -13,10 +13,19 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-MONGO_COLLECTION_BGP_AGENT = 'BGP_AGENT'
-MONGO_COLLECTION_RABBIT_CHANNEL_FILTER = 'RABBIT_CHANNEL_FILTER'
+from yabgp.tlv import TLV
+from ..linkstate import LinkState
 
-SOURCE_ROUTER_TAG = 'SRC'
-TARGET_ROUTER_TAG = 'DST'
-SOURCE_AND_TARGET_ROUTER_TAG = 'BOTH'
-MONITOR_ROUTER_TAG = 'MON'
+
+@LinkState.register()
+class NodeName(TLV):
+    """
+    node name
+    """
+    TYPE = 1026
+    TYPE_STR = 'node-name'
+
+    @classmethod
+    def unpack(cls, data):
+
+        return cls(value=data.decode('ascii'))

@@ -100,7 +100,7 @@ A BGP update generator based on YaBGP https://github.com/trungdtbk/bgp-update-ge
 Support
 ~~~~~~~
 
-|Join Chat|
+Please join our Slack http://smartbgp.slack.com/ for questions, discussion, suggestions, etc
 
 Send email to xiaoquwl@gmail.com, or use GitHub issue system.
 
@@ -125,9 +125,6 @@ https://github.com/Exa-Networks/exabgp
    :target: https://github.com/smartbgp/yabgp/blob/master/LICENSE
 .. |Build Status| image:: https://travis-ci.org/smartbgp/yabgp.svg?branch=master
    :target: https://travis-ci.org/smartbgp/yabgp
-
-.. |Join Chat| image:: https://badges.gitter.im/Join%20Chat.svg
-   :target: https://gitter.im/smartbgp/yabgp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 .. |Code Health| image:: https://landscape.io/github/smartbgp/yabgp/master/landscape.svg?style=flat
    :target: https://landscape.io/github/smartbgp/yabgp/master

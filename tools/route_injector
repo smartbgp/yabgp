@@ -167,6 +167,8 @@ def send_update():
                 elif CONF.attribute.originator_id and CONF.attribute.cluster_list:
                     message['attr']['9'] = CONF.attribute.originator_id
                     message['attr']['10'] = CONF.attribute.cluster_list
+                if CONF.attribute.nexthop:
+                    message['attr']['3'] = CONF.attribute.nexthop
                 post_data = {
                     'nlri': message['nlri'],
                     'attr': message['attr']

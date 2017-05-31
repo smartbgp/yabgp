@@ -1,7 +1,7 @@
-# Copyright 2015 Cisco Systems, Inc.
+# Copyright 2015-2017 Cisco Systems, Inc.
 # All rights reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -13,23 +13,18 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""BGP RIB in and out policy
-"""
+import struct
+
+from yabgp.message.attribute.linkstate.linkstate import LinkState
+from yabgp.common.tlv import TLV
 
 
-class Rules(dict):
-    """Route Policy Rules"""
-
-    def __init__(self, rules=None, default_rule=None):
-        """Initialize the Route Policy Rules"""
-
-        super(Rules, self).__init__(rules or {})
-        self.default_rule = default_rule
+@LinkState.register(typecode=1089, typestr='maximum-link-bandwidth')
+@LinkState.register(typecode=1090, typestr='maximum-reserved-link-bandwidth')
+class LinkBandWidth(TLV):
 
     @classmethod
-    def from_dict(cls, rules_dict, default_rule=None):
-        pass
-
-    @classmethod
-    def from_database(cls):
-        pass
+    def parse(cls, value):
+        """
+        """
+        return cls(value=struct.unpack('!f', value)[0])

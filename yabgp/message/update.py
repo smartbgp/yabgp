@@ -18,6 +18,7 @@
 import struct
 import traceback
 import logging
+import binascii
 
 import netaddr
 
@@ -38,6 +39,7 @@ from yabgp.message.attribute.mpreachnlri import MpReachNLRI
 from yabgp.message.attribute.mpunreachnlri import MpUnReachNLRI
 from yabgp.message.attribute.extcommunity import ExtCommunity
 from yabgp.message.attribute.pmsitunnel import PMSITunnel
+from yabgp.message.attribute.linkstate.linkstate import LinkState
 
 LOG = logging.getLogger()
 
@@ -367,8 +369,11 @@ class Update(object):
                 decode_value = ExtCommunity.parse(value=attr_value)
             elif type_code == bgp_cons.BGPTYPE_PMSI_TUNNEL:
                 decode_value = PMSITunnel.parse(value=attr_value)
+            elif type_code == bgp_cons.BGPTYPE_LINK_STATE:
+                attributes.update(LinkState.unpack(data=attr_value).dict())
+                continue
             else:
-                decode_value = repr(attr_value)
+                decode_value = binascii.b2a_hex(attr_value)
             attributes[type_code] = decode_value
 
         return attributes

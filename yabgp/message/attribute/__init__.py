@@ -105,8 +105,8 @@ class AttributeID(int):
     Tunnel_Encapsulation_Attribute = 0x17  # 23  [RFC5512]
     Traffic_Engineering = 0x18  # 24  [RFC5543]
     IPv6_Address_Specific_Extended_Community = 0x19  # 25  [RFC5701]
-    # AIGP                                    = 0x1a  # 26  [draft-ietf-idr-aigp](TEMPORARY - expires 2012-03-14)
 
+    LINKSTATE = 0x1d
     ATTR_SET = 0x80  # 128 [RFC6368]
 
     Unassigned = list(range(27, 127)) + list(range(129, 254))

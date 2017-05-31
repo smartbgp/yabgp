@@ -25,9 +25,8 @@ from yabgp.message.attribute.nlri.ipv4_mpls_vpn import IPv4MPLSVPN
 from yabgp.message.attribute.nlri.ipv6_mpls_vpn import IPv6MPLSVPN
 from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
 from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
-from yabgp.message.attribute.nlri.labeled_unicast.ipv4 import IPv4LabeledUnicast
-from yabgp.message.attribute.nlri.labeled_unicast.ipv6 import IPv6LabeledUnicast
 from yabgp.message.attribute.nlri.evpn import EVPN
+from yabgp.message.attribute.nlri.linkstate import BGPLS
 from yabgp.common import afn
 from yabgp.common import safn
 from yabgp.common import exception as excep
@@ -90,9 +89,6 @@ class MpUnReachNLRI(Attribute):
                         withdraw_list.append(nlri)
 
                 return dict(afi_safi=(afi, safi), withdraw=withdraw_list)
-            elif safi == safn.SAFNUM_MPLS_LABEL:
-                withdraw_list = IPv4LabeledUnicast.parse(nlri_bin)
-                return dict(afi_safi=(afi, safi), withdraw=withdraw_list)
             else:
                 return dict(afi_safi=(afn.AFNUM_INET, safi), withdraw=repr(nlri_bin))
         # for ipv6
@@ -102,8 +98,6 @@ class MpUnReachNLRI(Attribute):
                 return dict(afi_safi=(afi, safi), withdraw=IPv6Unicast.parse(nlri_data=nlri_bin))
             elif safi == safn.SAFNUM_LAB_VPNUNICAST:
                 return dict(afi_safi=(afi, safi), withdraw=IPv6MPLSVPN.parse(value=nlri_bin, iswithdraw=True))
-            elif safi == safn.SAFNUM_MPLS_LABEL:
-                return dict(afi_safi=(afi, safi), withdraw=IPv6LabeledUnicast.parse(nlri_bin))
             else:
                 return dict(afi_safi=(afi, safi), withdraw=repr(nlri_bin))
         # for l2vpn
@@ -113,7 +107,13 @@ class MpUnReachNLRI(Attribute):
                 return dict(afi_safi=(afi, safi), withdraw=EVPN.parse(nlri_data=nlri_bin))
             else:
                 return dict(afi_safi=(afi, safi), withdraw=repr(nlri_bin))
-
+        # BGP LS
+        elif afi == afn.AFNUM_BGPLS:
+            if safi == safn.SAFNUM_BGPLS:
+                withdraw = BGPLS.parse(nlri_bin)
+                return dict(afi_safi=(afi, safi), withdraw=withdraw)
+            else:
+                pass
         else:
             return dict(afi_safi=(afi, safi), withdraw=repr(nlri_bin))
 
@@ -153,11 +153,6 @@ class MpUnReachNLRI(Attribute):
                         reason='failed to construct attributes',
                         data=value
                     )
-            elif safi == safn.SAFNUM_MPLS_LABEL:
-                nlri_hex = IPv4LabeledUnicast.construct(value['withdraw'])
-                attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri_hex
-                return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
-                    + struct.pack('!B', len(attr_value)) + attr_value
             else:
                 raise excep.ConstructAttributeFailed(
                     reason='unsupport this sub address family',
@@ -177,11 +172,6 @@ class MpUnReachNLRI(Attribute):
                         + struct.pack('!B', len(attr_value)) + attr_value
                 else:
                     return None
-            elif safi == safn.SAFNUM_MPLS_LABEL:
-                nlri_hex = IPv6LabeledUnicast.construct(value['withdraw'])
-                attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri_hex
-                return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
-                    + struct.pack('!B', len(attr_value)) + attr_value
         # for l2vpn
         elif afi == afn.AFNUM_L2VPN:
             # for evpn

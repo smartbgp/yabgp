@@ -136,21 +136,14 @@ class DefaultHandler(BaseHandler):
         msg_path, msg_file = self.peer_files[peer.lower()]
         msg_seq = self.msg_sequence[peer.lower()]
         if msg_path:
-            if CONF.message.format == 'list':
-                msg_record = [timestamp, msg_seq, msg_type, msg]
-                msg_file.write(str(msg_record) + '\n')
-            elif CONF.message.format == 'json':
-                msg_record = {
-                    't': timestamp,
-                    'seq': msg_seq,
-                    'type': msg_type
-                }
-                msg_record.update(msg)
-                json.dump(msg_record, msg_file)
-                msg_file.write('\n')
-            else:
-                LOG.error('unknown message format %s', CONF.message.format)
-                sys.exit()
+            msg_record = {
+                't': timestamp,
+                'seq': msg_seq,
+                'type': msg_type
+            }
+            msg_record.update(msg)
+            json.dump(msg_record, msg_file)
+            msg_file.write('\n')
             self.msg_sequence[peer.lower()] += 1
             if flush:
                 msg_file.flush()
@@ -238,5 +231,14 @@ class DefaultHandler(BaseHandler):
             timestamp=time.time(),
             msg_type=3,
             msg={"msg": msg},
+            flush=True
+        )
+
+    def on_connection_lost(self, peer):
+        self.write_msg(
+            peer=peer.factory.peer_addr,
+            timestamp=time.time(),
+            msg_type=bgp_cons.MSG_BGP_CLOSED,
+            msg={"msg": None},
             flush=True
         )

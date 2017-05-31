@@ -35,6 +35,7 @@ from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
 from yabgp.message.attribute.nlri.labeled_unicast.ipv4 import IPv4LabeledUnicast
 from yabgp.message.attribute.nlri.labeled_unicast.ipv6 import IPv6LabeledUnicast
 from yabgp.message.attribute.nlri.evpn import EVPN
+from yabgp.message.attribute.nlri.linkstate import BGPLS
 
 
 class MpReachNLRI(Attribute):
@@ -64,7 +65,8 @@ class MpReachNLRI(Attribute):
 
     @classmethod
     def parse(cls, value):
-
+        """parse
+        """
         try:
             afi, safi, nexthop_length = struct.unpack('!HBB', value[0:4])
             nexthop_bin = value[4:4 + nexthop_length]
@@ -73,7 +75,7 @@ class MpReachNLRI(Attribute):
             # error when lenght is wrong
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
-                data=repr(value))
+                data=str(value))
 
         #  Address Family IPv4
         if afi == afn.AFNUM_INET:
@@ -87,9 +89,8 @@ class MpReachNLRI(Attribute):
                     asn, an = struct.unpack('!HI', rd_value_bin)
                     ipv4 = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin[8:]), 16)))
                     nexthop = {'rd': '%s:%s' % (asn, an), 'str': ipv4}
-                # TODO(xiaoquwl) for other RD type decoding
                 else:
-                    nexthop = repr(nexthop_bin[8:])
+                    nexthop = binascii.b2a_hex((nexthop_bin[8:]))
                 # parse nlri
                 nlri = IPv4MPLSVPN.parse(nlri_bin)
                 return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
@@ -121,7 +122,7 @@ class MpReachNLRI(Attribute):
                     nexthop = ''
                 return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri_list)
             else:
-                nlri = repr(nlri_bin)
+                nlri = binascii.b2a_hex(nlri_bin)
 
         # #  Address Family IPv6
         elif afi == afn.AFNUM_INET6:
@@ -162,7 +163,7 @@ class MpReachNLRI(Attribute):
                     nexthop = {'rd': '%s:%s' % (asn, an), 'str': ipv6}
                 # TODO(xiaoquwl) for other RD type decoding
                 else:
-                    nexthop = repr(nexthop_bin[8:])
+                    nexthop = binascii.b2a_hex(nexthop_bin[8:])
                 # parse nlri
                 nlri = IPv6MPLSVPN.parse(nlri_bin)
                 return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
@@ -183,12 +184,20 @@ class MpReachNLRI(Attribute):
                 nlri = EVPN.parse(nlri_bin)
                 return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
             else:
-                nlri = repr(nlri_bin)
+                nlri = binascii.b2a_hex(nlri_bin)
 
+        # BGP LS
+        elif afi == afn.AFNUM_BGPLS:
+            if safi == safn.SAFNUM_BGPLS:
+                nexthop = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin), 16)))
+                nlri = BGPLS.parse(nlri_bin)
+                return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
+            else:
+                pass
         else:
-            nlri = repr(nlri_bin)
+            nlri = binascii.b2a_hex(nlri_bin)
 
-        return dict(afi_safi=(afi, safi), nexthop=nexthop_bin, nlri=nlri_bin)
+        return dict(afi_safi=(afi, safi), nexthop=binascii.b2a_hex(nexthop_bin), nlri=binascii.b2a_hex(nlri_bin))
 
     @classmethod
     def construct_mpls_vpn_nexthop(cls, nexthop):

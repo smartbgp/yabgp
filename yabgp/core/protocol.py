@@ -19,8 +19,6 @@ import logging
 import traceback
 import struct
 import time
-import copy
-import json
 
 import netaddr
 from oslo_config import cfg
@@ -34,7 +32,6 @@ from yabgp.message.update import Update
 from yabgp.message.notification import Notification
 from yabgp.message.route_refresh import RouteRefresh
 from yabgp.common import exception as excep
-from yabgp.db import constants as channel_cons
 
 LOG = logging.getLogger(__name__)
 
@@ -75,12 +72,6 @@ class BGP(protocol.Protocol):
             'RouteRefresh': 0
         }
 
-        # Adj-rib-in
-        self._adj_rib_in = {}
-
-        # Adj-rib-out
-        self._adj_rib_out = {}
-
     def connectionMade(self):
 
         """
@@ -115,25 +106,13 @@ class BGP(protocol.Protocol):
             LOG.debug(error_str)
 
     def connectionLost(self, reason):
-
         """Called when the associated connection was lost.
-
         :param reason: the reason of lost connection.
         """
         LOG.debug('Called connectionLost')
 
-        # send msg to rabbit mq
-        if not CONF.standalone and self.factory.tag in \
-                [channel_cons.SOURCE_ROUTER_TAG,
-                 channel_cons.SOURCE_AND_TARGET_ROUTER_TAG, channel_cons.TARGET_ROUTER_TAG]:
-            agent_id = "%s:%s" % (CONF.rest.bind_host, CONF.rest.bind_port)
-            send_to_channel_msg = {
-                'agent_id': agent_id,
-                'type': bgp_cons.MSG_BGP_CLOSED,
-                'msg': None
-            }
-            self.factory.channel.send_message(
-                exchange='', routing_key=self.factory.peer_addr, message=send_to_channel_msg)
+        self.handler.on_connection_lost(self)
+
         # Don't do anything if we closed the connection explicitly ourselves
         if self.disconnected:
             self.factory.connection_closed(self)
@@ -150,69 +129,7 @@ class BGP(protocol.Protocol):
             error_str = traceback.format_exc()
             LOG.debug(error_str)
 
-    def _init_rib_table(self):
-        for afi_safi in cfg.CONF.bgp.afi_safi:
-            self._adj_rib_in[afi_safi] = {}
-            if not self._adj_rib_out:
-                self._adj_rib_out[afi_safi] = {}
-
-    def reset_rib_in(self):
-        """
-        clear _adj_rib_in table when bgp peer establish
-        :return:
-        """
-        self._init_rib_table()
-
-    def reset_rib_out(self):
-        """
-        when bgp peer established, should send all prefix in _adj_rib_out out.
-        :return:
-        """
-        pass
-
-    def get_rib_in(self):
-        return self._adj_rib_in
-
-    def get_rib_out(self):
-        return self._adj_rib_out
-
-    def update_rib(self, msg):
-
-        if not CONF.bgp.rib:
-            return
-        for prefix in msg['nlri']:
-            self._adj_rib_in['ipv4'][prefix] = msg['attr']
-        for prefix in msg['withdraw']:
-            if prefix in self._adj_rib_in['ipv4']:
-                self._adj_rib_in['ipv4'].pop(prefix)
-            else:
-                LOG.warning('withdraw prefix which does not exist in rib table!')
-        # for none ipv4 address family
-        mpreach_dict = msg['attr'].get(14) or {}
-        afi_safi = mpreach_dict.get('afi_safi')
-        if afi_safi == (1, 133):  # ipv4 flowspec
-            new_attr = copy.copy(msg['attr'])
-            nlri_dict = new_attr.pop(14)
-            new_attr[3] = nlri_dict['nexthop']
-            for prefix in nlri_dict.get('nlri'):
-                prefix = json.dumps(prefix)
-                self._adj_rib_in['flowspec'][str(prefix)] = new_attr
-
-        mpunreach_dict = msg['attr'].get(15) or {}
-        if not mpunreach_dict:
-            return
-        afi_safi = mpunreach_dict.get('afi_safi')
-        if afi_safi == (1, 133):
-            for prefix in mpunreach_dict.get('withdraw'):
-                prefix = json.dumps(prefix)
-                if str(prefix) in self._adj_rib_in['flowspec']:
-                    print str(prefix)
-                    self._adj_rib_in['flowspec'].pop(str(prefix))
-                else:
-                    LOG.warning('withdraw prefix which does not exist in rib table')
-
     def dataReceived(self, data):
-
         """
         Appends newly received data to the receive buffer, and
         then attempts to parse as many BGP messages as possible.
@@ -291,7 +208,8 @@ class BGP(protocol.Protocol):
                 self._route_refresh_received(msg=route_refresh_msg, msg_type=msg_type)
             else:
                 # unknown message type
-                self.fsm.header_error(bgp_cons.ERR_MSG_HDR_BAD_MSG_TYPE, struct.pack('!H', msg_type))
+                self.fsm.header_error(
+                    bgp_cons.ERR_MSG_HDR_BAD_MSG_TYPE, struct.pack('!H', msg_type))
         except Exception as e:
             LOG.error(e)
             error_str = traceback.format_exc()
@@ -300,7 +218,6 @@ class BGP(protocol.Protocol):
         return True
 
     def closeConnection(self):
-
         """Close the connection"""
 
         if self.transport.connected:
@@ -310,7 +227,8 @@ class BGP(protocol.Protocol):
     def _update_received(self, timestamp, msg):
 
         """Called when a BGP Update message was received."""
-        result = Update().parse(timestamp, msg, self.fourbytesas, self.add_path_ipv4_receive, self.add_path_ipv4_send)
+        result = Update().parse(
+            timestamp, msg, self.fourbytesas, self.add_path_ipv4_receive, self.add_path_ipv4_send)
         if result['sub_error']:
             msg = {
                 'attr': result['attr'],
@@ -318,7 +236,9 @@ class BGP(protocol.Protocol):
                 'withdraw': result['withdraw'],
                 'hex': repr(result['hex'])
             }
+
             self.handler.on_update_error(self, timestamp, msg)
+
             LOG.error('[%s] Update message error: sub error=%s', self.factory.peer_addr, result['sub_error'])
             self.msg_recv_stat['Updates'] += 1
             self.fsm.update_received()
@@ -342,90 +262,8 @@ class BGP(protocol.Protocol):
 
         self.handler.update_received(self, timestamp, msg)
 
-        # check channel filter
-        if not CONF.standalone and self.factory.tag in \
-                [channel_cons.SOURCE_ROUTER_TAG, channel_cons.SOURCE_AND_TARGET_ROUTER_TAG]:
-            self.channel_filter(msg=msg)
-        # update rib
-        self.update_rib(msg)
         self.msg_recv_stat['Updates'] += 1
         self.fsm.update_received()
-
-    def channel_filter(self, msg):
-        """if not running standalone mode, need to check the filter"""
-        agent_id = '%s:%s' % (CONF.rest.bind_host, CONF.rest.bind_port)
-        send_to_channel_msg = {
-            'agent_id': agent_id,
-            'type': bgp_cons.MSG_UPDATE,
-            'msg': None
-        }
-        match_community = False
-        match_as_path = False
-        nlri_out = []
-        withdraw_out = []
-
-        # for prefix update
-        # compare community
-        if 8 in msg['attr']:
-            for community in msg['attr'][8]:
-                if community in CONF.rabbit_mq.filter['community']:
-                    match_community = True
-                    break
-        # not match community, then compare as path
-        if not match_community:
-            # [(2, [3257, 31027, 34848, 21465])]
-            as_path_list = msg['attr'].get(2)
-            if as_path_list:
-                for as_path in CONF.rabbit_mq.filter['as_path']:
-                    if as_path in as_path_list[0][1]:
-                        match_as_path = True
-                        break
-
-        # if not match community and as path, then compare prefix
-        if not match_community and not match_as_path:
-            for prefix in msg['nlri']:
-                if prefix in CONF.rabbit_mq.filter['prefix']:
-                    nlri_out.append(prefix)
-
-        # for withdraw prefix
-        prefix_match = False
-        for prefix in msg['withdraw']:
-            if prefix in CONF.rabbit_mq.filter['prefix']:
-                withdraw_out.append(prefix)
-                prefix_match = True
-            if not prefix_match:  # not match prefix, then compare attribute
-                # check community
-                if prefix in self._adj_rib_in['ipv4']:
-                    flag = False
-                    if 8 in self._adj_rib_in['ipv4'][prefix]:
-                        for community in self._adj_rib_in['ipv4'][prefix][8]:
-                            if community in CONF.rabbit_mq.filter['community']:
-                                withdraw_out.append(prefix)
-                                flag = True
-                    as_path_list = self._adj_rib_in['ipv4'][prefix].get(2)
-                    if as_path_list and not flag:
-                        for as_path in CONF.rabbit_mq.filter['as_path']:
-                            if as_path in as_path_list[0][1]:
-                                withdraw_out.append(prefix)
-
-        # try to send message to rabbitmq
-        if match_community or match_as_path:
-            send_to_channel_msg['msg'] = msg
-        elif nlri_out:
-            send_to_channel_msg['msg'] = {
-                'attr': msg['attr'],
-                'nlri': nlri_out,
-                'withdraw': []
-                }
-        elif withdraw_out:
-            send_to_channel_msg['msg'] = {
-                'attr': {},
-                'nlri': [],
-                'withdraw': withdraw_out
-            }
-        if send_to_channel_msg['msg']:
-            self.factory.channel.send_message(
-                exchange='', routing_key=self.factory.peer_addr, message=send_to_channel_msg)
 
     def send_update(self, msg):
         """
@@ -456,7 +294,8 @@ class BGP(protocol.Protocol):
         """
         self.msg_sent_stat['Notifications'] += 1
         LOG.info(
-            "[%s]Send a BGP Notification message to the peer [Error: %s, Suberror: %s, Error data: %s ]",
+            "[%s]Send a BGP Notification message to the peer "
+            "[Error: %s, Suberror: %s, Error data: %s ]",
             self.factory.peer_addr, error, sub_error, repr(data))
         # message statistic
         self.msg_sent_stat['Notifications'] += 1
@@ -541,8 +380,9 @@ class BGP(protocol.Protocol):
         """
         # construct Open message
         self.capability_negotiate()
-        open_msg = Open(version=bgp_cons.VERSION, asn=self.factory.my_asn, hold_time=self.fsm.hold_time,
-                        bgp_id=self.factory.bgp_id). \
+        open_msg = Open(
+            version=bgp_cons.VERSION, asn=self.factory.my_asn, hold_time=self.fsm.hold_time,
+            bgp_id=self.factory.bgp_id). \
             construct(cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local'])
         if 'add_path' in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']:
             # check add path feature, send add path condition:
@@ -593,7 +433,7 @@ class BGP(protocol.Protocol):
                     if cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']['add_path'] in \
                             ['ipv4_receive', 'ipv4_both']:
                         self.add_path_ipv4_receive = True
-                    CONF.bgp.rib = False
+
             LOG.info("--%s = %s", key, cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote'][key])
 
         self.peer_id = open_msg.bgp_id
@@ -601,7 +441,6 @@ class BGP(protocol.Protocol):
 
         self.negotiate_hold_time(open_msg.hold_time)
         self.fsm.open_received()
-        self.reset_rib_in()
 
         self.handler.open_received(self, timestamp, parse_result)
 
