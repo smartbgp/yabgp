@@ -111,12 +111,8 @@ class BGP(protocol.Protocol):
         """
         LOG.debug('Called connectionLost')
 
-        self.factory.write_msg(
-            timestamp=time.time(),
-            msg_type=bgp_cons.MSG_BGP_CLOSED,
-            msg=None,
-            flush=True
-        )
+        self.handler.on_connection_lost(self)
+
         # Don't do anything if we closed the connection explicitly ourselves
         if self.disconnected:
             self.factory.connection_closed(self)
