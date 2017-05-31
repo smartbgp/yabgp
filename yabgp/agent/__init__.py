@@ -173,17 +173,10 @@ def prepare_twisted_service():
             if CONF.bgp.running_config[peer]['local_addr'] == '0.0.0.0':
                 LOG.error('please use the exactly local bgp ip address when not running in standalone mode')
                 sys.exit()
-        if CONF.message.write_disk:
-            msg_file_path_for_peer = os.path.join(
-                CONF.message.write_dir,
-                peer.lower()
-            )
-            if not os.path.exists(msg_file_path_for_peer):
-                os.makedirs(msg_file_path_for_peer)
-                LOG.info('Create dir %s for peer %s', msg_file_path_for_peer, peer)
-            LOG.info('BGP message file path is %s', msg_file_path_for_peer)
-        else:
-            msg_file_path_for_peer = None
+
+        if CONF.message.write_disk and CONF.handler['class'].file_writer:
+            CONF.handler['class'].init_msg_file(peer.lower())
+
         LOG.info('Create BGPPeering instance')
         afi_safi_list = [bgp_cons.AFI_SAFI_STR_DICT[afi_safi]
                          for afi_safi in CONF.bgp.running_config[peer]['afi_safi']]
@@ -196,7 +189,6 @@ def prepare_twisted_service():
             peeraddr=CONF.bgp.running_config[peer]['remote_addr'],
             tag=CONF.bgp.running_config[peer]['tag'],
             afisafi=CONF.bgp.running_config[peer]['afi_safi'],
-            msgpath=msg_file_path_for_peer,
             md5=CONF.bgp.running_config[peer]['md5'],
             channel=rabbit_mq_factory,
             mongo_conn=mongo_connection
@@ -214,6 +206,7 @@ def prepare_twisted_service():
 
     # Starting api server
     if sys.version_info[0] == 2:
+        # if running under Py2.x
         from twisted.web.wsgi import WSGIResource
         LOG.info("Prepare RESTAPI service")
         resource = WSGIResource(reactor, reactor.getThreadPool(), app)
@@ -229,6 +222,16 @@ def prepare_twisted_service():
         LOG.info('start peer, peer address=%s', peer)
         all_peers[peer].automatic_start()
     reactor.run()
+
+
+def register_callback_handler(handler):
+    CONF.handler['class'] = handler
+    LOG.info('Registered callback handler `%s`', handler)
+
+
+# TODO
+def register_api_handler(api_handler):
+    app.register_blueprint(api_handler.blueprint, api_handler.url_prefix)
 
 
 def prepare_service(args=None):

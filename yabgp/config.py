@@ -28,6 +28,10 @@ CONF.register_cli_opts([
     cfg.StrOpt('pid-file', default=None, help='pid file name')
 ])
 
+CONF.register_cli_opts([
+    cfg.DictOpt('handler', default={}, help='callback handler')
+])
+
 msg_process_opts = [
     cfg.BoolOpt('write_disk',
                 default=True,
