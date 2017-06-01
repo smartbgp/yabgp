@@ -15,11 +15,14 @@
 
 """start service"""
 
-from yabgp.agent import prepare_service
+from yabgp.agent import prepare_service, register_callback_handler
+from yabgp.handler import DefaultHandler
 
 
 def main():
     try:
+        default_handler = DefaultHandler()
+        register_callback_handler(default_handler)
         prepare_service()
     except Exception as e:
         print e

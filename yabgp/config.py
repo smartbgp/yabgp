@@ -23,6 +23,10 @@ from oslo_config import cfg
 
 CONF = cfg.CONF
 
+CONF.register_cli_opts([
+    cfg.DictOpt('handler', default={}, help='callback handler')
+])
+
 MSG_PROCESS_OPTS = [
     cfg.BoolOpt('write_disk',
                 default=True,

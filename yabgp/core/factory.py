@@ -17,14 +17,11 @@ Twisted Factory, BGP implementation.
 """
 
 import time
-import os
 import logging
 import socket
 import platform
 import struct
 import sys
-import json
-import traceback
 
 import netaddr
 from twisted.internet import protocol
@@ -75,8 +72,8 @@ class BGPPeering(BGPFactory):
     One connection, One BGPPeering class.
     """
 
-    def __init__(self, myasn=None, myaddr=None, peerasn=None, peeraddr=None,
-                 msgpath=None, afisafi=None, md5=None):
+    def __init__(self, myasn=None, myaddr=None, peerasn=None, peeraddr=None, tag=None,
+                 afisafi=None, md5=None, channel=None, mongo_conn=None):
         """Initial a BGPPeering instance.
 
         :param myasn: local bgp as number.
@@ -102,17 +99,6 @@ class BGPPeering(BGPFactory):
 
         # reference to the BGPProtocol instance in ESTAB state
         self.estab_protocol = None
-        self.msg_path = msgpath
-        if msgpath:
-            self.msg_path = msgpath + '/msg/'
-            if not os.path.exists(self.msg_path):
-                os.makedirs(self.msg_path)
-            self.msg_file_name = "%s.msg" % time.time()
-            self.msg_seq = self.get_last_seq() + 1
-            self.msg_file = open(os.path.join(self.msg_path, self.msg_file_name), 'a')
-            self.msg_file.flush()
-            LOG.info('BGP message file %s', self.msg_file_name)
-            LOG.info('The last bgp message seq number is %s', self.msg_seq - 1)
 
     def buildProtocol(self, addr):
 
@@ -169,77 +155,6 @@ class BGPPeering(BGPFactory):
             self.fsm.connection_failed()
         except Exception as e:
             LOG.info("[%s]Client connection failed: %s", self.peer_addr, e)
-
-    def get_last_seq(self):
-
-        """
-        Get the last sequence number in the latest log file.
-        """
-        LOG.info('get the last bgp message seq for this peer')
-        last_seq = 0
-        # first get the last file
-        file_list = os.listdir(self.msg_path)
-        if not file_list:
-            return last_seq
-        file_list.sort()
-        self.msg_file_name = file_list[-1]
-        try:
-            with open(self.msg_path + self.msg_file_name, 'rb') as fh:
-                line = None
-                for line in fh:
-                    pass
-                last = line
-                if line:
-                    if last.startswith('['):
-                        last_seq = eval(last)[1]
-                    elif last.startswith('{'):
-                        last_seq = json.loads(last)['seq']
-        except OSError:
-            LOG.error('Error when reading bgp message files')
-        except Exception as e:
-            LOG.debug(traceback.format_exc())
-            LOG.error(e)
-            sys.exit()
-
-        return last_seq
-
-    def write_msg(self, timestamp, msg_type, msg, flush=False):
-        """
-        write bgp message into local disk file
-        :param timestamp: timestamp
-        :param msg_type: message type (0,1,2,3,4,5,6)
-        :param msg: message dict
-        :param flush: flush after write or not
-        :return:
-        """
-        if self.msg_path:
-            msg_record = {
-                't': timestamp,
-                'seq': self.msg_seq,
-                'type': msg_type,
-                'msg': msg
-            }
-            json.dump(msg_record, self.msg_file)
-            self.msg_file.write('\n')
-            self.msg_seq += 1
-            if flush:
-                self.msg_file.flush()
-
-    def flush_and_check_file_size(self):
-        if self.msg_path:
-            # Flush message log file
-            self.msg_file.flush()
-
-            # if the size of the msg file is bigger than 'max_msg_file_size',
-            # then save as and re-open a new file.
-            if os.path.getsize(os.path.join(self.msg_path, self.msg_file_name)) >= \
-                    CONF.message.write_msg_max_size:
-                self.msg_file.close()
-                self.msg_file_name = "%s.msg" % time.time()
-                LOG.info('Open a new message file %s', self.msg_file_name)
-                self.msg_file = open(os.path.join(self.msg_path + self.msg_file_name), 'a')
-                return True
-        return False
 
     def automatic_start(self, idle_hold=False):
 
