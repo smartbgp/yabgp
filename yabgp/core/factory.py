@@ -16,7 +16,6 @@
 Twisted Factory, BGP implementation.
 """
 
-import time
 import logging
 import socket
 import platform
@@ -72,8 +71,8 @@ class BGPPeering(BGPFactory):
     One connection, One BGPPeering class.
     """
 
-    def __init__(self, myasn=None, myaddr=None, peerasn=None, peeraddr=None, tag=None,
-                 afisafi=None, md5=None, channel=None, mongo_conn=None):
+    def __init__(self, myasn=None, myaddr=None, peerasn=None, peeraddr=None,
+                 afisafi=None, md5=None, handler=None):
         """Initial a BGPPeering instance.
 
         :param myasn: local bgp as number.
@@ -96,6 +95,7 @@ class BGPPeering(BGPFactory):
 
         self.status = False
         self.fsm = BGPFactory.FSM(self)
+        self.handler = handler
 
         # reference to the BGPProtocol instance in ESTAB state
         self.estab_protocol = None
@@ -142,12 +142,7 @@ class BGPPeering(BGPFactory):
         """
 
         error_msg = "[%s]Client connection failed: %s" % (self.peer_addr, reason.getErrorMessage())
-        if self.msg_path:
-            self.write_msg(
-                timestamp=time.time(),
-                msg_type=0,
-                msg={"msg": "Client connection failed: %s" % reason.getErrorMessage()}
-            )
+        self.handler.on_connection_failed(self.peer_addr, reason.getErrorMessage())
         LOG.info(error_msg)
         # There is no protocol instance yet at this point.
         # Catch a possible NotificationException

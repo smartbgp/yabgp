@@ -54,8 +54,7 @@ class BGP(protocol.Protocol):
         self.add_path_ipv4_receive = False
         self.add_path_ipv4_send = False
 
-        self.handler = CONF.handler['class']
-
+        self.handler = self.factory.handler
         # statistic
         self.msg_sent_stat = {
             'Opens': 0,

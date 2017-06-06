@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 import sys
 
-from yabgp.agent import prepare_service, register_callback_handler
-from yabgp.handler import BaseHandler
-
-# from yabgp.common import constants as bgp_cons
 from oslo_config import cfg
+
+from yabgp.agent import prepare_service
+from yabgp.handler import BaseHandler
+# from yabgp.common import constants as bgp_cons
 
 CONF = cfg.CONF
 
@@ -37,8 +37,7 @@ class CliHandler(BaseHandler):
 def main():
     try:
         cli_handler = CliHandler()
-        register_callback_handler(cli_handler)
-        prepare_service()
+        prepare_service(handler=cli_handler)
     except Exception as e:
         print e
 
