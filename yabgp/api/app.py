@@ -23,7 +23,7 @@ from yabgp.api import config
 from oslo_config import cfg
 
 app = flask.Flask('yabgp.api')
-app.config['SECRET_KEY'] = 'nexus-yabgp-pass'
+app.config['SECRET_KEY'] = 'cisco123'
 app.register_blueprint(v1.blueprint, url_prefix='/v1')
 
 cfg.CONF.register_cli_opts(config.rest_server_ops, group='rest')
