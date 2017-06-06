@@ -8,6 +8,7 @@ from yabgp.agent import prepare_service
 from yabgp.handler import BaseHandler
 # from yabgp.common import constants as bgp_cons
 
+
 CONF = cfg.CONF
 
 
@@ -40,6 +41,7 @@ def main():
         prepare_service(handler=cli_handler)
     except Exception as e:
         print e
+
 
 if __name__ == '__main__':
     sys.exit(main())

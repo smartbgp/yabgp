@@ -105,12 +105,24 @@ def prepare_twisted_service(handler):
     reactor.run()
 
 
+<<<<<<< HEAD
+=======
+def register_callback_handler(handler):
+    CONF.handler['class'] = handler
+    LOG.info('Registered callback handler `%s`', handler)
+
+
+>>>>>>> remote/master
 # TODO
 def register_api_handler(api_handler):
     app.register_blueprint(api_handler.blueprint, api_handler.url_prefix)
 
 
+<<<<<<< HEAD
 def prepare_service(args=None, handler=None):
+=======
+def prepare_service(args=None):
+>>>>>>> remote/master
     try:
         CONF(args=args, project='yabgp', version=version,
              default_config_files=['/etc/yabgp/yabgp.ini'])

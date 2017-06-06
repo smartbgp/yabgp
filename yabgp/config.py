@@ -22,6 +22,7 @@ from oslo_config import cfg
 
 CONF = cfg.CONF
 
+
 BGP_CONFIG_OPTS = [
     cfg.IntOpt('peer_start_interval',
                default=10,
