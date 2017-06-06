@@ -3,15 +3,14 @@
 import abc
 import json
 import os
-
+import time
 import logging
 import traceback
-
 import sys
 
-from yabgp.common import constants as bgp_cons
-import time
 from oslo_config import cfg
+
+from yabgp.common import constants as bgp_cons
 
 CONF = cfg.CONF
 
@@ -61,10 +60,6 @@ class DefaultHandler(BaseHandler):
         '''
         self.msg_sequence = {}
 
-    @property
-    def file_writer(self):
-        return True
-
     def init_msg_file(self, peer_addr):
         msg_file_path_for_peer = os.path.join(
             CONF.message.write_dir,
@@ -79,18 +74,22 @@ class DefaultHandler(BaseHandler):
             msg_path = msg_file_path_for_peer + '/msg/'
             if not os.path.exists(msg_path):
                 os.makedirs(msg_path)
-            msg_file_name = "%s.msg" % time.time()
-            msg_seq = DefaultHandler.get_last_seq(msg_path) + 1
+
+            # try get latest file and msg sequence if any
+            last_msg_seq, msg_file_name = DefaultHandler.get_last_seq_and_file(msg_path)
+
+            if not msg_file_name:
+                msg_file_name = "%s.msg" % time.time()
             # store the message sequence
-            self.msg_sequence[peer_addr] = msg_seq
+            self.msg_sequence[peer_addr] = last_msg_seq + 1
             msg_file = open(os.path.join(msg_path, msg_file_name), 'a')
             msg_file.flush()
             self.peer_files[peer_addr] = (msg_path, msg_file)
             LOG.info('BGP message file %s', msg_file_name)
-            LOG.info('The last bgp message seq number is %s', msg_seq - 1)
+            LOG.info('The last bgp message seq number is %s', last_msg_seq)
 
     @staticmethod
-    def get_last_seq(msg_path):
+    def get_last_seq_and_file(msg_path):
         """
         Get the last sequence number in the latest log file.
         """
@@ -99,7 +98,7 @@ class DefaultHandler(BaseHandler):
         # first get the last file
         file_list = os.listdir(msg_path)
         if not file_list:
-            return last_seq
+            return last_seq, None
         file_list.sort()
         msg_file_name = file_list[-1]
         try:
@@ -120,7 +119,7 @@ class DefaultHandler(BaseHandler):
             LOG.error(e)
             sys.exit()
 
-        return last_seq
+        return last_seq, msg_file_name
 
     def write_msg(self, peer, timestamp, msg_type, msg, flush=False):
         """
@@ -133,9 +132,10 @@ class DefaultHandler(BaseHandler):
         :param flush: flush after write or not
         :return:
         """
-        msg_path, msg_file = self.peer_files[peer.lower()]
-        msg_seq = self.msg_sequence[peer.lower()]
+        msg_path, msg_file = self.peer_files.get(peer.lower(), (None, None))
         if msg_path:
+            msg_seq = self.msg_sequence[peer.lower()]
+
             msg_record = {
                 't': timestamp,
                 'seq': msg_seq,
@@ -149,7 +149,7 @@ class DefaultHandler(BaseHandler):
                 msg_file.flush()
 
     def flush_and_check_file_size(self, peer):
-        msg_path, cur_file = self.peer_files[peer.lower()]
+        msg_path, cur_file = self.peer_files.get(peer.lower(), (None, None))
         if msg_path:
             # Flush message log file
             cur_file.flush()

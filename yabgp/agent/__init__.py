@@ -63,7 +63,7 @@ def prepare_twisted_service():
     for peer in CONF.bgp.running_config:
         LOG.info('Get peer %s configuration', peer)
 
-        if CONF.message.write_disk and CONF.handler['class'].file_writer:
+        if CONF.message.write_disk:
             CONF.handler['class'].init_msg_file(peer.lower())
 
         LOG.info('Create BGPPeering instance')

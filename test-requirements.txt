@@ -1,5 +1,6 @@
 nose==1.3.6
 flake8==2.4.0
+six>=1.10.0
 
 coverage
 testrepository>=0.0.13
