@@ -54,8 +54,6 @@ class BGP(protocol.Protocol):
         self.add_path_ipv4_receive = False
         self.add_path_ipv4_send = False
 
-        self.handler = self.factory.handler
-
         # statistic
         self.msg_sent_stat = {
             'Opens': 0,
@@ -71,6 +69,11 @@ class BGP(protocol.Protocol):
             'Keepalives': 0,
             'RouteRefresh': 0
         }
+
+    @property
+    def handler(self):
+        # this is due to self.factory is assigned at runtime
+        return self.factory.handler
 
     def connectionMade(self):
 
