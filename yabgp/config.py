@@ -17,32 +17,11 @@
 
 import logging
 import sys
-import os
 
 from oslo_config import cfg
 
 CONF = cfg.CONF
 
-CONF.register_cli_opts([
-    cfg.DictOpt('handler', default={}, help='callback handler')
-])
-
-MSG_PROCESS_OPTS = [
-    cfg.BoolOpt('write_disk',
-                default=True,
-                help='Whether the BGP message is written to disk'),
-    cfg.StrOpt('write_dir',
-               default=os.path.join(os.environ['HOME'], 'data/bgp/'),
-               help='The BGP messages storage path'),
-    cfg.IntOpt('write_msg_max_size',
-               default=500,
-               help='The Max size of one BGP message file, the unit is MB'),
-    cfg.BoolOpt('write_keepalive',
-                default=False,
-                help='Whether write keepalive message to disk')
-]
-
-CONF.register_opts(MSG_PROCESS_OPTS, group='message')
 
 BGP_CONFIG_OPTS = [
     cfg.IntOpt('peer_start_interval',

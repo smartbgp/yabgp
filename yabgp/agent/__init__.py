@@ -27,6 +27,7 @@ from yabgp.core.factory import BGPPeering
 from yabgp.config import get_bgp_config
 from yabgp.common import constants as bgp_cons
 from yabgp.api.app import app
+from yabgp.handler.default_handler import Handler
 
 
 log.early_init_log(logging.DEBUG)
@@ -53,7 +54,7 @@ def check_msg_config():
         CONF.message.write_msg_max_size = CONF.message.write_msg_max_size * 1024 * 1024
 
 
-def prepare_twisted_service():
+def prepare_twisted_service(handler):
     """prepare twsited service
     """
     LOG.info('Prepare twisted services')
@@ -64,7 +65,7 @@ def prepare_twisted_service():
         LOG.info('Get peer %s configuration', peer)
 
         if CONF.message.write_disk:
-            CONF.handler['class'].init_msg_file(peer.lower())
+            handler.init_msg_file(peer.lower())
 
         LOG.info('Create BGPPeering instance')
         afi_safi_list = [bgp_cons.AFI_SAFI_STR_DICT[afi_safi]
@@ -77,7 +78,8 @@ def prepare_twisted_service():
             peerasn=CONF.bgp.running_config[peer]['remote_as'],
             peeraddr=CONF.bgp.running_config[peer]['remote_addr'],
             afisafi=CONF.bgp.running_config[peer]['afi_safi'],
-            md5=CONF.bgp.running_config[peer]['md5']
+            md5=CONF.bgp.running_config[peer]['md5'],
+            handler=handler
         )
         all_peers[peer] = bgp_peering
         CONF.bgp.running_config[peer]['factory'] = bgp_peering
@@ -99,12 +101,8 @@ def prepare_twisted_service():
     for peer in all_peers:
         LOG.info('start peer, peer address=%s', peer)
         all_peers[peer].automatic_start()
+
     reactor.run()
-
-
-def register_callback_handler(handler):
-    CONF.handler['class'] = handler
-    LOG.info('Registered callback handler `%s`', handler)
 
 
 # TODO
@@ -112,7 +110,7 @@ def register_api_handler(api_handler):
     app.register_blueprint(api_handler.blueprint, api_handler.url_prefix)
 
 
-def prepare_service(args=None):
+def prepare_service(args=None, handler=None):
     try:
         CONF(args=args, project='yabgp', version=version,
              default_config_files=['/etc/yabgp/yabgp.ini'])
@@ -124,6 +122,9 @@ def prepare_service(args=None):
     LOG.info("Configuration:")
     cfg.CONF.log_opt_values(LOG, logging.INFO)
     try:
+        if not handler:
+            LOG.info('No handler provided, init default handler')
+            handler = Handler()
         get_bgp_config()
         check_msg_config()
     except Exception as e:
@@ -133,4 +134,4 @@ def prepare_service(args=None):
 
     LOG.info('Starting server in PID %s', os.getpid())
 
-    prepare_twisted_service()
+    prepare_twisted_service(handler)
