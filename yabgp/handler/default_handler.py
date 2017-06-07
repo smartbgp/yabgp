@@ -34,8 +34,6 @@ MSG_PROCESS_OPTS = [
 
 CONF.register_opts(MSG_PROCESS_OPTS, group='message')
 
-print "message opts registered", CONF._opts
-
 
 class Handler(BaseHandler):
     def __init__(self):
