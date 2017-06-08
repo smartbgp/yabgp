@@ -60,28 +60,16 @@ def get_peer_conf_and_state(peer_ip=None):
     :param peer_ip: peer ip address
     :return:
     """
+    one_peer_state = {key: cfg.CONF.bgp.running_config[key] for key in [
+        'remote_as', 'remote_addr', 'local_as', 'local_addr', 'capability']}
+    fsm = cfg.CONF.bgp.running_config['factory'].fsm.state
+    one_peer_state['fsm'] = common_cons.stateDescr[fsm]
+    if fsm == common_cons.ST_ESTABLISHED:
+        one_peer_state['uptime'] = time.time() - cfg.CONF.bgp.running_config['factory'].fsm.uptime
+    else:
+        one_peer_state['uptime'] = 0
 
-    def get_peer_state(peer):
-        one_peer_state = {key: cfg.CONF.bgp.running_config[peer][key] for key in [
-            'remote_as', 'remote_addr', 'local_as', 'local_addr', 'capability']}
-        fsm = cfg.CONF.bgp.running_config[peer]['factory'].fsm.state
-        one_peer_state['fsm'] = common_cons.stateDescr[fsm]
-        if fsm == common_cons.ST_ESTABLISHED:
-            one_peer_state['uptime'] = time.time() - cfg.CONF.bgp.running_config[peer]['factory'].fsm.uptime
-        else:
-            one_peer_state['uptime'] = 0
-        return one_peer_state
-
-    if peer_ip:
-        peer_state = {}
-        if peer_ip in cfg.CONF.bgp.running_config:
-            peer_state = get_peer_state(peer_ip)
-        return {'peer': peer_state}
-    # for multi peers
-    result = {'peers': []}
-    for peer_ip in cfg.CONF.bgp.running_config:
-        result['peers'].append(get_peer_state(peer_ip))
-    return result
+    return {'peer': one_peer_state}
 
 
 def get_peer_msg_statistic(peer_ip=None):
@@ -91,13 +79,10 @@ def get_peer_msg_statistic(peer_ip=None):
     :return:
     """
 
-    if peer_ip and peer_ip in cfg.CONF.bgp.running_config:
-        return {
-            'send': cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.msg_sent_stat,
-            'receive': cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.msg_recv_stat,
-        }
-    else:
-        return {}
+    return {
+        'send': cfg.CONF.bgp.running_config['factory'].fsm.protocol.msg_sent_stat,
+        'receive': cfg.CONF.bgp.running_config['factory'].fsm.protocol.msg_recv_stat,
+    }
 
 
 def _ready_to_send_msg(peer_ip):
@@ -106,11 +91,9 @@ def _ready_to_send_msg(peer_ip):
     :param peer_ip:  peer ip address
     :return: if is ready, return is True, or False
     """
-    if peer_ip and peer_ip in cfg.CONF.bgp.running_config:
-        # check if the peer is established
-        peer_state = get_peer_conf_and_state(peer_ip)
-        if peer_state.get('peer').get('fsm') == common_cons.stateDescr[common_cons.ST_ESTABLISHED]:
-            return True
+    peer_state = get_peer_conf_and_state()
+    if peer_state.get('peer').get('fsm') == common_cons.stateDescr[common_cons.ST_ESTABLISHED]:
+        return True
     return False
 
 
@@ -121,7 +104,7 @@ def send_route_refresh(peer_ip, afi, safi, res):
     :return: the sending results
     """
     try:
-        if cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.send_route_refresh(
+        if cfg.CONF.bgp.running_config['factory'].fsm.protocol.send_route_refresh(
                 afi=afi, safi=safi, res=res):
             return {
                 'status': True
@@ -140,16 +123,8 @@ def send_update(peer_ip, attr, nlri, withdraw):
     :param peer_ip: peer ip address
     :return:
     """
-    # TODO check RIB out policy
-    # TODO update RIB out table
-    if cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.send_update({
+    if cfg.CONF.bgp.running_config['factory'].fsm.protocol.send_update({
             'attr': attr, 'nlri': nlri, 'withdraw': withdraw}):
-        # TODO update ad rib out table
-        # if nlri or withdraw:
-        #     for prefix in nlri:
-        #         if isinstance(prefix, basestring):
-        #             cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.get_rib_out()['ipv4'][prefix] = attr
-
         return {
             'status': True
         }
@@ -158,44 +133,3 @@ def send_update(peer_ip, attr, nlri, withdraw):
             'status': False,
             'code': 'failed when send this message out'
         }
-
-
-def get_adj_rib_in(peer_ip, afi_safi, prefix=None):
-    rib_table = cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.get_rib_in().get(afi_safi) or {}
-    if prefix:
-        attr = rib_table.get(prefix)
-        if not attr:
-            flask.abort(404)
-        else:
-            return attr
-    return rib_table.keys()
-
-
-def get_adj_rib_out(peer_ip, afi_safi, prefix=None):
-    rib_table = cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.get_rib_out().get(afi_safi) or {}
-    if prefix:
-        attr = rib_table.get(prefix)
-        if not attr:
-            flask.abort(404)
-        else:
-            return attr
-    return rib_table.keys()
-
-
-def close_bgp_connection(peer_ip):
-    cfg.CONF.bgp.running_config[peer_ip]['factory'].manual_stop()
-
-
-def start_bgp_connection(peer_ip, idle_hold=False):
-    cfg.CONF.bgp.running_config[peer_ip]['factory'].manual_start(idle_hold=idle_hold)
-
-
-def restart_bgp_connection(peer_ip):
-    close_bgp_connection(peer_ip)
-    start_bgp_connection(peer_ip)
-
-
-def get_adj_rib_all(peer_ip, afi_safi):
-    rib_table = cfg.CONF.bgp.running_config[peer_ip]['factory'].fsm.protocol.get_rib_in().get(afi_safi) or {}
-
-    return rib_table

@@ -58,31 +58,29 @@ def prepare_twisted_service(handler):
     """prepare twsited service
     """
     LOG.info('Prepare twisted services')
-    # check all peers
-    all_peers = {}
 
-    for peer in CONF.bgp.running_config:
-        LOG.info('Get peer %s configuration', peer)
+    LOG.info('Get peer configuration')
+    for conf_key in CONF.bgp.running_config:
+        LOG.info('---%s = %s', conf_key, CONF.bgp.running_config[conf_key])
 
-        if CONF.message.write_disk:
-            handler.init_msg_file(peer.lower())
+    # move to handler init? (@xiaopeng163)
+    if CONF.message.write_disk:
+        handler.init_msg_file(CONF.bgp.running_config['remote_addr'].lower())
 
-        LOG.info('Create BGPPeering instance')
-        afi_safi_list = [bgp_cons.AFI_SAFI_STR_DICT[afi_safi]
-                         for afi_safi in CONF.bgp.running_config[peer]['afi_safi']]
-        CONF.bgp.running_config[peer]['afi_safi'] = afi_safi_list
-        CONF.bgp.running_config[peer]['capability']['local']['afi_safi'] = afi_safi_list
-        bgp_peering = BGPPeering(
-            myasn=CONF.bgp.running_config[peer]['local_as'],
-            myaddr=CONF.bgp.running_config[peer]['local_addr'],
-            peerasn=CONF.bgp.running_config[peer]['remote_as'],
-            peeraddr=CONF.bgp.running_config[peer]['remote_addr'],
-            afisafi=CONF.bgp.running_config[peer]['afi_safi'],
-            md5=CONF.bgp.running_config[peer]['md5'],
-            handler=handler
-        )
-        all_peers[peer] = bgp_peering
-        CONF.bgp.running_config[peer]['factory'] = bgp_peering
+    LOG.info('Create BGPPeering twsited instance')
+    afi_safi_list = [bgp_cons.AFI_SAFI_STR_DICT[afi_safi] for afi_safi in CONF.bgp.running_config['afi_safi']]
+    CONF.bgp.running_config['afi_safi'] = afi_safi_list
+    CONF.bgp.running_config['capability']['local']['afi_safi'] = afi_safi_list
+    bgp_peering = BGPPeering(
+        myasn=CONF.bgp.running_config['local_as'],
+        myaddr=CONF.bgp.running_config['local_addr'],
+        peerasn=CONF.bgp.running_config['remote_as'],
+        peeraddr=CONF.bgp.running_config['remote_addr'],
+        afisafi=CONF.bgp.running_config['afi_safi'],
+        md5=CONF.bgp.running_config['md5'],
+        handler=handler
+    )
+    CONF.bgp.running_config['factory'] = bgp_peering
 
     # Starting api server
     if sys.version_info[0] == 2:
@@ -98,9 +96,8 @@ def prepare_twisted_service(handler):
             LOG.error(e, exc_info=True)
             sys.exit()
 
-    for peer in all_peers:
-        LOG.info('start peer, peer address=%s', peer)
-        all_peers[peer].automatic_start()
+    LOG.info('Starting BGPPeering twsited instance')
+    bgp_peering.automatic_start()
 
     reactor.run()
 
