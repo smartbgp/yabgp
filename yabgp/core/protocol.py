@@ -367,13 +367,13 @@ class BGP(protocol.Protocol):
         # if received open message from remote peer firstly
         # then copy peer's capability to local according to the
         # local support. best effort support.
-        if cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']:
+        if cfg.CONF.bgp.running_config['capability']['remote']:
             unsupport_cap = []
-            for capability in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']:
-                if capability not in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']:
+            for capability in cfg.CONF.bgp.running_config['capability']['local']:
+                if capability not in cfg.CONF.bgp.running_config['capability']['remote']:
                     unsupport_cap.append(capability)
             for capability in unsupport_cap:
-                cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local'].pop(capability)
+                cfg.CONF.bgp.running_config['capability']['local'].pop(capability)
 
     def send_open(self):
         """
@@ -386,14 +386,14 @@ class BGP(protocol.Protocol):
         open_msg = Open(
             version=bgp_cons.VERSION, asn=self.factory.my_asn, hold_time=self.fsm.hold_time,
             bgp_id=self.factory.bgp_id). \
-            construct(cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local'])
-        if 'add_path' in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']:
+            construct(cfg.CONF.bgp.running_config['capability']['local'])
+        if 'add_path' in cfg.CONF.bgp.running_config['capability']['local']:
             # check add path feature, send add path condition:
             # local support send or both
             # remote support receive or both
-            if cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']['add_path'] in \
+            if cfg.CONF.bgp.running_config['capability']['local']['add_path'] in \
                     ['ipv4_send', 'ipv4_both']:
-                if cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote'].get('add_path') in \
+                if cfg.CONF.bgp.running_config['capability']['remote'].get('add_path') in \
                         ['ipv4_receive', 'ipv4_both']:
                     self.add_path_ipv4_send = True
         # send message
@@ -401,8 +401,8 @@ class BGP(protocol.Protocol):
         self.msg_sent_stat['Opens'] += 1
         LOG.info("[%s]Send a BGP Open message to the peer.", self.factory.peer_addr)
         LOG.info("[%s]Probe's Capabilities:", self.factory.peer_addr)
-        for key in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']:
-            LOG.info("--%s = %s", key, cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local'][key])
+        for key in cfg.CONF.bgp.running_config['capability']['local']:
+            LOG.info("--%s = %s", key, cfg.CONF.bgp.running_config['capability']['local'][key])
 
     def _open_received(self, timestamp, msg):
         """
@@ -420,24 +420,24 @@ class BGP(protocol.Protocol):
             raise excep.OpenMessageError(sub_error=bgp_cons.ERR_MSG_OPEN_BAD_PEER_AS)
 
         # Open message Capabilities negotiation
-        cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote'] = open_msg.capa_dict
+        cfg.CONF.bgp.running_config['capability']['remote'] = open_msg.capa_dict
         LOG.info("[%s]A BGP Open message was received", self.factory.peer_addr)
         LOG.info('--version = %s', open_msg.version)
         LOG.info('--ASN = %s', open_msg.asn)
         LOG.info('--hold time = %s', open_msg.hold_time)
         LOG.info('--id = %s', open_msg.bgp_id)
         LOG.info("[%s]Neighbor's Capabilities:", self.factory.peer_addr)
-        for key in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']:
+        for key in cfg.CONF.bgp.running_config['capability']['remote']:
             if key == 'four_bytes_as':
                 self.fourbytesas = True
             elif key == 'add_path':
-                if cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']['add_path'] in \
+                if cfg.CONF.bgp.running_config['capability']['remote']['add_path'] in \
                         ['ipv4_send', 'ipv4_both']:
-                    if cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['local']['add_path'] in \
+                    if cfg.CONF.bgp.running_config['capability']['local']['add_path'] in \
                             ['ipv4_receive', 'ipv4_both']:
                         self.add_path_ipv4_receive = True
 
-            LOG.info("--%s = %s", key, cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote'][key])
+            LOG.info("--%s = %s", key, cfg.CONF.bgp.running_config['capability']['remote'][key])
 
         self.peer_id = open_msg.bgp_id
         self.bgp_peering.set_peer_id(open_msg.bgp_id)
@@ -455,14 +455,14 @@ class BGP(protocol.Protocol):
         :param res: reserve, default is 0
         """
         # check if the peer support route refresh
-        if 'cisco_route_refresh' in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']:
+        if 'cisco_route_refresh' in cfg.CONF.bgp.running_config['capability']['remote']:
             type_code = bgp_cons.MSG_CISCOROUTEREFRESH
-        elif 'route_refresh' in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']:
+        elif 'route_refresh' in cfg.CONF.bgp.running_config['capability']['remote']:
             type_code = bgp_cons.MSG_ROUTEREFRESH
         else:
             return False
         # check if the peer support this address family
-        if (afi, safi) not in cfg.CONF.bgp.running_config[self.factory.peer_addr]['capability']['remote']['afi_safi']:
+        if (afi, safi) not in cfg.CONF.bgp.running_config['capability']['remote']['afi_safi']:
             return False
         # construct message
         msg_routerefresh = RouteRefresh(afi, safi, res).construct(type_code)

@@ -49,16 +49,6 @@ def root():
     return flask.jsonify(intro)
 
 
-@blueprint.route('/peers', methods=['GET'])
-@auth.login_required
-@api_utils.log_request
-def peers():
-    """
-    Get all peers realtime running information, include basic configurations and fsm state.
-    """
-    return flask.jsonify(api_utils.get_peer_conf_and_state())
-
-
 @blueprint.route('/peer/<peer_ip>/state')
 @auth.login_required
 @api_utils.log_request
@@ -67,54 +57,6 @@ def peer(peer_ip):
     Get one peer's running information, include basic configurations and fsm state.
     """
     return flask.jsonify(api_utils.get_peer_conf_and_state(peer_ip))
-
-
-@blueprint.route('/peer/<peer_ip>/stop')
-@auth.login_required
-@api_utils.log_request
-def stop_peer(peer_ip):
-    try:
-        api_utils.close_bgp_connection(peer_ip)
-        return flask.jsonify({
-            'status': True
-        })
-    except Exception as e:
-        LOG.error(e)
-        return flask.jsonify({
-            'status': False
-        })
-
-
-@blueprint.route('/peer/<peer_ip>/start')
-@auth.login_required
-@api_utils.log_request
-def start_peer(peer_ip):
-    try:
-        api_utils.start_bgp_connection(peer_ip)
-        return flask.jsonify({
-            'status': True
-        })
-    except Exception as e:
-        LOG.error(e)
-        return flask.jsonify({
-            'status': False
-        })
-
-
-@blueprint.route('/peer/<peer_ip>/restart')
-@auth.login_required
-@api_utils.log_request
-def restart_peer(peer_ip):
-    try:
-        api_utils.restart_bgp_connection(peer_ip)
-        return flask.jsonify({
-            'status': True
-        })
-    except Exception as e:
-        LOG.error(e)
-        return flask.jsonify({
-            'status': False
-        })
 
 
 @blueprint.route('/peer/<peer_ip>/statistic')

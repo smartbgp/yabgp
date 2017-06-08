@@ -86,7 +86,7 @@ def get_bgp_config():
     # check bgp configuration from CLI input
     LOG.info('Try to load BGP configuration from CLI input')
     if CONF.bgp.local_as and CONF.bgp.remote_as and CONF.bgp.local_addr and CONF.bgp.remote_addr:
-        CONF.bgp.running_config[CONF.bgp.remote_addr] = {
+        CONF.bgp.running_config = {
             'remote_as': CONF.bgp.remote_as,
             'remote_addr': CONF.bgp.remote_addr,
             'local_as': CONF.bgp.local_as,
@@ -105,20 +105,6 @@ def get_bgp_config():
                 'remote': {}
             }
         }
-
-        LOG.info('Get BGP running configuration for peer %s', CONF.bgp.remote_addr)
-        for item in CONF.bgp.running_config[CONF.bgp.remote_addr]:
-            if item == 'capability':
-                LOG.info('capability local:')
-                for capa in CONF.bgp.running_config[CONF.bgp.remote_addr][item]['local']:
-                    LOG.info(
-                        '-- %s: %s',
-                        capa,
-                        CONF.bgp.running_config[CONF.bgp.remote_addr][item]['local'][capa])
-                continue
-
-            LOG.info("%s = %s", item, CONF.bgp.running_config[CONF.bgp.remote_addr][item])
-        return
     else:
         LOG.error('Please provide enough parameters!')
         sys.exit()
