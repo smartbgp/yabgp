@@ -108,7 +108,7 @@ class Handler(BaseHandler):
 
         return last_seq, msg_file_name
 
-    def write_msg(self, peer, timestamp, msg_type, msg, flush=False):
+    def write_msg(self, peer, timestamp, msg_type, msg):
         """
         write bgp message into local disk file
         :param peer: peer address
@@ -116,7 +116,6 @@ class Handler(BaseHandler):
         :param msg_type: message type (0,1,2,3,4,5,6)
         :param msg: message dict
         :param msg_path: path to store messages on disk
-        :param flush: flush after write or not
         :return:
         """
         msg_path, msg_file = self.peer_files.get(peer.lower(), (None, None))
@@ -132,17 +131,15 @@ class Handler(BaseHandler):
             json.dump(msg_record, msg_file)
             msg_file.write('\n')
             self.msg_sequence[peer.lower()] += 1
-            if flush:
-                msg_file.flush()
+            msg_file.flush()
+            os.fsync(msg_file.fileno())
 
-    def flush_and_check_file_size(self, peer):
+    def check_file_size(self, peer):
+        """if the size of the msg file is bigger than 'max_msg_file_size',
+        then save as and re-open a new file.
+        """
         msg_path, cur_file = self.peer_files.get(peer.lower(), (None, None))
         if msg_path:
-            # Flush message log file
-            cur_file.flush()
-
-            # if the size of the msg file is bigger than 'max_msg_file_size',
-            # then save as and re-open a new file.
             if os.path.getsize(cur_file.name) >= CONF.message.write_msg_max_size:
                 cur_file.close()
                 msg_file_name = "%s.msg" % time.time()
@@ -157,8 +154,7 @@ class Handler(BaseHandler):
             peer=peer.factory.peer_addr,
             timestamp=timestamp,
             msg_type=6,
-            msg={'msg': msg},
-            flush=True
+            msg={'msg': msg}
         )
 
     def update_received(self, peer, timestamp, msg):
@@ -169,7 +165,7 @@ class Handler(BaseHandler):
             msg_type=bgp_cons.MSG_UPDATE,
             msg={"msg": msg}
         )
-        self.flush_and_check_file_size(peer.factory.peer_addr)
+        self.check_file_size(peer.factory.peer_addr)
 
     def keepalive_received(self, peer, timestamp):
         """
@@ -189,8 +185,7 @@ class Handler(BaseHandler):
                 peer=peer.factory.peer_addr,
                 timestamp=timestamp,
                 msg_type=4,
-                msg={"msg": None},
-                flush=True
+                msg={"msg": None}
             )
 
     def open_received(self, peer, timestamp, result):
@@ -199,8 +194,7 @@ class Handler(BaseHandler):
             peer=peer.factory.peer_addr,
             timestamp=timestamp,
             msg_type=1,
-            msg={"msg": result},
-            flush=True
+            msg={"msg": result}
         )
 
     def route_refresh_received(self, peer, msg, msg_type):
@@ -208,8 +202,7 @@ class Handler(BaseHandler):
             peer=peer.factory.peer_addr,
             timestamp=time.time(),
             msg_type=msg_type,
-            msg={"msg": msg},
-            flush=True
+            msg={"msg": msg}
         )
 
     def notification_received(self, peer, msg):
@@ -217,8 +210,7 @@ class Handler(BaseHandler):
             peer=peer.factory.peer_addr,
             timestamp=time.time(),
             msg_type=3,
-            msg={"msg": msg},
-            flush=True
+            msg={"msg": msg}
         )
 
     def on_connection_lost(self, peer):
@@ -226,8 +218,7 @@ class Handler(BaseHandler):
             peer=peer.factory.peer_addr,
             timestamp=time.time(),
             msg_type=bgp_cons.MSG_BGP_CLOSED,
-            msg={"msg": None},
-            flush=True
+            msg={"msg": None}
         )
 
     def on_connection_failed(self, peer, msg):
@@ -235,6 +226,5 @@ class Handler(BaseHandler):
             peer=peer,
             timestamp=time.time(),
             msg_type=0,
-            msg={"msg": msg},
-            flush=True
+            msg={"msg": msg}
         )

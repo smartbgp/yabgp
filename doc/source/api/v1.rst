@@ -34,54 +34,6 @@ Peer's Information
 
 Try to get peer's configuration and running information.
 
-All Peers
-+++++++++
-
-Get all peers configuration and running information.
-
-==============   ===============================================================================================
-Property         Description
-==============   ===============================================================================================
-fsm	             The Finite State Machine, represent the current status of the peer. an be: ``IDLE``, ``CONNECT``, ``ACTIVE``, ``OPENSENT``, ``OPENCONFIRM`` and ``ESTABLISHED`` |
-local_addr       The local IP address used to establish BGP connection
-local_as         The local BGP AS number
-remote_addr      The remote IP address used to connect with
-remote_as        The remote BGP AS number
-uptime           The BGP session uptime, unit is second. It starts when fsm is ``ESTABLISHED``
-==============   ===============================================================================================
-
-**Example request**:
-
-.. code-block:: bash
-
-    GET /v1/peers
-
-
-**Example response**:
-
-    .. code-block:: json
-
-      {
-          "peers": [
-              {
-                  "fsm": "ESTABLISHED",
-                  "local_addr": "100.100.0.1",
-                  "local_as": 65022,
-                  "remote_addr": "100.100.9.1",
-                  "remote_as": 65022,
-                  "uptime": 106810.47324299812
-              },
-              {
-                  "fsm": "ESTABLISHED",
-                  "local_addr": "100.100.0.1",
-                  "local_as": 65022,
-                  "remote_addr": "100.100.9.1",
-                  "remote_as": 65022,
-                  "uptime": 106810.47324299812
-              }
-          ]
-      }
-
 One Peers
 +++++++++
 
@@ -89,7 +41,7 @@ Get one peer's configuration and running information.
 
 .. code-block:: bash
 
-    GET /v1/peer/<peer_ip_address>
+    GET /v1/peer/<peer_ip_address>/state
 
 **Example response**:
 
@@ -135,117 +87,6 @@ Get the BGP message sending and receiving number statistic.
               "Updates": 0
           }
       }
-
-RIB Information
-~~~~~~~~~~~~~~~
-
-adj rib in
-++++++++++
-
-.. code-block:: bash
-
-    GET /v1/adj-rib-in/ipv4/<peer_ip_address>
-
-**Example response**:
-
-.. code-block:: json
-
-    {
-        "prefixes": [
-            "1.1.1.1/32",
-            "2.2.2.2/32",
-            "3.3.3.3/32"
-        ]
-    }
-
-Also, you can get the attribute for a prefix.
-
-.. code-block:: bash
-
-    GET /v1/adj-rib-in/ipv4/<peer_ip_address>?prefix=<prefix>
-
-**Example response**:
-
-.. code-block:: json
-
-    {
-      "attr": {
-        "1": 0,
-        "2": [],
-        "3": "10.124.1.221",
-        "4": 0,
-        "5": 100
-      }
-    }
-
-
-adj rib out
-+++++++++++
-
-.. code-block:: bash
-
-    GET /v1/adj-rib-out/ipv4/<peer_ip_address>
-
-**Example response**:
-
-.. code-block:: json
-
-    {
-        "prefixes": [
-            "1.1.1.1/32",
-            "2.2.2.2/32",
-            "3.3.3.3/32"
-        ]
-    }
-
-Also, you can get the attribute for a prefix.
-
-.. code-block:: bash
-
-    GET /v1/adj-rib-out/ipv4/<peer_ip_address>?prefix=<prefix>
-
-**Example response**:
-
-.. code-block:: json
-
-    {
-      "attr": {
-        "1": 0,
-        "2": [],
-        "3": "10.124.1.221",
-        "4": 0,
-        "5": 100
-      }
-    }
-
-
-adj rib all
-+++++++++++
-
-.. code-block:: bash
-
-    GET /v1/adj-rib-all/ipv4/<peer_ip_address>
-
-**Example response**:
-
-.. code-block:: json
-
-    {
-        "20.0.5.0/24": {
-            "1": 0,
-            "2": [
-                    [
-                        2,
-                        [
-                            400
-                        ]
-                    ]
-            ],
-            "3": "20.0.4.33",
-            "4": 0,
-            "5": 100
-        }
-    }
 
 Send Message
 ~~~~~~~~~~~~
@@ -326,54 +167,3 @@ POST data format for withdraw
     {
         "status": true
     }
-
-
-Peer Management
-~~~~~~~~~~~~~~~
-
-Peer Stop
-+++++++++
-
-.. code-block:: bash
-
-    GET /v1/peer/<peer_ip_address>/stop
-
-**Example response**:
-
-.. code-block:: json
-
-    {
-        "status": true
-    }
-
-Peer Start
-++++++++++
-
-.. code-block:: bash
-
-    GET /v1/peer/<peer_ip_address>/start
-
-**Example response**:
-
-.. code-block:: json
-
-    {
-        "status": true
-    }
-
-
-Peer Restart
-++++++++++++
-
-.. code-block:: bash
-
-    GET /v1/peer/<peer_ip_address>/restart
-
-**Example response**:
-
-.. code-block:: json
-
-    {
-        "status": true
-    }
-
