@@ -8,158 +8,13 @@
 	},
 	"item": [
 		{
-			"name": "Channel",
-			"description": "",
-			"item": [
-				{
-					"name": "channel filter - get-init",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Response time is less than 200ms\"] = responseTime < 200;",
-									"",
-									"tests[\"Content-Type is present\"] = postman.getResponseHeader(\"Content-Type\");",
-									"",
-									"var data = JSON.parse(responseBody);",
-									"",
-									"",
-									"",
-									"var data = JSON.parse(responseBody);",
-									"",
-									"tests[\"Return value check\"] = data.value ==={",
-									"  \"filter\": [",
-									"    {",
-									"      \"type\": \"community\",",
-									"      \"value\": \"4134:100\"",
-									"    }",
-									"  ]",
-									"};",
-									"",
-									"postman.setGlobalVariable(\"filter\", \"test\");"
-								]
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": {
-								"username": "admin",
-								"password": "admin",
-								"saveHelperData": true,
-								"showPassword": false
-							}
-						},
-						"url": "http://10.75.44.10:8801/v1/channel/filter",
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4=",
-								"description": ""
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "formdata",
-							"formdata": []
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "channel filter- add",
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": {
-								"username": "admin",
-								"password": "admin",
-								"saveHelperData": true,
-								"showPassword": false
-							}
-						},
-						"url": "http://10.75.44.10:8801/v1/channel/filter",
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4=",
-								"description": ""
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"filter\": [\n    {\n        \"type\": \"prefix\",\n        \"value\": \"2.2.2.2/32\"\n    }\n]\n}"
-						},
-						"description": ""
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "Peer Information",
 			"description": "",
 			"item": [
 				{
-					"name": "show all peers",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var tests;"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "http://10.75.44.11:8801/v1/peers",
-						"method": "GET",
-						"header": [
-							{
-								"key": "X-Auth-Token",
-								"value": "MIIQcQYJKoZIhvcNAQcCoIIQYjCCEF4CAQExCTAHBgUrDgMCGjCCDscGCSqGSIb3DQEHAaCCDrgEgg60eyJhY2Nlc3MiOiB7InRva2VuIjogeyJpc3N1ZWRfYXQiOiAiMjAxNC0wNC0yOFQxMDoxODozOC4wMDUyNTYiLCAiZXhwaXJlcyI6ICIyMDE0LTA0LTI4VDExOjE4OjM3WiIsICJpZCI6ICJwbGFjZWhvbGRlciIsICJ0ZW5hbnQiOiB7ImRlc2NyaXB0aW9uIjogImVDb21tZXJjZS1PcGVuc3RhY2stSUgiLCAiZW5hYmxlZCI6IHRydWUsICJpZCI6ICI0Y2Q5OTMwZGY2MmU0MDc0YWJkNTBiMTQyYTFhZDgwZSIsICJuYW1lIjogImVDb21tZXJjZS1PcGVuc3RhY2stSUgifX0sICJzZXJ2aWNlQ2F0YWxvZyI6IFt7ImVuZHBvaW50cyI6IFt7ImFkbWluVVJMIjogImh0dHA6Ly8xNzIuMjguODAuNTA6ODc3NC92Mi80Y2Q5OTMwZGY2MmU0MDc0YWJkNTBiMTQyYTFhZDgwZSIsICJyZWdpb24iOiAiUmVnaW9uT25lIiwgImludGVybmFsVVJMIjogImh0dHA6Ly8xNzIuMjguODAuNTA6ODc3NC92Mi80Y2Q5OTMwZGY2MmU0MDc0YWJkNTBiMTQyYTFhZDgwZSIsICJpZCI6ICIxMjRkNDdhN2I2YmM0NWI2YmJjZjhiZTQxZWVhNGQ3NCIsICJwdWJsaWNVUkwiOiAiaHR0cDovLzE3Mi4yOC44MC41MDo4Nzc0L3YyLzRjZDk5MzBkZjYyZTQwNzRhYmQ1MGIxNDJhMWFkODBlIn1dLCAiZW5kcG9pbnRzX2xpbmtzIjogW10sICJ0eXBlIjogImNvbXB1dGUiLCAibmFtZSI6ICJub3ZhIn0sIHsiZW5kcG9pbnRzIjogW3siYWRtaW5VUkwiOiAiaHR0cDovLzE3Mi4yOC44MC41MDo5Njk2LyIsICJyZWdpb24iOiAiUmVnaW9uT25lIiwgImludGVybmFsVVJMIjogImh0dHA6Ly8xNzIuMjguODAuNTA6OTY5Ni8iLCAiaWQiOiAiODE5YTg5YTBlOGM1NDI1MmIzMmI1ODI1Y2YzMjBjNzciLCAicHVibGljVVJMIjogImh0dHA6Ly8xNzIuMjguODAuNTA6OTY5Ni8ifV0sICJlbmRwb2ludHNfbGlua3MiOiBbXSwgInR5cGUiOiAibmV0d29yayIsICJuYW1lIjogIm5ldXRyb24ifSwgeyJlbmRwb2ludHMiOiBbeyJhZG1pblVSTCI6ICJodHRwOi8vMTcyLjI4LjgwLjUwOjg3NzYvdjIvNGNkOTkzMGRmNjJlNDA3NGFiZDUwYjE0MmExYWQ4MGUiLCAicmVnaW9uIjogIlJlZ2lvbk9uZSIsICJpbnRlcm5hbFVSTCI6ICJodHRwOi8vMTcyLjI4LjgwLjUwOjg3NzYvdjIvNGNkOTkzMGRmNjJlNDA3NGFiZDUwYjE0MmExYWQ4MGUiLCAiaWQiOiAiNWQ1OWNmNzFmOWFjNGJmMWI4ZDQ1OGM5ZWU5Nzg3YzMiLCAicHVibGljVVJMIjogImh0dHA6Ly8xNzIuMjguODAuNTA6ODc3Ni92Mi80Y2Q5OTMwZGY2MmU0MDc0YWJkNTBiMTQyYTFhZDgwZSJ9XSwgImVuZHBvaW50c19saW5rcyI6IFtdLCAidHlwZSI6ICJ2b2x1bWV2MiIsICJuYW1lIjogImNpbmRlcnYyIn0sIHsiZW5kcG9pbnRzIjogW3siYWRtaW5VUkwiOiAiaHR0cDovLzE3Mi4yOC44MC41MDo4Nzc0L3YzIiwgInJlZ2lvbiI6ICJSZWdpb25PbmUiLCAiaW50ZXJuYWxVUkwiOiAiaHR0cDovLzE3Mi4yOC44MC41MDo4Nzc0L3YzIiwgImlkIjogImQyYzdlMTM4ZmYwNjRmMGQ5OWZhMzMxYzA3NmY2MGI5IiwgInB1YmxpY1VSTCI6ICJodHRwOi8vMTcyLjI4LjgwLjUwOjg3NzQvdjMifV0sICJlbmRwb2ludHNfbGlua3MiOiBbXSwgInR5cGUiOiAiY29tcHV0ZXYzIiwgIm5hbWUiOiAibm92YXYzIn0sIHsiZW5kcG9pbnRzIjogW3siYWRtaW5VUkwiOiAiaHR0cDovLzE3Mi4yOC44MC41MDozMzMzIiwgInJlZ2lvbiI6ICJSZWdpb25PbmUiLCAiaW50ZXJuYWxVUkwiOiAiaHR0cDovLzE3Mi4yOC44MC41MDozMzMzIiwgImlkIjogIjU0Y2Y1MmE2ODM4NDQyNjA4YmVkZDEyZGFiNGRiMGE2IiwgInB1YmxpY1VSTCI6ICJodHRwOi8vMTcyLjI4LjgwLjUwOjMzMzMifV0sICJlbmRwb2ludHNfbGlua3MiOiBbXSwgInR5cGUiOiAiczMiLCAibmFtZSI6ICJzMyJ9LCB7ImVuZHBvaW50cyI6IFt7ImFkbWluVVJMIjogImh0dHA6Ly8xNzIuMjguODAuNTA6OTI5MiIsICJyZWdpb24iOiAiUmVnaW9uT25lIiwgImludGVybmFsVVJMIjogImh0dHA6Ly8xNzIuMjguODAuNTA6OTI5MiIsICJpZCI6ICIyZTg0ZTRjNmQ4NGM0NGFhOWE0ZDM0ZTUyMDVjMjhlOCIsICJwdWJsaWNVUkwiOiAiaHR0cDovLzE3Mi4yOC44MC41MDo5MjkyIn1dLCAiZW5kcG9pbnRzX2xpbmtzIjogW10sICJ0eXBlIjogImltYWdlIiwgIm5hbWUiOiAiZ2xhbmNlIn0sIHsiZW5kcG9pbnRzIjogW3siYWRtaW5VUkwiOiAiaHR0cDovLzE3Mi4yOC44MC41MDo4Nzc2L3YxLzRjZDk5MzBkZjYyZTQwNzRhYmQ1MGIxNDJhMWFkODBlIiwgInJlZ2lvbiI6ICJSZWdpb25PbmUiLCAiaW50ZXJuYWxVUkwiOiAiaHR0cDovLzE3Mi4yOC44MC41MDo4Nzc2L3YxLzRjZDk5MzBkZjYyZTQwNzRhYmQ1MGIxNDJhMWFkODBlIiwgImlkIjogIjJhMDg5OTIwZDI0NjRhZGM4YzI0NjVmZGQ1NDhhNjgzIiwgInB1YmxpY1VSTCI6ICJodHRwOi8vMTcyLjI4LjgwLjUwOjg3NzYvdjEvNGNkOTkzMGRmNjJlNDA3NGFiZDUwYjE0MmExYWQ4MGUifV0sICJlbmRwb2ludHNfbGlua3MiOiBbXSwgInR5cGUiOiAidm9sdW1lIiwgIm5hbWUiOiAiY2luZGVyIn0sIHsiZW5kcG9pbnRzIjogW3siYWRtaW5VUkwiOiAiaHR0cDovLzE3Mi4yOC44MC41MDo4NzczL3NlcnZpY2VzL0FkbWluIiwgInJlZ2lvbiI6ICJSZWdpb25PbmUiLCAiaW50ZXJuYWxVUkwiOiAiaHR0cDovLzE3Mi4yOC44MC41MDo4NzczL3NlcnZpY2VzL0Nsb3VkIiwgImlkIjogImI5YzliOWQ0OWRlYjQ0ODRiNWE2NmE0ODg4MTFmZGVjIiwgInB1YmxpY1VSTCI6ICJodHRwOi8vMTcyLjI4LjgwLjUwOjg3NzMvc2VydmljZXMvQ2xvdWQifV0sICJlbmRwb2ludHNfbGlua3MiOiBbXSwgInR5cGUiOiAiZWMyIiwgIm5hbWUiOiAiZWMyIn0sIHsiZW5kcG9pbnRzIjogW3siYWRtaW5VUkwiOiAiaHR0cDovLzE3Mi4yOC44MC41MDo4MDgwIiwgInJlZ2lvbiI6ICJSZWdpb25PbmUiLCAiaW50ZXJuYWxVUkwiOiAiaHR0cDovLzE3Mi4yOC44MC41MDo4MDgwL3YxL0FVVEhfNGNkOTkzMGRmNjJlNDA3NGFiZDUwYjE0MmExYWQ4MGUiLCAiaWQiOiAiODkzM2I3MmY1ZDFjNGZhMjllODE1NjUxMDE5YTgxMTQiLCAicHVibGljVVJMIjogImh0dHA6Ly8xNzIuMjguODAuNTA6ODA4MC92MS9BVVRIXzRjZDk5MzBkZjYyZTQwNzRhYmQ1MGIxNDJhMWFkODBlIn1dLCAiZW5kcG9pbnRzX2xpbmtzIjogW10sICJ0eXBlIjogIm9iamVjdC1zdG9yZSIsICJuYW1lIjogInN3aWZ0In0sIHsiZW5kcG9pbnRzIjogW3siYWRtaW5VUkwiOiAiaHR0cDovLzE3Mi4yOC44MC41MDozNTM1Ny92Mi4wIiwgInJlZ2lvbiI6ICJSZWdpb25PbmUiLCAiaW50ZXJuYWxVUkwiOiAiaHR0cDovLzE3Mi4yOC44MC41MDo1MDAwL3YyLjAiLCAiaWQiOiAiMTkzNjAwODNjZGY5NGZmNTg0Nzg0ODUzMTU1MGYwMDUiLCAicHVibGljVVJMIjogImh0dHA6Ly8xNzIuMjguODAuNTA6NTAwMC92Mi4wIn1dLCAiZW5kcG9pbnRzX2xpbmtzIjogW10sICJ0eXBlIjogImlkZW50aXR5IiwgIm5hbWUiOiAia2V5c3RvbmUifV0sICJ1c2VyIjogeyJ1c2VybmFtZSI6ICJjcG8iLCAicm9sZXNfbGlua3MiOiBbXSwgImlkIjogImZjMjI5MjY3Y2VkYjQ3ZDFhZTc2NmNmNGY4MmVhMDk2IiwgInJvbGVzIjogW3sibmFtZSI6ICJNZW1iZXIifSwgeyJuYW1lIjogIl9tZW1iZXJfIn0sIHsibmFtZSI6ICJhZG1pbiJ9XSwgIm5hbWUiOiAiY3BvIn0sICJtZXRhZGF0YSI6IHsiaXNfYWRtaW4iOiAwLCAicm9sZXMiOiBbImUxZjQzYWFkNjk1NjQzODJhYzYzOTI2NjIwY2RkOWNjIiwgIjlmZTJmZjllZTQzODRiMTg5NGE5MDg3OGQzZTkyYmFiIiwgIjkyZTQzZmE1ODBmNzQxMzc5NWNlMmUwNmZmZmI1NGVkIl19fX0xggGBMIIBfQIBATBcMFcxCzAJBgNVBAYTAlVTMQ4wDAYDVQQIDAVVbnNldDEOMAwGA1UEBwwFVW5zZXQxDjAMBgNVBAoMBVVuc2V0MRgwFgYDVQQDDA93d3cuZXhhbXBsZS5jb20CAQEwBwYFKw4DAhowDQYJKoZIhvcNAQEBBQAEggEAhGo0xZRoImqx0wmhtY1oGRmosB5q6Uf9ca0zHj20uNLfTQcWrPHN+L2RK0u5jJ59LIhJQ9huifCbledVCXzFYsIstdVh5+VBDFJKXu+VSjNXPrY-FZ-WLNZvecaCYd2K31tr36gqUVPPmDe0w8ig+G0r2Mti17IMGiYu60FXFObCLeqH0o8azU95hs1zxIRB-k-B3D+R9rP6H+P52saOGPQtvvzk0ILWTq3pL7QvFb5v6zbkdMml8EI7BtMEZyZ8KP1-bnMpdFexSaZc485LlRQ9qRsGpI36PtcW5mRc-wqL0OSazgKmC0qsn-eeHRXZpbqeFnYP7YPfh-Is6k872g==+yy4xLECfuV3WzW5qY3i07o6eGj+BGz-7hFLiOPOnNlX5a5ui9s0GXb0zGy2S+tbeDWeJYXih6XkK56CNcont4ZxjeJI-lY8yNXt+XwRCjSd4rLPu4gUWReQYn8zXOkFpRHr1aBbjmKc1VVGywKwftdGhixFLeA5lGDtEBTNydhOHxAsfRdC8RYQvbYvgoBkXj-hsLSCRsdlgCaFqqWH2fquZKUUhbAMLeYEExEufJnCFhUtBUAQz67Hw+41Dd7U0pTbGZQ+5w4Gv5h1mPgsQHQoEubL8PELkpvfRIKsnCPyUAhwcfVYuSg==",
-								"description": ""
-							},
-							{
-								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4=",
-								"description": ""
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "formdata",
-							"formdata": []
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
 					"name": "get one peer state",
 					"request": {
-						"url": "http://10.75.44.11:8801/v1/peer/10.75.44.204/state",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/state",
 						"method": "GET",
 						"header": [
 							{
@@ -168,10 +23,7 @@
 								"description": ""
 							}
 						],
-						"body": {
-							"mode": "formdata",
-							"formdata": []
-						},
+						"body": {},
 						"description": ""
 					},
 					"response": []
@@ -179,7 +31,7 @@
 				{
 					"name": "peer message statistic",
 					"request": {
-						"url": "http://10.75.44.11:8801/v1/peer/10.75.44.204/statistic",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/statistic",
 						"method": "GET",
 						"header": [
 							{
@@ -188,46 +40,7 @@
 								"description": ""
 							}
 						],
-						"body": {
-							"mode": "formdata",
-							"formdata": []
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "get rib in",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var tests;"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "http://10.75.44.11:8801/v1/adj-rib-in/ipv4/10.75.44.204",
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
-							},
-							{
-								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4=",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "formdata",
-							"formdata": []
-						},
+						"body": {},
 						"description": ""
 					},
 					"response": []
@@ -241,7 +54,7 @@
 				{
 					"name": "send route refresh",
 					"request": {
-						"url": "http://10.75.44.10:8801/v1/peer/10.75.44.204/send/route-refresh",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/route-refresh",
 						"method": "POST",
 						"header": [
 							{
@@ -281,7 +94,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -315,7 +128,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -349,7 +162,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -383,7 +196,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -417,7 +230,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -451,7 +264,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -485,7 +298,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -519,7 +332,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -559,7 +372,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -593,7 +406,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.10:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -633,7 +446,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.10:8804/v1/peer/10.75.44.205/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -649,7 +462,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 400, \n        \"14\": {\n            \"afi_safi\": [1, 4], \n            \"nexthop\": \"10.75.44.254\",\n            \"nlri\":[\n            \t{\"prefix\": \"34.1.41.0/24\", \"label\": [321]},\n            \t{\"prefix\": \"34.1.42.0/24\", \"label\": [322]}]\n\t\t}\n\t}\n}"
+							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 400, \n        \"14\": {\n            \"afi_safi\": [1, 4], \n            \"nexthop\": \"10.75.44.254\",\n            \"nlri\":[\n              {\"prefix\": \"34.1.41.0/24\", \"label\": [321]},\n              {\"prefix\": \"34.1.42.0/24\", \"label\": [322]}]\n    }\n  }\n}"
 						},
 						"description": ""
 					},
@@ -667,7 +480,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.10:8804/v1/peer/10.75.44.205/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -683,7 +496,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [1, 4], \n            \"withdraw\":[\n            \t{\"prefix\": \"34.1.41.0/24\", \"label\": [321]},\n            \t{\"prefix\": \"34.1.42.0/24\", \"label\": [322]}]\n\t\t}\n\t}\n}"
+							"raw": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [1, 4], \n            \"withdraw\":[\n              {\"prefix\": \"34.1.41.0/24\", \"label\": [321]},\n              {\"prefix\": \"34.1.42.0/24\", \"label\": [322]}]\n    }\n  }\n}"
 						},
 						"description": ""
 					},
@@ -707,7 +520,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -741,7 +554,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -772,7 +585,7 @@
 				{
 					"name": "send update ipv4 unicast",
 					"request": {
-						"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -806,7 +619,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -846,7 +659,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.10:8804/v1/peer/10.75.44.205/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -862,7 +675,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 400, \n        \"14\": {\n            \"afi_safi\": [1, 4], \n            \"nexthop\": \"10.75.44.254\",\n            \"nlri\":[\n            \t{\"label\": [91], \"prefix\": \"2001:2121::1/128\"},\n            \t{\"label\": [92], \"prefix\": \"::2001:2121:1:0/64\"}]\n\t\t}\n\t}\n}"
+							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 400, \n        \"14\": {\n            \"afi_safi\": [1, 4], \n            \"nexthop\": \"10.75.44.254\",\n            \"nlri\":[\n              {\"label\": [91], \"prefix\": \"2001:2121::1/128\"},\n              {\"label\": [92], \"prefix\": \"::2001:2121:1:0/64\"}]\n    }\n  }\n}"
 						},
 						"description": ""
 					},
@@ -880,7 +693,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.10:8804/v1/peer/10.75.44.205/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -896,7 +709,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [1, 4], \n            \"withdraw\":[\n            \t{\"label\": [91], \"prefix\": \"2001:2121::1/128\"},\n            \t{\"label\": [92], \"prefix\": \"::2001:2121:1:0/64\"}]\n\t\t}\n\t}\n}"
+							"raw": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [1, 4], \n            \"withdraw\":[\n              {\"label\": [91], \"prefix\": \"2001:2121::1/128\"},\n              {\"label\": [92], \"prefix\": \"::2001:2121:1:0/64\"}]\n    }\n  }\n}"
 						},
 						"description": ""
 					},
@@ -920,7 +733,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -954,7 +767,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -994,7 +807,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
@@ -1028,7 +841,7 @@
 								"showPassword": false
 							}
 						},
-						"url": "http://10.75.44.11:8888/v1/peer/10.75.44.228/send/update",
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
