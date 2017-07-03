@@ -235,5 +235,6 @@ class Handler(BaseHandler):
             peer=peer,
             timestamp=time.time(),
             msg_type=0,
-            msg={"msg": msg}
+            msg={"msg": msg},
+            flush=True
         )
