@@ -101,8 +101,11 @@ class BGPLS(NLRI):
             elif _type == 265:   # IP Reachability Information
                 descriptor['type'] = 'prefix'
                 mask = struct.unpack('!B', value[0])[0]
-                ip = str(netaddr.IPAddress(int(binascii.b2a_hex(value[1:]), 16)))
-                descriptor['value'] = "%s/%s" % (ip, mask)
+                if value[1:]:
+                    ip_str = str(netaddr.IPAddress(int(binascii.b2a_hex(value[1:]), 16)))
+                else:
+                    ip_str = '0.0.0.0'
+                descriptor['value'] = "%s/%s" % (ip_str, mask)
             else:
                 descriptor['type'] = _type
                 descriptor['value'] = binascii.b2a_hex(value)
