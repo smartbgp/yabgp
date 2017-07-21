@@ -1,8 +1,6 @@
 YABGP
 =====
 
-|Version| |License| |Build Status| |Code Health| |Documentation Status| |Test Coverage| |Downloads|
-
 yabgp是什么？
 ~~~~~~~~~~~~~~
 
@@ -111,23 +109,3 @@ BGP message举例：
 核心文件比如fsm，protocol我们从https://github.com/wikimedia/PyBal/blob/master/pybal/bgp.py 参考了一部分代码，
 
 message解析，我们参照了这里的代码https://github.com/Exa-Networks/exabgp
-
-.. |License| image:: https://img.shields.io/hexpm/l/plug.svg
-   :target: https://github.com/smartbgp/yabgp/blob/master/LICENSE
-.. |Build Status| image:: https://travis-ci.org/smartbgp/yabgp.svg?branch=master
-   :target: https://travis-ci.org/smartbgp/yabgp
-
-.. |Code Health| image:: https://landscape.io/github/smartbgp/yabgp/master/landscape.svg?style=flat
-   :target: https://landscape.io/github/smartbgp/yabgp/master
-
-.. |Documentation Status| image:: https://readthedocs.org/projects/yabgp/badge/?version=latest
-   :target: https://readthedocs.org/projects/yabgp/?badge=latest
-
-.. |Test Coverage| image:: https://coveralls.io/repos/smartbgp/yabgp/badge.svg?branch=master
-   :target: https://coveralls.io/r/smartbgp/yabgp
-
-.. |Version| image:: https://img.shields.io/pypi/v/yabgp.svg?
-   :target: http://badge.fury.io/py/yabgp
-
-.. |Downloads| image:: https://img.shields.io/pypi/dm/yabgp.svg?
-   :target: https://pypi.python.org/pypi/yabgp
