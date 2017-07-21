@@ -1,4 +1,6 @@
-*[简体中文](https://github.com/donnemartin/system-design-primer/issues/40)*
+简体中文_
+ 
+.. _简体中文: README-zh.rst
 
 YABGP
 =====
