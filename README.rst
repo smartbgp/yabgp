@@ -1,3 +1,5 @@
+*[简体中文](README.rst)*
+
 YABGP
 =====
 
