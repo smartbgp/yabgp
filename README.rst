@@ -1,3 +1,7 @@
+简体中文_
+ 
+.. _简体中文: README-zh.rst
+
 YABGP
 =====
 
