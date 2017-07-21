@@ -1,4 +1,4 @@
-*[简体中文](README-zh.rst)*
+*[简体中文](https://github.com/donnemartin/system-design-primer/issues/40)*
 
 YABGP
 =====
