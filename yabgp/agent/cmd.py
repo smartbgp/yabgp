@@ -22,4 +22,4 @@ def main():
     try:
         prepare_service()
     except Exception as e:
-        print e
+        print(e)
