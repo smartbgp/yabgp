@@ -17,22 +17,22 @@ class CliHandler(BaseHandler):
         super(CliHandler, self).__init__()
 
     def on_update_error(self, peer, timestamp, msg):
-        print '[-] UPDATE ERROR,', msg
+        print('[-] UPDATE ERROR,', msg)
 
     def route_refresh_received(self, peer, msg, msg_type):
-        print '[+] ROUTE_REFRESH received,', msg
+        print('[+] ROUTE_REFRESH received,', msg)
 
     def keepalive_received(self, peer, timestamp):
-        print '[+] KEEPALIVE received'
+        print('[+] KEEPALIVE received')
 
     def open_received(self, peer, timestamp, result):
-        print '[+] OPEN received,', result
+        print('[+] OPEN received,', result)
 
     def update_received(self, peer, timestamp, msg):
-        print '[+] UPDATE received,', msg
+        print('[+] UPDATE received,', msg)
 
     def notification_received(self, peer, msg):
-        print '[-] NOTIFICATION received,', msg
+        print('[-] NOTIFICATION received,', msg)
 
 
 def main():
@@ -40,7 +40,7 @@ def main():
         cli_handler = CliHandler()
         prepare_service(handler=cli_handler)
     except Exception as e:
-        print e
+        print(e)
 
 
 if __name__ == '__main__':
