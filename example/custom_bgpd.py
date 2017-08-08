@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import sys
 
-from __future__ import print_function
 from oslo_config import cfg
 
 from yabgp.agent import prepare_service
