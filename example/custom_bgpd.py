@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 
+from __future__ import print_function
 from oslo_config import cfg
 
 from yabgp.agent import prepare_service
