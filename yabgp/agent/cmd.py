@@ -15,6 +15,7 @@
 
 """start service"""
 
+from __future__ import print_function
 from yabgp.agent import prepare_service
 
 
@@ -22,4 +23,4 @@ def main():
     try:
         prepare_service()
     except Exception as e:
-        print e
+        print(e)

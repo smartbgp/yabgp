@@ -19,6 +19,7 @@
 """ BGP Route injector
 """
 
+from __future__ import print_function
 import sys
 import urllib2
 import json
@@ -194,9 +195,9 @@ def send_update():
     spaces = ''
     sys.stdout.write("\rPercent: [%s] %.2f%%"%(hashes + spaces, 100.00))
     sys.stdout.flush()
-    print '\nTotal messages:   %s' % int(message_count)
-    print 'Success send out: %s' % send_success
-    print 'Failed send out:  %s' % send_failed
+    print('\nTotal messages:   %s' % int(message_count))
+    print('Success send out: %s' % send_success)
+    print('Failed send out:  %s' % send_failed)
 
 if __name__ == '__main__':
 

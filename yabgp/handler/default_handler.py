@@ -89,7 +89,7 @@ class Handler(BaseHandler):
         file_list.sort()
         msg_file_name = file_list[-1]
         try:
-            with open(msg_path + msg_file_name, 'rb') as fh:
+            with open(msg_path + msg_file_name, 'r') as fh:
                 line = None
                 for line in fh:
                     pass
