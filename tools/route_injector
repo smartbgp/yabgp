@@ -19,12 +19,12 @@
 """ BGP Route injector
 """
 
+from __future__ import print_function
 import sys
 import urllib2
 import json
 import time
 
-from __future__ import print_function
 from oslo_config import cfg
 
 
