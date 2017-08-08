@@ -21,6 +21,7 @@ import traceback
 from oslo_config import cfg
 from twisted.internet import reactor
 from twisted.web.server import Site
+from twisted.web.wsgi import WSGIResource
 
 from yabgp import version, log
 from yabgp.core.factory import BGPPeering
@@ -83,18 +84,15 @@ def prepare_twisted_service(handler):
     CONF.bgp.running_config['factory'] = bgp_peering
 
     # Starting api server
-    if sys.version_info[0] == 2:
-        # if running under Py2.x
-        from twisted.web.wsgi import WSGIResource
-        LOG.info("Prepare RESTAPI service")
-        resource = WSGIResource(reactor, reactor.getThreadPool(), app)
-        site = Site(resource)
-        try:
-            reactor.listenTCP(CONF.rest.bind_port, site, interface=CONF.rest.bind_host)
-            LOG.info("serving RESTAPI on http://%s:%s", CONF.rest.bind_host, CONF.rest.bind_port)
-        except Exception as e:
-            LOG.error(e, exc_info=True)
-            sys.exit()
+    LOG.info("Prepare RESTAPI service")
+    resource = WSGIResource(reactor, reactor.getThreadPool(), app)
+    site = Site(resource)
+    try:
+        reactor.listenTCP(CONF.rest.bind_port, site, interface=CONF.rest.bind_host)
+        LOG.info("serving RESTAPI on http://%s:%s", CONF.rest.bind_host, CONF.rest.bind_port)
+    except Exception as e:
+        LOG.error(e, exc_info=True)
+        sys.exit()
 
     LOG.info('Starting BGPPeering twsited instance')
     bgp_peering.automatic_start()
