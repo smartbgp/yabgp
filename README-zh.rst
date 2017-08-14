@@ -1,8 +1,11 @@
 YABGP
 =====
 
+<<<<<<< HEAD
 |Version| |License| |Build Status| |Code Health| |Documentation Status| |Test Coverage| |Downloads|
 
+=======
+>>>>>>> upstream/master
 yabgp是什么？
 ~~~~~~~~~~~~~~
 
@@ -111,6 +114,7 @@ BGP message举例：
 核心文件比如fsm，protocol我们从https://github.com/wikimedia/PyBal/blob/master/pybal/bgp.py 参考了一部分代码，
 
 message解析，我们参照了这里的代码https://github.com/Exa-Networks/exabgp
+<<<<<<< HEAD
 
 .. |License| image:: https://img.shields.io/hexpm/l/plug.svg
    :target: https://github.com/smartbgp/yabgp/blob/master/LICENSE
@@ -131,3 +135,5 @@ message解析，我们参照了这里的代码https://github.com/Exa-Networks/ex
 
 .. |Downloads| image:: https://img.shields.io/pypi/dm/yabgp.svg?
    :target: https://pypi.python.org/pypi/yabgp
+=======
+>>>>>>> upstream/master
