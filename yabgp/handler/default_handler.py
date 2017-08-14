@@ -47,6 +47,10 @@ class Handler(BaseHandler):
         '''
         self.msg_sequence = {}
 
+    def init(self):
+        if CONF.message.write_disk:
+            self.init_msg_file(CONF.bgp.running_config['remote_addr'].lower())
+
     def init_msg_file(self, peer_addr):
         msg_file_path_for_peer = os.path.join(
             CONF.message.write_dir,

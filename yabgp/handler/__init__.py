@@ -14,6 +14,10 @@ class BaseHandler(object):
         pass
 
     @abc.abstractmethod
+    def init(self):
+        raise NotImplemented
+
+    @abc.abstractmethod
     def on_update_error(self, peer, timestamp, msg):
         raise NotImplemented
 
