@@ -92,7 +92,7 @@ class BGP(protocol.Protocol):
         if self.factory.bgp_id is None:
             try:
                 local_host_addr = netaddr.IPAddress(self.transport.getHost().host)
-                if 'IPv6' in local_host_addr.info:
+                if 'IPv6' in local_host_addr.info.__iter__():
                     self.factory.bgp_id = int(netaddr.IPAddress('127.0.0.1'))
                 else:
                     self.factory.bgp_id = int(local_host_addr)
