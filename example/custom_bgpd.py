@@ -17,6 +17,9 @@ class CliHandler(BaseHandler):
     def __init__(self):
         super(CliHandler, self).__init__()
 
+    def init(self):
+        pass
+
     def on_update_error(self, peer, timestamp, msg):
         print('[-] UPDATE ERROR,', msg)
 
@@ -34,6 +37,12 @@ class CliHandler(BaseHandler):
 
     def notification_received(self, peer, msg):
         print('[-] NOTIFICATION received,', msg)
+
+    def on_connection_lost(self, peer):
+        print('[-] CONNECTION lost')
+
+    def on_connection_failed(self, peer, msg):
+        print('[-] CONNECTION failed,', msg)
 
 
 def main():
