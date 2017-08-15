@@ -28,7 +28,7 @@ from yabgp.core.factory import BGPPeering
 from yabgp.config import get_bgp_config
 from yabgp.common import constants as bgp_cons
 from yabgp.api.app import app
-from yabgp.handler.default_handler import Handler
+from yabgp.handler.default_handler import DefaultHandler
 
 
 log.early_init_log(logging.DEBUG)
@@ -118,7 +118,7 @@ def prepare_service(args=None, handler=None):
     try:
         if not handler:
             LOG.info('No handler provided, init default handler')
-            handler = Handler()
+            handler = DefaultHandler()
         get_bgp_config()
         check_msg_config()
     except Exception as e:

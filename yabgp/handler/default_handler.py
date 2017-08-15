@@ -35,9 +35,9 @@ MSG_PROCESS_OPTS = [
 CONF.register_opts(MSG_PROCESS_OPTS, group='message')
 
 
-class Handler(BaseHandler):
+class DefaultHandler(BaseHandler):
     def __init__(self):
-        super(Handler, self).__init__()
+        super(DefaultHandler, self).__init__()
         '''
             {<peer>: (<path>, <current file>)}
         '''
@@ -67,7 +67,7 @@ class Handler(BaseHandler):
                 os.makedirs(msg_path)
 
             # try get latest file and msg sequence if any
-            last_msg_seq, msg_file_name = Handler.get_last_seq_and_file(msg_path)
+            last_msg_seq, msg_file_name = DefaultHandler.get_last_seq_and_file(msg_path)
 
             if not msg_file_name:
                 msg_file_name = "%s.msg" % time.time()

@@ -3,17 +3,14 @@
 from __future__ import print_function
 import sys
 
-from oslo_config import cfg
-
 from yabgp.agent import prepare_service
 from yabgp.handler import BaseHandler
-# from yabgp.common import constants as bgp_cons
-
-
-CONF = cfg.CONF
 
 
 class CliHandler(BaseHandler):
+    """demo handler implementation
+    """
+
     def __init__(self):
         super(CliHandler, self).__init__()
 
