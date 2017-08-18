@@ -15,5 +15,5 @@
 
 """version information"""
 
-version_info = (0, 2, 9)
+version_info = (0, 3, 0)
 version = '.'.join(map(str, version_info))
