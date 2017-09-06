@@ -28,7 +28,7 @@ from yabgp.core.factory import BGPPeering
 from yabgp.config import get_bgp_config
 from yabgp.common import constants as bgp_cons
 from yabgp.api.app import app
-from yabgp.handler.default_handler import Handler
+from yabgp.handler.default_handler import DefaultHandler
 
 
 log.early_init_log(logging.DEBUG)
@@ -64,9 +64,8 @@ def prepare_twisted_service(handler):
     for conf_key in CONF.bgp.running_config:
         LOG.info('---%s = %s', conf_key, CONF.bgp.running_config[conf_key])
 
-    # move to handler init? (@xiaopeng163)
-    if CONF.message.write_disk:
-        handler.init_msg_file(CONF.bgp.running_config['remote_addr'].lower())
+    # init handler
+    handler.init()
 
     LOG.info('Create BGPPeering twsited instance')
     afi_safi_list = [bgp_cons.AFI_SAFI_STR_DICT[afi_safi] for afi_safi in CONF.bgp.running_config['afi_safi']]
@@ -119,7 +118,7 @@ def prepare_service(args=None, handler=None):
     try:
         if not handler:
             LOG.info('No handler provided, init default handler')
-            handler = Handler()
+            handler = DefaultHandler()
         get_bgp_config()
         check_msg_config()
     except Exception as e:

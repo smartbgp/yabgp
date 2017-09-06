@@ -35,9 +35,9 @@ MSG_PROCESS_OPTS = [
 CONF.register_opts(MSG_PROCESS_OPTS, group='message')
 
 
-class Handler(BaseHandler):
+class DefaultHandler(BaseHandler):
     def __init__(self):
-        super(Handler, self).__init__()
+        super(DefaultHandler, self).__init__()
         '''
             {<peer>: (<path>, <current file>)}
         '''
@@ -46,6 +46,10 @@ class Handler(BaseHandler):
             {<peer>: <seq number>}
         '''
         self.msg_sequence = {}
+
+    def init(self):
+        if CONF.message.write_disk:
+            self.init_msg_file(CONF.bgp.running_config['remote_addr'].lower())
 
     def init_msg_file(self, peer_addr):
         msg_file_path_for_peer = os.path.join(
@@ -63,7 +67,7 @@ class Handler(BaseHandler):
                 os.makedirs(msg_path)
 
             # try get latest file and msg sequence if any
-            last_msg_seq, msg_file_name = Handler.get_last_seq_and_file(msg_path)
+            last_msg_seq, msg_file_name = DefaultHandler.get_last_seq_and_file(msg_path)
 
             if not msg_file_name:
                 msg_file_name = "%s.msg" % time.time()

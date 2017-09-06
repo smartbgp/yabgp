@@ -33,13 +33,6 @@ If you change the default setting (like change the ``write_dir``), please start 
     $ yabgpd --bgp-local_addr=10.75.44.11 --bgp-local_as=23650 --bgp-remote_addr=10.124.1.245 \
              --bgp-remote_as=23650 --bgp-md5=cisco --config-file=../etc/yabgp/yabgp.ini
 
-Running Mode
-~~~~~~~~~~~~
-
-By default, the yabgp will be running as standalone mode, and it will write all BGP messages in local disk where as ``write_dir`` point out.
-If you run yabgp with ``--nostandalone``,  you must configure mongodb and rabbitmq, then you can control which kind of bgp message will be
-sent to rabbitmq queue for further process.
-
 Logging and Debug
 ~~~~~~~~~~~~~~~~~
 

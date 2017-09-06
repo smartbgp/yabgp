@@ -26,6 +26,7 @@ Table of Contents
    tutorial
    msg_format
    restapi
+   extension
    tools
    reference
 
