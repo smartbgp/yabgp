@@ -4,3 +4,4 @@ Twisted==16.0.0
 Flask==0.10.1
 Flask-HTTPAuth==2.5.0
 netaddr>=0.7.12
+pika==0.9.14
