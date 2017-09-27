@@ -278,6 +278,7 @@ class BGP(protocol.Protocol):
             msg_update = Update().construct(msg, self.fourbytesas, self.add_path_ipv4_send)
             reactor.callFromThread(self.write_tcp_thread, msg_update)
             self.msg_sent_stat['Updates'] += 1
+
             return True
         except Exception as e:
             LOG.error(e)
@@ -353,8 +354,9 @@ class BGP(protocol.Protocol):
 
         # deal with all request in internal message queue
         # until the queue is empty
-        while not self.handler.inter_mq.empty():
+        while not self.handler.inter_mq.empty() and self.msg_recv_stat['Keepalives'] > 0:
             inter_msg = self.handler.inter_mq.get()
+            LOG.debug('Get %s message %s from internal queue', inter_msg['type'], inter_msg['msg'])
             if inter_msg['type'] == 'notification':
                 self.send_notification(inter_msg['msg']['error'],
                                        inter_msg['msg']['sub_error'],
