@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import abc
 import logging
+from queue import Queue
 
 
 LOG = logging.getLogger(__name__)
@@ -11,6 +12,12 @@ class BaseHandler(object):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self):
+        """
+        internal message queue:
+        push message in custom handler
+        pop message when keep alive received
+        """
+        self.inter_mq = Queue()
         pass
 
     @abc.abstractmethod
