@@ -350,6 +350,15 @@ class BGP(protocol.Protocol):
             :param msg:
             :return:
         """
+        while not self.handler.inter_mq.empty():
+            inter_msg = self.handler.inter_mq.get()
+            if inter_msg['type'] == 'notification':
+                self.send_notification(inter_msg['msg']['error'],
+                                       inter_msg['msg']['sub_error'],
+                                       inter_msg['msg']['data'])
+            elif inter_msg['type'] == 'update':
+                self.send_update(inter_msg['msg'])
+
         self.msg_recv_stat['Keepalives'] += 1
 
         self.handler.keepalive_received(self, timestamp)
