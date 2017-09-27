@@ -350,6 +350,9 @@ class BGP(protocol.Protocol):
             :param msg:
             :return:
         """
+
+        # deal with all request in internal message queue
+        # until the queue is empty
         while not self.handler.inter_mq.empty():
             inter_msg = self.handler.inter_mq.get()
             if inter_msg['type'] == 'notification':
