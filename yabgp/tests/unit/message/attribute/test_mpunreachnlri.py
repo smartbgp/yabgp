@@ -73,6 +73,11 @@ class TestMpUnReachNLRI(unittest.TestCase):
         nlri_dict = {'afi_safi': (1, 133), 'withdraw': [{1: '192.85.2.0/24', 2: '192.85.1.0/24'}]}
         self.assertEqual(data_bin, MpUnReachNLRI.construct(nlri_dict)[3:])
 
+    def test_ipv4_srte_construct(self):
+        data_bin = b'\x00\x01\x49\x60\x00\x00\x00\x00\x00\x00\x00\x0a\xc0\xa8\x05\x07'
+        nlri_dict = {'afi_safi': (1, 73), 'withdraw': {'distinguisher': 0, 'color': 10, 'endpoint': '192.168.5.7'}}
+        self.assertEqual(data_bin, MpUnReachNLRI.construct(nlri_dict)[3:])
+
     def test_l2vpn_evpn_route_type_1_parse_construct(self):
         data_dict = {
             "afi_safi": (25, 70),

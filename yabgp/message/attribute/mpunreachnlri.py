@@ -18,6 +18,8 @@
 
 import struct
 
+import logging
+
 from yabgp.message.attribute import Attribute
 from yabgp.message.attribute import AttributeFlag
 from yabgp.message.attribute import AttributeID
@@ -27,11 +29,13 @@ from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
 from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
 from yabgp.message.attribute.nlri.evpn import EVPN
 from yabgp.message.attribute.nlri.linkstate import BGPLS
+from yabgp.message.attribute.nlri.ipv4_srte import IPv4SRTE
 from yabgp.common import afn
 from yabgp.common import safn
 from yabgp.common import exception as excep
 from yabgp.common import constants as bgp_cons
 
+LOG = logging.getLogger()
 
 class MpUnReachNLRI(Attribute):
 
@@ -148,6 +152,21 @@ class MpUnReachNLRI(Attribute):
                     return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
                         + struct.pack('!B', len(attr_value)) + attr_value
 
+                except Exception:
+                    raise excep.ConstructAttributeFailed(
+                        reason='failed to construct attributes',
+                        data=value
+                    )
+            elif safi == safn.SAFNUM_SRTE:
+                try:
+                    nlri_list = value.get('withdraw') or {}
+                    if not nlri_list:
+                        return None
+                    nlri_hex = b''
+                    nlri_hex += IPv4SRTE.construct(data=value['withdraw'])
+                    attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri_hex
+                    return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
+                        + struct.pack('!B', len(attr_value)) + attr_value
                 except Exception:
                     raise excep.ConstructAttributeFailed(
                         reason='failed to construct attributes',

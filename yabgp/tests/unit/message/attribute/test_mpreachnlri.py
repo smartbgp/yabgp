@@ -150,6 +150,20 @@ class TestMpReachNLRI(unittest.TestCase):
         data_bin_cons = MpReachNLRI.construct(data_dict)
         self.assertEqual(data_dict, MpReachNLRI.parse(data_bin_cons[3:]))
 
+    def test_ipv4_srte_contruct(self):
+        data_bin = b'\x80\x0e\x16\x00\x01\x49\x04\xc0\xa8\x05\x05\x00\x60\x00\x00\x00\x00\x00' \
+                   b'\x00\x00\x0a\xc0\xa8\x05\x07'
+        data_dict = {
+            "afi_safi": (1, 73),
+            "nexthop": "192.168.5.5",
+            "nlri": {
+                "distinguisher": 0,
+                "color": 10,
+                "endpoint": '192.168.5.7'
+            }
+        }
+        self.assertEqual(data_bin, MpReachNLRI.construct(data_dict))
+
     def test_l2vpn_evpn_parse_construct_route_type1(self):
         data_dict = {
             "afi_safi": (25, 70),

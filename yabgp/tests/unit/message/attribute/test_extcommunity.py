@@ -117,6 +117,11 @@ class TestExtCommunity(unittest.TestCase):
         self.assertEqual(community_list, ExtCommunity.parse(community_hex))
         self.assertEqual(community_hex, ExtCommunity.construct(community_list)[3:])
 
+    def test_construct_transitive_opaque_color(self):
+        community_list = [[bgp_cons.BGP_EXT_COM_COLOR, 10]]
+        community_hex = b'\x03\x0b\x00\x00\x00\x00\x00\x0a'
+        self.assertEqual(community_hex, ExtCommunity.construct(community_list)[3:])
+
     def test_parse_construct_es_import(self):
         community_list = [[bgp_cons.BGP_EXT_COM_EVPN_ES_IMPORT, '00-11-22-33-44-55']]
         community_hex = b'\x06\x02\x00\x11\x22\x33\x44\x55'

@@ -46,6 +46,7 @@ class AttributeFlag(int):
     PARTIAL = 0x20  # 32  RFC 4271
     TRANSITIVE = 0x40  # 64  RFC 4271
     OPTIONAL = 0x80  # 128 RFC 4271
+    # OPTIONAL_TRANSITIVE = 0xc0  # 192 RFC 4271
 
     def __str_(self):
         r = []
@@ -62,6 +63,9 @@ class AttributeFlag(int):
         if v & 0x80:
             r.append("OPTIONAL")
             v -= 0x80
+        if v & 0xc0:
+            r.append("OPTIONAL_TRANSITIVE")
+            v -= 0xc0
         if v:
             r.append("UNKNOWN %s" % hex(v))
         return " ".join(r)

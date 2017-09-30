@@ -185,6 +185,7 @@ The attribute we supported now is: (reference by `IANA <http://www.iana.org/assi
         "17": "AS4_PATH",
         "18": "AS4_AGGREGATOR",
         "22": "PMSI_TUNNEL",
+        "23": "TUNNEL_ENCAPSULATIONS",
         "128": "ATTR_SET"
     }
 
@@ -356,6 +357,7 @@ Value     Meaning
 ========= ===
 [1, 128]  IPv4 MPLSVPN
 [1, 133]  IPv4 Flowspec
+[1, 73]   IPv4 Sr-policy
 [2, 1]    IPv6 Unicast
 [2, 128]  IPv6 MPLSVPN
 [25, 70]  EVPN
@@ -394,6 +396,77 @@ IPv4 FlowSpec
             }
         }
     }
+
+IPv4 Sr-policy
+"""""""""""""
+
+.. code-block:: json
+
+    {
+        "attr": {
+            "8": ["NO_ADVERTISE"],
+            "14": {
+                "afi_safi": [1, 73],
+                "nexthop": "192.168.5.5",
+                "nlri": {
+                    "distinguisher": 0,
+                    "color": 10,
+                    "endpoint": "192.168.76.1"
+                }
+            },
+            "16": [[258, "10.75.195.199:00"]],
+            "23": {
+                "6": 100,
+                "7": 25102,
+                "128": [
+                    {
+                        "9": 10,
+                        "1": [
+                            {
+                                "1": {
+                                    "label": 2000,
+                                    "TC": 0,
+                                    "S": 0,
+                                    "TTL": 255
+                                }
+                            },
+                            {
+                                "3": {
+                                    "node": "10.1.1.1",
+                                    "SID": {
+                                        "label": 3000,
+                                        "TC": 0,
+                                        "S": 0,
+                                        "TTL": 255
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+
+attribute explaination(only for this format):
+::
+    "8": Optionally assign
+    "14": Multiprotocol Reacable Attribute
+    "16": Route Target Extended Community
+    "23": Tunnel Encapsulation Attribute
+        "6": Preference
+        "7": Binding SID
+        "128": Multiple segement lists
+            "9": Weighted
+            "1": Segement list
+                "1": Segement type 1
+                    "label": Value of MPLS Label
+                    "TC": Assign optionally, default value is 0
+                    "S": Assign optionally, default value is 0
+                    "TTL": Assign optionally, default value is 255
+                "3": Segement type 3
+                    "node": An Ipv4 Address
+                    "SID": Assign Optionally, inner structure similar to Segement type 1
 
 IPv6 Unicast
 """"""""""""
@@ -501,6 +574,28 @@ IPv4 FlowSpec
             "15": {
                 "afi_safi": [1, 133],
                 "withdraw": [{"1": "192.88.2.3/24", "2": "192.89.1.3/24"}]
+            }
+        }
+    }
+
+IPv4 Sr-policy
+"""""""""""""
+
+.. code-block:: json
+
+    {
+        "attr":{
+            "1": 0,
+            "2": [],
+            "3": "192.168.5.5",
+            "5": 200,
+            "15": {
+                "afi_safi": [1, 73],
+                "withdraw": {
+                    "distinguisher": 0,
+                    "color": 10,
+                    "endpoint": "192.168.76.1"
+                }
             }
         }
     }
