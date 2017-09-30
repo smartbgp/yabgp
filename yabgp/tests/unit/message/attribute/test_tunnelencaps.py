@@ -15,8 +15,8 @@
 
 import unittest
 
-from yabgp.common import constants as bgp_cons
 from yabgp.message.attribute.tunnelencaps import TunnelEncaps
+
 
 class TestTunnelEncaps(unittest.TestCase):
 
@@ -29,7 +29,7 @@ class TestTunnelEncaps(unittest.TestCase):
             "TTL": 255
         }
         self.assertEqual(option_sid, TunnelEncaps.construct_optional_label_sid(data_dict))
-    
+
     def test_construct_weight(self):
         data_dict = {"9": 10, "1": []}
         segment_list = dict([(int(l), r) for (l, r) in data_dict.items()])
@@ -38,7 +38,26 @@ class TestTunnelEncaps(unittest.TestCase):
         self.assertEqual((weight_hex, sid_hex), TunnelEncaps.construct_weight_and_seg(segment_list))
 
     def test_construct_seg(self):
-        data_dict = {"1": [{"1": {"label": 2000}},{"3": {"node": "10.1.1.1","SID": {"label": 2000,"TC": 0,"S": 0,"TTL": 255}}}]}
+        data_dict = {
+            "1": [
+                {
+                    "1": {
+                        "label": 2000
+                    }
+                },
+                {
+                    "3": {
+                        "node": "10.1.1.1",
+                        "SID": {
+                            "label": 2000,
+                            "TC": 0,
+                            "S": 0,
+                            "TTL": 255
+                        }
+                    }
+                }
+            ]
+        }
         segment_list = dict([(int(l), r) for (l, r) in data_dict.items()])
         weight_hex = b''
         sid_hex = b'\x01\x06\x00\x00\x00\x7d\x00\xff\x03\x0a\x00\x00\x0a\x01\x01\x01\x00\x7d\x00\xff'
@@ -55,8 +74,33 @@ class TestTunnelEncaps(unittest.TestCase):
         self.assertEqual(data_hex, TunnelEncaps.construct(data_dict)[11:])
 
     def test_construct_segement_lists(self):
-        data_dict = {"128": [{"9": 10,"1": [{"1": {"label": 2000}},{"3": {"node": "10.1.1.1","SID": {"label": 2000,"TC": 0,"S": 0,"TTL": 255}}}]}]}
-        data_hex = b'\x80\x00\x1d\x00\x09\x06\x00\x00\x00\x00\x00\x0a\x01\x06\x00\x00\x00\x7d\x00\xff\x03\x0a\x00\x00\x0a\x01\x01\x01\x00\x7d\x00\xff'
+        data_dict = {
+            "128": [
+                {
+                    "9": 10,
+                    "1": [
+                        {
+                            "1": {
+                                "label": 2000
+                            }
+                        },
+                        {
+                            "3": {
+                                "node": "10.1.1.1",
+                                "SID": {
+                                    "label": 2000,
+                                    "TC": 0,
+                                    "S": 0,
+                                    "TTL": 255
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+        data_hex = b'\x80\x00\x1d\x00\x09\x06\x00\x00\x00\x00\x00\x0a\x01\x06\x00\x00\x00\x7d\x00' \
+                   b'\xff\x03\x0a\x00\x00\x0a\x01\x01\x01\x00\x7d\x00\xff'
         self.assertEqual(data_hex, TunnelEncaps.construct(data_dict)[11:])
 
 if __name__ == '__main__':

@@ -17,30 +17,14 @@
 """
 
 import struct
-import binascii
 
-import netaddr
-import logging
 import netaddr
 
 from yabgp.message.attribute import Attribute
 from yabgp.message.attribute import AttributeFlag
 from yabgp.message.attribute import AttributeID
-from yabgp.common import afn
-from yabgp.common import safn
-from yabgp.common import exception as excep
 from yabgp.common import constants as bgp_cons
-from yabgp.message.attribute.nlri.ipv4_mpls_vpn import IPv4MPLSVPN
-from yabgp.message.attribute.nlri.ipv6_mpls_vpn import IPv6MPLSVPN
-from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
-from yabgp.message.attribute.nlri.ipv4_srte import IPv4SRTE
-from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
-from yabgp.message.attribute.nlri.labeled_unicast.ipv4 import IPv4LabeledUnicast
-from yabgp.message.attribute.nlri.labeled_unicast.ipv6 import IPv6LabeledUnicast
-from yabgp.message.attribute.nlri.evpn import EVPN
-from yabgp.message.attribute.nlri.linkstate import BGPLS
 
-LOG = logging.getLogger()
 
 class TunnelEncaps(Attribute):
     """
@@ -62,7 +46,7 @@ class TunnelEncaps(Attribute):
         +-----------------------------------+
         |     Sub-TLV Value (Variable)      |
         |                                   |
-        +-----------------------------------+               
+        +-----------------------------------+
     """
 
     ID = AttributeID.Tunnel_Encapsulation_Attribute
@@ -73,7 +57,7 @@ class TunnelEncaps(Attribute):
         items = value.keys()
         label = value['label'] << 12
         tra_cls = 0
-        btt_stack = 0 
+        btt_stack = 0
         ttl = 0
         if 'TC' in items:
             tra_cls = value['TC'] << 9
@@ -87,7 +71,7 @@ class TunnelEncaps(Attribute):
             ttl = value['TTL']
         else:
             ttl = 255
-        return label + tra_cls + btt_stack + ttl    
+        return label + tra_cls + btt_stack + ttl
 
     @classmethod
     def construct_weight_and_seg(cls, segment_list):
@@ -116,39 +100,34 @@ class TunnelEncaps(Attribute):
                     seg_hex += struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_SID) + struct.pack('!B', 10) + b'\x00\x00' +\
                         netaddr.IPAddress(ipv4_node).packed + struct.pack('!I', sum_value)
             # 5
-            # elif seg_type == bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_INDEX_SID:
-            #     value = seg[seg.keys()[0]]
-            #     local_int = value['interface']
-            #     # LOG.info(local_int)
-            #     ipv4_node = value['node']
-            #     # LOG.info(ipv4_node)
-            #     if "SID" not in value.keys():
-            #         # LOG.info('no_sid_5')
-            #         seg_hex += struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_INDEX_SID) + struct.pack('!B', 10) + b'\x00\x00' +\
-            #             struct.pack('!I', local_int) + netaddr.IPAddress(ipv4_node).packed
-            #     else:
-            #         # LOG.info('yes_sid_5')
-            #         opt_sid = value['SID']
-            #         sum_value = cls.construct_optional_label_sid(opt_sid)
-            #         seg_hex += struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_INDEX_SID) + struct.pack('!B', 14) + b'\x00\x00' +\
-            #             struct.pack('!I', local_int) + netaddr.IPAddress(ipv4_node).packed + struct.pack('!I', sum_value)
+            elif seg_type == bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_INDEX_SID:
+                value = seg[seg.keys()[0]]
+                local_int = value['interface']
+                ipv4_node = value['node']
+                if "SID" not in value.keys():
+                    seg_hex += struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_INDEX_SID) +\
+                        struct.pack('!B', 10) + b'\x00\x00' + struct.pack('!I', local_int) +\
+                        netaddr.IPAddress(ipv4_node).packed
+                else:
+                    opt_sid = value['SID']
+                    sum_value = cls.construct_optional_label_sid(opt_sid)
+                    seg_hex += struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_INDEX_SID) +\
+                        struct.pack('!B', 14) + b'\x00\x00' + struct.pack('!I', local_int) +\
+                        netaddr.IPAddress(ipv4_node).packed + struct.pack('!I', sum_value)
             # 6
             elif seg_type == bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_ADDR_SID:
                 value = seg[seg.keys()[0]]
                 local_ipv4 = value['local']
-                # LOG.info(local_ipv4)
                 remote_ipv4 = value['remote']
-                # LOG.info(remote_ipv4)
                 if "SID" not in value.keys():
-                    # LOG.info('no_sid_6')
-                    seg_hex += struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_ADDR_SID) + struct.pack('!B', 10) + b'\x00\x00' +\
-                        netaddr.IPAddress(local_ipv4).packed + netaddr.IPAddress(remote_ipv4).packed
+                    seg_hex += struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_ADDR_SID) + struct.pack('!B', 10) +\
+                        b'\x00\x00' + netaddr.IPAddress(local_ipv4).packed + netaddr.IPAddress(remote_ipv4).packed
                 else:
-                    # LOG.info('yes_sid_6')
                     opt_sid = value['SID']
                     sum_value = cls.construct_optional_label_sid(opt_sid)
-                    seg_hex += struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_ADDR_SID) + struct.pack('!B', 14) + b'\x00\x00' +\
-                        netaddr.IPAddress(local_ipv4).packed + netaddr.IPAddress(remote_ipv4).packed + struct.pack('!I', sum_value)
+                    seg_hex += struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_ADDR_SID) + struct.pack('!B', 14) +\
+                        b'\x00\x00' + netaddr.IPAddress(local_ipv4).packed + netaddr.IPAddress(remote_ipv4).packed +\
+                        struct.pack('!I', sum_value)
         return weight_hex, seg_hex
 
     @classmethod
@@ -158,32 +137,32 @@ class TunnelEncaps(Attribute):
 
         :param value: python dictionary
         {
-			"6": 100,
-			"7": 25102,
-			"128": [
-				{
-					"9": 10,
-					"1": [
-						{
-							"1": {
-								"label": 2000
-							}
-						},
-						{
-							"3": {
-								"node": "10.1.1.1",
-								"SID": {
-									"label": 3000,
-									"TC": 0,
-									"S": 0,
-									"TTL": 255
-								}
-							}
-						}
-					]
-				}
-			]
-	    }
+            "6": 100,
+            "7": 25102,
+            "128": [
+                {
+                    "9": 10,
+                    "1": [
+                        {
+                            "1": {
+                                "label": 2000
+                            }
+                        },
+                        {
+                            "3": {
+                                "node": "10.1.1.1",
+                                "SID": {
+                                    "label": 3000,
+                                    "TC": 0,
+                                    "S": 0,
+                                    "TTL": 255
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
         """
         policy_hex = b''
         policy = value
@@ -212,8 +191,9 @@ class TunnelEncaps(Attribute):
                 for seg_list in data[type_tmp]:
                     segment_list = dict([(int(l), r) for (l, r) in seg_list.items()])
                     weight_hex, seg_hex = cls.construct_weight_and_seg(segment_list)
-                    seg_list_hex += struct.pack('!B', type_tmp) + struct.pack('!H', len(weight_hex) + len(seg_hex) + 1) + b'\x00' + weight_hex + seg_hex
+                    seg_list_hex += struct.pack('!B', type_tmp) + struct.pack('!H', len(weight_hex) + len(seg_hex) + 1) +\
+                        b'\x00' + weight_hex + seg_hex
                 policy_value_hex += seg_list_hex
-        policy_hex += struct.pack('!H', bgp_cons.BGP_TUNNEL_ENCAPS_SR_TE_POLICY_TYPE) + struct.pack('!H', len(policy_value_hex)) + policy_value_hex
+        policy_hex += struct.pack('!H', bgp_cons.BGP_TUNNEL_ENCAPS_SR_TE_POLICY_TYPE) +\
+            struct.pack('!H', len(policy_value_hex)) + policy_value_hex
         return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) + struct.pack('!B', len(policy_hex)) + policy_hex
-

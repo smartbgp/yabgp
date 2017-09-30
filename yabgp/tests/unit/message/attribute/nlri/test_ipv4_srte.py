@@ -15,7 +15,6 @@
 
 import unittest
 
-from yabgp.common import constants as bgp_cons
 from yabgp.message.attribute.nlri.ipv4_srte import IPv4SRTE
 
 

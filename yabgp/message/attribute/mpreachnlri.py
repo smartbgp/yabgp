@@ -38,6 +38,7 @@ from yabgp.message.attribute.nlri.labeled_unicast.ipv6 import IPv6LabeledUnicast
 from yabgp.message.attribute.nlri.evpn import EVPN
 from yabgp.message.attribute.nlri.linkstate import BGPLS
 
+
 class MpReachNLRI(Attribute):
     """
         MP_REACH_NLRI (type code 14) is used to carry the set of reachable
@@ -249,7 +250,7 @@ class MpReachNLRI(Attribute):
                         reason='failed to construct attributes: %s' % e,
                         data=value
                     )
-            elif safi == safn.SAFNUM_SRTE: # BGP SR TE Policy
+            elif safi == safn.SAFNUM_SRTE:  # BGP SR TE Policy
                 try:
                     try:
                         nexthop = netaddr.IPAddress(value['nexthop']).packed
@@ -266,7 +267,7 @@ class MpReachNLRI(Attribute):
                     raise excep.ConstructAttributeFailed(
                         reason='failed to construct attributes: %s' % e,
                         data=value
-                    )                       
+                    )
             elif safi == safn.SAFNUM_MPLS_LABEL:
                 try:
                     try:

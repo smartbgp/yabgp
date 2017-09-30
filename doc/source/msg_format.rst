@@ -398,7 +398,7 @@ IPv4 FlowSpec
     }
 
 IPv4 Sr-policy
-"""""""""""""
+""""""""""""""
 
 .. code-block:: json
 
@@ -450,6 +450,7 @@ IPv4 Sr-policy
 
 attribute explaination(only for this format):
 ::
+
     "8": Optionally assign
     "14": Multiprotocol Reacable Attribute
     "16": Route Target Extended Community
@@ -579,7 +580,7 @@ IPv4 FlowSpec
     }
 
 IPv4 Sr-policy
-"""""""""""""
+""""""""""""""
 
 .. code-block:: json
 

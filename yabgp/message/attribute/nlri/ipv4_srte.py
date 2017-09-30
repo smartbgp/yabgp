@@ -16,15 +16,10 @@
 """IPv4 SR TE Policy NLRI
 """
 import struct
-
 import netaddr
 
-import logging
-
-from yabgp.common import constants as bgp_cons
 from yabgp.message.attribute.nlri import NLRI
 
-LOG = logging.getLogger()
 
 class IPv4SRTE(NLRI):
     """

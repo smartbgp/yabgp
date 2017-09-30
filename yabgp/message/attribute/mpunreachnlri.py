@@ -18,8 +18,6 @@
 
 import struct
 
-import logging
-
 from yabgp.message.attribute import Attribute
 from yabgp.message.attribute import AttributeFlag
 from yabgp.message.attribute import AttributeID
@@ -35,7 +33,6 @@ from yabgp.common import safn
 from yabgp.common import exception as excep
 from yabgp.common import constants as bgp_cons
 
-LOG = logging.getLogger()
 
 class MpUnReachNLRI(Attribute):
 
