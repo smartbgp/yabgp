@@ -1,4 +1,4 @@
-# Copyright 2015 Cisco Systems, Inc.
+# Copyright 2015-2017 Cisco Systems, Inc.
 # All rights reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -26,6 +26,7 @@ SAFNUM_VPLS = 65
 SAFNUM_MDT = 66  # rfc6037
 SAFNUM_EVPN = 70  # RFC 7432
 SAFNUM_BGPLS = 71
+SAFNUM_SRTE = 73
 SAFNUM_LAB_VPNUNICAST = 128  # Draft-rosen-rfc2547bis-03
 SAFNUM_LAB_VPNMULCAST = 129
 SAFNUM_LAB_VPNUNIMULC = 130

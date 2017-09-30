@@ -644,6 +644,80 @@
 			]
 		},
 		{
+			"name": "ipv4_sr-policy",
+			"description": "",
+			"item": [
+				{
+					"name": "send update",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": {
+								"username": "admin",
+								"password": "admin",
+								"saveHelperData": true,
+								"showPassword": false
+							}
+						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\"attr\":{ \n\"1\": 0, \n\"2\": [], \n\"3\": \"192.168.5.5\", \n\"5\": 200, \n\"8\": [\"NO_ADVERTISE\"], \n\"14\": { \n\"afi_safi\": [1, \n 73], \n\"nexthop\": \"192.168.5.5\", \n\"nlri\": { \n\"distinguisher\": 0, \n\"color\": 10, \n\"endpoint\": \"192.168.76.1\" \n} \n}, \n\"16\": [[258, \n \"10.75.195.199:00\"]], \n\"23\": { \n\"6\": 100, \n\"7\": 25102, \n\"128\": [ \n{ \n\"9\": 2, \n\"1\": [ \n{ \n\"1\": { \n\"label\": 5000 \n} \n}, \n{ \n\"1\": { \n\"label\": 4000, \n\"TC\": 0, \n\"S\": 0, \n\"TTL\": 255 \n} \n} \n] \n}, \n{ \n\"9\": 10, \n\"1\": [ \n{ \n\"1\": { \n\"label\": 2000 \n} \n}, \n{ \n\"3\": { \n\"node\": \"10.1.1.1\", \n\"SID\": { \n\"label\": 3000, \n\"TC\": 0, \n\"S\": 0, \n\"TTL\": 255 \n} \n} \n} \n] \n} \n] \n} \n} \n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "send withdraw",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": {
+								"username": "admin",
+								"password": "admin",
+								"saveHelperData": true,
+								"showPassword": false
+							}
+						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\"attr\":{ \n\"1\": 0, \n\"2\": [], \n\"3\": \"192.168.5.5\", \n\"5\": 200, \n\"8\": [\"NO_ADVERTISE\"], \n\"15\": { \n\"afi_safi\": [1, \n 73], \n\"withdraw\": { \n\"distinguisher\": 0, \n\"color\": 10, \n\"endpoint\": \"192.168.76.1\" \n} \n} \n} \n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "ipv6_labeled_unicast",
 			"description": "",
 			"item": [

@@ -31,6 +31,8 @@ YABGP是另一种BGP协议的Python实现。它可以和各种路由器（包括
 
    - IPv4 Flowspec(有限支持)
 
+   - IPv4 SR Policy(draft-previdi-idr-segment-routing-te-policy-07)
+
    - IPv4/IPv6 MPLSVPN
 
    - EVPN (部分支持)
@@ -71,11 +73,7 @@ pip安装：
 
 .. code:: bash
 
-    $ yabgpd --bgp-local_addr=1.1.1.1 --bgp-local_as=65001 --bgp-remote_addr=1.1.1.2 --bgp-remote_as=65001 --bgp-md5=test --config-file=../etc/yabgp/yabgp.ini
-
-BGP message举例：
-
-如果你想把解析的BGP message存储到本地磁盘，你可以在``yabgp.ini``中指定存储位置。
+    $ yabgpd --bgp-local_addr=1.1.1.1 --bgp-local_as=65001 --bgp-remote_addr=1.1.1.2 --bgp-remote_as=65001 --bgp-afi_safi=ipv4
 
 文档
 ~~~~~~~~~~~~~

@@ -41,6 +41,8 @@ Features
 
    - IPv4 Flowspec(limited)
 
+   - IPv4 SR Policy(draft-previdi-idr-segment-routing-te-policy-07)
+
    - IPv4/IPv6 MPLSVPN
 
    - EVPN (partially supported)
@@ -82,12 +84,7 @@ For example:
 
 .. code:: bash
 
-    $ yabgpd --bgp-local_addr=1.1.1.1 --bgp-local_as=65001 --bgp-remote_addr=1.1.1.2 --bgp-remote_as=65001 --bgp-md5=test --config-file=../etc/yabgp/yabgp.ini
-
-BGP message example:
-
-in ``yabgp.ini``, you can point out if you want to store the parsing
-BGP message to local disk and where you want to put them in.
+    $ yabgpd --bgp-local_addr=1.1.1.1 --bgp-local_as=65001 --bgp-remote_addr=1.1.1.2 --bgp-remote_as=65001 --bgp-afi_safi=ipv4
 
 Documentation
 ~~~~~~~~~~~~~

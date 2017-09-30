@@ -1,4 +1,4 @@
-# Copyright 2015 Cisco Systems, Inc.
+# Copyright 2015-2017 Cisco Systems, Inc.
 # All rights reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -37,6 +37,7 @@ from yabgp.message.attribute.originatorid import OriginatorID
 from yabgp.message.attribute.clusterlist import ClusterList
 from yabgp.message.attribute.mpreachnlri import MpReachNLRI
 from yabgp.message.attribute.mpunreachnlri import MpUnReachNLRI
+from yabgp.message.attribute.tunnelencaps import TunnelEncaps
 from yabgp.message.attribute.extcommunity import ExtCommunity
 from yabgp.message.attribute.pmsitunnel import PMSITunnel
 from yabgp.message.attribute.linkstate.linkstate import LinkState
@@ -389,7 +390,6 @@ class Update(object):
         """
         attr_raw_hex = b''
         for type_code, value in attr_dict.items():
-
             if type_code == bgp_cons.BGPTYPE_ORIGIN:
                 origin_hex = Origin.construct(value=value)
                 attr_raw_hex += origin_hex
@@ -439,6 +439,9 @@ class Update(object):
             elif type_code == bgp_cons.BGPTYPE_EXTENDED_COMMUNITY:
                 community_ext_hex = ExtCommunity.construct(value=value)
                 attr_raw_hex += community_ext_hex
+            elif type_code == bgp_cons.BGPTYPE_TUNNEL_ENCAPS_ATTR:
+                tunnelencap_hex = TunnelEncaps.construct(value=value)
+                attr_raw_hex += tunnelencap_hex
 
         return attr_raw_hex
 
