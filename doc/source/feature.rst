@@ -15,6 +15,8 @@ Features
 
    - IPv4 Flowspec(limited)
 
+   - IPv4 sr-policy(limited)
+
    - IPv4/IPv6 MPLSVPN
 
    - EVPN (partially supported)
