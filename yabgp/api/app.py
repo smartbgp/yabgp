@@ -27,6 +27,7 @@ app.config['SECRET_KEY'] = 'cisco123'
 app.register_blueprint(v1.blueprint, url_prefix='/v1')
 
 cfg.CONF.register_cli_opts(config.rest_server_ops, group='rest')
+cfg.CONF.register_opts(config.keep_alive_ops, group='keep_alive')
 
 
 @app.route('/')
