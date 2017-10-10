@@ -33,3 +33,12 @@ rest_server_ops = [
                help='Password for api server',
                secret=True)
 ]
+
+
+keep_alive_ops = [
+    cfg.IntOpt(
+        'last_time',
+        default=0,
+        help='Last time which controller called API to check probe stat'
+    )
+]

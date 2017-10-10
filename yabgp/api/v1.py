@@ -16,6 +16,7 @@
 """Blueprint for version 1 of API
 """
 import logging
+import time
 
 from flask.ext.httpauth import HTTPBasicAuth
 from flask import Blueprint
@@ -46,6 +47,7 @@ def root():
         "status": "stable",
         "updated": "2015-01-22T00:00:00Z",
         "version": "v1"}
+    cfg.CONF.keep_alive.last_time = time.time()
     return flask.jsonify(intro)
 
 
