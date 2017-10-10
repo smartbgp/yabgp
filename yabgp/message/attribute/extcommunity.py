@@ -1,4 +1,4 @@
-# Copyright 2015 Cisco Systems, Inc.
+# Copyright 2015-2017 Cisco Systems, Inc.
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -209,6 +209,8 @@ class ExtCommunity(Attribute):
                 ext_community_hex += struct.pack('!HHf', bgp_cons.BGP_EXT_TRA_RATE, int(asn), int(rate))
 
             # Transitive Opaque
+            elif item[0] == bgp_cons.BGP_EXT_COM_COLOR:
+                ext_community_hex += struct.pack('!HHI', bgp_cons.BGP_EXT_COM_COLOR, 0, item[1])
             elif item[0] == bgp_cons.BGP_EXT_COM_ENCAP:
                 ext_community_hex += struct.pack('!HHI', bgp_cons.BGP_EXT_COM_ENCAP, 0, item[1])
             # EVPN
