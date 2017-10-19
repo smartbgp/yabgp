@@ -22,16 +22,15 @@ from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
 class TestIPv4FlowSpec(unittest.TestCase):
 
     def test_parse(self):
-        pass
         raw_hex = '\x01\x18\x02\x02\x02\x02\x10\x03\x03\x03\x01\x00\x01\x2f\x01\x58' \
                   '\x01\x01\x01\x02\x01\x59\x81\x67\x05\x11\x1f\x92\x91\x1f\x93\x06\x01' \
                   '\x50\x11\x1f\x90\x11\x1f\x91\x11\x1f\x92\x91\x1f\x93\x07\x01\x02\x01' \
                   '\x03\x01\x05\x81\x06\x08\x81\x02\x09\x81\x28\x0a\x01\xfe\x03\xfe\xd5' \
                   '\x01\x2c\x0b\x01\x28\x81\x30\x0c\x81\x01'
         self.assertEqual(
-            {1: '2.2.2.0/24', 2: '3.3.0.0/16', 3: '=0 =47 =88 =1 =2 =89 =103', 5: '=8082 =8083',
-             6: '=80 =8080 =8081 =8082 =8083', 7: '=2 =3 =5 =6', 8: '=2', 9: '=40', 10: '=254 >=254&<=300',
-             11: '=40 =48', 12: '=1'}, IPv4FlowSpec.parse(raw_hex))
+            {1: '2.2.2.0/24', 2: '3.3.0.0/16', 3: '=0|=47|=88|=1|=2|=89|=103', 5: '=8082|=8083',
+             6: '=80|=8080|=8081|=8082|=8083', 7: '=2|=3|=5|=6', 8: '=2', 9: '=40', 10: '=254|>=254&<=300',
+             11: '=40|=48', 12: '=1'}, IPv4FlowSpec.parse(raw_hex))
 
     def test_parse_nlri_prefix(self):
         raw_hex = b'\x01\x18\x6e\x01\x01'
@@ -39,25 +38,25 @@ class TestIPv4FlowSpec(unittest.TestCase):
 
     def test_parse_nlri_packet_length(self):
         raw_hex = '\x0a\x01\xfe\x03\xfe\xd5\x01\x2c'
-        self.assertEqual({bgp_cons.BGPNLRI_FSPEC_PCK_LEN: '=254 >=254&<=300'}, IPv4FlowSpec.parse(raw_hex))
+        self.assertEqual({bgp_cons.BGPNLRI_FSPEC_PCK_LEN: '=254|>=254&<=300'}, IPv4FlowSpec.parse(raw_hex))
 
     def test_parse_nlri_ip_protocol(self):
         raw_hex = '\x03\x01\x00\x01\x2f\x01\x58\x01\x01\x01\x02\x01\x59\x81\x67'
-        self.assertEqual({bgp_cons.BGPNLRI_FSPEC_IP_PROTO: '=0 =47 =88 =1 =2 =89 =103'}, IPv4FlowSpec.parse(raw_hex))
+        self.assertEqual({bgp_cons.BGPNLRI_FSPEC_IP_PROTO: '=0|=47|=88|=1|=2|=89|=103'}, IPv4FlowSpec.parse(raw_hex))
 
     def test_parse_nlri_des_port(self):
         raw_hex = '\x05\x01\x50\x11\x1f\x90\x11\x1f\x91\x11\x1f\x92\x91\x1f\x93'
-        self.assertEqual({bgp_cons.BGPNLRI_FSPEC_DST_PORT: '=80 =8080 =8081 =8082 =8083'},
+        self.assertEqual({bgp_cons.BGPNLRI_FSPEC_DST_PORT: '=80|=8080|=8081|=8082|=8083'},
                          IPv4FlowSpec.parse(raw_hex))
 
     def test_parse_nlri_src_port(self):
         raw_hex = '\x06\x01\x50\x11\x1f\x90\x11\x1f\x91\x11\x1f\x92\x91\x1f\x93'
-        self.assertEqual({bgp_cons.BGPNLRI_FSPEC_SRC_PORT: '=80 =8080 =8081 =8082 =8083'},
+        self.assertEqual({bgp_cons.BGPNLRI_FSPEC_SRC_PORT: '=80|=8080|=8081|=8082|=8083'},
                          IPv4FlowSpec.parse(raw_hex))
 
     def test_parse_nlri_icmp_type(self):
         raw_hex = '\x07\x01\x02\x01\x03\x01\x05\x81\x06'
-        self.assertEqual({bgp_cons.BGPNLRI_FSPEC_ICMP_TP: '=2 =3 =5 =6'}, IPv4FlowSpec.parse(raw_hex))
+        self.assertEqual({bgp_cons.BGPNLRI_FSPEC_ICMP_TP: '=2|=3|=5|=6'}, IPv4FlowSpec.parse(raw_hex))
 
     def test_parse_nlri_icmp_code(self):
         raw_hex = '\x08\x81\x02'
@@ -68,11 +67,34 @@ class TestIPv4FlowSpec(unittest.TestCase):
         prefix_str = '192.85.2.0/24'
         self.assertEqual(prefix_bin, IPv4FlowSpec.construct_prefix(prefix_str))
 
+    def test_construct_operator_flag(self):
+        flag = {
+            'LEN': 1,
+            'EQ': 1,
+            'EOL': 1
+        }
+        self.assertEqual(0x81, IPv4FlowSpec.construct_operator_flag(flag))
+        flag = {
+            'EOL': 1,
+            'LEN': 2,
+            'AND': 1,
+            'LT': 1,
+            'EQ': 1
+        }
+        self.assertEqual(0xd5, IPv4FlowSpec.construct_operator_flag(flag))
+
+    def test_construct_operators(self):
+        operators = '=80|=8080|=8083'
+        operators_bin = b'\x01\x50\x11\x1f\x90\x91\x1f\x93'
+        self.assertEqual(operators_bin, IPv4FlowSpec.construct_operators(operators))
+
     def test_construct_nlri(self):
+        raw_hex = '\x0f\x05\x01\x50\x11\x1f\x90\x11\x1f\x91\x11\x1f\x92\x91\x1f\x93'
+        nlri_dict = {bgp_cons.BGPNLRI_FSPEC_DST_PORT: '=80|=8080|=8081|=8082|=8083'}
+        self.assertEqual(raw_hex, IPv4FlowSpec.construct_nlri(nlri_dict))
         nlri_bin = b'\x0a\x01\x18\xc0\x55\x02\x02\x18\xc0\x55\x01'
         nlri_list = {1: '192.85.2.0/24', 2: '192.85.1.0/24'}
         self.assertEqual(nlri_bin, IPv4FlowSpec.construct_nlri(nlri_list))
-
 
 if __name__ == '__main__':
     unittest.main()

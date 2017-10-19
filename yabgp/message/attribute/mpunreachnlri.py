@@ -143,8 +143,7 @@ class MpUnReachNLRI(Attribute):
                     if not nlri_list:
                         return None
                     nlri_hex = b''
-                    for nlri in nlri_list:
-                        nlri_hex += IPv4FlowSpec.construct(value=nlri)
+                    nlri_hex += IPv4FlowSpec.construct(value=nlri_list)
                     attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri_hex
                     return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
                         + struct.pack('!B', len(attr_value)) + attr_value
