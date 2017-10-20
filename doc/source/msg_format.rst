@@ -360,7 +360,7 @@ Value     Meaning
 [1, 73]   IPv4 Sr-policy
 [2, 1]    IPv6 Unicast
 [2, 128]  IPv6 MPLSVPN
-[25, 70]  EVPN
+[25, 70]  L2VPN EVPN
 ...       ...
 ========= ===
 
@@ -392,10 +392,39 @@ IPv4 FlowSpec
             "14": {
                 "afi_safi": [1, 133],
                 "nexthop": "",
-                "nlri": [{"1": "192.88.2.3/24", "2": "192.89.1.3/24"}]
+                "nlri": [
+                    {"1": "192.88.2.3/24", "2": "192.89.1.3/24", "5": "=80|=8080"},
+                    {"1": "192.88.5.3/24", "2": "192.89.2.3/24", "5": "=80|=8080"}
+                ]
             }
         }
     }
+
+The nlri contains filters and values, and the supported filters are:
+
+.. code-block:: python
+
+    BGPNLRI_FSPEC_DST_PFIX = 1  # RFC 5575
+    BGPNLRI_FSPEC_SRC_PFIX = 2  # RFC 5575
+    BGPNLRI_FSPEC_IP_PROTO = 3  # RFC 5575
+    BGPNLRI_FSPEC_PORT = 4  # RFC 5575
+    BGPNLRI_FSPEC_DST_PORT = 5  # RFC 5575
+    BGPNLRI_FSPEC_SRC_PORT = 6  # RFC 5575
+    BGPNLRI_FSPEC_ICMP_TP = 7  # RFC 5575
+    BGPNLRI_FSPEC_ICMP_CD = 8  # RFC 5575
+    BGPNLRI_FSPEC_TCP_FLAGS = 9  # RFC 5575
+    BGPNLRI_FSPEC_PCK_LEN = 10  # RFC 5575
+    BGPNLRI_FSPEC_DSCP = 11  # RFC 5575
+    BGPNLRI_FSPEC_FRAGMENT = 12  # RFC 5575
+
+The value format of each filter are: `BGPNLRI_FSPEC_DST_PFIX` and `BGPNLRI_FSPEC_SRC_PFIX` are prefixes format,
+others are integers, but in string format like:
+
+`=80` means equal to `80`
+
+`=80|=8080` means equal to 80 or 8080.
+
+`>=80|<40` means geater than 80 or equal to 80 or less than 40
 
 IPv4 Sr-policy
 """"""""""""""
@@ -574,7 +603,10 @@ IPv4 FlowSpec
         "attr":{
             "15": {
                 "afi_safi": [1, 133],
-                "withdraw": [{"1": "192.88.2.3/24", "2": "192.89.1.3/24"}]
+                "withdraw": [
+                    {"1": "192.88.2.3/24", "2": "192.89.1.3/24", "5": "=80|=8080"},
+                    {"1": "192.16.0.0/8", "6": "=8080"}
+                ]
             }
         }
     }
@@ -586,10 +618,6 @@ IPv4 Sr-policy
 
     {
         "attr":{
-            "1": 0,
-            "2": [],
-            "3": "192.168.5.5",
-            "5": 200,
             "15": {
                 "afi_safi": [1, 73],
                 "withdraw": {

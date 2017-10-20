@@ -238,8 +238,7 @@ class MpReachNLRI(Attribute):
                     except netaddr.core.AddrFormatError:
                         nexthop = ''
                     nlri_hex = b''
-                    for nlri in value['nlri']:
-                        nlri_hex += IPv4FlowSpec.construct(value=nlri)
+                    nlri_hex += IPv4FlowSpec.construct(value=value['nlri'])
                     if nlri_hex:
                         attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + \
                             struct.pack('!B', len(nexthop)) + nexthop + b'\x00' + nlri_hex

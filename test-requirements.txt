@@ -5,6 +5,3 @@ six>=1.10.0
 coverage
 testrepository>=0.0.13
 testtools>=0.9.26
-
-# for coveralls.io web service
-coveralls
