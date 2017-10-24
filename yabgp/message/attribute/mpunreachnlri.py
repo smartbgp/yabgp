@@ -1,4 +1,4 @@
-# Copyright 2015 Cisco Systems, Inc.
+# Copyright 2015-2017 Cisco Systems, Inc.
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -27,6 +27,7 @@ from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
 from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
 from yabgp.message.attribute.nlri.evpn import EVPN
 from yabgp.message.attribute.nlri.linkstate import BGPLS
+from yabgp.message.attribute.nlri.ipv4_srte import IPv4SRTE
 from yabgp.common import afn
 from yabgp.common import safn
 from yabgp.common import exception as excep
@@ -142,12 +143,26 @@ class MpUnReachNLRI(Attribute):
                     if not nlri_list:
                         return None
                     nlri_hex = b''
-                    for nlri in nlri_list:
-                        nlri_hex += IPv4FlowSpec.construct(value=nlri)
+                    nlri_hex += IPv4FlowSpec.construct(value=nlri_list)
                     attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri_hex
                     return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
                         + struct.pack('!B', len(attr_value)) + attr_value
 
+                except Exception:
+                    raise excep.ConstructAttributeFailed(
+                        reason='failed to construct attributes',
+                        data=value
+                    )
+            elif safi == safn.SAFNUM_SRTE:
+                try:
+                    nlri_list = value.get('withdraw') or {}
+                    if not nlri_list:
+                        return None
+                    nlri_hex = b''
+                    nlri_hex += IPv4SRTE.construct(data=value['withdraw'])
+                    attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri_hex
+                    return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
+                        + struct.pack('!B', len(attr_value)) + attr_value
                 except Exception:
                     raise excep.ConstructAttributeFailed(
                         reason='failed to construct attributes',

@@ -26,6 +26,9 @@ from yabgp.message.attribute.nlri import NLRI
 
 
 class IPv4FlowSpec(NLRI):
+    """ipv4 flow nlri process
+    """
+
     @classmethod
     def parse(cls, value):
         """
@@ -54,17 +57,20 @@ class IPv4FlowSpec(NLRI):
                                    bgp_cons.BGPNLRI_FSPEC_ICMP_CD, bgp_cons.BGPNLRI_FSPEC_DSCP,
                                    bgp_cons.BGPNLRI_FSPEC_PCK_LEN]:
                 operator_list, offset = cls.parse_operators(value[offset:])
-                nlri_dict[flowspec_type] = operator_dict_to_str(operator_list)
+                nlri_dict[flowspec_type] = cls.operator_dict_to_str(operator_list)
                 value = value[offset:]
             else:
                 operator_list, offset = cls.parse_operators(value[offset:])
-                nlri_dict[flowspec_type] = operator_dict_to_str(operator_list)
+                nlri_dict[flowspec_type] = cls.operator_dict_to_str(operator_list)
                 value = value[offset:]
         return nlri_dict
 
     @classmethod
     def construct(cls, value):
-        return cls.construct_nlri(value)
+        nlri_hex = b''
+        for nlri in value:
+            nlri_hex += cls.construct_nlri(nlri)
+        return nlri_hex
 
     @classmethod
     def construct_nlri(cls, data):
@@ -83,12 +89,8 @@ class IPv4FlowSpec(NLRI):
                 continue
 
             # translate from expression to binary
-            # expr = '>8080&<8088|=3128'
-            if data[type_tmp] > 255:
-                nlri_tmp += struct.pack('!B', type_tmp) + '\x91' + struct.pack('!H', data[type_tmp])
-            else:
-                nlri_tmp += struct.pack('!B', type_tmp) + '\x81' + struct.pack('!B', data[type_tmp])
-                # TODO(penxiao) other flow type
+            nlri_tmp += struct.pack('!B', type_tmp) + cls.construct_operators(data[type_tmp])
+
         if len(nlri_tmp) >= 240:
             return struct.pack('!H', len(nlri_tmp)) + nlri_tmp
         elif nlri_tmp:
@@ -128,12 +130,12 @@ class IPv4FlowSpec(NLRI):
             ip_hex = ''
         return struct.pack('!B', masklen) + ip_hex
 
-    @staticmethod
-    def parse_operators(data):
+    @classmethod
+    def parse_operators(cls, data):
         offset = 0
         parse_operator_list = []
         while data:
-            operator = parse_operator(struct.unpack('!B', data[0])[0])
+            operator = cls.parse_operator_flag(struct.unpack('!B', data[0])[0])
             offset += 1
             operator_value = int(binascii.b2a_hex(data[1:1 + operator['LEN']]), 16)
             offset += operator['LEN']
@@ -144,89 +146,137 @@ class IPv4FlowSpec(NLRI):
                 break
         return parse_operator_list, offset + 1
 
+    @staticmethod
+    def parse_operator_flag(data):
+        """
+        The operator byte is encoded as:
+        0    1   2   3   4  5   6   7
+        +---+---+---+---+---+---+---+---+
+        |EOL|AND|  LEN  |RES|LT |GT |EQ |
+        +---+---+---+---+---+---+---+---+
+        """
+        bit_list = []
+        for i in xrange(8):
+            bit_list.append((data >> i) & 1)
+        bit_list.reverse()
+        result = {
+            'EOL': bit_list[0],
+            'AND': bit_list[1],
+            'LEN': 1 << (bit_list[2] * 2 + bit_list[3]),
+            'LT': bit_list[5],
+            'GT': bit_list[6],
+            'EQ': bit_list[7]
+        }
+        return result
 
-def parse_operator(data):
-    """
-    The operator byte is encoded as:
-      0    1   2   3   4  5   6   7
-    +---+---+---+---+---+---+---+---+
-    |EOL|AND|  LEN  |RES|LT |GT |EQ |
-    +---+---+---+---+---+---+---+---+
-    """
-    bit_list = []
-    for i in xrange(8):
-        bit_list.append((data >> i) & 1)
-    bit_list.reverse()
-    result = {
-        'EOL': bit_list[0],
-        'AND': bit_list[1],
-        'LEN': 1 << (bit_list[2] * 2 + bit_list[3]),
-        'LT': bit_list[5],
-        'GT': bit_list[6],
-        'EQ': bit_list[7]
-    }
-    return result
+    @staticmethod
+    def construct_operator_flag(data):
+        """construct operator flag from dict to binary
+        """
+        opt_dict = {
+            'EOL': 0x80,
+            'AND': 0x40,
+            'LEN': {
+                1: 0x00,
+                2: 0x10,
+                4: 0x20,
+                6: 0x30
+            },
+            'RES': 0x00,
+            'LT': 0x04,
+            'GT': 0x02,
+            'EQ': 0x01
+        }
+        b_data = 0x00
+        for opt in opt_dict:
+            if opt in data and opt != 'LEN':
+                if data[opt] == 1:
+                    b_data += opt_dict[opt]
+            elif opt == 'LEN' and data[opt]:
+                b_data += opt_dict['LEN'][data['LEN']]
+        return b_data
 
+    @staticmethod
+    def operator_dict_to_str(data):
+        """
 
-def operator_dict_to_str(data):
-    """
-
-    from
-    [
+        from
         [
-            {'AND': 0, 'GT': 0, 'LEN': 1, 'EOL': 0, 'LT': 0, 'EQ': 1},
-            254
-        ],
-        [
-            {'AND': 0, 'GT': 1, 'LEN': 1, 'EOL': 0, 'LT': 0, 'EQ': 1},
-            254
-        ],
-        [
-            {'AND': 1, 'GT': 0, 'LEN': 2, 'EOL': 1, 'LT': 1, 'EQ': 1},
-            300
+            [
+                {'AND': 0, 'GT': 0, 'LEN': 1, 'EOL': 0, 'LT': 0, 'EQ': 1},
+                254
+            ],
+            [
+                {'AND': 0, 'GT': 1, 'LEN': 1, 'EOL': 0, 'LT': 0, 'EQ': 1},
+                254
+            ],
+            [
+                {'AND': 1, 'GT': 0, 'LEN': 2, 'EOL': 1, 'LT': 1, 'EQ': 1},
+                300
+            ]
         ]
-    ]
-    to
-    =254 >=254&<=300
-    :param data: dict
-    :return: string format
-    """
-    return_str = ''
-    for item in data:
-        operator_dict, value = item
-        if operator_dict['AND']:
-            return_str += '&'
-        else:
-            if return_str != '':
-                return_str += ' '
-        if operator_dict['GT']:
-            return_str += '>'
-        if operator_dict['LT']:
-            return_str += '<'
-        if operator_dict['EQ']:
-            return_str += '='
-        return_str += str(value)
-    return return_str
+        to
+        =254|>=254&<=300
+        :param data: dict
+        :return: string format
+        """
+        return_str = ''
+        for item in data:
+            operator_dict, value = item
+            if operator_dict['AND']:
+                return_str += '&'
+            else:
+                if return_str != '':
+                    return_str += '|'
+            if operator_dict['GT']:
+                return_str += '>'
+            if operator_dict['LT']:
+                return_str += '<'
+            if operator_dict['EQ']:
+                return_str += '='
+            return_str += str(value)
+        return return_str
 
+    @classmethod
+    def construct_operators(cls, data):
+        """
+        from "=254|>=254&<=300" to binary data
+        :param data:
+        :return:
+        """
+        data_bin = b''
+        data_list = data.split('|')
+        eol = 0
+        for i, data in enumerate(data_list):
+            if i == len(data_list) - 1:
+                eol = 1
+            if '&' not in data:
+                flag_dict = {'EOL': eol}
+                if data[0] == '=':
+                    off_set = 1
+                    flag_dict['EQ'] = 1
+                elif '>=' in data:
+                    off_set = 2
+                    flag_dict['EQ'] = 1
+                    flag_dict['GT'] = 1
+                elif '<=' in data:
+                    off_set = 2
+                    flag_dict['EQ'] = 1
+                    flag_dict['LT'] = 1
+                elif '>' in data:
+                    off_set = 1
+                    flag_dict['GT'] = 1
+                elif '<' in data:
+                    off_set = 1
+                    # value_hex = str(bytearray.fromhex(hex(int(data[2:]))[2:]))
+                    flag_dict['LT'] = 1
+                hex_str = hex(int(data[off_set:]))[2:]
+                if len(hex_str) == 1:
+                    hex_str = '0' + hex_str
+                value_hex = str(bytearray.fromhex(hex_str))
+                flag_dict['LEN'] = len(value_hex)
+                opt_flag_bin = cls.construct_operator_flag(flag_dict)
+                data_bin += struct.pack('!B', opt_flag_bin)
+                data_bin += value_hex
 
-def operator_str_dict(data):
-    """
-    from =254 >=254&<=300 to dict
-    :param data:
-    :return:
-    """
-    # operator_list = []
-    # pattern1 = re.compile('^(\D+)(\d+)(&)(\D+)(\d+)$')
-    # pattern2 = re.compile('^(\D+)(\d+)$')
-    #
-    # operator = data.strip().split(' ')
-    #
-    # for item in operator:
-    #     first_match = pattern1.match(item)
-    #     if first_match:
-    #         print first_match.group(1, 2, 3, 4, 5)
-    #     second_match = pattern2.match(item)
-    #     if second_match:
-    #         operator_type, value = second_match.group(1, 2)
-    #         if operator_type == '=':
-    #             pass
+        return data_bin
