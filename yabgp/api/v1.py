@@ -167,8 +167,6 @@ def send_update_message(peer_ip):
                             'status': False,
                             'code': 'unexpected extended community "%s", please check your post data' % key
                         })
-            print 'ext'
-            print ext_community
             attr[16] = ext_community
     if (attr and nlri) or withdraw:
         return flask.jsonify(api_utils.send_update(peer_ip, attr, nlri, withdraw))
