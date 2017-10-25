@@ -128,7 +128,7 @@ BGP_EXT_COM_RT_2 = 0x0202  # Route Target,Format AS(4bytes):AN(2bytes)
 # Route Origin (SOO site of Origin)
 BGP_EXT_COM_RO_0 = 0x0003  # Route Origin,Format AS(2bytes):AN(4bytes)
 BGP_EXT_COM_RO_1 = 0x0103  # Route Origin,Format IP address:AN(2bytes)
-BGP_EXT_COM_RO_2 = 0x0203  # Route Origin,Format AS(2bytes):AN(4bytes)
+BGP_EXT_COM_RO_2 = 0x0203  # Route Origin,Format AS(4bytes):AN(2bytes)
 
 # BGP Flow Spec
 BGP_EXT_REDIRECT_NH = 0x0800  # redirect to ipv4/v6 nexthop
@@ -157,6 +157,19 @@ BGP_EXT_COM_LINK_BW = 0x4004
 
 # Unkonw
 BGP_EXT_COM_UNKNOW = 0x0000
+
+BGP_EXT_COM_DICT = {
+    'redirect-vrf': 32776,  # redirect 6-byte Route Target
+    'redirect-nexthop': 2048,  # redirect to ipv4/v6 nexthop
+    'traffic-marking-dscp': 32777,  # traffic-marking DSCP value
+    'traffic-rate': 32774,  # traffic-rate 2-byte as#, 4-byte float
+    'color': 779,  # Color
+    'encapsulation': 780,  # BGP_EXT_COM_ENCAP = 0x030c
+    'es-import': 1538,  # ES Import
+    'esi-label': 1537,  # ESI MPLS Label
+    'mac-mobility': 1536,  # Mac Mobility
+    'router-mac': 1539  # EVPN Router MAC Extended Community
+}
 
 # route distinguisher type
 BGP_ROUTE_DISTINGUISHER_TYPE_0 = 0x0000
