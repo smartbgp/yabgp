@@ -160,15 +160,17 @@ BGP_EXT_COM_UNKNOW = 0x0000
 
 BGP_EXT_COM_DICT = {
     'redirect-vrf': 32776,  # redirect 6-byte Route Target
-    'redirect-nexthop': 2048,  # redirect to ipv4/v6 nexthop
     'traffic-marking-dscp': 32777,  # traffic-marking DSCP value
     'traffic-rate': 32774,  # traffic-rate 2-byte as#, 4-byte float
     'color': 779,  # Color
     'encapsulation': 780,  # BGP_EXT_COM_ENCAP = 0x030c
     'es-import': 1538,  # ES Import
+    'router-mac': 1539  # EVPN Router MAC Extended Community
+}
+
+BGP_EXT_COM_DICT_1 = {
     'esi-label': 1537,  # ESI MPLS Label
     'mac-mobility': 1536,  # Mac Mobility
-    'router-mac': 1539  # EVPN Router MAC Extended Community
 }
 
 # route distinguisher type
