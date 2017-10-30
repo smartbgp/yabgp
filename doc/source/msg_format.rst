@@ -443,7 +443,7 @@ IPv4 Sr-policy
                     "endpoint": "192.168.76.1"
                 }
             },
-            "16": [[258, "10.75.195.199:00"]],
+            "16": ["route-target:10.75.195.199:00"],
             "23": {
                 "6": 100,
                 "7": 25102,
@@ -540,7 +540,7 @@ IPv6 MPLSVPN
                     }
                 ]
             },
-            "16": [[2, "100:12"]]
+            "16": ["route-target:100:12"]
             }
     }
 
@@ -694,40 +694,26 @@ Extended community we supported:
 .. code-block:: Python
 
     #  VPN Route Target  #
-    BGP_EXT_COM_RT_0 = 0x0002  # Route Target,Format AS(2bytes):AN(4bytes)
-    BGP_EXT_COM_RT_1 = 0x0102  # Route Target,Format IPv4 address(4bytes):AN(2bytes)
-    BGP_EXT_COM_RT_2 = 0x0202  # Route Target,Format AS(4bytes):AN(2bytes)
+    route-target  # Route Target
 
     # Route Origin (SOO site of Origin)
-    BGP_EXT_COM_RO_0 = 0x0003  # Route Origin,Format AS(2bytes):AN(4bytes)
-    BGP_EXT_COM_RO_1 = 0x0103  # Route Origin,Format IP address:AN(2bytes)
-    BGP_EXT_COM_RO_2 = 0x0203  # Route Origin,Format AS(2bytes):AN(4bytes)
+    route-origin  # Route Origin
 
     # BGP Flow Spec
-    BGP_EXT_REDIRECT_NH = 0x0800  # redirect to ipv4/v6 nexthop
-    BGP_EXT_TRA_RATE = 0x8006  # traffic-rate 2-byte as#, 4-byte float
-    BGP_EXT_TRA_ACTION = 0x8007  # traffic-action bitmask
-    BGP_EXT_REDIRECT_VRF = 0x8008  # redirect 6-byte Route Target
-    BGP_EXT_TRA_MARK = 0x8009  # traffic-marking DSCP value
+    redirect-nexthop  # redirect to ipv4/v6 nexthop
+    traffic-rate  # traffic-rate
+    redirect-vrf  # redirect Route Target
+    traffic-marking-dscp  # traffic-marking DSCP value
 
     # Transitive Opaque
-    BGP_EXT_COM_OSPF_ROUTE_TYPE = 0x0306  # OSPF Route Type
-    BGP_EXT_COM_COLOR = 0x030b  # Color
-    BGP_EXT_COM_ENCAP = 0x030c  # BGP_EXT_COM_ENCAP = 0x030c
-    BGP_EXT_COM_DEFAULT_GATEWAY = 0x030d  # Default Gateway
+    color  # Color
+    encapsulation  # encapsulation
 
     # BGP EVPN
-    BGP_EXT_COM_EVPN_MAC_MOBIL = 0x0600  # Mac Mobility
-    BGP_EXT_COM_EVPN_ESI_MPLS_LABEL = 0x0601  # ESI MPLS Label
-    BGP_EXT_COM_EVPN_ES_IMPORT = 0x0602  # ES Import
-    BGP_EXT_COM_EVPN_ROUTE_MAC = 0x0603  # EVPN Router MAC Extended Community
-
-    # BGP cost cummunity
-    BGP_EXT_COM_COST = 0x4301
-
-    # BGP link bandwith
-    BGP_EXT_COM_LINK_BW = 0x4004
-
+    mac-mobility  # Mac Mobility
+    esi-label  # ESI MPLS Label
+    es-import  # ES Import
+    router-mac  # EVPN Router MAC
 
 
 14. AS4_PATH
