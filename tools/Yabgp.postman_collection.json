@@ -1,73 +1,53 @@
 {
+	"variables": [],
 	"info": {
 		"name": "Yabgp",
-		"_postman_id": "5a1ab0f6-55a9-623f-8470-8240a5af9e11",
+		"_postman_id": "88183d59-54a5-2294-3b01-1c79cc900ba1",
 		"description": "",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
 	"item": [
 		{
 			"name": "Peer Information",
+			"description": "",
 			"item": [
 				{
 					"name": "get one peer state",
 					"request": {
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/state",
 						"method": "GET",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": ""
 						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/state",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"state"
-							]
-						}
+						"description": ""
 					},
 					"response": []
 				},
 				{
 					"name": "peer message statistic",
 					"request": {
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/statistic",
 						"method": "GET",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": ""
 						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/statistic",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"statistic"
-							]
-						}
+						"description": ""
 					},
 					"response": []
 				}
@@ -80,36 +60,25 @@
 				{
 					"name": "send route refresh",
 					"request": {
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/route-refresh",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"afi\": 1,\n    \"safi\": 1,\n    \"res\": 0\n}"
 						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/route-refresh",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"route-refresh"
-							]
-						}
+						"description": ""
 					},
 					"response": []
 				}
@@ -117,126 +86,55 @@
 		},
 		{
 			"name": "evpn",
+			"description": "",
 			"item": [
 				{
 					"name": "route type 1 update",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
-						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [25, 70],\n            \"nexthop\": \"10.75.44.254\",\n            \"nlri\": [{\n                \"type\": 1,\n                \"value\": {\n                    \"rd\": \"1.1.1.1:32867\",\n                    \"esi\": 0,\n                    \"eth_tag_id\": 100,\n                    \"label\": [10]\n                }\n            }]},\n        \"16\":[[1537, 0, 500]]\n}}"
+							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [25, 70],\n            \"nexthop\": \"10.75.44.254\",\n            \"nlri\": [{\n                \"type\": 1,\n                \"value\": {\n                    \"rd\": \"1.1.1.1:32867\",\n                    \"esi\": 0,\n                    \"eth_tag_id\": 100,\n                    \"label\": [10]\n                }\n            }]},\n        \"16\":[\"esi-label:0:500\"]\n}}"
 						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
-						}
+						"description": ""
 					},
 					"response": []
 				},
 				{
 					"name": "route type 2 update",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
-						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [25, 70],\n            \"nexthop\": \"10.75.44.254\",\n            \"nlri\": [\n                {\n                    \"type\": 2,\n                    \"value\": {\n                        \"eth_tag_id\": 108,\n                        \"ip\": \"11.11.11.1\",\n                        \"label\": [0],\n                        \"rd\": \"172.17.0.3:2\",\n                        \"mac\": \"00-11-22-33-44-55\",\n                        \"esi\": 0}}]},\n        \"16\":[[1536, 1, 500]]\n}}"
+							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [25, 70],\n            \"nexthop\": \"10.75.44.254\",\n            \"nlri\": [\n                {\n                    \"type\": 2,\n                    \"value\": {\n                        \"eth_tag_id\": 108,\n                        \"ip\": \"11.11.11.1\",\n                        \"label\": [0],\n                        \"rd\": \"172.17.0.3:2\",\n                        \"mac\": \"00-11-22-33-44-55\",\n                        \"esi\": 0\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t]\n        },\n        \"16\":[\"mac-mobility:1:500\"]\n\t}\n}"
 						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
-						}
+						"description": ""
 					},
 					"response": []
 				},
@@ -245,120 +143,54 @@
 					"request": {
 						"auth": {
 							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
+							"basic": {
+								"showPassword": false
+							}
 						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [25, 70],\n            \"nexthop\": \"10.75.44.254\",\n            \"nlri\": [\n                {\n                    \"type\": 3,\n                    \"value\": {\n                        \"rd\": \"172.16.0.1:5904\",\n                        \"eth_tag_id\": 100,\n                        \"ip\": \"192.168.0.1\"\n                    }\n                }\n            ]\n        }\n}}"
 						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
-						}
+						"description": ""
 					},
 					"response": []
 				},
 				{
 					"name": "route type 4 update",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
-						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [25, 70],\n            \"nexthop\": \"10.75.44.254\",\n            \"nlri\": [\n                {\n                    \"type\": 4,\n                    \"value\": {\n                        \"rd\": \"172.16.0.1:8888\",\n                        \"esi\": 0,\n                        \"ip\": \"192.168.0.1\"\n                    }\n                }\n            ]\n        },\n         \"16\":[[1538, \"00-11-22-33-44-55\"]]\n}}"
+							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [25, 70],\n            \"nexthop\": \"10.75.44.254\",\n            \"nlri\": [\n                {\n                    \"type\": 4,\n                    \"value\": {\n                        \"rd\": \"172.16.0.1:8888\",\n                        \"esi\": 0,\n                        \"ip\": \"192.168.0.1\"\n                    }\n                }\n            ]\n        },\n        \"16\":[\"es-import:00-11-22-33-44-55\"]\n\t}\n}"
 						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
-						}
+						"description": ""
 					},
 					"response": []
 				},
@@ -367,59 +199,29 @@
 					"request": {
 						"auth": {
 							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
+							"basic": {
+								"showPassword": false
+							}
 						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [25, 70],\n            \"withdraw\": [{\n                \"type\": 1,\n                \"value\": {\n                    \"rd\": \"1.1.1.1:32867\",\n                    \"esi\": 0,\n                    \"eth_tag_id\": 100,\n                    \"label\": [10]\n                }\n            }]}\n}}"
 						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
-						}
+						"description": ""
 					},
 					"response": []
 				},
@@ -428,59 +230,29 @@
 					"request": {
 						"auth": {
 							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
+							"basic": {
+								"showPassword": false
+							}
 						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [25, 70],\n            \"withdraw\": [\n                {\n                    \"type\": 2,\n                    \"value\": {\n                        \"eth_tag_id\": 108,\n                        \"ip\": \"11.11.11.1\",\n                        \"label\": [0],\n                        \"rd\": \"172.17.0.3:2\",\n                        \"mac\": \"00-11-22-33-44-55\",\n                        \"esi\": 0}}]\n        }\n        }\n}"
 						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
-						}
+						"description": ""
 					},
 					"response": []
 				},
@@ -489,59 +261,29 @@
 					"request": {
 						"auth": {
 							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
+							"basic": {
+								"showPassword": false
+							}
 						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [25, 70],\n            \"withdraw\": [\n                {\n                    \"type\": 3,\n                    \"value\": {\n                        \"rd\": \"172.16.0.1:5904\",\n                        \"eth_tag_id\": 100,\n                        \"ip\": \"192.168.0.1\"\n                    }\n                }\n            ]\n        }\n}}"
 						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
-						}
+						"description": ""
 					},
 					"response": []
 				},
@@ -550,59 +292,29 @@
 					"request": {
 						"auth": {
 							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
+							"basic": {
+								"showPassword": false
+							}
 						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [25, 70],\n            \"withdraw\": [\n                {\n                    \"type\": 4,\n                    \"value\": {\n                        \"rd\": \"172.16.0.1:8888\",\n                        \"esi\": 0,\n                        \"ip\": \"192.168.0.1\"\n                    }\n                }\n            ]\n        }\n}}"
 						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
-						}
+						"description": ""
 					},
 					"response": []
 				}
@@ -610,63 +322,34 @@
 		},
 		{
 			"name": "ipv4_flowspec",
+			"description": "",
 			"item": [
 				{
 					"name": "Send withdraw ipv4 flowspec",
 					"request": {
 						"auth": {
 							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"type": "any"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
+							"basic": {
+								"showPassword": false
+							}
 						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							},
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [1, 133], \n            \"withdraw\": [\n            \t{\"1\": \"192.88.2.3/24\", \"2\": \"192.89.1.3/24\"},\n            \t{\"1\": \"192.88.4.3/24\", \"2\": \"192.89.2.3/24\"}\n            ]\n        }\n    }\n}"
-						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
 						},
 						"description": "if you want to withdraw the prefix we sent, you can use the same url and http method, just use the following as POST data.\n\n```\n{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [1, 133], \n            \"withdraw\": [{\"1\": \"192.88.2.3/24\", \"2\": \"192.89.1.3/24\"}]\n        }\n    }\n}\n```"
 					},
@@ -675,59 +358,23 @@
 				{
 					"name": "Send update  ipv4 flowspec (rate limit)",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"type": "any"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
-						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							},
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [1, 133], \n            \"nexthop\": \"\", \n            \"nlri\": [\n            \t{\"1\": \"192.88.2.3/24\", \"2\": \"192.89.1.3/24\", \"3\":\"=17|=80|=1\"},\n            \t{\"1\": \"192.77.2.3/24\", \"2\": \"192.77.1.3/24\", \"5\": \"=80|=8080\"}]\n        },\n        \"16\":[[32774, \"100:6250000\"]]\n    }\n}"
-						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
+							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [1, 133], \n            \"nexthop\": \"\", \n            \"nlri\": [\n            \t{\"1\": \"192.88.2.3/24\", \"2\": \"192.89.1.3/24\", \"3\":\"=17|=80|=1\"},\n            \t{\"1\": \"192.77.2.3/24\", \"2\": \"192.77.1.3/24\", \"5\": \"=80|=8080\"}]\n        },\n        \"16\":[\"traffic-rate:100:6250000\"]\n    }\n}"
 						},
 						"description": "if you want to withdraw the prefix we sent, you can use the same url and http method, just use the following as POST data.\n\n```\n{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [1, 133], \n            \"withdraw\": [{\"1\": \"192.88.2.3/24\", \"2\": \"192.89.1.3/24\"}]\n        }\n    }\n}\n```"
 					},
@@ -736,59 +383,23 @@
 				{
 					"name": "Send update  ipv4 flowspec (redirect nexthop)",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"type": "any"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
-						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							},
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [1, 133], \n            \"nexthop\": \"1.1.1.1\", \n            \"nlri\": [\n            \t{\"1\": \"192.88.2.3/24\", \"2\": \"192.89.1.3/24\", \"3\":\"=17|=80|=1\"},\n            \t{\"1\": \"192.77.2.3/24\", \"2\": \"192.77.1.3/24\", \"5\": \"=80|=8080\"}]\n        },\n        \"16\":[[2048, \"0.0.0.0\", 0]]\n    }\n}"
-						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
+							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [1, 133], \n            \"nexthop\": \"1.1.1.1\", \n            \"nlri\": [\n            \t{\"1\": \"192.88.2.3/24\", \"2\": \"192.89.1.3/24\", \"3\":\"=17|=80|=1\"},\n            \t{\"1\": \"192.77.2.3/24\", \"2\": \"192.77.1.3/24\", \"5\": \"=80|=8080\"}]\n        },\n        \"16\":[\"redirect-nexthop:0\"]\n    }\n}"
 						},
 						"description": "if you want to withdraw the prefix we sent, you can use the same url and http method, just use the following as POST data.\n\n```\n{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [1, 133], \n            \"withdraw\": [{\"1\": \"192.88.2.3/24\", \"2\": \"192.89.1.3/24\"}]\n        }\n    }\n}\n```"
 					},
@@ -797,59 +408,23 @@
 				{
 					"name": "Send update  ipv4 flowspec (set dscp=12)",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"type": "any"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
-						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							},
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [1, 133], \n            \"nexthop\": \"\", \n            \"nlri\": [\n            \t{\"1\": \"192.88.2.3/24\", \"2\": \"192.89.1.3/24\", \"3\":\"=17|=80|=1\"},\n            \t{\"1\": \"192.77.2.3/24\", \"2\": \"192.77.1.3/24\", \"5\": \"=80|=8080\"}]\n        },\n        \"16\":[[32777, 12]]\n    }\n}"
-						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
+							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [1, 133], \n            \"nexthop\": \"\", \n            \"nlri\": [\n            \t{\"1\": \"192.88.2.3/24\", \"2\": \"192.89.1.3/24\", \"3\":\"=17|=80|=1\"},\n            \t{\"1\": \"192.77.2.3/24\", \"2\": \"192.77.1.3/24\", \"5\": \"=80|=8080\"}]\n        },\n        \"16\":[\"traffic-marking-dscp:12\"]\n    }\n}"
 						},
 						"description": "if you want to withdraw the prefix we sent, you can use the same url and http method, just use the following as POST data.\n\n```\n{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [1, 133], \n            \"withdraw\": [{\"1\": \"192.88.2.3/24\", \"2\": \"192.89.1.3/24\"}]\n        }\n    }\n}\n```"
 					},
@@ -859,65 +434,36 @@
 		},
 		{
 			"name": "ipv4_labeled_unicast",
+			"description": "",
 			"item": [
 				{
 					"name": "send update ipv4",
 					"request": {
 						"auth": {
 							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
+							"basic": {
+								"showPassword": false
+							}
 						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							},
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 400, \n        \"14\": {\n            \"afi_safi\": [1, 4], \n            \"nexthop\": \"10.75.44.254\",\n            \"nlri\":[\n              {\"prefix\": \"34.1.41.0/24\", \"label\": [321]},\n              {\"prefix\": \"34.1.42.0/24\", \"label\": [322]}]\n    }\n  }\n}"
 						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
-						}
+						"description": ""
 					},
 					"response": []
 				},
@@ -926,59 +472,29 @@
 					"request": {
 						"auth": {
 							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
+							"basic": {
+								"showPassword": false
+							}
 						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							},
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [1, 4], \n            \"withdraw\":[\n              {\"prefix\": \"34.1.41.0/24\", \"label\": [321]},\n              {\"prefix\": \"34.1.42.0/24\", \"label\": [322]}]\n    }\n  }\n}"
 						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
-						}
+						"description": ""
 					},
 					"response": []
 				}
@@ -986,64 +502,28 @@
 		},
 		{
 			"name": "ipv4_mpls_vpn",
+			"description": "",
 			"item": [
 				{
 					"name": "Send update ipv4 mpls vpn",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
-						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [1, 128],\n            \"nexthop\": {\"rd\": \"0:0\", \"str\": \"2.2.2.2\"},\n            \"nlri\": [\n                {\n                    \"label\": [25],\n                    \"rd\": \"100:100\",\n                    \"prefix\": \"11.11.11.11/32\"}]},\n        \"16\": [[2, \"2:2\"]]\n}}"
-						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
+							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [1, 128],\n            \"nexthop\": {\"rd\": \"0:0\", \"str\": \"2.2.2.2\"},\n            \"nlri\": [\n                {\n                    \"label\": [25],\n                    \"rd\": \"100:100\",\n                    \"prefix\": \"11.11.11.11/32\"}]},\n        \"16\": [\"route-target:2:2\"]\n}}"
 						},
 						"description": "if you want to send withdraw\n\n```\n{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [1, 128],\n            \"withdraw\": [\n                {\n                    \"rd\": \"100:100\",\n                    \"prefix\": \"11.11.11.11/32\"}]}\n        }\n}\n```"
 					},
@@ -1054,58 +534,27 @@
 					"request": {
 						"auth": {
 							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
+							"basic": {
+								"showPassword": false
+							}
 						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [1, 128],\n            \"withdraw\": [\n                {\n                    \"rd\": \"100:100\",\n                    \"prefix\": \"11.11.11.11/32\"}]}\n        }\n}"
-						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
 						},
 						"description": "if you want to send withdraw\n\n```\n{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [1, 128],\n            \"withdraw\": [\n                {\n                    \"rd\": \"100:100\",\n                    \"prefix\": \"11.11.11.11/32\"}]}\n        }\n}\n```"
 					},
@@ -1114,40 +563,85 @@
 			]
 		},
 		{
-			"name": "ipv4_unicast",
+			"name": "ipv4_sr-policy",
+			"description": "",
 			"item": [
 				{
-					"name": "send update ipv4 unicast",
+					"name": "send update",
 					"request": {
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							},
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\t\"attr\":{ \n\t\t\"1\": 0, \n\t\t\"2\": [], \n\t\t\"3\": \"192.168.5.5\", \n\t\t\"5\": 200, \n\t\t\"8\": [\"NO_ADVERTISE\"], \n\t\t\"14\": { \n\t\t\t\"afi_safi\": [1, 73], \n\t\t\t\"nexthop\": \"192.168.5.5\", \n\t\t\t\"nlri\": { \n\t\t\t\t\"distinguisher\": 0, \n\t\t\t\t\"color\": 10, \n\t\t\t\t\"endpoint\": \"192.168.76.1\" \n\t\t\t} \n\t\t}, \n\t\t\"16\": [\"route-target:10.75.195.199:00\"],\n\t\t\"23\": { \n\t\t\t\"6\": 100, \n\t\t\t\"7\": 25102, \n\t\t\t\"128\": [ \n\t\t\t\t{ \n\t\t\t\t\t\"9\": 2, \n\t\t\t\t\t\"1\": [ \n\t\t\t\t\t\t{ \n\t\t\t\t\t\t\t\"1\": { \n\t\t\t\t\t\t\t\t\"label\": 5000 \n\t\t\t\t\t\t\t} \n\t\t\t\t\t\t}, \n\t\t\t\t\t\t{ \n\t\t\t\t\t\t\t\"1\": { \n\t\t\t\t\t\t\t\t\"label\": 4000, \n\t\t\t\t\t\t\t\t\"TC\": 0, \n\t\t\t\t\t\t\t\t\"S\": 0, \n\t\t\t\t\t\t\t\t\"TTL\": 255 \n\t\t\t\t\t\t\t} \n\t\t\t\t\t\t} \n\t\t\t\t\t] \n\t\t\t\t}, \n\t\t\t\t{ \n\t\t\t\t\t\"9\": 10, \n\t\t\t\t\t\"1\": [ \n\t\t\t\t\t\t{ \n\t\t\t\t\t\t\t\"1\": { \n\t\t\t\t\t\t\t\t\"label\": 2000 \n\t\t\t\t\t\t\t} \n\t\t\t\t\t\t}, \n\t\t\t\t\t\t{ \n\t\t\t\t\t\t\t\"3\": { \n\t\t\t\t\t\t\t\t\"node\": \"10.1.1.1\", \n\t\t\t\t\t\t\t\t\"SID\": { \n\t\t\t\t\t\t\t\t\"label\": 3000, \n\t\t\t\t\t\t\t\t\"TC\": 0, \n\t\t\t\t\t\t\t\t\"S\": 0, \n\t\t\t\t\t\t\t\t\"TTL\": 255 \n\t\t\t\t\t\t\t\t} \n\t\t\t\t\t\t\t} \n\t\t\t\t\t\t} \n\t\t\t\t\t] \n\t\t\t\t} \n\t\t\t] \n\t\t} \n\t} \n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "send withdraw",
+					"request": {
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\t\"attr\":{ \n\t\t\"1\": 0, \n\t\t\"2\": [], \n\t\t\"3\": \"192.168.5.5\", \n\t\t\"5\": 200, \n\t\t\"8\": [\"NO_ADVERTISE\"], \n\t\t\"15\": { \n\t\t\t\"afi_safi\": [1, 73], \n\t\t\t\"withdraw\": { \n\t\t\t\t\"distinguisher\": 0, \n\t\t\t\t\"color\": 10, \n\t\t\t\t\"endpoint\": \"192.168.76.1\" \n\t\t\t} \n\t\t} \n\t} \n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ipv4_unicast",
+			"description": "",
+			"item": [
+				{
+					"name": "send update ipv4 unicast",
+					"request": {
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"attr\":{\r\n        \"1\": 0, \r\n        \"2\": [[2,[1,2,3]]],\r\n        \"3\": \"192.0.2.1\",\r\n        \"5\": 500,\r\n        \"8\": [\"NO_EXPORT\",\"123:456\"]\r\n    },\r\n  \"nlri\":[\"172.20.1.0/24\",\"172.20.2.0/24\"]\r\n}"
-						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
 						},
 						"description": "## Attribute\n\n### AS_PATH = 2 \n\n```\n[[2,[1,2,3]]]\n```\nthis means AS PATH is `1 2 3`, origin AS is 3, and direct AS is 1.\n\n## Prefix\n\nprefixes contain in a list.\n```\n\"nlri\":[\"172.20.1.0/24\",\"172.20.2.0/24\"]\n```\n\nif you want to send withdraw message to withdraw this two prefixes, you can use\nthis post data:\n\n```\n{\n  \"withdraw\":[\"172.20.1.0/24\",\"172.20.2.0/24\"],\n  \"attr\": {},\n  \"nlri\": []\n}\n```"
 					},
@@ -1158,58 +652,27 @@
 					"request": {
 						"auth": {
 							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
+							"basic": {
+								"showPassword": false
+							}
 						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n  \"withdraw\":[\"172.20.1.0/24\",\"172.20.2.0/24\"],\n  \"attr\": {},\n  \"nlri\": []\n}"
-						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
 						},
 						"description": "if you want to send withdraw message to withdraw this two prefixes, you can use\nthis post data:\n\n```\n{\n  \"withdraw\":[\"172.20.1.0/24\",\"172.20.2.0/24\"],\n  \"attr\": {},\n  \"nlri\": []\n}\n```"
 					},
@@ -1218,193 +681,37 @@
 			]
 		},
 		{
-			"name": "ipv4_sr-policy",
-			"item": [
-				{
-					"name": "send update",
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{ \n\"attr\":{ \n\"1\": 0, \n\"2\": [], \n\"3\": \"192.168.5.5\", \n\"5\": 200, \n\"8\": [\"NO_ADVERTISE\"], \n\"14\": { \n\"afi_safi\": [1, \n 73], \n\"nexthop\": \"192.168.5.5\", \n\"nlri\": { \n\"distinguisher\": 0, \n\"color\": 10, \n\"endpoint\": \"192.168.76.1\" \n} \n}, \n\"16\": [[258, \n \"10.75.195.199:00\"]], \n\"23\": { \n\"6\": 100, \n\"7\": 25102, \n\"128\": [ \n{ \n\"9\": 2, \n\"1\": [ \n{ \n\"1\": { \n\"label\": 5000 \n} \n}, \n{ \n\"1\": { \n\"label\": 4000, \n\"TC\": 0, \n\"S\": 0, \n\"TTL\": 255 \n} \n} \n] \n}, \n{ \n\"9\": 10, \n\"1\": [ \n{ \n\"1\": { \n\"label\": 2000 \n} \n}, \n{ \n\"3\": { \n\"node\": \"10.1.1.1\", \n\"SID\": { \n\"label\": 3000, \n\"TC\": 0, \n\"S\": 0, \n\"TTL\": 255 \n} \n} \n} \n] \n} \n] \n} \n} \n}"
-						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "send withdraw",
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{ \n\"attr\":{ \n\"1\": 0, \n\"2\": [], \n\"3\": \"192.168.5.5\", \n\"5\": 200, \n\"8\": [\"NO_ADVERTISE\"], \n\"15\": { \n\"afi_safi\": [1, \n 73], \n\"withdraw\": { \n\"distinguisher\": 0, \n\"color\": 10, \n\"endpoint\": \"192.168.76.1\" \n} \n} \n} \n}"
-						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "ipv6_labeled_unicast",
+			"description": "",
 			"item": [
 				{
 					"name": "send update",
 					"request": {
 						"auth": {
 							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
+							"basic": {
+								"showPassword": false
+							}
 						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							},
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 400, \n        \"14\": {\n            \"afi_safi\": [1, 4], \n            \"nexthop\": \"10.75.44.254\",\n            \"nlri\":[\n              {\"label\": [91], \"prefix\": \"2001:2121::1/128\"},\n              {\"label\": [92], \"prefix\": \"::2001:2121:1:0/64\"}]\n    }\n  }\n}"
 						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
-						}
+						"description": ""
 					},
 					"response": []
 				},
@@ -1413,59 +720,29 @@
 					"request": {
 						"auth": {
 							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
+							"basic": {
+								"showPassword": false
+							}
 						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							},
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [1, 4], \n            \"withdraw\":[\n              {\"label\": [91], \"prefix\": \"2001:2121::1/128\"},\n              {\"label\": [92], \"prefix\": \"::2001:2121:1:0/64\"}]\n    }\n  }\n}"
 						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
-						}
+						"description": ""
 					},
 					"response": []
 				}
@@ -1473,65 +750,30 @@
 		},
 		{
 			"name": "ipv6_mpls_vpn",
+			"description": "",
 			"item": [
 				{
 					"name": "Send update ipv6 mpls vpn",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
-						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							},
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [2, 128],\n            \"nexthop\": {\"rd\": \"100:12\", \"str\": \"::ffff:172.16.4.12\"},\n            \"nlri\": [\n                {\n                    \"label\": [54],\n                    \"rd\": \"100:12\",\n                    \"prefix\": \"2010:0:12:4::/64\"},\n                {\n                    \"label\": [55],\n                    \"rd\": \"100:12\",\n                    \"prefix\": \"2010:1:12::/64\"\n                }\n            ]},\n        \"16\": [[2, \"100:12\"]]\n}}"
+							"raw": "{\n    \"attr\":{\n        \"1\": 0, \n        \"2\": [], \n        \"5\": 100, \n        \"14\": {\n            \"afi_safi\": [2, 128],\n            \"nexthop\": {\"rd\": \"100:12\", \"str\": \"::ffff:172.16.4.12\"},\n            \"nlri\": [\n                {\n                    \"label\": [54],\n                    \"rd\": \"100:12\",\n                    \"prefix\": \"2010:0:12:4::/64\"},\n                {\n                    \"label\": [55],\n                    \"rd\": \"100:12\",\n                    \"prefix\": \"2010:1:12::/64\"\n                }\n            ]},\n        \"16\": [\"route-target:100:12\"]\n}}"
 						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
-						}
+						"description": ""
 					},
 					"response": []
 				},
@@ -1540,59 +782,29 @@
 					"request": {
 						"auth": {
 							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
+							"basic": {
+								"showPassword": false
+							}
 						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							},
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"attr\":{\n        \"15\": {\n            \"afi_safi\": [2, 128],\n            \"withdraw\": [\n                {\n                    \"label\": [54],\n                    \"rd\": \"100:12\",\n                    \"prefix\": \"2010:0:12:4::/64\"},\n                {\n                    \"label\": [55],\n                    \"rd\": \"100:12\",\n                    \"prefix\": \"2010:1:12::/64\"\n                }\n            ]}\n}}"
 						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
-						}
+						"description": ""
 					},
 					"response": []
 				}
@@ -1600,64 +812,34 @@
 		},
 		{
 			"name": "ipv6_unicast",
+			"description": "",
 			"item": [
 				{
 					"name": "send update ipv6 unicast",
 					"request": {
 						"auth": {
 							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
+							"basic": {
+								"showPassword": false
+							}
 						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"attr\": {\n                \"15\": {\n                    \"afi_safi\": [2, 1],\n                    \"withdraw\": [\"::2001:db8:2:2/64\", \"::2001:db8:2:1/64\", \"::2001:db8:2:0/64\"]}\n            },\n    \"nlri\":[],\n    \"withdraw\": []\n}"
-						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
 						},
 						"description": "if you want to withdraw the prefix we sent, you can use the same url and http method, just use the following as POST data.\n\n```\n{\n    \"attr\": {\n                \"15\": {\n                    \"afi_safi\": [2, 1],\n                    \"withdraw\": [\"::2001:db8:2:2/64\", \"::2001:db8:2:1/64\", \"::2001:db8:2:0/64\"]}\n            },\n    \"nlri\":[],\n    \"withdraw\": []\n}\n```"
 					},
@@ -1668,58 +850,27 @@
 					"request": {
 						"auth": {
 							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
+							"basic": {
+								"showPassword": false
+							}
 						},
+						"url": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic YWRtaW46YWRtaW4="
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"attr\": {\n                \"1\": 0,\n                \"2\": [[2, [65502]]],\n                \"4\": 0,\n                \"14\": {\n                    \"afi_safi\": [2, 1],\n                    \"linklocal_nexthop\": \"fe80::c002:bff:fe7e:0\",\n                    \"nexthop\": \"2001:db8::2\",\n                    \"nlri\": [\"::2001:db8:2:2/64\", \"::2001:db8:2:1/64\", \"::2001:db8:2:0/64\"]}\n            },\n    \"nlri\":[],\n    \"withdraw\": []\n}"
-						},
-						"url": {
-							"raw": "http://{{host}}:{{port}}/v1/peer/{{peer}}/send/update",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"v1",
-								"peer",
-								"{{peer}}",
-								"send",
-								"update"
-							]
 						},
 						"description": "if you want to withdraw the prefix we sent, you can use the same url and http method, just use the following as POST data.\n\n```\n{\n    \"attr\": {\n                \"15\": {\n                    \"afi_safi\": [2, 1],\n                    \"withdraw\": [\"::2001:db8:2:2/64\", \"::2001:db8:2:1/64\", \"::2001:db8:2:0/64\"]}\n            },\n    \"nlri\":[],\n    \"withdraw\": []\n}\n```"
 					},
