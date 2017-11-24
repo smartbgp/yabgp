@@ -99,12 +99,15 @@ def prepare_twisted_service(handler):
     reactor.run()
 
 
-# TODO
 def register_api_handler(api_handler):
-    app.register_blueprint(api_handler.blueprint, api_handler.url_prefix)
+    """register flask blueprint
+    """
+    app.register_blueprint(api_handler.blueprint, url_prefix=api_handler.url_prefix)
 
 
-def prepare_service(args=None, handler=None):
+def prepare_service(args=None, handler=None, api_hander=None):
+    """prepare all services
+    """
     try:
         CONF(args=args, project='yabgp', version=version,
              default_config_files=['/etc/yabgp/yabgp.ini'])
@@ -125,7 +128,9 @@ def prepare_service(args=None, handler=None):
         LOG.error(e)
         LOG.debug(traceback.format_exc())
         sys.exit()
-
+    # prepare api handler
+    if api_hander:
+        register_api_handler(api_hander)
     LOG.info('Starting server in PID %s', os.getpid())
 
     prepare_twisted_service(handler)

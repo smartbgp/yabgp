@@ -3,8 +3,28 @@
 from __future__ import print_function
 import sys
 
+from flask import Blueprint
+import flask
+
 from yabgp.agent import prepare_service
 from yabgp.handler import BaseHandler
+
+
+class APIHandler(object):
+
+    blueprint = Blueprint('demo', __name__)
+    url_prefix = '/v1'
+
+
+@APIHandler.blueprint.route('/rib')
+def root():
+    """
+    v1 api root. Get the api status.
+    """
+    intro = {
+        'rib': []
+    }
+    return flask.jsonify(intro)
 
 
 class CliHandler(BaseHandler):
@@ -45,7 +65,7 @@ class CliHandler(BaseHandler):
 def main():
     try:
         cli_handler = CliHandler()
-        prepare_service(handler=cli_handler)
+        prepare_service(handler=cli_handler, api_hander=APIHandler())
     except Exception as e:
         print(e)
 
