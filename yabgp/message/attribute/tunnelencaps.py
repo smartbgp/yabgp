@@ -169,23 +169,44 @@ class TunnelEncaps(Attribute):
         data = dict([(int(l), r) for (l, r) in policy.items()])
         policy_value_hex = b''
         items = data.keys()
+        # Binding SID Sub-TLV
         if bgp_cons.BGPSUB_TLV_BINDGINGSID not in items:
-            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID) + struct.pack('!B', 2) +\
-                b'\x00\x00'
+            if bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW not in items:
+                policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW) + struct.pack('!B', 2) +\
+                    b'\x00\x00'
+            if bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW in items:
+                if data[bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW] is None:
+                    policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW) + struct.pack('!B', 2) +\
+                        b'\x00\x00'
+                else:
+                    policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW) + struct.pack('!B', 6) +\
+                        b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW] << 12)
         else:
             # format of binding sid is same with the mpls label
             # the high order 20 bit was truly used as the bsid
             # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             # |          Label                        |           ...         |
             # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID) + struct.pack('!B', 6) +\
-                b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID] << 12)
+            if data[bgp_cons.BGPSUB_TLV_BINDGINGSID] is None:
+                policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID) + struct.pack('!B', 2) +\
+                    b'\x00\x00'
+            else:
+                policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID) + struct.pack('!B', 6) +\
+                    b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID] << 12)
+        # Preference Sub-TLV
+        if bgp_cons.BGPSUB_TLV_PREFERENCE not in items:
+            if bgp_cons.BGPSUB_TLV_PREFERENCE_NEW in items:
+                policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE_NEW) + struct.pack('!B', 6) + \
+                    b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_PREFERENCE_NEW])
+        else:
+            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE) + struct.pack('!B', 6) + \
+                b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_PREFERENCE])
         for type_tmp in items:
-            if type_tmp == bgp_cons.BGPSUB_TLV_PREFERENCE:
+            # if type_tmp == bgp_cons.BGPSUB_TLV_PREFERENCE:
                 # Sub_TLV preference
-                policy_value_hex += struct.pack('!B', type_tmp) + struct.pack('!B', 6) + \
-                    b'\x00\x00' + struct.pack('!I', data[type_tmp])
-            elif type_tmp == bgp_cons.BGPSUB_TLV_SIDLIST:
+                # policy_value_hex += struct.pack('!B', type_tmp) + struct.pack('!B', 6) + \
+                #     b'\x00\x00' + struct.pack('!I', data[type_tmp])
+            if type_tmp == bgp_cons.BGPSUB_TLV_SIDLIST:
                 # Sub_TLV segment list
                 seg_list_hex = b''
                 for seg_list in data[type_tmp]:
