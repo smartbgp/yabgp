@@ -69,3 +69,4 @@ ChangeLog
 covhtml/
 doc/build
 *.DS_Store
+.vscode/settings.json
