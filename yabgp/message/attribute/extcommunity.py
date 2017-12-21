@@ -210,9 +210,9 @@ class ExtCommunity(Attribute):
 
             # Transitive Opaque
             elif item[0] == bgp_cons.BGP_EXT_COM_COLOR:
-                ext_community_hex += struct.pack('!HHI', bgp_cons.BGP_EXT_COM_COLOR, 0, item[1])
+                ext_community_hex += struct.pack('!HHI', bgp_cons.BGP_EXT_COM_COLOR, 0, int(item[1]))
             elif item[0] == bgp_cons.BGP_EXT_COM_ENCAP:
-                ext_community_hex += struct.pack('!HHI', bgp_cons.BGP_EXT_COM_ENCAP, 0, item[1])
+                ext_community_hex += struct.pack('!HHI', bgp_cons.BGP_EXT_COM_ENCAP, 0, int(item[1]))
             # EVPN
             elif item[0] == bgp_cons.BGP_EXT_COM_EVPN_ES_IMPORT:
                 mac = b''.join([struct.pack('!B', (int(i, 16))) for i in item[1].split("-")])
