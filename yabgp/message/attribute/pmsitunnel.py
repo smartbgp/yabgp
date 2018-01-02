@@ -15,20 +15,20 @@
 
 import struct
 import binascii
-
 import netaddr
 
 from yabgp.message.attribute import Attribute
 from yabgp.message.attribute import AttributeFlag
 from yabgp.message.attribute import AttributeID
 from yabgp.common import constants as bgp_cons
+from yabgp.message.attribute.nlri.mpls_vpn import MPLSVPN
 
 
 class PMSITunnel(Attribute):
     """
     RFC 6514#section-5
     """
-    ID = AttributeID.EXTENDED_COMMUNITY
+    ID = AttributeID.PMSI_TUNNEL
     FLAG = AttributeFlag.OPTIONAL + AttributeFlag.TRANSITIVE
 
     @classmethod
@@ -119,4 +119,30 @@ class PMSITunnel(Attribute):
 
     @classmethod
     def construct(cls, value):
-        pass
+        """
+        :param value:
+            {
+                "mpsl_label": 1234,
+                "tunnel_id": "192.168.10.10",
+                "tunnel_type": 6,
+                "leaf_info_required": 0
+            }
+        """
+        tunnel_type = value['tunnel_type']
+        pmsi_tunnel_hex = b''
+
+        # Flags: (currently only Leaf Info Required is defined)
+        pmsi_tunnel_hex += struct.pack('!B', int(value['leaf_info_required']))
+        # Tunnel Type
+        pmsi_tunnel_hex += struct.pack('!B', int(tunnel_type))
+        # MPLS Label
+        pmsi_tunnel_hex += MPLSVPN.construct_mpls_label_stack(value['mpls_label'])
+        # tunnel_type dictates the tunnel_id structure
+        if tunnel_type == bgp_cons.PMSI_TUNNEL_TYPE_INGRESS_REPL:
+            ip_hex = netaddr.IPAddress(value['tunnel_id']).packed
+            pmsi_tunnel_hex += ip_hex
+        else:
+            pass
+        if pmsi_tunnel_hex:
+            return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
+                   + struct.pack('!B', len(pmsi_tunnel_hex)) + pmsi_tunnel_hex

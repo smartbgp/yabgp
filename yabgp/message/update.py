@@ -439,6 +439,9 @@ class Update(object):
             elif type_code == bgp_cons.BGPTYPE_EXTENDED_COMMUNITY:
                 community_ext_hex = ExtCommunity.construct(value=value)
                 attr_raw_hex += community_ext_hex
+            elif type_code == bgp_cons.BGPTYPE_PMSI_TUNNEL:
+                pmsi_tunnel_hex = PMSITunnel.construct(value=value)
+                attr_raw_hex += pmsi_tunnel_hex
             elif type_code == bgp_cons.BGPTYPE_TUNNEL_ENCAPS_ATTR:
                 tunnelencap_hex = TunnelEncaps.construct(value=value)
                 attr_raw_hex += tunnelencap_hex
