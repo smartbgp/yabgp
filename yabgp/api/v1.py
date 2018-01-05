@@ -126,24 +126,25 @@ def send_update_message(peer_ip):
                         if '.' in vau.strip().split(':')[0]:
                             ext_community.append([258, vau.strip()])
                         else:
-                            res = api_utils.get_peer_conf_and_state(peer_ip)
-                            if res['peer']['capability']['remote']:
-                                four_bytes_as = res['peer']['capability']['remote']['four_bytes_as']
-                            else:
-                                return flask.jsonify({
-                                    'status': False,
-                                    'code': 'please check peer state'
-                                })
                             nums = vau.strip().split(':', 1)
-                            if int(nums[1].strip()) <= 65535 and four_bytes_as:
-                                ext_community.append([514, vau.strip()])
-                            elif not four_bytes_as and int(nums[0].strip()) > 65535:
-                                return flask.jsonify({
-                                    'status': False,
-                                    'code': 'peer not support as num of greater than 65535'
-                                })
-                            else:
+                            if int(nums[1].strip()) <= 65535:
                                 ext_community.append([2, vau.strip()])
+                            else:
+                                res = api_utils.get_peer_conf_and_state(peer_ip)
+                                if res['peer']['capability']['remote']:
+                                    four_bytes_as = res['peer']['capability']['remote']['four_bytes_as']
+                                else:
+                                    return flask.jsonify({
+                                        'status': False,
+                                        'code': 'please check peer state'
+                                    })
+                                if int(nums[1].strip()) > 65535 and four_bytes_as:
+                                    ext_community.append([514, vau.strip()])
+                                elif not four_bytes_as and int(nums[0].strip()) > 65535:
+                                    return flask.jsonify({
+                                        'status': False,
+                                        'code': 'peer not support as num of greater than 65535'
+                                    })
                 elif key.strip().lower() == 'route-origin':
                     values = value.strip().split(',')
                     for vau in values:
