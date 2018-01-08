@@ -445,8 +445,9 @@ IPv4 Sr-policy
             },
             "16": ["route-target:10.75.195.199:00"],
             "23": {
-                "6": 100,
-                "7": 25102,
+                "0": "new",
+                "6": 100, // "12": 100,
+                "7": 25102, // "13": 25102,
                 "128": [
                     {
                         "9": 10,
@@ -484,8 +485,11 @@ attribute explaination(only for this format):
     "14": Multiprotocol Reacable Attribute
     "16": Route Target Extended Community
     "23": Tunnel Encapsulation Attribute
-        "6": Preference
-        "7": Binding SID
+        "0": if the ios version lower than 6.4.1.14(Cisco facility), the value should be 'old', and in the meantime,
+             the key of Preference should be '6', key of Binding SID should be '7', else it should be 'new' and key
+             of Preference and Binding SID should be '12' and '13'
+        "6"/"12": Preference
+        "7"/"13": Binding SID
         "128": Multiple segement lists
             "9": Weighted
             "1": Segement list
