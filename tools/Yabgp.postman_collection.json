@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "Yabgp",
-		"_postman_id": "88183d59-54a5-2294-3b01-1c79cc900ba1",
+		"_postman_id": "cab7ab31-8c8f-d503-41f1-693d2ff53d3b",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -585,7 +585,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \n\t\"attr\":{ \n\t\t\"1\": 0, \n\t\t\"2\": [], \n\t\t\"3\": \"192.168.5.5\", \n\t\t\"5\": 200, \n\t\t\"8\": [\"NO_ADVERTISE\"], \n\t\t\"14\": { \n\t\t\t\"afi_safi\": [1, 73], \n\t\t\t\"nexthop\": \"192.168.5.5\", \n\t\t\t\"nlri\": { \n\t\t\t\t\"distinguisher\": 0, \n\t\t\t\t\"color\": 10, \n\t\t\t\t\"endpoint\": \"192.168.76.1\" \n\t\t\t} \n\t\t}, \n\t\t\"16\": [\"route-target:10.75.195.199:00\"],\n\t\t\"23\": { \n\t\t\t\"6\": 100, \n\t\t\t\"7\": 25102, \n\t\t\t\"128\": [ \n\t\t\t\t{ \n\t\t\t\t\t\"9\": 2, \n\t\t\t\t\t\"1\": [ \n\t\t\t\t\t\t{ \n\t\t\t\t\t\t\t\"1\": { \n\t\t\t\t\t\t\t\t\"label\": 5000 \n\t\t\t\t\t\t\t} \n\t\t\t\t\t\t}, \n\t\t\t\t\t\t{ \n\t\t\t\t\t\t\t\"1\": { \n\t\t\t\t\t\t\t\t\"label\": 4000, \n\t\t\t\t\t\t\t\t\"TC\": 0, \n\t\t\t\t\t\t\t\t\"S\": 0, \n\t\t\t\t\t\t\t\t\"TTL\": 255 \n\t\t\t\t\t\t\t} \n\t\t\t\t\t\t} \n\t\t\t\t\t] \n\t\t\t\t}, \n\t\t\t\t{ \n\t\t\t\t\t\"9\": 10, \n\t\t\t\t\t\"1\": [ \n\t\t\t\t\t\t{ \n\t\t\t\t\t\t\t\"1\": { \n\t\t\t\t\t\t\t\t\"label\": 2000 \n\t\t\t\t\t\t\t} \n\t\t\t\t\t\t}, \n\t\t\t\t\t\t{ \n\t\t\t\t\t\t\t\"3\": { \n\t\t\t\t\t\t\t\t\"node\": \"10.1.1.1\", \n\t\t\t\t\t\t\t\t\"SID\": { \n\t\t\t\t\t\t\t\t\"label\": 3000, \n\t\t\t\t\t\t\t\t\"TC\": 0, \n\t\t\t\t\t\t\t\t\"S\": 0, \n\t\t\t\t\t\t\t\t\"TTL\": 255 \n\t\t\t\t\t\t\t\t} \n\t\t\t\t\t\t\t} \n\t\t\t\t\t\t} \n\t\t\t\t\t] \n\t\t\t\t} \n\t\t\t] \n\t\t} \n\t} \n}"
+							"raw": "{ \n\t\"attr\":{ \n\t\t\"1\": 0, \n\t\t\"2\": [], \n\t\t\"3\": \"192.168.5.5\", \n\t\t\"5\": 200, \n\t\t\"8\": [\"NO_ADVERTISE\"], \n\t\t\"14\": { \n\t\t\t\"afi_safi\": [1, 73], \n\t\t\t\"nexthop\": \"192.168.5.5\", \n\t\t\t\"nlri\": { \n\t\t\t\t\"distinguisher\": 0, \n\t\t\t\t\"color\": 10, \n\t\t\t\t\"endpoint\": \"192.168.76.1\" \n\t\t\t} \n\t\t}, \n\t\t\"16\": [\"route-target:10.75.195.199:00\"],\n\t\t\"23\": { \n\t\t\t\"0\": \"old\",\n\t\t\t\"6\": 100, \n\t\t\t\"7\": 25102, \n\t\t\t\"128\": [ \n\t\t\t\t{ \n\t\t\t\t\t\"9\": 2, \n\t\t\t\t\t\"1\": [ \n\t\t\t\t\t\t{ \n\t\t\t\t\t\t\t\"1\": { \n\t\t\t\t\t\t\t\t\"label\": 5000 \n\t\t\t\t\t\t\t} \n\t\t\t\t\t\t}, \n\t\t\t\t\t\t{ \n\t\t\t\t\t\t\t\"1\": { \n\t\t\t\t\t\t\t\t\"label\": 4000, \n\t\t\t\t\t\t\t\t\"TC\": 0, \n\t\t\t\t\t\t\t\t\"S\": 0, \n\t\t\t\t\t\t\t\t\"TTL\": 255 \n\t\t\t\t\t\t\t} \n\t\t\t\t\t\t} \n\t\t\t\t\t] \n\t\t\t\t}, \n\t\t\t\t{ \n\t\t\t\t\t\"9\": 10, \n\t\t\t\t\t\"1\": [ \n\t\t\t\t\t\t{ \n\t\t\t\t\t\t\t\"1\": { \n\t\t\t\t\t\t\t\t\"label\": 2000 \n\t\t\t\t\t\t\t} \n\t\t\t\t\t\t}, \n\t\t\t\t\t\t{ \n\t\t\t\t\t\t\t\"3\": { \n\t\t\t\t\t\t\t\t\"node\": \"10.1.1.1\", \n\t\t\t\t\t\t\t\t\"SID\": { \n\t\t\t\t\t\t\t\t\"label\": 3000, \n\t\t\t\t\t\t\t\t\"TC\": 0, \n\t\t\t\t\t\t\t\t\"S\": 0, \n\t\t\t\t\t\t\t\t\"TTL\": 255 \n\t\t\t\t\t\t\t\t} \n\t\t\t\t\t\t\t} \n\t\t\t\t\t\t} \n\t\t\t\t\t] \n\t\t\t\t} \n\t\t\t] \n\t\t} \n\t} \n}"
 						},
 						"description": ""
 					},
