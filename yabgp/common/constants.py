@@ -140,6 +140,10 @@ BGP_EXT_TRA_MARK = 0x8009  # traffic-marking DSCP value
 # Transitive Opaque
 BGP_EXT_COM_OSPF_ROUTE_TYPE = 0x0306  # OSPF Route Type
 BGP_EXT_COM_COLOR = 0x030b  # Color
+BGP_EXT_COM_COLOR_00 = 0x030b0000  # Color-00
+BGP_EXT_COM_COLOR_01 = 0x030b4000  # Color-01
+BGP_EXT_COM_COLOR_10 = 0x030b8000  # Color-10
+BGP_EXT_COM_COLOR_11 = 0x030bc000  # Color-11
 BGP_EXT_COM_ENCAP = 0x030c  # BGP_EXT_COM_ENCAP = 0x030c
 BGP_EXT_COM_DEFAULT_GATEWAY = 0x030d  # Default Gateway
 
@@ -163,6 +167,18 @@ BGP_EXT_COM_DICT = {
     'traffic-marking-dscp': 32777,  # traffic-marking DSCP value
     'traffic-rate': 32774,  # traffic-rate 2-byte as#, 4-byte float
     'color': 779,  # Color
+    # Color, leftmost 2 bits of reserved field = 00, CO bits = 00,
+    # srpolicy -> IGP
+    'color-00': 51052544,
+    # Color, leftmost 2 bits of reserved field = 01, CO bits = 01,
+    # srpolicy -> same afi null endpoint -> any null endpoint -> IGP
+    'color-01': 51068928,
+    # Color, leftmost 2 bits of reserved field = 10, CO bits = 10,
+    # srpolicy -> same afi null endpoint -> any null endpoint -> same afi endpoint -> any endpoint -> IGP
+    'color-10': 51085312,
+    # Color, leftmost 2 bits of reserved field = 11, CO bits = 11,
+    # treated like color-00
+    'color-11': 51101696,
     'encapsulation': 780,  # BGP_EXT_COM_ENCAP = 0x030c
     'es-import': 1538,  # ES Import
     'router-mac': 1539  # EVPN Router MAC Extended Community
