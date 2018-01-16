@@ -710,7 +710,19 @@ Extended community we supported:
     traffic-marking-dscp  # traffic-marking DSCP value
 
     # Transitive Opaque
-    color  # Color
+    color # Color, treated like color-00, leftmost 2 bits of reserved field = 00, CO bits = 00
+    # Color, leftmost 2 bits of reserved field = 00, CO bits = 00
+    # srpolicy -> IGP
+    color-00
+    # Color, leftmost 2 bits of reserved field = 01, CO bits = 01
+    # srpolicy -> same afi null endpoint -> any null endpoint -> IGP
+    color-01
+    # Color, leftmost 2 bits of reserved field = 10, CO bits = 10
+    # srpolicy -> same afi null endpoint -> any null endpoint -> same afi endpoint -> any endpoint -> IGP
+    color-10
+    # Color, leftmost 2 bits of reserved field = 11, CO bits = 11
+    # treated like color-00
+    color-11
     encapsulation  # encapsulation
 
     # BGP EVPN
