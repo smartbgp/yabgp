@@ -21,7 +21,6 @@ from yabgp.message.attribute import Attribute
 from yabgp.message.attribute import AttributeFlag
 from yabgp.message.attribute import AttributeID
 from yabgp.common import constants as bgp_cons
-from yabgp.message.attribute.nlri.mpls_vpn import MPLSVPN
 
 
 class PMSITunnel(Attribute):
@@ -32,7 +31,7 @@ class PMSITunnel(Attribute):
     FLAG = AttributeFlag.OPTIONAL + AttributeFlag.TRANSITIVE
 
     @classmethod
-    def parse(cls, value):
+    def parse(cls, value, evpn_overlay=False):
         """
         +---------------------------------+
         |  Flags (1 octet)                |
@@ -47,12 +46,15 @@ class PMSITunnel(Attribute):
         """
         flag = ord(value[0:1])
         tunnel_type = ord(value[1:2])
-        mpls_label = cls.parse_mpls_label(value[2: 5])
+        if evpn_overlay:
+            mpls_label = cls.parse_vni(value[2: 5])
+        else:
+            mpls_label = cls.parse_mpls_label(value[2: 5])
         tunnel_id = cls.parse_tunnel_id(tunel_type=tunnel_type, tunel_data=value[5:])
         return {
             'leaf_info_required': flag,
             'tunnel_type': tunnel_type,
-            'mpsl_label': mpls_label,
+            'mpls_label': [mpls_label],
             'tunnel_id': tunnel_id
         }
 
@@ -60,6 +62,11 @@ class PMSITunnel(Attribute):
     def parse_mpls_label(data):
         label = struct.unpack('!L', b'\00'+data[:3])[0]
         return label >> 4
+
+    @staticmethod
+    def parse_vni(data):
+        label = struct.unpack('!L', b'\00'+data[:3])[0]
+        return label
 
     @staticmethod
     def parse_tunnel_id(tunel_type, tunel_data):
@@ -118,31 +125,48 @@ class PMSITunnel(Attribute):
         return 'not supported'
 
     @classmethod
-    def construct(cls, value):
+    def construct(cls, value, evpn_overlay=False):
         """
         :param value:
             {
-                "mpsl_label": [1234],
+                "mpls_label": [1234],
                 "tunnel_id": "192.168.10.10",
                 "tunnel_type": 6,
                 "leaf_info_required": 0
             }
         """
-        tunnel_type = value['tunnel_type']
         pmsi_tunnel_hex = b''
-
         # Flags: (currently only Leaf Info Required is defined)
         pmsi_tunnel_hex += struct.pack('!B', int(value['leaf_info_required']))
         # Tunnel Type
-        pmsi_tunnel_hex += struct.pack('!B', int(tunnel_type))
+        pmsi_tunnel_hex += struct.pack('!B', int(value['tunnel_type']))
         # MPLS Label
-        pmsi_tunnel_hex += MPLSVPN.construct_mpls_label_stack(value['mpls_label'])
+        pmsi_tunnel_hex += cls.construct_pmsi_label(evpn_overlay, value)
         # tunnel_type dictates the tunnel_id structure
-        if tunnel_type == bgp_cons.PMSI_TUNNEL_TYPE_INGRESS_REPL:
-            ip_hex = netaddr.IPAddress(value['tunnel_id']).packed
-            pmsi_tunnel_hex += ip_hex
-        else:
-            pass
+        pmsi_tunnel_hex += cls.construct_tunnel_type(value)
         if pmsi_tunnel_hex:
             return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
                 + struct.pack('!B', len(pmsi_tunnel_hex)) + pmsi_tunnel_hex
+
+    @staticmethod
+    def construct_pmsi_label(evpn_overlay, value):
+        if not evpn_overlay:
+            # MPLS Label
+            return struct.pack('!L', value['mpls_label'][0] << 4)[1:]
+        else:
+            # draft-ietf-bess-evpn-overlay-10#section-5.1.3 - label is used for 24 bit VNI
+            if evpn_overlay['evpn'] & evpn_overlay['encap_ec']:
+                if evpn_overlay['encap_value'] == bgp_cons.BGP_TUNNEL_ENCAPS_VXLAN:
+                    return struct.pack('!L', value['mpls_label'][0])[1:]
+                elif evpn_overlay['encap_value'] == bgp_cons.BGP_TUNNEL_ENCAPS_NVGRE:
+                    return struct.pack('!L', value['mpls_label'][0])[1:]
+            else:
+                # MPLS Label
+                return struct.pack('!L', value['mpls_label'][0] << 4)[1:]
+
+    @staticmethod
+    def construct_tunnel_type(value):
+        if value['tunnel_type'] == bgp_cons.PMSI_TUNNEL_TYPE_INGRESS_REPL:
+            return netaddr.IPAddress(value['tunnel_id']).packed
+        else:
+            return ''

@@ -41,12 +41,12 @@ from yabgp.message.attribute.tunnelencaps import TunnelEncaps
 from yabgp.message.attribute.extcommunity import ExtCommunity
 from yabgp.message.attribute.pmsitunnel import PMSITunnel
 from yabgp.message.attribute.linkstate.linkstate import LinkState
+from yabgp.message.attribute.nlri.evpn import EVPN
 
 LOG = logging.getLogger()
 
 
 class Update(object):
-
     """
     An UPDATE message is used to advertise feasible routes that share
     common path attributes to a peer, or to withdraw multiple unfeasible
@@ -370,13 +370,17 @@ class Update(object):
                 decode_value = ExtCommunity.parse(value=attr_value)
             elif type_code == bgp_cons.BGPTYPE_PMSI_TUNNEL:
                 decode_value = PMSITunnel.parse(value=attr_value)
+                pmsi_tunnel_hex = attr_value
             elif type_code == bgp_cons.BGPTYPE_LINK_STATE:
                 attributes.update(LinkState.unpack(data=attr_value).dict())
                 continue
             else:
                 decode_value = binascii.b2a_hex(attr_value)
             attributes[type_code] = decode_value
-
+        evpn_overlay = EVPN.signal_evpn_overlay(attributes)
+        if evpn_overlay['evpn'] and evpn_overlay['encap_ec']:
+            if bgp_cons.BGPTYPE_PMSI_TUNNEL in attributes:
+                attributes[bgp_cons.BGPTYPE_PMSI_TUNNEL] = PMSITunnel.parse(value=pmsi_tunnel_hex, evpn_overlay=evpn_overlay)
         return attributes
 
     @staticmethod
@@ -440,7 +444,8 @@ class Update(object):
                 community_ext_hex = ExtCommunity.construct(value=value)
                 attr_raw_hex += community_ext_hex
             elif type_code == bgp_cons.BGPTYPE_PMSI_TUNNEL:
-                pmsi_tunnel_hex = PMSITunnel.construct(value=value)
+                evpn_overlay = EVPN.signal_evpn_overlay(attr_dict)
+                pmsi_tunnel_hex = PMSITunnel.construct(value=value, evpn_overlay=evpn_overlay)
                 attr_raw_hex += pmsi_tunnel_hex
             elif type_code == bgp_cons.BGPTYPE_TUNNEL_ENCAPS_ATTR:
                 tunnelencap_hex = TunnelEncaps.construct(value=value)
