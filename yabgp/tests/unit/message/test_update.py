@@ -276,5 +276,44 @@ class TestUpdate(unittest.TestCase):
                 {'type': 'adj-segment-id', 'value': 25003}]}
         self.assertEqual(data_dict, Update.parse(None, data_bin[HDR_LEN:])['attr'])
 
+    def test_parse_and_construct_pmsi_tunnel_evpn_overlay(self):
+        data_bin = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff' \
+                   b'\x00`\x02\x00\x00\x00I\xc0\x10\x10\x00\x02\xff\xf7\x00\x00\x8f' \
+                   b'\xc2\x03\x0c\x00\x00\x00\x00\x00\x08@\x01\x01\x00\xc0\x16\t\x00' \
+                   b'\x06\x00\xeaa\xc0\xa8\x01\n@\x05\x04\x00\x00\x00d\x80\x0e\x1c\x00' \
+                   b'\x19F\x04\xc0\xa8\x01\n\x00\x03\x11\x00\x00\xff\xf7\x00\x00\x8f\xc2' \
+                   b'\x00\x00\x00\x00 \xc0\xa8\x01\n'
+
+        data_dict = {
+            'attr': {
+                1: 0,
+                5: 100,
+                14: {
+                    'afi_safi': (25,70),
+                    'nexthop': '192.168.1.10',
+                    'nlri': [
+                        {
+                            'type': 3,
+                            'value': {
+                                'eth_tag_id': 0,
+                                'ip': '192.168.1.10',
+                                'rd': '65527:36802'
+                            }
+                        }
+                    ]
+                },
+                16: [[2, '65527:36802'], [780, 8]],
+                22: {
+                    'mpls_label': [60001],
+                    'tunnel_id': '192.168.1.10',
+                    'tunnel_type': 6,
+                    'leaf_info_required': 0
+                }
+            }
+        }
+        self.maxDiff = None
+        self.assertEqual(data_dict['attr'], Update.parse(None, data_bin[HDR_LEN:])['attr'])
+        self.assertEqual(data_bin, Update.construct(msg_dict=data_dict))
+
 if __name__ == '__main__':
     unittest.main()
