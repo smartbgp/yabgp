@@ -24,6 +24,7 @@ from yabgp.message.attribute import Attribute
 from yabgp.message.attribute import AttributeFlag
 from yabgp.message.attribute import AttributeID
 from yabgp.common import constants as bgp_cons
+from yabgp.common import exception as excep
 
 
 class TunnelEncaps(Attribute):
@@ -137,6 +138,7 @@ class TunnelEncaps(Attribute):
 
         :param value: python dictionary
         {
+            "0": "old",
             "6": 100,
             "7": 25102,
             "128": [
@@ -169,43 +171,65 @@ class TunnelEncaps(Attribute):
         data = dict([(int(l), r) for (l, r) in policy.items()])
         policy_value_hex = b''
         items = data.keys()
-        # Binding SID Sub-TLV
-        if bgp_cons.BGPSUB_TLV_BINDGINGSID not in items:
-            if bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW not in items:
-                policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW) + struct.pack('!B', 2) +\
-                    b'\x00\x00'
-            if bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW in items:
-                if data[bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW] is None:
-                    policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW) + struct.pack('!B', 2) +\
-                        b'\x00\x00'
-                else:
-                    policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW) + struct.pack('!B', 6) +\
-                        b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW] << 12)
-        else:
-            # format of binding sid is same with the mpls label
-            # the high order 20 bit was truly used as the bsid
-            # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-            # |          Label                        |           ...         |
-            # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-            if data[bgp_cons.BGPSUB_TLV_BINDGINGSID] is None:
-                policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID) + struct.pack('!B', 2) +\
-                    b'\x00\x00'
-            else:
-                policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID) + struct.pack('!B', 6) +\
-                    b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID] << 12)
-        # Preference Sub-TLV
-        if bgp_cons.BGPSUB_TLV_PREFERENCE not in items:
-            if bgp_cons.BGPSUB_TLV_PREFERENCE_NEW in items:
-                policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE_NEW) + struct.pack('!B', 6) + \
-                    b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_PREFERENCE_NEW])
-        else:
-            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE) + struct.pack('!B', 6) + \
-                b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_PREFERENCE])
+        if bgp_cons.BGP_BSID_PREFERENCE_OLD_OR_NEW not in items:
+            raise excep.ConstructAttributeFailed(
+                reason='failed to construct attributes: %s' % 'please provide the value of TLV encoding',
+                data={}
+            )
         for type_tmp in items:
-            # if type_tmp == bgp_cons.BGPSUB_TLV_PREFERENCE:
-                # Sub_TLV preference
-                # policy_value_hex += struct.pack('!B', type_tmp) + struct.pack('!B', 6) + \
-                #     b'\x00\x00' + struct.pack('!I', data[type_tmp])
+            if type_tmp == bgp_cons.BGP_BSID_PREFERENCE_OLD_OR_NEW:
+                # format of binding sid is same with the mpls label
+                # the high order 20 bit was truly used as the bsid
+                # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                # |          Label                        |           ...         |
+                # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                # old ios
+                if data[type_tmp] == 'old':
+                    # Preference Sub-TLV
+                    if bgp_cons.BGPSUB_TLV_PREFERENCE not in items:
+                        if bgp_cons.BGPSUB_TLV_PREFERENCE_NEW in items:
+                            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE) + struct.pack('!B', 6) + \
+                                b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_PREFERENCE_NEW])
+                    else:
+                        policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE) + struct.pack('!B', 6) + \
+                            b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_PREFERENCE])
+                    # Binding SID Sub-TLV
+                    if bgp_cons.BGPSUB_TLV_BINDGINGSID not in items:
+                        if bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW not in items:
+                            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID) + struct.pack('!B', 2) +\
+                                b'\x00\x00'
+                        else:
+                            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID) + struct.pack('!B', 6) +\
+                                b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW] << 12)
+                    else:
+                        policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID) + struct.pack('!B', 6) +\
+                            b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID] << 12)
+                # new ios
+                elif data[type_tmp] == 'new':
+                    # Preference Sub-TLV
+                    if bgp_cons.BGPSUB_TLV_PREFERENCE not in items:
+                        if bgp_cons.BGPSUB_TLV_PREFERENCE_NEW in items:
+                            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE_NEW) + struct.pack('!B', 6) + \
+                                b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_PREFERENCE_NEW])
+                    else:
+                        policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE_NEW) + struct.pack('!B', 6) + \
+                            b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_PREFERENCE])
+                    # Binding SID Sub-TLV
+                    if bgp_cons.BGPSUB_TLV_BINDGINGSID not in items:
+                        if bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW not in items:
+                            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW) + struct.pack('!B', 2) +\
+                                b'\x00\x00'
+                        else:
+                            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW) + struct.pack('!B', 6) +\
+                                b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW] << 12)
+                    else:
+                        policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW) + struct.pack('!B', 6) +\
+                            b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID] << 12)
+                else:
+                    raise excep.ConstructAttributeFailed(
+                        reason='failed to construct attributes: %s' % 'TLV encoding must be one value of new or old',
+                        data={}
+                    )
             if type_tmp == bgp_cons.BGPSUB_TLV_SIDLIST:
                 # Sub_TLV segment list
                 seg_list_hex = b''
