@@ -289,7 +289,7 @@ class TestUpdate(unittest.TestCase):
                 1: 0,
                 5: 100,
                 14: {
-                    'afi_safi': (25,70),
+                    'afi_safi': (25, 70),
                     'nexthop': '192.168.1.10',
                     'nlri': [
                         {

@@ -370,7 +370,7 @@ class Update(object):
                 decode_value = ExtCommunity.parse(value=attr_value)
             elif type_code == bgp_cons.BGPTYPE_PMSI_TUNNEL:
                 decode_value = PMSITunnel.parse(value=attr_value)
-                pmsi_tunnel_hex = attr_value
+                pmsi_hex = attr_value
             elif type_code == bgp_cons.BGPTYPE_LINK_STATE:
                 attributes.update(LinkState.unpack(data=attr_value).dict())
                 continue
@@ -380,7 +380,7 @@ class Update(object):
         evpn_overlay = EVPN.signal_evpn_overlay(attributes)
         if evpn_overlay['evpn'] and evpn_overlay['encap_ec']:
             if bgp_cons.BGPTYPE_PMSI_TUNNEL in attributes:
-                attributes[bgp_cons.BGPTYPE_PMSI_TUNNEL] = PMSITunnel.parse(value=pmsi_tunnel_hex, evpn_overlay=evpn_overlay)
+                attributes[bgp_cons.BGPTYPE_PMSI_TUNNEL] = PMSITunnel.parse(value=pmsi_hex, evpn_overlay=evpn_overlay)
         return attributes
 
     @staticmethod
@@ -445,8 +445,7 @@ class Update(object):
                 attr_raw_hex += community_ext_hex
             elif type_code == bgp_cons.BGPTYPE_PMSI_TUNNEL:
                 evpn_overlay = EVPN.signal_evpn_overlay(attr_dict)
-                pmsi_tunnel_hex = PMSITunnel.construct(value=value, evpn_overlay=evpn_overlay)
-                attr_raw_hex += pmsi_tunnel_hex
+                attr_raw_hex += PMSITunnel.construct(value=value, evpn_overlay=evpn_overlay)
             elif type_code == bgp_cons.BGPTYPE_TUNNEL_ENCAPS_ATTR:
                 tunnelencap_hex = TunnelEncaps.construct(value=value)
                 attr_raw_hex += tunnelencap_hex
