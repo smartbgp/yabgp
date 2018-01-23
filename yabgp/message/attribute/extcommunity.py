@@ -211,6 +211,14 @@ class ExtCommunity(Attribute):
             # Transitive Opaque
             elif item[0] == bgp_cons.BGP_EXT_COM_COLOR:
                 ext_community_hex += struct.pack('!HHI', bgp_cons.BGP_EXT_COM_COLOR, 0, int(item[1]))
+            elif item[0] == bgp_cons.BGP_EXT_COM_COLOR_00:
+                ext_community_hex += struct.pack('!II', bgp_cons.BGP_EXT_COM_COLOR_00, int(item[1]))
+            elif item[0] == bgp_cons.BGP_EXT_COM_COLOR_01:
+                ext_community_hex += struct.pack('!II', bgp_cons.BGP_EXT_COM_COLOR_01, int(item[1]))
+            elif item[0] == bgp_cons.BGP_EXT_COM_COLOR_10:
+                ext_community_hex += struct.pack('!II', bgp_cons.BGP_EXT_COM_COLOR_10, int(item[1]))
+            elif item[0] == bgp_cons.BGP_EXT_COM_COLOR_11:
+                ext_community_hex += struct.pack('!II', bgp_cons.BGP_EXT_COM_COLOR_11, int(item[1]))
             elif item[0] == bgp_cons.BGP_EXT_COM_ENCAP:
                 ext_community_hex += struct.pack('!HHI', bgp_cons.BGP_EXT_COM_ENCAP, 0, int(item[1]))
             # EVPN

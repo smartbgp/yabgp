@@ -445,8 +445,9 @@ IPv4 Sr-policy
             },
             "16": ["route-target:10.75.195.199:00"],
             "23": {
-                "6": 100,
-                "7": 25102,
+                "0": "new",
+                "12": 100,
+                "13": 25102,
                 "128": [
                     {
                         "9": 10,
@@ -484,8 +485,11 @@ attribute explaination(only for this format):
     "14": Multiprotocol Reacable Attribute
     "16": Route Target Extended Community
     "23": Tunnel Encapsulation Attribute
-        "6": Preference
-        "7": Binding SID
+        "0": if the ios version lower than 6.4.1.14(Cisco facility), the value should be 'old', and in the meantime,
+             the key of Preference should be '6', key of Binding SID should be '7', else it should be 'new' and key
+             of Preference and Binding SID should be '12' and '13'
+        "6"/"12": Preference
+        "7"/"13": Binding SID
         "128": Multiple segement lists
             "9": Weighted
             "1": Segement list
@@ -706,7 +710,19 @@ Extended community we supported:
     traffic-marking-dscp  # traffic-marking DSCP value
 
     # Transitive Opaque
-    color  # Color
+    color # Color, treated like color-00, leftmost 2 bits of reserved field = 00, CO bits = 00
+    # Color, leftmost 2 bits of reserved field = 00, CO bits = 00
+    # srpolicy -> IGP
+    color-00
+    # Color, leftmost 2 bits of reserved field = 01, CO bits = 01
+    # srpolicy -> same afi null endpoint -> any null endpoint -> IGP
+    color-01
+    # Color, leftmost 2 bits of reserved field = 10, CO bits = 10
+    # srpolicy -> same afi null endpoint -> any null endpoint -> same afi endpoint -> any endpoint -> IGP
+    color-10
+    # Color, leftmost 2 bits of reserved field = 11, CO bits = 11
+    # treated like color-00
+    color-11
     encapsulation  # encapsulation
 
     # BGP EVPN
