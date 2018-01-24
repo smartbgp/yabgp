@@ -17,7 +17,8 @@ import struct
 import binascii
 
 import netaddr
-
+from yabgp.common import afn
+from yabgp.common import safn
 from yabgp.common import constants as bgp_cons
 from yabgp.message.attribute.nlri import NLRI
 from yabgp.message.attribute.nlri.mpls_vpn import MPLSVPN
@@ -79,6 +80,28 @@ class EVPN(NLRI):
             if nlri_hex:
                 nlri_list_hex += struct.pack('!2B', nlri['type'], len(nlri_hex)) + nlri_hex
         return nlri_list_hex
+
+    @staticmethod
+    def signal_evpn_overlay(attr_dict):
+        """
+        draft-ietf-bess-evpn-overlay-10 changes label encoding if EVPN and encapsulation EC set
+
+        :param attr_dict: bgp attribute dictionary
+        """
+        evpn_overlay = {'evpn': False, 'encap_ec': False}
+        try:
+            afi_safi = tuple(attr_dict.get(bgp_cons.BGPTYPE_MP_REACH_NLRI).get('afi_safi'))
+            community_ext = attr_dict.get(bgp_cons.BGPTYPE_EXTENDED_COMMUNITY)
+        except:
+            return evpn_overlay
+        if afi_safi == (afn.AFNUM_L2VPN, safn.SAFNUM_EVPN):
+            evpn_overlay['evpn'] = True
+        if community_ext:
+            for ec in community_ext:
+                if bgp_cons.BGP_EXT_COM_DICT['encapsulation'] == ec[0]:
+                    evpn_overlay['encap_ec'] = True
+                    evpn_overlay['encap_value'] = int(ec[1])
+        return evpn_overlay
 
 
 class EthernetAutoDiscovery(MPLSVPN):
@@ -217,7 +240,7 @@ class InclusiveMulticastEthernetTag(MPLSVPN):
         offset += 1
         # ip address
         if ip_addr_len != 0:
-            route['ip'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value[offset: offset+ip_addr_len / 8]), 16)))
+            route['ip'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value[offset: int(offset+ip_addr_len / 8)]), 16)))
         return route
 
     @classmethod

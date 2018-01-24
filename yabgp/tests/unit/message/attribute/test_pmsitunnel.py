@@ -25,9 +25,15 @@ class TestPMSITunnel(unittest.TestCase):
 
     def test_parse(self):
         self.maxDiff = None
-        hex_valule = b'\x00\x06\x00\x27\x10\x04\x04\x04\x04'
-        value_hoped = {'mpsl_label': 625, 'tunnel_id': '4.4.4.4', 'tunnel_type': 6, 'leaf_info_required': 0}
-        self.assertEqual(value_hoped, PMSITunnel.parse(hex_valule))
+        hex_value = b'\x00\x06\x00\x27\x10\x04\x04\x04\x04'
+        value_hoped = {'mpls_label': [625], 'tunnel_id': '4.4.4.4', 'tunnel_type': 6, 'leaf_info_required': 0}
+        self.assertEqual(value_hoped, PMSITunnel.parse(hex_value))
+
+    def test_construct(self):
+        self.maxDiff = None
+        hex_value = b'\x00\x06\x00\x27\x10\x04\x04\x04\x04'
+        value_hoped = {'mpls_label': [625], 'tunnel_id': '4.4.4.4', 'tunnel_type': 6, 'leaf_info_required': 0}
+        self.assertEqual(hex_value, PMSITunnel.construct(value_hoped)[3:])
 
 if __name__ == '__main__':
     unittest.main()
