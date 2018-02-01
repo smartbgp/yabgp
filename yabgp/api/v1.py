@@ -112,7 +112,8 @@ def send_update_message(peer_ip):
     withdraw = json_request.get('withdraw')
     if attr:
         attr = {int(k): v for k, v in attr.items()}
-        if 5 not in attr:
+        res = api_utils.get_peer_conf_and_state(peer_ip)
+        if 5 not in attr and res['peer']['remote_as'] == res['peer']['local_as']:
             # default local preference
             attr[5] = 100
         if 16 in attr:
@@ -130,7 +131,6 @@ def send_update_message(peer_ip):
                             if int(nums[1].strip()) <= 65535:
                                 ext_community.append([2, vau.strip()])
                             else:
-                                res = api_utils.get_peer_conf_and_state(peer_ip)
                                 if res['peer']['capability']['remote']:
                                     four_bytes_as = res['peer']['capability']['remote']['four_bytes_as']
                                 else:
@@ -151,7 +151,6 @@ def send_update_message(peer_ip):
                         if '.' in vau.strip().split(':')[0]:
                             ext_community.append([259, vau.strip()])
                         else:
-                            res = api_utils.get_peer_conf_and_state(peer_ip)
                             if res['peer']['capability']['remote']:
                                 four_bytes_as = res['peer']['capability']['remote']['four_bytes_as']
                             else:
