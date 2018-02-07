@@ -98,6 +98,11 @@ class BGPLS(NLRI):
                 ipv4_neighbor_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
                 descriptor['type'] = 'link-remote-ipv4'
                 descriptor['value'] = ipv4_neighbor_addr
+            # elif _type == 263: # Multi-Topology Identifier
+            #     pass
+            elif _type == 264:  # OSPF Route Type
+                descriptor['type'] = 'prefix-ospf-route-type'
+                descriptor['value'] = struct.unpack('!B', value)[0]
             elif _type == 265:   # IP Reachability Information
                 descriptor['type'] = 'prefix'
                 mask = struct.unpack('!B', value[0])[0]

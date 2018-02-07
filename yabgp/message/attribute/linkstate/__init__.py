@@ -17,6 +17,9 @@ from .linkstate import LinkState  # noqa
 from .node.local_router_id import LocalRouterID   # noqa
 from .node.name import NodeName   # noqa
 from .node.isisarea import ISISArea   # noqa
+from .node.sr_capabilities import SRCapabilities  # noqa
+from .node.sr_algorithm import SRAlgorithm  # noqa
+from .node.node_msd import NodeMSD  # noqa
 from .link.admingroup import AdminGroup   # noqa
 from .link.remote_router_id import RemoteRouterID   # noqa
 from .link.max_bw import MaxBandwidth   # noqa
@@ -26,5 +29,9 @@ from .link.te_metric import TeMetric   # noqa
 from .link.link_name import LinkName   # noqa
 from .link.igp_metric import IGPMetric   # noqa
 from .link.adj_seg_id import AdjSegID   # noqa
+from .link.link_identifiers import LinkIdentifiers  # noqa
+from .link.link_msd import LinkMSD  # noqa
 from .prefix.prefix_metric import PrefixMetric   # noqa
 from .prefix.prefix_sid import PrefixSID  # noqa
+from .prefix.prefix_igp_attr import PrefixIGPAttr  # noqa
+from .prefix.src_router_id import SrcRouterID  # noqa

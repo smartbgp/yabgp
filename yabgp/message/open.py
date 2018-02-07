@@ -182,6 +182,15 @@ class Open(object):
                                 'time': time
                             })
                             capability.capa_value = capability.capa_value[7:]
+                    elif capability.capa_code == capability.EXTENDED_NEXT_HOP:
+                        self.capa_dict['ext_nexthop'] = []
+                        while len(capability.capa_value) > 0:
+                            afi, safi, nexthop = struct.unpack('!HHH', capability.capa_value[:6])
+                            capability.capa_value = capability.capa_value[6:]
+                            self.capa_dict['ext_nexthop'].append({
+                                "afi_safi": [afi, safi],
+                                "nexthop_afi": nexthop
+                            })
                     else:
                         self.capa_dict[str(capability.capa_code)] = repr(capability.capa_value)
 
