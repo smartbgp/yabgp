@@ -86,6 +86,14 @@ For example:
 
     $ yabgpd --bgp-local_addr=1.1.1.1 --bgp-local_as=65001 --bgp-remote_addr=1.1.1.2 --bgp-remote_as=65001 --bgp-afi_safi=ipv4
 
+Use Docker container
+
+.. code:: bash
+
+    $ docker run -it smartbgp/yabgp:latest --bgp-afi_safi=ipv4 --bgp-local_as=65022 --bgp-remote_addr=10.75.44.219 --bgp-remote_as=65022
+
+More docker image tags, please reference https://hub.docker.com/r/smartbgp/yabgp/tags/
+
 Documentation
 ~~~~~~~~~~~~~
 
