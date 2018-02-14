@@ -50,7 +50,11 @@ class BGPLS(NLRI):
             else:
                 nlri['type'] = 'unknown'
                 continue
-            nlri['value'] = cls.parse_nlri(value)
+            # nlri['value'] = cls.parse_nlri(value)
+            protocol_id, identifier, descriptors = cls.parse_nlri(value)
+            nlri['protocol_id'] = protocol_id
+            nlri['identifier'] = identifier
+            nlri['descriptors'] = descriptors
             nlri_list.append(nlri)
         return nlri_list
 
@@ -73,8 +77,46 @@ class BGPLS(NLRI):
         #     //                  Link Descriptors (variable)                //
         #     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
         #                     Figure 8: The Link NLRI format
-        return_data = []
-        # proto_id = struct.unpack('!B', data[0])[0]
+
+        # The Protocol-ID field can contain one of the following values:
+        #     +-------------+----------------------------------+
+        #     | Protocol-ID | NLRI information source protocol |
+        #     +-------------+----------------------------------+
+        #     |      1      | IS-IS Level 1                    |
+        #     |      2      | IS-IS Level 2                    |
+        #     |      3      | OSPFv2                           |
+        #     |      4      | Direct                           |
+        #     |      5      | Static configuration             |
+        #     |      6      | OSPFv3                           |
+        #     +-------------+----------------------------------+
+        #               Table 2: Protocol Identifiers
+
+        #     +------------+----------------------------------+
+        #     | Identifier | Routing Universe                 |
+        #     +------------+----------------------------------+
+        #     |     0      | Default Layer 3 Routing topology |
+        #     +------------+----------------------------------+
+        #         Table 3: Well-Known Instance Identifiers
+
+        proto_id = struct.unpack('!B', data[0])[0]
+        if proto_id == 1:
+            proto_id = 'IS-IS Level 1'
+        elif proto_id == 2:
+            proto_id = 'IS-IS Level 2'
+        elif proto_id == 3:
+            proto_id = 'OSPFv2'
+        elif proto_id == 4:
+            proto_id = 'Direct'
+        elif proto_id == 5:
+            proto_id = 'Static Configuration'
+        elif proto_id == 6:
+            proto_id = 'OSPFv3'
+
+        identifier = struct.unpack('!I', data[5:9])[0]
+        # if identifier == 0:
+        #     identifier = 'Default Layer 3 Routing topology'
+
+        descriptor_list = []
         descriptors = data[9:]
         while descriptors:
             _type, length = struct.unpack('!HH', descriptors[0:4])
@@ -100,6 +142,12 @@ class BGPLS(NLRI):
                 descriptor['value'] = ipv4_neighbor_addr
             # elif _type == 263: # Multi-Topology Identifier
             #     pass
+            elif _type == 263:  # Multi-Topology Identifier
+                descriptor['type'] = 'mt-id'
+                descriptor['value'] = []
+                while value:
+                    descriptor['value'].append(struct.unpack('!H', value[:2])[0])
+                    value = value[2:]
             elif _type == 264:  # OSPF Route Type
                 descriptor['type'] = 'prefix-ospf-route-type'
                 descriptor['value'] = struct.unpack('!B', value)[0]
@@ -114,8 +162,8 @@ class BGPLS(NLRI):
             else:
                 descriptor['type'] = _type
                 descriptor['value'] = binascii.b2a_hex(value)
-            return_data.append(descriptor)
-        return return_data
+            descriptor_list.append(descriptor)
+        return proto_id, identifier, descriptor_list
 
     @classmethod
     def parse_node_descriptor(cls, data):

@@ -20,6 +20,8 @@ from .node.isisarea import ISISArea   # noqa
 from .node.sr_capabilities import SRCapabilities  # noqa
 from .node.sr_algorithm import SRAlgorithm  # noqa
 from .node.node_msd import NodeMSD  # noqa
+from .node.nodeflags import NodeFlags  # noqa
+from .node.opa_node_attr import OpaNodeAttr  # noqa
 from .link.admingroup import AdminGroup   # noqa
 from .link.remote_router_id import RemoteRouterID   # noqa
 from .link.max_bw import MaxBandwidth   # noqa
@@ -31,7 +33,15 @@ from .link.igp_metric import IGPMetric   # noqa
 from .link.adj_seg_id import AdjSegID   # noqa
 from .link.link_identifiers import LinkIdentifiers  # noqa
 from .link.link_msd import LinkMSD  # noqa
+from .link.lan_adj_seg_id import LanAdjSegID  # noqa
+from .link.srlg import SRLGList  # noqa
+from .link.mplsmask import MplsMask  # noqa
+from .link.protection_type import ProtectionType  # noqa
+from .link.opa_link_attr import OpaLinkAttr  # noqa
 from .prefix.prefix_metric import PrefixMetric   # noqa
 from .prefix.prefix_sid import PrefixSID  # noqa
 from .prefix.prefix_igp_attr import PrefixIGPAttr  # noqa
 from .prefix.src_router_id import SrcRouterID  # noqa
+from .prefix.igpflags import IGPFlags  # noqa
+from .prefix.igp_route_tag_list import IGPRouteTagList  # noqa
+from .prefix.ext_igp_route_tag_list import ExtIGPRouteTagList  # noqa
