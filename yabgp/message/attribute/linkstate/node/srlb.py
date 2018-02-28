@@ -18,10 +18,10 @@ import struct
 from yabgp.message.attribute.linkstate.linkstate import LinkState
 from yabgp.tlv import TLV
 
-# https://tools.ietf.org/html/draft-ietf-idr-bgp-ls-segment-routing-ext-03#section-2.1.2
+# https://tools.ietf.org/html/draft-ietf-idr-bgp-ls-segment-routing-ext-03#section-2.1.4
 #     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 #    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-#    |               Type            |          Length               |
+#    |               Type            |               Length          |
 #    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #    |      Flags    |   RESERVED    |
 #    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -34,21 +34,21 @@ from yabgp.tlv import TLV
 
 
 @LinkState.register()
-class SRCapabilities(TLV):
+class SRLB(TLV):
 
-    TYPE = 1034  # https://tools.ietf.org/html/draft-ietf-idr-bgp-ls-segment-routing-ext-03#section-2.1.2
-    TYPE_STR = "sr-capabilities"
+    TYPE = 1036  # https://tools.ietf.org/html/draft-ietf-idr-bgp-ls-segment-routing-ext-03#section-2.1.4
+    TYPE_STR = "srlb"
 
     @classmethod
     def unpack(cls, value):
         """
         """
-        flags = struct.unpack('!B', value[0])[0]
-        F = flags >> 7
-        M = (flags << 1) % 256 >> 7
-        S = (flags << 2) % 256 >> 7
-        D = (flags << 3) % 256 >> 7
-        A = (flags << 4) % 256 >> 7
+        # flags = value[0]
+        # F = struct.unpack('!B', flags)[0] >> 7
+        # M = (struct.unpack('!B', flags)[0] << 1) >> 7
+        # S = (struct.unpack('!B', flags)[0] << 2) >> 7
+        # D = (struct.unpack('!B', flags)[0] << 3) >> 7
+        # A = (struct.unpack('!B', flags)[0] << 4) >> 7
         value = value[2:]
         results = []
         while True:
@@ -64,7 +64,7 @@ class SRCapabilities(TLV):
                     data = struct.unpack('!I', value[7:7 + length])[0]
                     value = value[7 + length:]
                 results.append({"sid_or_label": data, "range-size": range_size})
-        return cls(value={"flag": {"F": F, "M": M, "S": S, "D": D, "A": A}, "value": results})
+        return cls(value=results)
         # results = dict()
         # if ord(value[0]) == 0x80:
         #     results['ipv4'] = True

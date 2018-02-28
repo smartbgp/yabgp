@@ -271,7 +271,9 @@ class TestMpReachNLRI(unittest.TestCase):
             'nlri': [
                 {
                     'type': 'link',
-                    'value': [
+                    'protocol_id': 'IS-IS Level 2',
+                    'identifier': 0,
+                    'descriptors': [
                         {
                             'type': 'local-node',
                             'value': {
