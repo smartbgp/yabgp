@@ -170,7 +170,6 @@ class Update(object):
         attr_len = struct.unpack('!H', msg_hex[withdraw_len + 2:withdraw_len + 4])[0]
         attribute_data = msg_hex[withdraw_len + 4:withdraw_len + 4 + attr_len]
         nlri_data = msg_hex[withdraw_len + 4 + attr_len:]
-
         try:
             # parse withdraw prefixes
             results['withdraw'] = cls.parse_prefix_list(withdraw_prefix_data, add_path_remote)
@@ -288,6 +287,8 @@ class Update(object):
         """
         attributes = {}
         postfix = data
+        bgpls_pro_id = None
+        bgpls_attr = None
         while len(postfix) > 0:
 
             try:
@@ -362,6 +363,9 @@ class Update(object):
 
             elif type_code == bgp_cons.BGPTYPE_MP_REACH_NLRI:
                 decode_value = MpReachNLRI.parse(value=attr_value)
+                if decode_value['nlri'][0] and type(decode_value['nlri'][0]) is dict:
+                    if decode_value['nlri'][0].get("protocol_id"):
+                        bgpls_pro_id = decode_value['nlri'][0]["protocol_id"]
 
             elif type_code == bgp_cons.BGPTYPE_MP_UNREACH_NLRI:
                 decode_value = MpUnReachNLRI.parse(value=attr_value)
@@ -372,11 +376,16 @@ class Update(object):
                 decode_value = PMSITunnel.parse(value=attr_value)
                 pmsi_hex = attr_value
             elif type_code == bgp_cons.BGPTYPE_LINK_STATE:
-                attributes.update(LinkState.unpack(data=attr_value).dict())
+                if bgpls_pro_id:
+                    attributes.update(LinkState.unpack(bgpls_pro_id=bgpls_pro_id, data=attr_value).dict())
+                else:
+                    bgpls_attr = attr_value
                 continue
             else:
                 decode_value = binascii.b2a_hex(attr_value)
             attributes[type_code] = decode_value
+        if bgpls_attr:
+            attributes.update(LinkState.unpack(bgpls_pro_id=bgpls_pro_id, data=attr_value).dict())
         evpn_overlay = EVPN.signal_evpn_overlay(attributes)
         if evpn_overlay['evpn'] and evpn_overlay['encap_ec']:
             if bgp_cons.BGPTYPE_PMSI_TUNNEL in attributes:

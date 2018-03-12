@@ -99,18 +99,18 @@ class BGPLS(NLRI):
         #         Table 3: Well-Known Instance Identifiers
 
         proto_id = struct.unpack('!B', data[0])[0]
-        if proto_id == 1:
-            proto_id = 'IS-IS Level 1'
-        elif proto_id == 2:
-            proto_id = 'IS-IS Level 2'
-        elif proto_id == 3:
-            proto_id = 'OSPFv2'
-        elif proto_id == 4:
-            proto_id = 'Direct'
-        elif proto_id == 5:
-            proto_id = 'Static Configuration'
-        elif proto_id == 6:
-            proto_id = 'OSPFv3'
+        # if proto_id == 1:
+        #     proto_id = 'IS-IS Level 1'
+        # elif proto_id == 2:
+        #     proto_id = 'IS-IS Level 2'
+        # elif proto_id == 3:
+        #     proto_id = 'OSPFv2'
+        # elif proto_id == 4:
+        #     proto_id = 'Direct'
+        # elif proto_id == 5:
+        #     proto_id = 'Static Configuration'
+        # elif proto_id == 6:
+        #     proto_id = 'OSPFv3'
 
         identifier = struct.unpack('!I', data[5:9])[0]
         # if identifier == 0:
