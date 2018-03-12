@@ -33,7 +33,7 @@ class SrcRouterID(TLV):
     source router id
     """
     TYPE = 1171
-    TYPE_STR = 'source-router-id'
+    TYPE_STR = 'source_router_id'
 
     @classmethod
     def unpack(cls, data):

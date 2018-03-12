@@ -25,7 +25,7 @@ class TeMetric(TLV):
     TE metric
     """
     TYPE = 1092
-    TYPE_STR = 'te-metric'
+    TYPE_STR = 'te_metric'
 
     @classmethod
     def unpack(cls, data):

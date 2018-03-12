@@ -25,7 +25,7 @@ class AdminGroup(TLV):
     admin group
     """
     TYPE = 1088
-    TYPE_STR = 'admin-group'
+    TYPE_STR = 'admin_group'
 
     @classmethod
     def unpack(cls, data):

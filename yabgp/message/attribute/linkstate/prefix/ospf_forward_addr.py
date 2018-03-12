@@ -25,7 +25,7 @@ import netaddr
 class OspfForwardingAddr(TLV):
 
     TYPE = 1156
-    TYPE_STR = "ospf-forwarding-address"
+    TYPE_STR = "ospf_forwarding_address"
 
     @classmethod
     def parse(cls, value):

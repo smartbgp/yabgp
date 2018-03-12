@@ -25,7 +25,7 @@ class LinkMSD(TLV):
     link msd
     """
     TYPE = 1110  # https://tools.ietf.org/html/draft-tantsura-idr-bgp-ls-segment-routing-msd-05#section-4
-    TYPE_STR = 'link-msd'
+    TYPE_STR = 'link_msd'
 
     @classmethod
     def unpack(cls, data):

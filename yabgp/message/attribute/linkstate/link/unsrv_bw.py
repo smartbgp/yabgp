@@ -25,7 +25,7 @@ class UnrsvBandwidth(TLV):
     un reserved bandwidth
     """
     TYPE = 1091
-    TYPE_STR = 'unrsv-bandwidth'
+    TYPE_STR = 'unrsv_bandwidth'
 
     @classmethod
     def unpack(cls, data):

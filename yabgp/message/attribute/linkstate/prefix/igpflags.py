@@ -40,7 +40,7 @@ from yabgp.tlv import TLV
 class IGPFlags(TLV):
 
     TYPE = 1152  # https://tools.ietf.org/html/rfc7752#section-3.3.3.1
-    TYPE_STR = "igp-flags"
+    TYPE_STR = "igp_flags"
 
     @classmethod
     def unpack(cls, value):

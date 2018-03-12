@@ -36,7 +36,7 @@ class PrefixSID(TLV):
     prefix sid
     """
     TYPE = 1158
-    TYPE_STR = 'prefix-sid'
+    TYPE_STR = 'prefix_sid'
 
     @classmethod
     def unpack(cls, data):

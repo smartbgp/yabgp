@@ -39,7 +39,7 @@ from yabgp.tlv import TLV
 class MplsMask(TLV):
 
     TYPE = 1094  # https://tools.ietf.org/html/rfc7752#section-3.3.2.2
-    TYPE_STR = "mpls-mask"
+    TYPE_STR = "mpls_mask"
 
     @classmethod
     def unpack(cls, value):

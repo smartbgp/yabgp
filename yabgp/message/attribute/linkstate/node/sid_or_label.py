@@ -32,7 +32,7 @@ from yabgp.tlv import TLV
 class SIDorLabel(TLV):
 
     TYPE = 1161  # https://tools.ietf.org/html/draft-ietf-idr-bgp-ls-segment-routing-ext-03#section-2.1.1
-    TYPE_STR = "sid-or-label"
+    TYPE_STR = "sid_or_label"
 
     @classmethod
     def unpack(cls, value):

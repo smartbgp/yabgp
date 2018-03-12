@@ -25,7 +25,7 @@ class MaxResvBandwidth(TLV):
     max reserved bandwidth
     """
     TYPE = 1090
-    TYPE_STR = 'max-rsv-bandwidth'
+    TYPE_STR = 'max_rsv_bandwidth'
 
     @classmethod
     def unpack(cls, data):

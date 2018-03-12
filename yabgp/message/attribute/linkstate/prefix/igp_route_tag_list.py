@@ -30,7 +30,7 @@ from yabgp.tlv import TLV
 class IGPRouteTagList(TLV):
 
     TYPE = 1153  # https://tools.ietf.org/html/rfc7752#section-3.3.3.2
-    TYPE_STR = "igp-route-tag-list"
+    TYPE_STR = "igp_route_tag_list"
 
     @classmethod
     def unpack(cls, value):

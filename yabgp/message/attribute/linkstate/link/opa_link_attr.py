@@ -30,7 +30,7 @@ from yabgp.tlv import TLV
 class OpaLinkAttr(TLV):
 
     TYPE = 1097  # https://tools.ietf.org/html/rfc7752#section-3.3.2.6
-    TYPE_STR = "opa-link-attr"
+    TYPE_STR = "opa_link_attr"
 
     @classmethod
     def unpack(cls, value):

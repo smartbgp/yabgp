@@ -25,7 +25,7 @@ class PrefixMetric(TLV):
     prefix metric
     """
     TYPE = 1155
-    TYPE_STR = 'prefix-metric'
+    TYPE_STR = 'prefix_metric'
 
     @classmethod
     def unpack(cls, data):

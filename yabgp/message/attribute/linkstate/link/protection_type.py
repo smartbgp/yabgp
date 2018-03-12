@@ -37,7 +37,7 @@ from yabgp.tlv import TLV
 class ProtectionType(TLV):
 
     TYPE = 1093  # https://tools.ietf.org/html/rfc5307#section-1.2
-    TYPE_STR = "protection-type"
+    TYPE_STR = "protection_type"
 
     @classmethod
     def unpack(cls, value):

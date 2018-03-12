@@ -34,7 +34,7 @@ class SRAlgorithm(TLV):
     sr algorithm
     """
     TYPE = 1035  # https://tools.ietf.org/html/draft-ietf-idr-bgp-ls-segment-routing-ext-03#section-2.1.3
-    TYPE_STR = 'sr-algorithm'
+    TYPE_STR = 'sr_algorithm'
 
     @classmethod
     def unpack(cls, data):

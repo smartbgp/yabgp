@@ -42,7 +42,7 @@ from yabgp.tlv import TLV
 class NodeFlags(TLV):
 
     TYPE = 1024  # https://tools.ietf.org/html/rfc7752#section-3.3.1.1
-    TYPE_STR = "nodeflags"
+    TYPE_STR = "node_flags"
 
     @classmethod
     def unpack(cls, value):

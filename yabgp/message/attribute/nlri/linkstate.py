@@ -44,9 +44,9 @@ class BGPLS(NLRI):
             elif _type == cls.NODE_NLRI:
                 nlri['type'] = 'node'
             elif _type == cls.IPv4_TOPO_PREFIX_NLRI:
-                nlri['type'] = 'ipv4-topo-prefix'
+                nlri['type'] = 'ipv4_topo_prefix'
             elif _type == cls.IPv6_TOPO_PREFIX_NLRI:
-                nlri['type'] = 'ipv6-topo-prefix'
+                nlri['type'] = 'ipv6_topo_prefix'
             else:
                 nlri['type'] = 'unknown'
                 continue
@@ -99,22 +99,8 @@ class BGPLS(NLRI):
         #         Table 3: Well-Known Instance Identifiers
 
         proto_id = struct.unpack('!B', data[0])[0]
-        # if proto_id == 1:
-        #     proto_id = 'IS-IS Level 1'
-        # elif proto_id == 2:
-        #     proto_id = 'IS-IS Level 2'
-        # elif proto_id == 3:
-        #     proto_id = 'OSPFv2'
-        # elif proto_id == 4:
-        #     proto_id = 'Direct'
-        # elif proto_id == 5:
-        #     proto_id = 'Static Configuration'
-        # elif proto_id == 6:
-        #     proto_id = 'OSPFv3'
 
         identifier = struct.unpack('!I', data[5:9])[0]
-        # if identifier == 0:
-        #     identifier = 'Default Layer 3 Routing topology'
 
         descriptor_list = []
         descriptors = data[9:]
@@ -124,32 +110,32 @@ class BGPLS(NLRI):
             descriptors = descriptors[4+length:]
             descriptor = dict()
             if _type == 256:  # local node
-                descriptor['type'] = 'local-node'
+                descriptor['type'] = 'local_node'
                 descriptor['value'] = cls.parse_node_descriptor(value)
 
             elif _type == 257:  # remote node
-                descriptor['type'] = 'remote-node'
+                descriptor['type'] = 'remote_node'
                 descriptor['value'] = cls.parse_node_descriptor(value)
             # elif _type == 258:  # link local/remote identifier
             #     pass
             elif _type == 259:  # ipv4 interface address
                 ipv4_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
-                descriptor['type'] = 'link-local-ipv4'
+                descriptor['type'] = 'link_local_ipv4'
                 descriptor['value'] = ipv4_addr
             elif _type == 260:  # ipv4 neighbor address
                 ipv4_neighbor_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
-                descriptor['type'] = 'link-remote-ipv4'
+                descriptor['type'] = 'link_remote_ipv4'
                 descriptor['value'] = ipv4_neighbor_addr
             # elif _type == 263: # Multi-Topology Identifier
             #     pass
             elif _type == 263:  # Multi-Topology Identifier
-                descriptor['type'] = 'mt-id'
+                descriptor['type'] = 'mt_id'
                 descriptor['value'] = []
                 while value:
                     descriptor['value'].append(struct.unpack('!H', value[:2])[0])
                     value = value[2:]
             elif _type == 264:  # OSPF Route Type
-                descriptor['type'] = 'prefix-ospf-route-type'
+                descriptor['type'] = 'prefix_ospf_route_type'
                 descriptor['value'] = struct.unpack('!B', value)[0]
             elif _type == 265:   # IP Reachability Information
                 descriptor['type'] = 'prefix'
@@ -184,30 +170,9 @@ class BGPLS(NLRI):
             if _type == 512:
                 return_data['as'] = int(binascii.b2a_hex(value), 16)
             elif _type == 513:
-                return_data['bgpls-id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
+                return_data['bgpls_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
             elif _type == 514:
-                return_data['ospf-id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
+                return_data['ospf_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
             elif _type == 515:
-                return_data['igp-id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
+                return_data['igp_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
         return return_data
-
-    @classmethod
-    def parse_link_descriptor(cls, data):
-
-        # +-----------+---------------------+--------------+------------------+
-        # |  TLV Code | Description         |  IS-IS TLV   | Reference        |
-        # |   Point   |                     |   /Sub-TLV   | (RFC/Section)    |
-        # +-----------+---------------------+--------------+------------------+
-        # |    258    | Link Local/Remote   |     22/4     | [RFC5307]/1.1    |
-        # |           | Identifiers         |              |                  |
-        # |    259    | IPv4 interface      |     22/6     | [RFC5305]/3.2    |
-        # |           | address             |              |                  |
-        # |    260    | IPv4 neighbor       |     22/8     | [RFC5305]/3.3    |
-        # |           | address             |              |                  |
-        # |    261    | IPv6 interface      |    22/12     | [RFC6119]/4.2    |
-        # |           | address             |              |                  |
-        # |    262    | IPv6 neighbor       |    22/13     | [RFC6119]/4.3    |
-        # |           | address             |              |                  |
-        # |    263    | Multi-Topology      |     ---      | Section 3.2.1.5  |
-        # |           | Identifier          |              |                  |
-        pass

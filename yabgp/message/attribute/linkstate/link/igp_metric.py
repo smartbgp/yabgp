@@ -26,7 +26,7 @@ class IGPMetric(TLV):
     IGP Metric
     """
     TYPE = 1095
-    TYPE_STR = 'igp-metric'
+    TYPE_STR = 'igp_metric'
 
     @classmethod
     def unpack(cls, data):

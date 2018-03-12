@@ -32,7 +32,7 @@ class LinkIdentifiers(TLV):
     link local/remote identifiers
     """
     TYPE = 258  # RFC 7752
-    TYPE_STR = 'link-identifiers'
+    TYPE_STR = 'link_identifiers'
 
     @classmethod
     def unpack(cls, data):

@@ -25,7 +25,7 @@ class ISISArea(TLV):
     isis area id
     """
     TYPE = 1027
-    TYPE_STR = 'isis-area'
+    TYPE_STR = 'isis_area'
 
     @classmethod
     def unpack(cls, data):
