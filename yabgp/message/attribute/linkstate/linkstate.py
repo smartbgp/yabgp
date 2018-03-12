@@ -51,14 +51,16 @@ class LinkState(Attribute):
         return {self.ID: self.value}
 
     @classmethod
-    def unpack(cls, data):
+    def unpack(cls, data, bgpls_pro_id=None):
         """unpack binary data
         """
         tlvs = []
         while data:
             type_code, length = struct.unpack('!HH', data[:4])
             value = data[4: 4+length]
-            if type_code in cls.registered_tlvs:
+            if type_code in [1099, 1100] and type_code in cls.registered_tlvs:
+                tlvs.append(cls.registered_tlvs[type_code].unpack(value, bgpls_pro_id).dict())
+            elif type_code in cls.registered_tlvs:
                 tlvs.append(cls.registered_tlvs[type_code].unpack(value).dict())
             else:
                 tlvs.append(

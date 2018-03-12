@@ -32,7 +32,7 @@ class TestBGPLS(unittest.TestCase):
         data_dict = [
             {
                 'type': 'link',
-                'protocol_id': 'IS-IS Level 2',
+                'protocol_id': 2,
                 'identifier': 0,
                 'descriptors': [
                     {

@@ -53,24 +53,28 @@ class LanAdjSegID(TLV):
     TYPE_STR = 'lan-adj-segment-id'
 
     @classmethod
-    def unpack(cls, data):
+    def unpack(cls, data, pro_id):
         flags = struct.unpack('!B', data[0])[0]
-        F = flags >> 7
-        B = (flags << 1) % 256 >> 7
-        V = (flags << 2) % 256 >> 7
-        L = (flags << 3) % 256 >> 7
-        S = (flags << 4) % 256 >> 7
-        P = (flags << 5) % 256 >> 7
+        flag = {}
+        if pro_id in [1, 2]:
+            flag['F'] = flags >> 7
+            flag['B'] = (flags << 1) % 256 >> 7
+            flag['V'] = (flags << 2) % 256 >> 7
+            flag['L'] = (flags << 3) % 256 >> 7
+            flag['S'] = (flags << 4) % 256 >> 7
+            flag['P'] = (flags << 5) % 256 >> 7
+            nei_or_sys_id = int(binascii.b2a_hex(data[4:10]), 16)
+        else:  # 3, 6
+            flag['B'] = flags >> 7
+            flag['V'] = (flags << 1) % 256 >> 7
+            flag['L'] = (flags << 2) % 256 >> 7
+            flag['G'] = (flags << 3) % 256 >> 7
+            flag['P'] = (flags << 4) % 256 >> 7
+            nei_or_sys_id = str(netaddr.IPAddress(int(binascii.b2a_hex(data[4:10]), 16)))
         weight = struct.unpack('!B', data[1])[0]
-        # nei_or_sys_id = struct.unpack('!6B', data[4:10])
-        nei_or_sys_id = str(netaddr.IPAddress(int(binascii.b2a_hex(data[4:10]), 16)))
         sid_index_label = int(binascii.b2a_hex(data[10:]), 16)
-        # if len(data) == 3:
-        #     sid_index_label = (struct.unpack('!I', "\x00" + data)[0] << 12) >> 12
-        # elif len(data) == 4:
-        #     sid_index_label = struct.unpack('!I', data)[0]
         return cls(value={
-            "flags": {"F": F, "B": B, "V": V, "L": L, "S": S, "P": P},
+            "flags": flag,
             "weight": weight,
             "nei_or_sys_id": nei_or_sys_id,
             "sid_index_label": sid_index_label

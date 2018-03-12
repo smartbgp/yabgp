@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import struct
 import binascii
 
 from yabgp.tlv import TLV
@@ -29,6 +30,24 @@ from ..linkstate import LinkState
 # |                   SID/Label/Index (variable)                  |
 # +---------------------------------------------------------------+
 
+# isis
+# 0 1 2 3 4 5 6 7
+# +-+-+-+-+-+-+-+-+
+# |F|B|V|L|S|P|   |
+# +-+-+-+-+-+-+-+-+
+
+# ospf
+# 0 1 2 3 4 5 6 7
+# +-+-+-+-+-+-+-+-+
+# |B|V|L|G|P|     |
+# +-+-+-+-+-+-+-+-+
+
+# ospf-v3
+# 0 1 2 3 4 5 6 7
+# +-+-+-+-+-+-+-+-+
+# |B|V|L|G|P|     |
+# +-+-+-+-+-+-+-+-+
+
 
 @LinkState.register()
 class AdjSegID(TLV):
@@ -39,5 +58,22 @@ class AdjSegID(TLV):
     TYPE_STR = 'adj-segment-id'
 
     @classmethod
-    def unpack(cls, data):
-        return cls(value=int(binascii.b2a_hex(data[4:]), 16))
+    def unpack(cls, data, pro_id):
+        flags = struct.unpack('!B', data[0])[0]
+        flag = {}
+        if pro_id in [1, 2]:
+            flag['F'] = flags >> 7
+            flag['B'] = (flags << 1) % 256 >> 7
+            flag['V'] = (flags << 2) % 256 >> 7
+            flag['L'] = (flags << 3) % 256 >> 7
+            flag['S'] = (flags << 4) % 256 >> 7
+            flag['P'] = (flags << 5) % 256 >> 7
+        else:  # 3, 6
+            flag['B'] = flags >> 7
+            flag['V'] = (flags << 1) % 256 >> 7
+            flag['L'] = (flags << 2) % 256 >> 7
+            flag['G'] = (flags << 3) % 256 >> 7
+            flag['P'] = (flags << 4) % 256 >> 7
+        weight = struct.unpack('!B', data[1])[0]
+        return cls(value={"flags": flag, "weight": weight, "sid_index_label": int(binascii.b2a_hex(data[4:]), 16)})
+        # return cls(value=int(binascii.b2a_hex(data[4:]), 16))

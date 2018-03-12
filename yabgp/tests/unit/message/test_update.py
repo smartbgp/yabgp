@@ -247,7 +247,7 @@ class TestUpdate(unittest.TestCase):
                  'nlri': [
                      {
                          'type': 'link',
-                         'protocol_id': 'IS-IS Level 2',
+                         'protocol_id': 2,
                          'identifier': 0,
                          'descriptors': [
                              {
@@ -272,10 +272,32 @@ class TestUpdate(unittest.TestCase):
                                  'type': 'link-remote-ipv4',
                                  'value': '1.3.0.2'}]}]},
             29: [
-                {'type': 'te-metric', 'value': 10},
-                {'type': 'igp-metric', 'value': 10},
-                {'type': 'adj-segment-id', 'value': 25002},
-                {'type': 'adj-segment-id', 'value': 25003}]}
+                {
+                    'type': 'te-metric',
+                    'value': 10
+                },
+                {
+                    'type': 'igp-metric',
+                    'value': 10
+                },
+                {
+                    'type': 'adj-segment-id',
+                    'value': {
+                        'flags': {'B': 1, 'F': 0, 'L': 1, 'P': 0, 'S': 0, 'V': 1},
+                        'sid_index_label': 25002,
+                        'weight': 0
+                    }
+                },
+                {
+                    'type': 'adj-segment-id',
+                    'value': {
+                        'flags': {'B': 0, 'F': 0, 'L': 1, 'P': 0, 'S': 0, 'V': 1},
+                        'sid_index_label': 25003,
+                        'weight': 0
+                    }
+                }
+            ]
+        }
         self.assertEqual(data_dict, Update.parse(None, data_bin[HDR_LEN:])['attr'])
 
     def test_parse_and_construct_pmsi_tunnel_evpn_overlay(self):
