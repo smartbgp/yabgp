@@ -55,7 +55,7 @@ def check_msg_config():
         CONF.message.write_msg_max_size = CONF.message.write_msg_max_size * 1024 * 1024
 
 
-def prepare_twisted_service(handler):
+def prepare_twisted_service(handler, reactor_thread_size=100):
     """prepare twsited service
     """
     LOG.info('Prepare twisted services')
@@ -84,6 +84,8 @@ def prepare_twisted_service(handler):
 
     # Starting api server
     LOG.info("Prepare RESTAPI service")
+    LOG.info("reactor_thread_size = %s", reactor_thread_size)
+    reactor.suggestThreadPoolSize(reactor_thread_size)
     resource = WSGIResource(reactor, reactor.getThreadPool(), app)
     site = Site(resource)
     try:
@@ -105,7 +107,7 @@ def register_api_handler(api_handler):
     app.register_blueprint(api_handler.blueprint, url_prefix=api_handler.url_prefix)
 
 
-def prepare_service(args=None, handler=None, api_hander=None):
+def prepare_service(args=None, handler=None, api_hander=None, reactor_thread_size=100):
     """prepare all services
     """
     try:
@@ -132,5 +134,4 @@ def prepare_service(args=None, handler=None, api_hander=None):
     if api_hander:
         register_api_handler(api_hander)
     LOG.info('Starting server in PID %s', os.getpid())
-
-    prepare_twisted_service(handler)
+    prepare_twisted_service(handler, reactor_thread_size)
