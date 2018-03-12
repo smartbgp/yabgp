@@ -109,6 +109,11 @@ def send_route_refresh(peer_ip, afi, safi, res):
             return {
                 'status': True
             }
+        else:
+            return {
+                'status': False,
+                'code': 'address family unsupported, afi=%s,safi=%s' % (afi, safi)
+            }
     except Exception as e:
         LOG.error(e)
         return {
