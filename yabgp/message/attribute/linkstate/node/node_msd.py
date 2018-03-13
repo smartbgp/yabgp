@@ -25,7 +25,7 @@ class NodeMSD(TLV):
     node msd
     """
     TYPE = 1050  # https://tools.ietf.org/html/draft-tantsura-idr-bgp-ls-segment-routing-msd-05#section-3
-    TYPE_STR = 'node-msd'
+    TYPE_STR = 'node_msd'
 
     @classmethod
     def unpack(cls, data):

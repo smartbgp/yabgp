@@ -30,7 +30,7 @@ from yabgp.tlv import TLV
 class OpaNodeAttr(TLV):
 
     TYPE = 1025  # https://tools.ietf.org/html/rfc7752#section-3.3.1.5
-    TYPE_STR = "opa-node-attr"
+    TYPE_STR = "opa_node_attr"
 
     @classmethod
     def unpack(cls, value):

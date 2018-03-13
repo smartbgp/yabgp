@@ -55,7 +55,7 @@ class AdjSegID(TLV):
     Adjacency Segment id
     """
     TYPE = 1099
-    TYPE_STR = 'adj-segment-id'
+    TYPE_STR = 'adj_segment_id'
 
     @classmethod
     def unpack(cls, data, pro_id):

@@ -24,7 +24,7 @@ class RemoteRouterID(TLV):
     """
     remote ipv4 or ipv6 router id
     """
-    TYPE_STR = 'remote-router-id'
+    TYPE_STR = 'remote_router_id'
 
     @classmethod
     def unpack(cls, data):

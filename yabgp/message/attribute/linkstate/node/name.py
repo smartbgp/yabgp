@@ -23,7 +23,7 @@ class NodeName(TLV):
     node name
     """
     TYPE = 1026
-    TYPE_STR = 'node-name'
+    TYPE_STR = 'node_name'
 
     @classmethod
     def unpack(cls, data):

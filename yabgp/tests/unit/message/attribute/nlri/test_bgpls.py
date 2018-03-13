@@ -36,22 +36,22 @@ class TestBGPLS(unittest.TestCase):
                 'identifier': 0,
                 'descriptors': [
                     {
-                        'type': 'local-node',
+                        'type': 'local_node',
                         'value': {
                             'as': 65534,
-                            'bgpls-id': '0.0.0.0',
-                            'igp-id': '0.0.0.3'}},
+                            'bgpls_id': '0.0.0.0',
+                            'igp_id': '0.0.0.3'}},
                     {
-                        'type': 'remote-node',
+                        'type': 'remote_node',
                         'value': {
                             'as': 65534,
-                            'bgpls-id': '0.0.0.0',
-                            'igp-id': '0.0.0.1'}},
+                            'bgpls_id': '0.0.0.0',
+                            'igp_id': '0.0.0.1'}},
                     {
-                        'type': 'link-local-ipv4',
+                        'type': 'link_local_ipv4',
                         'value': '1.3.0.2'},
                     {
-                        'type': 'link-remote-ipv4',
+                        'type': 'link_remote_ipv4',
                         'value': '1.3.0.1'},
                 ]
             }

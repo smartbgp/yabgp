@@ -50,7 +50,7 @@ class LanAdjSegID(TLV):
     Adjacency Segment id
     """
     TYPE = 1100
-    TYPE_STR = 'lan-adj-segment-id'
+    TYPE_STR = 'lan_adj_segment_id'
 
     @classmethod
     def unpack(cls, data, pro_id):

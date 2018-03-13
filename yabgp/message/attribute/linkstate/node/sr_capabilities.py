@@ -37,7 +37,7 @@ from yabgp.tlv import TLV
 class SRCapabilities(TLV):
 
     TYPE = 1034  # https://tools.ietf.org/html/draft-ietf-idr-bgp-ls-segment-routing-ext-03#section-2.1.2
-    TYPE_STR = "sr-capabilities"
+    TYPE_STR = "sr_capabilities"
 
     @classmethod
     def unpack(cls, value):

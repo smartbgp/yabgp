@@ -32,7 +32,7 @@ class PrefixIGPAttr(TLV):
     prefix igp attr
     """
     TYPE = 1170
-    TYPE_STR = 'prefix-igp-attr'
+    TYPE_STR = 'prefix_igp_attr'
 
     @classmethod
     def unpack(cls, data):

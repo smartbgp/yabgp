@@ -25,7 +25,7 @@ class LinkName(TLV):
     link name
     """
     TYPE = 1098
-    TYPE_STR = 'link-name'
+    TYPE_STR = 'link_name'
 
     @classmethod
     def unpack(cls, data):

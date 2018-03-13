@@ -34,7 +34,7 @@ from yabgp.tlv import TLV
 class SRLGList(TLV):
 
     TYPE = 1096  # https://tools.ietf.org/html/rfc7752#section-3.3.2.5
-    TYPE_STR = "srlg-list"
+    TYPE_STR = "srlg_list"
 
     @classmethod
     def unpack(cls, value):
