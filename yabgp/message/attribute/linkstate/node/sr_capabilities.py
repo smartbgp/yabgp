@@ -63,7 +63,7 @@ class SRCapabilities(TLV):
                 elif length == 4:
                     data = struct.unpack('!I', value[7:7 + length])[0]
                     value = value[7 + length:]
-                results.append({"sid_or_label": data, "range-size": range_size})
+                results.append({"sid_or_label": data, "range_size": range_size})
         return cls(value={"flag": {"F": F, "M": M, "S": S, "D": D, "A": A}, "value": results})
         # results = dict()
         # if ord(value[0]) == 0x80:
