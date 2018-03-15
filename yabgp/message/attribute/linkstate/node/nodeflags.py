@@ -13,7 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import struct
 from yabgp.message.attribute.linkstate.linkstate import LinkState
 from yabgp.tlv import TLV
 
@@ -48,7 +47,7 @@ class NodeFlags(TLV):
     def unpack(cls, value):
         """
         """
-        valueByte = struct.unpack('!B', value)[0]
+        valueByte = ord(value[0:1])
         O = valueByte >> 7
         T = (valueByte << 1) % 256 >> 7
         E = (valueByte << 2) % 256 >> 7

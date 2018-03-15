@@ -53,7 +53,7 @@ class Origin(Attribute):
         unrecognized attribute (type,length, and vlaue)
         :param value: raw binary value
         """
-        orgin = struct.unpack('!B', value)[0]
+        orgin = ord(value[0:1])
         if orgin not in [cls.IGP, cls.EGP, cls.INCOMPLETE]:
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_INVALID_ORIGIN,

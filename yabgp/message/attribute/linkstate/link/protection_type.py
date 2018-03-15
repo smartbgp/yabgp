@@ -13,7 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import struct
 from yabgp.message.attribute.linkstate.linkstate import LinkState
 from yabgp.tlv import TLV
 
@@ -43,7 +42,7 @@ class ProtectionType(TLV):
     def unpack(cls, value):
         """
         """
-        value = struct.unpack('!B', value[0])[0]
+        value = ord(value[0])
         if value == 0x01:
             return cls(value='Extra Traffic')
         if value == 0x02:

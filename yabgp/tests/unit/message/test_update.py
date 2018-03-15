@@ -224,81 +224,81 @@ class TestUpdate(unittest.TestCase):
         self.assertEqual(data_bin, Update.construct(msg_dict=data_dict))
         self.assertEqual(data_dict['attr'], Update.parse(None, data_bin[HDR_LEN:])['attr'])
 
-    # def test_parse_link_state(self):
-    #     self.maxDiff = None
-    #     data_bin = b"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff" \
-    #                b"\x00\xb3\x02\x00\x00\x00\x9c\x90\x0e\x00\x62\x40\x04\x47\x04\x0a" \
-    #                b"\x7c\x01\x7e\x00\x00\x02\x00\x55\x02\x00\x00\x00\x00\x00\x00\x00" \
-    #                b"\x00\x01\x00\x00\x1a\x02\x00\x00\x04\x00\x00\xff\xfe\x02\x01\x00" \
-    #                b"\x04\x00\x00\x00\x00\x02\x03\x00\x06\x00\x00\x00\x00\x00\x01\x01" \
-    #                b"\x01\x00\x1a\x02\x00\x00\x04\x00\x00\xff\xfe\x02\x01\x00\x04\x00" \
-    #                b"\x00\x00\x00\x02\x03\x00\x06\x00\x00\x00\x00\x00\x03\x01\x03\x00" \
-    #                b"\x04\x01\x03\x00\x01\x01\x04\x00\x04\x01\x03\x00\x02\x40\x01\x01" \
-    #                b"\x00\x40\x02\x00\x40\x05\x04\x00\x00\x00\x64\x80\x1d\x25\x04\x44" \
-    #                b"\x00\x04\x00\x00\x00\x0a\x04\x47\x00\x03\x00\x00\x0a\x04\x4b\x00" \
-    #                b"\x07\x70\x00\x00\x00\x00\x61\xaa\x04\x4b\x00\x07\x30\x00\x00\x00" \
-    #                b"\x00\x61\xab"
-    #     data_dict = {
-    #         1: 0,
-    #         2: [],
-    #         5: 100,
-    #         14: {'afi_safi': (16388, 71),
-    #              'nexthop': '10.124.1.126',
-    #              'nlri': [
-    #                  {
-    #                      'type': 'link',
-    #                      'protocol_id': 2,
-    #                      'identifier': 0,
-    #                      'descriptors': [
-    #                          {
-    #                              'type': 'local-node',
-    #                              'value':
-    #                              {
-    #                                  'as': 65534,
-    #                                  'bgpls-id': '0.0.0.0',
-    #                                  'igp-id': '0.0.0.1'
-    #                              }
-    #                          },
-    #                          {
-    #                              'type': 'remote-node',
-    #                              'value': {
-    #                                  'as': 65534,
-    #                                  'bgpls-id': '0.0.0.0',
-    #                                  'igp-id': '0.0.0.3'}},
-    #                          {
-    #                              'type': 'link-local-ipv4',
-    #                              'value': '1.3.0.1'},
-    #                          {
-    #                              'type': 'link-remote-ipv4',
-    #                              'value': '1.3.0.2'}]}]},
-    #         29: [
-    #             {
-    #                 'type': 'te-metric',
-    #                 'value': 10
-    #             },
-    #             {
-    #                 'type': 'igp-metric',
-    #                 'value': 10
-    #             },
-    #             {
-    #                 'type': 'adj-segment-id',
-    #                 'value': {
-    #                     'flags': {'B': 1, 'F': 0, 'L': 1, 'P': 0, 'S': 0, 'V': 1},
-    #                     'sid_index_label': 25002,
-    #                     'weight': 0
-    #                 }
-    #             },
-    #             {
-    #                 'type': 'adj-segment-id',
-    #                 'value': {
-    #                     'flags': {'B': 0, 'F': 0, 'L': 1, 'P': 0, 'S': 0, 'V': 1},
-    #                     'sid_index_label': 25003,
-    #                     'weight': 0
-    #                 }
-    #             }
-    #         ]
-    #     }
-    #     self.assertEqual(data_dict, Update.parse(None, data_bin[HDR_LEN:])['attr'])
+    def test_parse_link_state(self):
+        self.maxDiff = None
+        data_bin = b"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff" \
+                   b"\x00\xb3\x02\x00\x00\x00\x9c\x90\x0e\x00\x62\x40\x04\x47\x04\x0a" \
+                   b"\x7c\x01\x7e\x00\x00\x02\x00\x55\x02\x00\x00\x00\x00\x00\x00\x00" \
+                   b"\x00\x01\x00\x00\x1a\x02\x00\x00\x04\x00\x00\xff\xfe\x02\x01\x00" \
+                   b"\x04\x00\x00\x00\x00\x02\x03\x00\x06\x00\x00\x00\x00\x00\x01\x01" \
+                   b"\x01\x00\x1a\x02\x00\x00\x04\x00\x00\xff\xfe\x02\x01\x00\x04\x00" \
+                   b"\x00\x00\x00\x02\x03\x00\x06\x00\x00\x00\x00\x00\x03\x01\x03\x00" \
+                   b"\x04\x01\x03\x00\x01\x01\x04\x00\x04\x01\x03\x00\x02\x40\x01\x01" \
+                   b"\x00\x40\x02\x00\x40\x05\x04\x00\x00\x00\x64\x80\x1d\x25\x04\x44" \
+                   b"\x00\x04\x00\x00\x00\x0a\x04\x47\x00\x03\x00\x00\x0a\x04\x4b\x00" \
+                   b"\x07\x70\x00\x00\x00\x00\x61\xaa\x04\x4b\x00\x07\x30\x00\x00\x00" \
+                   b"\x00\x61\xab"
+        data_dict = {
+            1: 0,
+            2: [],
+            5: 100,
+            14: {'afi_safi': (16388, 71),
+                 'nexthop': '10.124.1.126',
+                 'nlri': [
+                     {
+                         'type': 'link',
+                         'protocol_id': 2,
+                         'instances_id': 0,
+                         'descriptors': [
+                             {
+                                 'type': 'local_node',
+                                 'value':
+                                 {
+                                     'as': 65534,
+                                     'bgpls_id': '0.0.0.0',
+                                     'igp_router_id': '0.0.0.1'
+                                 }
+                             },
+                             {
+                                 'type': 'remote_node',
+                                 'value': {
+                                     'as': 65534,
+                                     'bgpls_id': '0.0.0.0',
+                                     'igp_router_id': '0.0.0.3'}},
+                             {
+                                 'type': 'link_local_ipv4',
+                                 'value': '1.3.0.1'},
+                             {
+                                 'type': 'link_remote_ipv4',
+                                 'value': '1.3.0.2'}]}]},
+            29: [
+                {
+                    'type': 'te_metric',
+                    'value': 10
+                },
+                {
+                    'type': 'igp_metric',
+                    'value': 10
+                },
+                {
+                    'type': 'adj_sid',
+                    'value': {
+                        'flags': {'B': 1, 'F': 0, 'L': 1, 'P': 0, 'S': 0, 'V': 1},
+                        'value': 25002,
+                        'weight': 0
+                    }
+                },
+                {
+                    'type': 'adj_sid',
+                    'value': {
+                        'flags': {'B': 0, 'F': 0, 'L': 1, 'P': 0, 'S': 0, 'V': 1},
+                        'value': 25003,
+                        'weight': 0
+                    }
+                }
+            ]
+        }
+        self.assertEqual(data_dict, Update.parse(None, data_bin[HDR_LEN:])['attr'])
 
     def test_parse_and_construct_pmsi_tunnel_evpn_overlay(self):
         data_bin = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff' \

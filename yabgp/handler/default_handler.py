@@ -132,7 +132,11 @@ class DefaultHandler(BaseHandler):
                 'type': msg_type
             }
             msg_record.update(msg)
-            json.dump(msg_record, msg_file)
+            try:
+                json.dump(msg_record, msg_file)
+            except Exception as e:
+                LOG.error(e)
+                LOG.info('raw message %s', msg)
             msg_file.write('\n')
             self.msg_sequence[peer.lower()] += 1
             msg_file.flush()

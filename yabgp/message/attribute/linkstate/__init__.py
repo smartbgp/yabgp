@@ -35,11 +35,13 @@ from .link.igp_metric import IGPMetric   # noqa
 from .link.adj_seg_id import AdjSegID   # noqa
 from .link.link_identifiers import LinkIdentifiers  # noqa
 from .link.link_msd import LinkMSD  # noqa
-from .link.lan_adj_seg_id import LanAdjSegID  # noqa
+from .link.lan_adj_sid import LanAdjSegID  # noqa
 from .link.srlg import SRLGList  # noqa
 from .link.mplsmask import MplsMask  # noqa
 from .link.protection_type import ProtectionType  # noqa
 from .link.opa_link_attr import OpaLinkAttr  # noqa
+from .link.peer_node_sid import PeerNodeSID   # noqa
+from .link.peer_adj_sid import PeerAdjSID    # noqa
 from .prefix.prefix_metric import PrefixMetric   # noqa
 from .prefix.prefix_sid import PrefixSID  # noqa
 from .prefix.prefix_igp_attr import PrefixIGPAttr  # noqa

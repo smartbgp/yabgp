@@ -43,12 +43,6 @@ class SRLB(TLV):
     def unpack(cls, value):
         """
         """
-        # flags = value[0]
-        # F = struct.unpack('!B', flags)[0] >> 7
-        # M = (struct.unpack('!B', flags)[0] << 1) >> 7
-        # S = (struct.unpack('!B', flags)[0] << 2) >> 7
-        # D = (struct.unpack('!B', flags)[0] << 3) >> 7
-        # A = (struct.unpack('!B', flags)[0] << 4) >> 7
         value = value[2:]
         results = []
         while True:

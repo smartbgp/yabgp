@@ -42,3 +42,16 @@
 #    |    1100   | LAN Adjacency Segment      | variable | Section 2.2.2 |
 #    |           | Identifier (Adj-SID) TLV   |          |               |
 #    +-----------+----------------------------+----------+---------------+
+
+
+#    +----------+---------------------------+----------+
+#    | TLV Code | Description               |   Length |
+#    |  Point   |                           |          |
+#    +----------+---------------------------+----------+
+#    |    1101  | Peer Node Segment         | variable |
+#    |          | Identifier (Peer-Node-SID)|          |
+#    |    1102  | Peer Adjacency Segment    | variable |
+#    |          | Identifier (Peer-Adj-SID) |          |
+#    |    1103  | Peer Set Segment          | variable |
+#    |          | Identifier (Peer-Set-SID) |          |
+#    +----------+---------------------------+----------+

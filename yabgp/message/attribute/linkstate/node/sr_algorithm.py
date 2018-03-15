@@ -38,7 +38,8 @@ class SRAlgorithm(TLV):
 
     @classmethod
     def unpack(cls, data):
-        results = []
-        for value in data:
-            results.append(struct.unpack('!B', value)[0])
+        if type(data) is str:
+            results = [struct.unpack('!B', value)[0] for value in data]
+        else:
+            results = list(data)
         return cls(value=results)

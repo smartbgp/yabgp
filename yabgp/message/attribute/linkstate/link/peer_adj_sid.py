@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Cisco Systems, Inc.
+# Copyright 2015-2018 Cisco Systems, Inc.
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -27,52 +27,29 @@ from ..linkstate import LinkState
 # | Flags         |     Weight    |             Reserved          |
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 # |                   SID/Label/Index (variable)                  |
-# +---------------------------------------------------------------+
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-# isis
-# 0 1 2 3 4 5 6 7
+#  0 1 2 3 4 5 6 7
 # +-+-+-+-+-+-+-+-+
-# |F|B|V|L|S|P|   |
-# +-+-+-+-+-+-+-+-+
-
-# ospf
-# 0 1 2 3 4 5 6 7
-# +-+-+-+-+-+-+-+-+
-# |B|V|L|G|P|     |
-# +-+-+-+-+-+-+-+-+
-
-# ospf-v3
-# 0 1 2 3 4 5 6 7
-# +-+-+-+-+-+-+-+-+
-# |B|V|L|G|P|     |
+# |V|L|B|P|       |
 # +-+-+-+-+-+-+-+-+
 
 
 @LinkState.register()
-class AdjSegID(TLV):
+class PeerAdjSID(TLV):
     """
-    Adjacency Segment id
+    Peer Adjacency Segment Identifier (Peer-Adj-SID)
     """
-    TYPE = 1099
-    TYPE_STR = 'adj_sid'
+    TYPE = 1102
+    TYPE_STR = 'peer_adj_sid'
 
     @classmethod
-    def unpack(cls, data, pro_id):
+    def unpack(cls, data):
         flags = ord(data[0:1])
         flag = {}
-        if pro_id in [1, 2]:
-            flag['F'] = flags >> 7
-            flag['B'] = (flags << 1) % 256 >> 7
-            flag['V'] = (flags << 2) % 256 >> 7
-            flag['L'] = (flags << 3) % 256 >> 7
-            flag['S'] = (flags << 4) % 256 >> 7
-            flag['P'] = (flags << 5) % 256 >> 7
-        else:  # 3, 6
-            flag['B'] = flags >> 7
-            flag['V'] = (flags << 1) % 256 >> 7
-            flag['L'] = (flags << 2) % 256 >> 7
-            flag['G'] = (flags << 3) % 256 >> 7
-            flag['P'] = (flags << 4) % 256 >> 7
+        flag['V'] = flags >> 7
+        flag['L'] = (flags << 1) % 256 >> 7
+        flag['B'] = (flags << 2) % 256 >> 7
+        flag['P'] = (flags << 3) % 256 >> 7
         weight = ord(data[1:2])
         return cls(value={"flags": flag, "weight": weight, "value": int(binascii.b2a_hex(data[4:]), 16)})
-        # return cls(value=int(binascii.b2a_hex(data[4:]), 16))

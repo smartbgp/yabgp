@@ -33,20 +33,20 @@ class TestBGPLS(unittest.TestCase):
             {
                 'type': 'link',
                 'protocol_id': 2,
-                'identifier': 0,
+                'instances_id': 0,
                 'descriptors': [
                     {
                         'type': 'local_node',
                         'value': {
                             'as': 65534,
                             'bgpls_id': '0.0.0.0',
-                            'igp_id': '0.0.0.3'}},
+                            'igp_router_id': '0.0.0.3'}},
                     {
                         'type': 'remote_node',
                         'value': {
                             'as': 65534,
                             'bgpls_id': '0.0.0.0',
-                            'igp_id': '0.0.0.1'}},
+                            'igp_router_id': '0.0.0.1'}},
                     {
                         'type': 'link_local_ipv4',
                         'value': '1.3.0.2'},

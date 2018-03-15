@@ -14,8 +14,9 @@
 #    under the License.
 
 import binascii
-import struct
+
 import netaddr
+
 from yabgp.message.attribute.linkstate.linkstate import LinkState
 from yabgp.tlv import TLV
 
@@ -50,11 +51,11 @@ class LanAdjSegID(TLV):
     Adjacency Segment id
     """
     TYPE = 1100
-    TYPE_STR = 'lan_adj_segment_id'
+    TYPE_STR = 'lan_adj_sid'
 
     @classmethod
     def unpack(cls, data, pro_id):
-        flags = struct.unpack('!B', data[0])[0]
+        flags = ord(data[0:1])
         flag = {}
         if pro_id in [1, 2]:
             flag['F'] = flags >> 7
@@ -71,11 +72,11 @@ class LanAdjSegID(TLV):
             flag['G'] = (flags << 3) % 256 >> 7
             flag['P'] = (flags << 4) % 256 >> 7
             nei_or_sys_id = str(netaddr.IPAddress(int(binascii.b2a_hex(data[4:10]), 16)))
-        weight = struct.unpack('!B', data[1])[0]
+        weight = ord(data[1:2])
         sid_index_label = int(binascii.b2a_hex(data[10:]), 16)
         return cls(value={
             "flags": flag,
             "weight": weight,
             "nei_or_sys_id": nei_or_sys_id,
-            "sid_index_label": sid_index_label
+            "value": sid_index_label
         })
