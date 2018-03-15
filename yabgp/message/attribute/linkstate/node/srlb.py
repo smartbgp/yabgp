@@ -43,12 +43,6 @@ class SRLB(TLV):
     def unpack(cls, value):
         """
         """
-        # flags = value[0]
-        # F = struct.unpack('!B', flags)[0] >> 7
-        # M = (struct.unpack('!B', flags)[0] << 1) >> 7
-        # S = (struct.unpack('!B', flags)[0] << 2) >> 7
-        # D = (struct.unpack('!B', flags)[0] << 3) >> 7
-        # A = (struct.unpack('!B', flags)[0] << 4) >> 7
         value = value[2:]
         results = []
         while True:
@@ -63,7 +57,7 @@ class SRLB(TLV):
                 elif length == 4:
                     data = struct.unpack('!I', value[7:7 + length])[0]
                     value = value[7 + length:]
-                results.append({"sid_or_label": data, "range-size": range_size})
+                results.append({"sid_or_label": data, "range_size": range_size})
         return cls(value=results)
         # results = dict()
         # if ord(value[0]) == 0x80:

@@ -13,7 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import struct
 from yabgp.message.attribute.linkstate.linkstate import LinkState
 from yabgp.tlv import TLV
 
@@ -46,7 +45,7 @@ class IGPFlags(TLV):
     def unpack(cls, value):
         """
         """
-        value = struct.unpack('!B', value)[0]
+        value = ord(value[0:1])
         D = value >> 7
         N = (value << 1) % 256 >> 7
         L = (value << 2) % 256 >> 7

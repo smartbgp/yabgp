@@ -129,7 +129,7 @@ class ExtCommunity(Attribute):
                 asn, an = struct.unpack('!HI', value_tmp)
                 ext_community.append([bgp_cons.BGP_EXT_REDIRECT_VRF, '%s:%s' % (asn, an)])
             elif comm_code == bgp_cons.BGP_EXT_TRA_MARK:
-                mark = struct.unpack('!B', value_tmp[-1])[0]
+                mark = ord(value_tmp[-1:])
                 ext_community.append([bgp_cons.BGP_EXT_TRA_MARK, mark])
 
             # Transitive Opaque

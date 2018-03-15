@@ -43,7 +43,7 @@ class SRCapabilities(TLV):
     def unpack(cls, value):
         """
         """
-        flags = struct.unpack('!B', value[0])[0]
+        flags = ord(value[0:1])
         F = flags >> 7
         M = (flags << 1) % 256 >> 7
         S = (flags << 2) % 256 >> 7
@@ -55,20 +55,13 @@ class SRCapabilities(TLV):
             if len(value) == 0:
                 break
             else:
-                range_size = struct.unpack('!I', "\x00" + value[:3])[0]
+                range_size = struct.unpack('!I', b"\x00" + value[:3])[0]
                 length = struct.unpack('!H', value[5:7])[0]
                 if length == 3:
-                    data = (struct.unpack('!I', "\x00" + value[7:7 + length])[0] << 12) >> 12
+                    data = (struct.unpack('!I', b"\x00" + value[7:7 + length])[0] << 12) >> 12
                     value = value[7 + length:]
                 elif length == 4:
                     data = struct.unpack('!I', value[7:7 + length])[0]
                     value = value[7 + length:]
-                results.append({"sid_or_label": data, "range-size": range_size})
+                results.append({"sid_or_label": data, "range_size": range_size})
         return cls(value={"flag": {"F": F, "M": M, "S": S, "D": D, "A": A}, "value": results})
-        # results = dict()
-        # if ord(value[0]) == 0x80:
-        #     results['ipv4'] = True
-        # else:
-        #     results['ipv6'] = True
-        # results['range-size'] = struct.unpack('!L', value[1:5])[0]
-        # return cls(value=results)

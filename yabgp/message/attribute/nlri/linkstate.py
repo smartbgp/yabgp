@@ -53,7 +53,7 @@ class BGPLS(NLRI):
             # nlri['value'] = cls.parse_nlri(value)
             protocol_id, identifier, descriptors = cls.parse_nlri(value)
             nlri['protocol_id'] = protocol_id
-            nlri['identifier'] = identifier
+            nlri['instances_id'] = identifier
             nlri['descriptors'] = descriptors
             nlri_list.append(nlri)
         return nlri_list
@@ -98,7 +98,7 @@ class BGPLS(NLRI):
         #     +------------+----------------------------------+
         #         Table 3: Well-Known Instance Identifiers
 
-        proto_id = struct.unpack('!B', data[0])[0]
+        proto_id = ord(data[0:1])
 
         identifier = struct.unpack('!I', data[5:9])[0]
 
@@ -136,10 +136,10 @@ class BGPLS(NLRI):
                     value = value[2:]
             elif _type == 264:  # OSPF Route Type
                 descriptor['type'] = 'prefix_ospf_route_type'
-                descriptor['value'] = struct.unpack('!B', value)[0]
+                descriptor['value'] = ord(value[0:1])
             elif _type == 265:   # IP Reachability Information
                 descriptor['type'] = 'prefix'
-                mask = struct.unpack('!B', value[0])[0]
+                mask = ord(value[0:1])
                 if value[1:]:
                     ip_str = str(netaddr.IPAddress(int(binascii.b2a_hex(value[1:]), 16)))
                 else:
@@ -172,7 +172,7 @@ class BGPLS(NLRI):
             elif _type == 513:
                 return_data['bgpls_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
             elif _type == 514:
-                return_data['ospf_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
+                return_data['ospf_area_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
             elif _type == 515:
-                return_data['igp_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
+                return_data['igp_router_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
         return return_data

@@ -33,6 +33,6 @@ class IGPMetric(TLV):
         if len(data) == 2:
             return cls(value=struct.unpack('!H', data)[0])
         elif len(data) == 1:
-            return cls(value=struct.unpack('!B', data)[0])
+            return cls(value=ord(data[0:1]))
         elif len(data) == 3:
             return cls(value=int(binascii.b2a_hex(data), 16))

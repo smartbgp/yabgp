@@ -13,7 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import struct
 from yabgp.message.attribute.linkstate.linkstate import LinkState
 from yabgp.tlv import TLV
 
@@ -45,7 +44,7 @@ class MplsMask(TLV):
     def unpack(cls, value):
         """
         """
-        value = struct.unpack('!B', value)[0]
+        value = ord(value[0:1])
         L = value >> 7
         R = (value << 1) % 256 >> 7
         return cls(value={'L': L, 'R': R})

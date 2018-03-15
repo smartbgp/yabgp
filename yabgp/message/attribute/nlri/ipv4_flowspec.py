@@ -44,7 +44,7 @@ class IPv4FlowSpec(NLRI):
         nlri_dict = {}
         while value:
             offset = 0
-            flowspec_type = struct.unpack('!B', value[0])[0]
+            flowspec_type = ord(value[0:1])
             offset += 1
             # decode all kinds of flow spec
             if flowspec_type in [bgp_cons.BGPNLRI_FSPEC_DST_PFIX, bgp_cons.BGPNLRI_FSPEC_SRC_PFIX]:
@@ -104,7 +104,7 @@ class IPv4FlowSpec(NLRI):
 
         Encoding: <prefix-length (1 octet), prefix>
         """
-        prefix_len = struct.unpack('!B', data[0])[0]
+        prefix_len = ord(data[0:1])
         octet_len = int(math.ceil(prefix_len / 8.0))
         tmp = data[1:octet_len + 1]
         prefix_data = [ord(i) for i in tmp]
@@ -135,7 +135,7 @@ class IPv4FlowSpec(NLRI):
         offset = 0
         parse_operator_list = []
         while data:
-            operator = cls.parse_operator_flag(struct.unpack('!B', data[0])[0])
+            operator = cls.parse_operator_flag(ord(data[0:1]))
             offset += 1
             operator_value = int(binascii.b2a_hex(data[1:1 + operator['LEN']]), 16)
             offset += operator['LEN']
