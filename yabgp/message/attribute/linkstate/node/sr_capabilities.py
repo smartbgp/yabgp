@@ -55,13 +55,17 @@ class SRCapabilities(TLV):
             if len(value) == 0:
                 break
             else:
+                tmp = dict()
                 range_size = struct.unpack('!I', b"\x00" + value[:3])[0]
+                tmp['range_size'] = range_size
                 length = struct.unpack('!H', value[5:7])[0]
                 if length == 3:
                     data = (struct.unpack('!I', b"\x00" + value[7:7 + length])[0] << 12) >> 12
                     value = value[7 + length:]
+                    tmp['label'] = data
                 elif length == 4:
                     data = struct.unpack('!I', value[7:7 + length])[0]
                     value = value[7 + length:]
-                results.append({"sid_or_label": data, "range_size": range_size})
+                    tmp['sid'] = data
+                results.append(tmp)
         return cls(value={"flag": {"F": F, "M": M, "S": S, "D": D, "A": A}, "value": results})

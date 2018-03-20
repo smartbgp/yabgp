@@ -39,4 +39,4 @@ class LinkIdentifiers(TLV):
         local_identifier = struct.unpack('!I', data[:4])[0]
         remote_identifier = struct.unpack('!I', data[4:])[0]
 
-        return cls(value={'local-identifier': local_identifier, 'remote-identifier': remote_identifier})
+        return cls(value={'local_identifier': local_identifier, 'remote_identifier': remote_identifier})
