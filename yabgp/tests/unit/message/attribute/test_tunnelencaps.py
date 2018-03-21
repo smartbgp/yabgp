@@ -66,22 +66,22 @@ class TestTunnelEncaps(unittest.TestCase):
     def test_construct_old_binding_sid(self):
         data_dict = {"0": "old", "7": 25102}
         data_hex = b'\x07\x06\x00\x00\x06\x20\xe0\x00'
-        self.assertEqual(data_hex, TunnelEncaps.construct(data_dict)[7:])
+        self.assertEqual(data_hex, TunnelEncaps.construct(data_dict)[8:])
 
     def test_construct_old_preference(self):
         data_dict = {"0": "old", "6": 100}
         data_hex = b'\x06\x06\x00\x00\x00\x00\x00\x64'
-        self.assertEqual(data_hex, TunnelEncaps.construct(data_dict)[7:15])
+        self.assertEqual(data_hex, TunnelEncaps.construct(data_dict)[8:16])
 
     def test_construct_new_binding_sid(self):
         data_dict = {"0": "new", "13": 25102}
         data_hex = b'\x0d\x06\x00\x00\x06\x20\xe0\x00'
-        self.assertEqual(data_hex, TunnelEncaps.construct(data_dict)[7:])
+        self.assertEqual(data_hex, TunnelEncaps.construct(data_dict)[8:])
 
     def test_construct_new_preference(self):
         data_dict = {"0": "new", "12": 100}
         data_hex = b'\x0c\x06\x00\x00\x00\x00\x00\x64'
-        self.assertEqual(data_hex, TunnelEncaps.construct(data_dict)[7:15])
+        self.assertEqual(data_hex, TunnelEncaps.construct(data_dict)[8:16])
 
     def test_construct_segement_lists(self):
         data_dict = {
@@ -114,7 +114,7 @@ class TestTunnelEncaps(unittest.TestCase):
                      b'\xff\x03\x0a\x00\x00\x0a\x01\x01\x01\x00\x7d\x00\xff\x07\x02\x00\x00'
         data_hex_2 = b'\x07\x02\x00\x00\x80\x00\x1d\x00\x09\x06\x00\x00\x00\x00\x00\x0a\x01\x06\x00' \
                      b'\x00\x00\x7d\x00\xff\x03\x0a\x00\x00\x0a\x01\x01\x01\x00\x7d\x00\xff'
-        self.assertTrue(TunnelEncaps.construct(data_dict)[7:] in [data_hex_1, data_hex_2])
+        self.assertTrue(TunnelEncaps.construct(data_dict)[8:] in [data_hex_1, data_hex_2])
 
 if __name__ == '__main__':
     unittest.main()

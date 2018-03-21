@@ -32,11 +32,13 @@ class TestMpUnReachNLRI(unittest.TestCase):
         self.assertEqual(data_hoped, MpUnReachNLRI.parse(data_bin[3:]))
 
     def test_ipv4_mpls_vpn_construct(self):
-        data_bin = b'\x80\x0f\x12\x00\x01\x80\x70\x80\x00\x00\x00\x00\x00\x02\x00\x00\x00\x02\xc0\xa8\xc9'
         data_hoped = {'afi_safi': (1, 128),
-                      'withdraw': [{'rd': '2:2',
-                                    'prefix': '192.168.201.0/24'}]}
-        self.assertEqual(data_bin, MpUnReachNLRI.construct(data_hoped))
+                      'withdraw': [
+                          {
+                              'rd': '2:2',
+                              'label': [524288],
+                              'prefix': '192.168.201.0/24'}]}
+        self.assertEqual(data_hoped, MpUnReachNLRI.parse(MpUnReachNLRI.construct(data_hoped)[4:]))
 
     def test_ipv6_unicast_parse(self):
         data_bin = b"\x00\x02\x01\x80\x20\x01\x48\x37\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20"
@@ -47,7 +49,7 @@ class TestMpUnReachNLRI(unittest.TestCase):
         nlri_dict = {
             'afi_safi': (2, 1),
             'withdraw': ['2001:3232::1/128', '::2001:3232:1:0/64', '2001:4837:1632::2/127']}
-        self.assertEqual(nlri_dict, MpUnReachNLRI.parse(MpUnReachNLRI.construct(nlri_dict)[3:]))
+        self.assertEqual(nlri_dict, MpUnReachNLRI.parse(MpUnReachNLRI.construct(nlri_dict)[4:]))
 
     def test_ipv6_mpls_vpn_parse_construct(self):
         data_dict = {
@@ -60,7 +62,7 @@ class TestMpUnReachNLRI(unittest.TestCase):
         self.assertEqual(
             data_dict,
             MpUnReachNLRI.parse(
-                value=MpUnReachNLRI.construct(value=data_dict)[3:]
+                value=MpUnReachNLRI.construct(value=data_dict)[4:]
             ))
 
     def test_ipv4_flowspec_parse(self):
@@ -71,12 +73,12 @@ class TestMpUnReachNLRI(unittest.TestCase):
     def test_ipv4_flowspec_construct(self):
         data_bin = b'\x00\x01\x85\x0a\x01\x18\xc0\x55\x02\x02\x18\xc0\x55\x01'
         nlri_dict = {'afi_safi': (1, 133), 'withdraw': [{1: '192.85.2.0/24', 2: '192.85.1.0/24'}]}
-        self.assertEqual(data_bin, MpUnReachNLRI.construct(nlri_dict)[3:])
+        self.assertEqual(data_bin, MpUnReachNLRI.construct(nlri_dict)[4:])
 
     def test_ipv4_srte_construct(self):
         data_bin = b'\x00\x01\x49\x60\x00\x00\x00\x00\x00\x00\x00\x0a\xc0\xa8\x05\x07'
         nlri_dict = {'afi_safi': (1, 73), 'withdraw': {'distinguisher': 0, 'color': 10, 'endpoint': '192.168.5.7'}}
-        self.assertEqual(data_bin, MpUnReachNLRI.construct(nlri_dict)[3:])
+        self.assertEqual(data_bin, MpUnReachNLRI.construct(nlri_dict)[4:])
 
     def test_l2vpn_evpn_route_type_1_parse_construct(self):
         data_dict = {
@@ -90,7 +92,7 @@ class TestMpUnReachNLRI(unittest.TestCase):
                     "label": [10]
                 }
             }]}
-        self.assertEqual(data_dict, MpUnReachNLRI.parse(MpUnReachNLRI.construct(data_dict)[3:]))
+        self.assertEqual(data_dict, MpUnReachNLRI.parse(MpUnReachNLRI.construct(data_dict)[4:]))
 
     def test_l2vpn_evpn_route_type_2_parse_construct(self):
         data_dict = {
@@ -106,7 +108,7 @@ class TestMpUnReachNLRI(unittest.TestCase):
                         'mac': '00-11-22-33-44-55',
                         'esi': 0}}]
         }
-        self.assertEqual(data_dict, MpUnReachNLRI.parse(MpUnReachNLRI.construct(data_dict)[3:]))
+        self.assertEqual(data_dict, MpUnReachNLRI.parse(MpUnReachNLRI.construct(data_dict)[4:]))
 
     def test_l2vpn_evpn_route_type_3_parse_construct(self):
         data_dict = {
@@ -122,7 +124,7 @@ class TestMpUnReachNLRI(unittest.TestCase):
                 }
             ]
         }
-        self.assertEqual(data_dict, MpUnReachNLRI.parse(MpUnReachNLRI.construct(data_dict)[3:]))
+        self.assertEqual(data_dict, MpUnReachNLRI.parse(MpUnReachNLRI.construct(data_dict)[4:]))
 
     def test_l2vpn_evpn_route_type_4_parse_construct(self):
         data_dict = {
@@ -138,7 +140,7 @@ class TestMpUnReachNLRI(unittest.TestCase):
                 }
             ]
         }
-        self.assertEqual(data_dict, MpUnReachNLRI.parse(MpUnReachNLRI.construct(data_dict)[3:]))
+        self.assertEqual(data_dict, MpUnReachNLRI.parse(MpUnReachNLRI.construct(data_dict)[4:]))
 
 
 if __name__ == '__main__':

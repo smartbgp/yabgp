@@ -45,7 +45,7 @@ class TestMpReachNLRI(unittest.TestCase):
         self.assertEqual(nexthop_bin, MpReachNLRI.construct_mpls_vpn_nexthop(nexthop))
 
     def test_ipv4_mpls_vpn_construct(self):
-        data_bin = b'\x80\x0e\x21\x00\x01\x80\x0c\x00\x00\x00\x00\x00\x00\x00\x00\x02\x02\x02\x02' \
+        data_bin = b'\x90\x0e\x00\x21\x00\x01\x80\x0c\x00\x00\x00\x00\x00\x00\x00\x00\x02\x02\x02\x02' \
                    b'\x00\x78\x00\x01\x91\x00\x00\x00\x64\x00\x00\x00\x64\xaa\x00\x00\x00'
         data_parsed = {'afi_safi': (1, 128),
                        'nexthop': {'rd': '0:0', 'str': '2.2.2.2'},
@@ -82,7 +82,7 @@ class TestMpReachNLRI(unittest.TestCase):
             'afi_safi': (2, 1),
             'nexthop': '2001:3232::1',
             'nlri': ['2001:3232::1/128', '::2001:3232:1:0/64', '2001:4837:1632::2/127']}
-        self.assertEqual(data_parsed, MpReachNLRI.parse(MpReachNLRI.construct(data_parsed)[3:]))
+        self.assertEqual(data_parsed, MpReachNLRI.parse(MpReachNLRI.construct(data_parsed)[4:]))
 
     def test_ipv6_unicast_with_locallink_nexthop_construct(self):
         data_hoped = {
@@ -90,7 +90,7 @@ class TestMpReachNLRI(unittest.TestCase):
             'linklocal_nexthop': 'fe80::c002:bff:fe7e:0',
             'nexthop': '2001:db8::2',
             'nlri': ['::2001:db8:2:2/64', '::2001:db8:2:1/64', '::2001:db8:2:0/64']}
-        self.assertEqual(data_hoped, MpReachNLRI.parse(MpReachNLRI.construct(data_hoped)[3:]))
+        self.assertEqual(data_hoped, MpReachNLRI.parse(MpReachNLRI.construct(data_hoped)[4:]))
 
     def test_ipv6_mpls_vpn_parse(self):
         data_bin = b'\x80\x0e\x45\x00\x02\x80\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
@@ -108,7 +108,7 @@ class TestMpReachNLRI(unittest.TestCase):
         self.assertEqual(data_hoped, MpReachNLRI.parse(data_bin[3:]))
 
     def test_ipv6_mpls_vpn_construct(self):
-        data_bin = b'\x80\x0e\x45\x00\x02\x80\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
+        data_bin = b'\x90\x0e\x00\x45\x00\x02\x80\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
                    b'\x00\x00\x00\x00\x00\x00\xff\xff\xac\x10\x04\x0c\x00\x98\x00\x03\x61\x00\x00' \
                    b'\x00\x64\x00\x00\x00\x0c\x20\x10\x00\x00\x00\x12\x00\x04\x98\x00\x03\x71\x00' \
                    b'\x00\x00\x64\x00\x00\x00\x0c\x20\x10\x00\x01\x00\x12\x00\x00'
@@ -135,7 +135,7 @@ class TestMpReachNLRI(unittest.TestCase):
         self.assertEqual(data_dict, MpReachNLRI.parse(data_bin[3:]))
 
     def test_ipv4_flowspec_construct(self):
-        data_bin = b'\x80\x0e\x10\x00\x01\x85\x00\x00\x0a\x01\x18\xc0\x55\x02\x02\x18\xc0\x55\x01'
+        data_bin = b'\x90\x0e\x00\x10\x00\x01\x85\x00\x00\x0a\x01\x18\xc0\x55\x02\x02\x18\xc0\x55\x01'
         data_dict = {'afi_safi': (1, 133), 'nexthop': '', 'nlri': [{1: '192.85.2.0/24', 2: '192.85.1.0/24'}]}
         self.assertEqual(data_bin, MpReachNLRI.construct(data_dict))
 
@@ -148,10 +148,10 @@ class TestMpReachNLRI(unittest.TestCase):
                 {1: '192.88.4.0/24', 2: '192.89.4.0/24'}
             ]}
         data_bin_cons = MpReachNLRI.construct(data_dict)
-        self.assertEqual(data_dict, MpReachNLRI.parse(data_bin_cons[3:]))
+        self.assertEqual(data_dict, MpReachNLRI.parse(data_bin_cons[4:]))
 
     def test_ipv4_srte_contruct(self):
-        data_bin = b'\x80\x0e\x16\x00\x01\x49\x04\xc0\xa8\x05\x05\x00\x60\x00\x00\x00\x00\x00' \
+        data_bin = b'\x90\x0e\x00\x16\x00\x01\x49\x04\xc0\xa8\x05\x05\x00\x60\x00\x00\x00\x00\x00' \
                    b'\x00\x00\x0a\xc0\xa8\x05\x07'
         data_dict = {
             "afi_safi": (1, 73),
@@ -178,7 +178,7 @@ class TestMpReachNLRI(unittest.TestCase):
                 }
             }]
         }
-        self.assertEqual(data_dict, MpReachNLRI.parse(MpReachNLRI.construct(data_dict)[3:]))
+        self.assertEqual(data_dict, MpReachNLRI.parse(MpReachNLRI.construct(data_dict)[4:]))
 
     def test_l2vpn_evpn_parse_route_type2(self):
         data_bin = b'\x80\x0e\x30\x00\x19\x46\x04\xac\x11\x00\x03\x00\x02\x25\x00\x01\xac\x11' \
@@ -202,7 +202,7 @@ class TestMpReachNLRI(unittest.TestCase):
         self.assertEqual(data_dict, MpReachNLRI.parse(data_bin[3:]))
 
     def test_l2vpn_evpn_construct_route_type2(self):
-        data_bin = b'\x80\x0e\x30\x00\x19\x46\x04\xac\x11\x00\x03\x00\x02\x25\x00\x01\xac\x11' \
+        data_bin = b'\x90\x0e\x00\x30\x00\x19\x46\x04\xac\x11\x00\x03\x00\x02\x25\x00\x01\xac\x11' \
                    b'\x00\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x6c' \
                    b'\x30\x00\x11\x22\x33\x44\x55\x20\x0b\x0b\x0b\x01\x00\x00\x00'
         data_dict = {
@@ -237,7 +237,7 @@ class TestMpReachNLRI(unittest.TestCase):
                 }
             ]
         }
-        self.assertEqual(data_dict, MpReachNLRI.parse(MpReachNLRI.construct(data_dict)[3:]))
+        self.assertEqual(data_dict, MpReachNLRI.parse(MpReachNLRI.construct(data_dict)[4:]))
 
     def test_l2vpn_evpn_parse_construct_route_type4(self):
         data_dict = {
@@ -254,7 +254,7 @@ class TestMpReachNLRI(unittest.TestCase):
                 }
             ]
         }
-        self.assertEqual(data_dict, MpReachNLRI.parse(MpReachNLRI.construct(data_dict)[3:]))
+        self.assertEqual(data_dict, MpReachNLRI.parse(MpReachNLRI.construct(data_dict)[4:]))
 
     def test_linkstate(self):
         self.maxDiff = None
