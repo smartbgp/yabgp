@@ -51,7 +51,7 @@ class TunnelEncaps(Attribute):
     """
 
     ID = AttributeID.Tunnel_Encapsulation_Attribute
-    FLAG = AttributeFlag.OPTIONAL + AttributeFlag.TRANSITIVE
+    FLAG = AttributeFlag.OPTIONAL + AttributeFlag.TRANSITIVE + AttributeFlag.EXTENDED_LENGTH
 
     @classmethod
     def construct_optional_label_sid(cls, value):
@@ -241,4 +241,4 @@ class TunnelEncaps(Attribute):
                 policy_value_hex += seg_list_hex
         policy_hex += struct.pack('!H', bgp_cons.BGP_TUNNEL_ENCAPS_SR_TE_POLICY_TYPE) +\
             struct.pack('!H', len(policy_value_hex)) + policy_value_hex
-        return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) + struct.pack('!B', len(policy_hex)) + policy_hex
+        return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) + struct.pack('!H', len(policy_hex)) + policy_hex

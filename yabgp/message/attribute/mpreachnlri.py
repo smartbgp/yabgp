@@ -62,7 +62,7 @@ class MpReachNLRI(Attribute):
     """
 
     ID = AttributeID.MP_REACH_NLRI
-    FLAG = AttributeFlag.OPTIONAL
+    FLAG = AttributeFlag.OPTIONAL + AttributeFlag.EXTENDED_LENGTH
 
     @classmethod
     def parse(cls, value):
@@ -230,7 +230,7 @@ class MpReachNLRI(Attribute):
                 attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) +\
                     struct.pack('!B', len(nexthop_hex)) + nexthop_hex + b'\x00' + nlri_hex
                 return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
-                    + struct.pack('!B', len(attr_value)) + attr_value
+                    + struct.pack('!H', len(attr_value)) + attr_value
             elif safi == safn.SAFNUM_FSPEC_RULE:  # BGP Flow spec
                 try:
                     try:
@@ -243,7 +243,7 @@ class MpReachNLRI(Attribute):
                         attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + \
                             struct.pack('!B', len(nexthop)) + nexthop + b'\x00' + nlri_hex
                         return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
-                            + struct.pack('!B', len(attr_value)) + attr_value
+                            + struct.pack('!H', len(attr_value)) + attr_value
                 except Exception as e:
                     raise excep.ConstructAttributeFailed(
                         reason='failed to construct attributes: %s' % e,
@@ -261,7 +261,7 @@ class MpReachNLRI(Attribute):
                         attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + \
                             struct.pack('!B', len(nexthop)) + nexthop + b'\x00' + nlri_hex
                         return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
-                            + struct.pack('!B', len(attr_value)) + attr_value
+                            + struct.pack('!H', len(attr_value)) + attr_value
                 except Exception as e:
                     raise excep.ConstructAttributeFailed(
                         reason='failed to construct attributes: %s' % e,
@@ -279,7 +279,7 @@ class MpReachNLRI(Attribute):
                         attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + \
                             struct.pack('!B', len(nexthop)) + nexthop + b'\x00' + nlri_hex
                         return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
-                            + struct.pack('!B', len(attr_value)) + attr_value
+                            + struct.pack('!H', len(attr_value)) + attr_value
                 except Exception as e:
                     raise excep.ConstructAttributeFailed(
                         reason='failed to construct attributes: %s' % e,
@@ -299,7 +299,7 @@ class MpReachNLRI(Attribute):
                 attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) +\
                     struct.pack('!B', len(nexthop_hex)) + nexthop_hex + b'\x00' + nlri_hex
                 return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
-                    + struct.pack('!B', len(attr_value)) + attr_value
+                    + struct.pack('!H', len(attr_value)) + attr_value
 
             elif safi == safn.SAFNUM_UNICAST:
                 nexthop_len = 16
@@ -313,7 +313,7 @@ class MpReachNLRI(Attribute):
                 attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + struct.pack('!B', nexthop_len) + \
                     nexthop_bin + b'\x00' + nlri_bin
                 return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID)\
-                    + struct.pack('!B', len(attr_value)) + attr_value
+                    + struct.pack('!H', len(attr_value)) + attr_value
             elif safi == safn.SAFNUM_MPLS_LABEL:
                 try:
                     try:
@@ -326,7 +326,7 @@ class MpReachNLRI(Attribute):
                         attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + \
                             struct.pack('!B', len(nexthop)) + nexthop + b'\x00' + nlri_hex
                         return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
-                            + struct.pack('!B', len(attr_value)) + attr_value
+                            + struct.pack('!H', len(attr_value)) + attr_value
                 except Exception as e:
                     raise excep.ConstructAttributeFailed(
                         reason='failed to construct attributes: %s' % e,
@@ -340,7 +340,7 @@ class MpReachNLRI(Attribute):
                 attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + struct.pack('!B', len(nexthop_bin)) + \
                     nexthop_bin + b'\x00' + nlri_bin
                 return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID)\
-                    + struct.pack('!B', len(attr_value)) + attr_value
+                    + struct.pack('!H', len(attr_value)) + attr_value
         else:
             raise excep.ConstructAttributeFailed(
                 reason='unsupport this sub address family',

@@ -53,7 +53,7 @@ class MpUnReachNLRI(Attribute):
     """
 
     ID = AttributeID.MP_UNREACH_NLRI
-    FLAG = AttributeFlag.OPTIONAL
+    FLAG = AttributeFlag.OPTIONAL + AttributeFlag.EXTENDED_LENGTH
 
     @classmethod
     def parse(cls, value):
@@ -134,7 +134,7 @@ class MpUnReachNLRI(Attribute):
                 if nlri:
                     attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri
                     return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
-                        + struct.pack('!B', len(attr_value)) + attr_value
+                        + struct.pack('!H', len(attr_value)) + attr_value
                 else:
                     return None
             elif safi == safn.SAFNUM_FSPEC_RULE:
@@ -146,7 +146,7 @@ class MpUnReachNLRI(Attribute):
                     nlri_hex += IPv4FlowSpec.construct(value=nlri_list)
                     attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri_hex
                     return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
-                        + struct.pack('!B', len(attr_value)) + attr_value
+                        + struct.pack('!H', len(attr_value)) + attr_value
 
                 except Exception:
                     raise excep.ConstructAttributeFailed(
@@ -162,7 +162,7 @@ class MpUnReachNLRI(Attribute):
                     nlri_hex += IPv4SRTE.construct(data=value['withdraw'])
                     attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri_hex
                     return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
-                        + struct.pack('!B', len(attr_value)) + attr_value
+                        + struct.pack('!H', len(attr_value)) + attr_value
                 except Exception:
                     raise excep.ConstructAttributeFailed(
                         reason='failed to construct attributes',
@@ -178,13 +178,13 @@ class MpUnReachNLRI(Attribute):
                 if nlri:
                     attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri
                     return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
-                        + struct.pack('!B', len(attr_value)) + attr_value
+                        + struct.pack('!H', len(attr_value)) + attr_value
             elif safi == safn.SAFNUM_LAB_VPNUNICAST:
                 nlri = IPv6MPLSVPN.construct(value=value['withdraw'], iswithdraw=True)
                 if nlri:
                     attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri
                     return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
-                        + struct.pack('!B', len(attr_value)) + attr_value
+                        + struct.pack('!H', len(attr_value)) + attr_value
                 else:
                     return None
         # for l2vpn
@@ -195,7 +195,7 @@ class MpUnReachNLRI(Attribute):
                 if nlri:
                     attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri
                     return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
-                        + struct.pack('!B', len(attr_value)) + attr_value
+                        + struct.pack('!H', len(attr_value)) + attr_value
             else:
                 return None
         else:

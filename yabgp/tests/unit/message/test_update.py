@@ -184,22 +184,15 @@ class TestUpdate(unittest.TestCase):
                          Update.parse(None, Update.construct(msg_dict=data_hoped)[HDR_LEN:], True)['attr'])
 
     def test_parse_and_construct_ipv4_mpls_vpn_withdraw(self):
-        data_bin = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00' \
-                   b'\x2c\x02\x00\x00\x00\x15\x80\x0f\x12\x00\x01\x80\x70\x80\x00\x00\x00' \
-                   b'\x00\x00\x02\x00\x00\x00\x02\xc0\xa8\xc9'
         data_hoped = {'attr': {15: {'afi_safi': (1, 128),
                                     'withdraw': [{'label': [524288],
                                                   'rd': '2:2',
                                                   'prefix': '192.168.201.0/24'}]}}}
-        self.assertEqual(data_hoped['attr'], Update.parse(None, data_bin[HDR_LEN:], True)['attr'])
-        self.assertEqual(data_bin, Update.construct(msg_dict=data_hoped))
+        self.assertEqual(
+            data_hoped['attr'],
+            Update.parse(None, Update.construct(msg_dict=data_hoped)[HDR_LEN:], True)['attr'])
 
     def test_parse_construct_l2vpn_evpn(self):
-        data_bin = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00\x63\x02\x00\x00\x00' \
-                   b'\x4c\xc0\x10\x08\x06\x00\x01\x00\x00\x00\x01\xf4\x40\x01\x01\x00\x40\x02\x00\x40\x05\x04' \
-                   b'\x00\x00\x00\x64\x80\x0e\x30\x00\x19\x46\x04\x0a\x4b\x2c\xfe\x00\x02\x25\x00\x01\xac\x11' \
-                   b'\x00\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x6c\x30\x00\x11\x22' \
-                   b'\x33\x44\x55\x20\x0b\x0b\x0b\x01\x00\x00\x00'
         data_dict = {
             "attr": {
                 1: 0,
@@ -221,8 +214,9 @@ class TestUpdate(unittest.TestCase):
                 },
                 16: [[1536, 1, 500]]
             }}
-        self.assertEqual(data_bin, Update.construct(msg_dict=data_dict))
-        self.assertEqual(data_dict['attr'], Update.parse(None, data_bin[HDR_LEN:])['attr'])
+        self.assertEqual(
+            data_dict['attr'],
+            Update.parse(None, Update.construct(msg_dict=data_dict)[HDR_LEN:])['attr'])
 
     def test_parse_link_state(self):
         self.maxDiff = None
@@ -301,13 +295,6 @@ class TestUpdate(unittest.TestCase):
         self.assertEqual(data_dict, Update.parse(None, data_bin[HDR_LEN:])['attr'])
 
     def test_parse_and_construct_pmsi_tunnel_evpn_overlay(self):
-        data_bin = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff' \
-                   b'\x00`\x02\x00\x00\x00I\xc0\x10\x10\x00\x02\xff\xf7\x00\x00\x8f' \
-                   b'\xc2\x03\x0c\x00\x00\x00\x00\x00\x08@\x01\x01\x00\xc0\x16\t\x00' \
-                   b'\x06\x00\xeaa\xc0\xa8\x01\n@\x05\x04\x00\x00\x00d\x80\x0e\x1c\x00' \
-                   b'\x19F\x04\xc0\xa8\x01\n\x00\x03\x11\x00\x00\xff\xf7\x00\x00\x8f\xc2' \
-                   b'\x00\x00\x00\x00 \xc0\xa8\x01\n'
-
         data_dict = {
             'attr': {
                 1: 0,
@@ -335,9 +322,9 @@ class TestUpdate(unittest.TestCase):
                 }
             }
         }
-        self.maxDiff = None
-        self.assertEqual(data_dict['attr'], Update.parse(None, data_bin[HDR_LEN:])['attr'])
-        self.assertEqual(data_bin, Update.construct(msg_dict=data_dict))
+        self.assertEqual(
+            data_dict['attr'],
+            Update.parse(None, Update.construct(msg_dict=data_dict)[HDR_LEN:])['attr'])
 
 if __name__ == '__main__':
     unittest.main()
