@@ -279,13 +279,19 @@ class TestMpReachNLRI(unittest.TestCase):
                             'value': {
                                 'as': 65534,
                                 'bgpls_id': '0.0.0.0',
-                                'igp_router_id': '0.0.0.1'}},
+                                'igp_router_id': {
+                                    'proto': 2,
+                                    'value': 1
+                                }}},
                         {
                             'type': 'remote_node',
                             'value': {
                                 'as': 65534,
                                 'bgpls_id': '0.0.0.0',
-                                'igp_router_id': '0.0.0.3'}},
+                                'igp_router_id': {
+                                    'proto': 2,
+                                    'value': 3
+                                }}},
                         {'type': 'link_local_ipv4', 'value': '1.3.0.1'},
                         {'type': 'link_remote_ipv4', 'value': '1.3.0.2'}]}]}
         self.assertEqual(data_dict, MpReachNLRI.parse(data[4:]))
