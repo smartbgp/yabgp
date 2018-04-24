@@ -252,7 +252,7 @@ class TestUpdate(unittest.TestCase):
                                      'bgpls_id': '0.0.0.0',
                                      'igp_router_id': {
                                          'pseudonode': False,
-                                         'iso_node_id': '000000000001'
+                                         'iso_node_id': b"000000000001"
                                      }
                                  }
                              },
@@ -263,7 +263,7 @@ class TestUpdate(unittest.TestCase):
                                      'bgpls_id': '0.0.0.0',
                                      'igp_router_id': {
                                          'pseudonode': False,
-                                         'iso_node_id': '000000000003'
+                                         'iso_node_id': b"000000000003"
                                      }}},
                              {
                                  'type': 'link_local_ipv4',

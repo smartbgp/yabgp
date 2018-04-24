@@ -198,7 +198,7 @@ class BGPLS(NLRI):
                 if (proto == 1 or proto == 2) and length == 7:
                     return_data['igp_router_id'] = {
                         "pseudonode": True,
-                        "psn": struct.unpack('!B', value[6:7])[0],
+                        "psn": ord(value[6: 7]),
                         "iso_node_id": str(binascii.b2a_hex(value[:6]))
                     }
         return return_data

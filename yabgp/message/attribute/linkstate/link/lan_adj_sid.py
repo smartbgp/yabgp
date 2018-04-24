@@ -71,9 +71,9 @@ class LanAdjSegID(TLV):
             flag['L'] = (flags << 2) % 256 >> 7
             flag['G'] = (flags << 3) % 256 >> 7
             flag['P'] = (flags << 4) % 256 >> 7
-            nei_or_sys_id = str(netaddr.IPAddress(int(binascii.b2a_hex(data[4:10]), 16)))
+            nei_or_sys_id = str(netaddr.IPAddress(int(binascii.b2a_hex(data[4:8]), 16)))
         weight = ord(data[1:2])
-        sid_index_label = int(binascii.b2a_hex(data[10:]), 16)
+        sid_index_label = int(binascii.b2a_hex(data[8:]), 16)
         return cls(value={
             "flags": flag,
             "weight": weight,
