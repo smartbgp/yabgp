@@ -281,7 +281,7 @@ class TestMpReachNLRI(unittest.TestCase):
                                 'bgpls_id': '0.0.0.0',
                                 'igp_router_id': {
                                     'pseudonode': False,
-                                    'iso_node_id': 1
+                                    'iso_node_id': '000000000001'
                                 }}},
                         {
                             'type': 'remote_node',
@@ -290,7 +290,7 @@ class TestMpReachNLRI(unittest.TestCase):
                                 'bgpls_id': '0.0.0.0',
                                 'igp_router_id': {
                                     'pseudonode': False,
-                                    'iso_node_id': 3
+                                    'iso_node_id': '000000000003'
                                 }}},
                         {'type': 'link_local_ipv4', 'value': '1.3.0.1'},
                         {'type': 'link_remote_ipv4', 'value': '1.3.0.2'}]}]}
