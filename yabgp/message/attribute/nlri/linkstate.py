@@ -111,11 +111,11 @@ class BGPLS(NLRI):
             descriptor = dict()
             if _type == 256:  # local node
                 descriptor['type'] = 'local_node'
-                descriptor['value'] = cls.parse_node_descriptor(value)
+                descriptor['value'] = cls.parse_node_descriptor(value, proto_id)
 
             elif _type == 257:  # remote node
                 descriptor['type'] = 'remote_node'
-                descriptor['value'] = cls.parse_node_descriptor(value)
+                descriptor['value'] = cls.parse_node_descriptor(value, proto_id)
             # elif _type == 258:  # link local/remote identifier
             #     pass
             elif _type == 259:  # ipv4 interface address
@@ -152,7 +152,7 @@ class BGPLS(NLRI):
         return proto_id, identifier, descriptor_list
 
     @classmethod
-    def parse_node_descriptor(cls, data):
+    def parse_node_descriptor(cls, data, proto):
 
         # +--------------------+-------------------+----------+
         # | Sub-TLV Code Point | Description       |   Length |
@@ -168,11 +168,37 @@ class BGPLS(NLRI):
             value = data[4: 4+length]
             data = data[4+length:]
             if _type == 512:
-                return_data['as'] = int(binascii.b2a_hex(value), 16)
+                return_data['as_num'] = int(binascii.b2a_hex(value), 16)
             elif _type == 513:
                 return_data['bgpls_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
             elif _type == 514:
                 return_data['ospf_area_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
             elif _type == 515:
-                return_data['igp_router_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
+                # OSPFv2, OSPFv3 non-pseudonode
+                if (proto == 3 or proto == 6) and length == 4:
+                    return_data['igp_router_id'] = {
+                        "pseudonode": False,
+                        "router_id": str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
+                    }
+                # OSPFv2, OSPFv3, LAN pseudonode
+                if (proto == 3 or proto == 6) and length == 8:
+                    return_data['igp_router_id'] = {
+                        "pseudonode": True,
+                        "router_id": str(netaddr.IPAddress(int(binascii.b2a_hex(value[:4]), 16))),
+                        "designated_router_addr": str(netaddr.IPAddress(int(binascii.b2a_hex(value[4:]), 16)))
+                    }
+                # IS-IS non-pseudonode
+                if (proto == 1 or proto == 2) and length == 6:
+                    return_data['igp_router_id'] = {
+                        "pseudonode": False,
+                        "iso_node_id": str(binascii.b2a_hex(value))
+                    }
+                # IS-IS LAN pseudonode = ISO Node-ID + PSN
+                # Unpack ISO address
+                if (proto == 1 or proto == 2) and length == 7:
+                    return_data['igp_router_id'] = {
+                        "pseudonode": True,
+                        "psn": struct.unpack('!B', value[6:7])[0],
+                        "iso_node_id": str(binascii.b2a_hex(value[:6]))
+                    }
         return return_data
