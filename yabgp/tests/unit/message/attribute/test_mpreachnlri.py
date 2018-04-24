@@ -296,6 +296,28 @@ class TestMpReachNLRI(unittest.TestCase):
                         {'type': 'link_remote_ipv4', 'value': '1.3.0.2'}]}]}
         self.assertEqual(data_dict, MpReachNLRI.parse(data[4:]))
 
+    def test_linkstate_ipv4_topo_prefix(self):
+        self.maxDiff = None
+        data = b"\x90\x0e\x00\x47\x40\x04\x47\x04\x0a\x7c\x02\x97\x00\x00\x03\x00" \
+               b"\x3a\x03\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x20\x02\x00" \
+               b"\x00\x04\x00\x00\x01\x91\x02\x01\x00\x04\x29\x29\x29\x29\x02\x02" \
+               b"\x00\x04\x00\x00\x00\x00\x02\x03\x00\x04\x5b\x5b\x5b\x5b\x01\x08" \
+               b"\x00\x01\x01\x01\x09\x00\x04\x18\x64\x0c\x00"
+        data_dict = {
+            'afi_safi': (16388, 71),
+            'nexthop': '10.124.2.151',
+            'nlri': [{'descriptors': [{'type': 'local_node',
+                                       'value': {'as_num': 401,
+                                                 'bgpls_id': '41.41.41.41',
+                                                 'igp_router_id': {'pseudonode': False,
+                                                                   'router_id': '91.91.91.91'},
+                                                 'ospf_area_id': '0.0.0.0'}},
+                                      {'type': 'prefix_ospf_route_type', 'value': 1},
+                                      {'type': 'prefix', 'value': '100.12.0.0/24'}],
+                      'instances_id': 0,
+                      'protocol_id': 3,
+                      'type': 'ipv4_topo_prefix'}]}
+        self.assertEqual(data_dict, MpReachNLRI.parse(data[4:]))
 
 if __name__ == '__main__':
     unittest.main()

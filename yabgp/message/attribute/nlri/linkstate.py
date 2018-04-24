@@ -50,8 +50,7 @@ class BGPLS(NLRI):
             else:
                 nlri['type'] = 'unknown'
                 continue
-            # nlri['value'] = cls.parse_nlri(value)
-            protocol_id, identifier, descriptors = cls.parse_nlri(value)
+            protocol_id, identifier, descriptors = cls.parse_nlri(value, _type)
             nlri['protocol_id'] = protocol_id
             nlri['instances_id'] = identifier
             nlri['descriptors'] = descriptors
@@ -59,7 +58,7 @@ class BGPLS(NLRI):
         return nlri_list
 
     @classmethod
-    def parse_nlri(cls, data):
+    def parse_nlri(cls, data, nlri_type):
         """parse nlri: node, link, prefix
         """
         #      0                   1                   2                   3
@@ -140,10 +139,11 @@ class BGPLS(NLRI):
             elif _type == 265:   # IP Reachability Information
                 descriptor['type'] = 'prefix'
                 mask = ord(value[0:1])
-                if value[1:]:
-                    ip_str = str(netaddr.IPAddress(int(binascii.b2a_hex(value[1:]), 16)))
+                if nlri_type == cls.IPv4_TOPO_PREFIX_NLRI:
+                    prefix_value = value[1:] + b'\x00' * (4 - len(value[1:]))
+                    ip_str = str(netaddr.IPAddress(int(binascii.b2a_hex(prefix_value), 16)))
                 else:
-                    ip_str = '0.0.0.0'
+                    ip_str = str(netaddr.IPAddress(int(binascii.b2a_hex(value[1:]), 16)))
                 descriptor['value'] = "%s/%s" % (ip_str, mask)
             else:
                 descriptor['type'] = _type
