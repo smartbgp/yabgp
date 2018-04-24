@@ -66,7 +66,7 @@ class LinkState(Attribute):
                 tlvs.append(
                     {
                         'type': type_code,
-                        'value': binascii.b2a_hex(value)
+                        'value': str(binascii.b2a_hex(value))
 
                     }
                 )
