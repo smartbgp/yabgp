@@ -168,7 +168,7 @@ class BGPLS(NLRI):
             value = data[4: 4+length]
             data = data[4+length:]
             if _type == 512:
-                return_data['as'] = int(binascii.b2a_hex(value), 16)
+                return_data['as_num'] = int(binascii.b2a_hex(value), 16)
             elif _type == 513:
                 return_data['bgpls_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
             elif _type == 514:
@@ -177,31 +177,28 @@ class BGPLS(NLRI):
                 # OSPFv2, OSPFv3 non-pseudonode
                 if (proto == 3 or proto == 6) and length == 4:
                     return_data['igp_router_id'] = {
-                        "proto": proto,
-                        "value": str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
+                        "pseudonode": False,
+                        "router_id": str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
                     }
                 # OSPFv2, OSPFv3, LAN pseudonode
                 if (proto == 3 or proto == 6) and length == 8:
                     return_data['igp_router_id'] = {
-                        "proto": proto,
-                        "psn": None,
-                        "value": {
-                            "dr_router_id": str(netaddr.IPAddress(int(binascii.b2a_hex(value[:4]), 16))),
-                            "dr_int_id": str(netaddr.IPAddress(int(binascii.b2a_hex(value[4:]), 16)))
-                        }
+                        "pseudonode": True,
+                        "router_id": str(netaddr.IPAddress(int(binascii.b2a_hex(value[:4]), 16))),
+                        "designated_router_addr": str(netaddr.IPAddress(int(binascii.b2a_hex(value[4:]), 16)))
                     }
                 # IS-IS non-pseudonode
                 if (proto == 1 or proto == 2) and length == 6:
                     return_data['igp_router_id'] = {
-                        "proto": proto,
-                        "value": int(binascii.b2a_hex(value))
+                        "pseudonode": False,
+                        "iso_node_id": int(binascii.b2a_hex(value))
                     }
                 # IS-IS LAN pseudonode = ISO Node-ID + PSN
                 # Unpack ISO address
                 if (proto == 1 or proto == 2) and length == 7:
                     return_data['igp_router_id'] = {
-                        "proto": proto,
+                        "pseudonode": True,
                         "psn": struct.unpack('!B', value[6:7])[0],
-                        "value": int(binascii.b2a_hex(value[:6]))
+                        "iso_node_id": int(binascii.b2a_hex(value[:6]))
                     }
         return return_data
