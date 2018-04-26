@@ -99,7 +99,7 @@ class BGPLS(NLRI):
 
         proto_id = ord(data[0:1])
 
-        identifier = struct.unpack('!I', data[5:9])[0]
+        identifier = int(binascii.b2a_hex(data[1:9]), 16)
 
         descriptor_list = []
         descriptors = data[9:]
