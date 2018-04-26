@@ -21,7 +21,6 @@ from ..linkstate import LinkState
 
 @LinkState.register(_type=1110)
 @LinkState.register(_type=267)
-@LinkState.register()
 class LinkMSD(TLV):
     """
     link msd

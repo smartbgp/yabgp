@@ -19,12 +19,13 @@ from yabgp.tlv import TLV
 from ..linkstate import LinkState
 
 
-@LinkState.register()
+@LinkState.register(_type=1050)
+@LinkState.register(_type=266)
 class NodeMSD(TLV):
     """
     node msd
     """
-    TYPE = 1050  # https://tools.ietf.org/html/draft-tantsura-idr-bgp-ls-segment-routing-msd-05#section-3
+    # https://tools.ietf.org/html/draft-tantsura-idr-bgp-ls-segment-routing-msd-05#section-3
     TYPE_STR = 'node_msd'
 
     @classmethod
