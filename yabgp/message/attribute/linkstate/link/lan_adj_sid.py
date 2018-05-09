@@ -56,6 +56,7 @@ class LanAdjSegID(TLV):
     @classmethod
     def unpack(cls, data, pro_id):
         flags = ord(data[0:1])
+        weight = ord(data[1:2])
         flag = {}
         if pro_id in [1, 2]:
             flag['F'] = flags >> 7
@@ -64,7 +65,10 @@ class LanAdjSegID(TLV):
             flag['L'] = (flags << 3) % 256 >> 7
             flag['S'] = (flags << 4) % 256 >> 7
             flag['P'] = (flags << 5) % 256 >> 7
-            nei_or_sys_id = int(binascii.b2a_hex(data[4:10]), 16)
+            tmp = binascii.b2a_hex(data[4:10])
+            chunks, chunk_size = len(tmp), len(tmp)/3
+            nei_or_sys_id = '.'.join([tmp[i:i+chunk_size] for i in range(0, chunks, chunk_size)])
+            sid_index_label = int(binascii.b2a_hex(data[10:]), 16)
         else:  # 3, 6
             flag['B'] = flags >> 7
             flag['V'] = (flags << 1) % 256 >> 7
@@ -72,8 +76,7 @@ class LanAdjSegID(TLV):
             flag['G'] = (flags << 3) % 256 >> 7
             flag['P'] = (flags << 4) % 256 >> 7
             nei_or_sys_id = str(netaddr.IPAddress(int(binascii.b2a_hex(data[4:8]), 16)))
-        weight = ord(data[1:2])
-        sid_index_label = int(binascii.b2a_hex(data[8:]), 16)
+            sid_index_label = int(binascii.b2a_hex(data[8:]), 16)
         return cls(value={
             "flags": flag,
             "weight": weight,

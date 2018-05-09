@@ -40,7 +40,7 @@ class TestBGPLS(unittest.TestCase):
                         'value': {
                             'as_num': 65534,
                             'bgpls_id': '0.0.0.0',
-                            'igp_router_id': {'pseudonode': False, 'iso_node_id': '000000000003'}}},
+                            'igp_router_id': {'pseudonode': False, 'iso_node_id': '0000.0000.0003'}}},
                     {
                         'type': 'remote_node',
                         'value': {
@@ -48,7 +48,7 @@ class TestBGPLS(unittest.TestCase):
                             'bgpls_id': '0.0.0.0',
                             'igp_router_id': {
                                 'pseudonode': False,
-                                'iso_node_id': '000000000001'
+                                'iso_node_id': '0000.0000.0001'
                             }}},
                     {
                         'type': 'link_local_ipv4',

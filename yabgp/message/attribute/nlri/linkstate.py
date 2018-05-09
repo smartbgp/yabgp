@@ -191,7 +191,7 @@ class BGPLS(NLRI):
                 if (proto == 1 or proto == 2) and length == 6:
                     return_data['igp_router_id'] = {
                         "pseudonode": False,
-                        "iso_node_id": str(binascii.b2a_hex(value))
+                        "iso_node_id": cls.parse_iso_node_id(value)
                     }
                 # IS-IS LAN pseudonode = ISO Node-ID + PSN
                 # Unpack ISO address
@@ -199,6 +199,12 @@ class BGPLS(NLRI):
                     return_data['igp_router_id'] = {
                         "pseudonode": True,
                         "psn": ord(value[6: 7]),
-                        "iso_node_id": str(binascii.b2a_hex(value[:6]))
+                        "iso_node_id": cls.parse_iso_node_id(value[:6])
                     }
         return return_data
+
+    @classmethod
+    def parse_iso_node_id(cls, data):
+        tmp = binascii.b2a_hex(data)
+        chunks, chunk_size = len(tmp), len(tmp)/3
+        return '.'.join([tmp[i:i+chunk_size] for i in range(0, chunks, chunk_size)])
