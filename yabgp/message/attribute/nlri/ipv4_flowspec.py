@@ -84,7 +84,7 @@ class IPv4FlowSpec(NLRI):
         for type_tmp in [bgp_cons.BGPNLRI_FSPEC_IP_PROTO, bgp_cons.BGPNLRI_FSPEC_DST_PORT,
                          bgp_cons.BGPNLRI_FSPEC_SRC_PORT, bgp_cons.BGPNLRI_FSPEC_ICMP_TP,
                          bgp_cons.BGPNLRI_FSPEC_ICMP_CD, bgp_cons.BGPNLRI_FSPEC_PCK_LEN,
-                         bgp_cons.BGPNLRI_FSPEC_DSCP]:
+                         bgp_cons.BGPNLRI_FSPEC_DSCP, bgp_cons.BGPNLRI_FSPEC_PORT]:
             if not data.get(type_tmp):
                 continue
 
@@ -271,7 +271,7 @@ class IPv4FlowSpec(NLRI):
                     # value_hex = str(bytearray.fromhex(hex(int(data[2:]))[2:]))
                     flag_dict['LT'] = 1
                 hex_str = hex(int(data[off_set:]))[2:]
-                if len(hex_str) == 1:
+                if len(hex_str) % 2 == 1:
                     hex_str = '0' + hex_str
                 value_hex = str(bytearray.fromhex(hex_str))
                 flag_dict['LEN'] = len(value_hex)
