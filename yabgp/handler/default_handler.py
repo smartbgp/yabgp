@@ -236,3 +236,6 @@ class DefaultHandler(BaseHandler):
             msg_type=0,
             msg={"msg": msg}
         )
+
+    def on_established(self, peer, msg):
+        pass
