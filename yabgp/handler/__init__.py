@@ -55,3 +55,7 @@ class BaseHandler(object):
     @abc.abstractmethod
     def on_connection_failed(self, peer, msg):
         raise NotImplemented
+
+    @abc.abstractmethod
+    def on_established(self, peer, msg):
+        raise NotImplemented

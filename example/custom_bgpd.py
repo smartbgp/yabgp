@@ -61,6 +61,9 @@ class CliHandler(BaseHandler):
     def on_connection_failed(self, peer, msg):
         print('[-] CONNECTION failed,', msg)
 
+    def on_established(self, peer, msg):
+        print('[-] ESTABLISHED,', msg)
+
 
 def main():
     try:

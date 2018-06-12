@@ -70,6 +70,7 @@ class FSM(object):
             LOG.info("[%s]State is now:%s", self.bgp_peering.peer_addr, bgp_cons.stateDescr[value])
             if value == bgp_cons.ST_ESTABLISHED:
                 self.uptime = time.time()
+                self.bgp_peering.handler.on_established(peer=self.bgp_peering.peer_addr, msg=self.uptime)
         super(FSM, self).__setattr__(name, value)
 
     def manual_start(self, idle_hold=False):
