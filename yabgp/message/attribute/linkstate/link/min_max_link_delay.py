@@ -13,7 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import struct
 import binascii
 
 from yabgp.tlv import TLV
@@ -30,9 +29,9 @@ class MinMaxUnidirectLinkDelay(TLV):
 
     @classmethod
     def unpack(cls, data):
-        min_value =  int(binascii.b2a_hex(data[:4]), 16)
+        min_value = int(binascii.b2a_hex(data[:4]), 16)
         max_value = int(binascii.b2a_hex(data[4:]), 16)
         return cls(value={
-            "min_link_delay":min_value,
+            "min_link_delay": min_value,
             "max_link_delay": max_value,
         })
