@@ -55,3 +55,14 @@
 #    |    1103  | Peer Set Segment          | variable |
 #    |          | Identifier (Peer-Set-SID) |          |
 #    +----------+---------------------------+----------+
+
+#    +----------+---------------------------+----------+
+#    | TLV Code | Description               |   Length |
+#    |  Point   |                           |          |
+#    +----------+---------------------------+----------+
+#    |    1114  | Unidirectional Link Delay | 4        |
+#    |    1115  | Min/Max Unidirectional    | 8        |
+#    |          | Link Delay                |          |
+#    |    1116  | Unidirectional Delay      | 4        |
+#    |          | Variation                 |          |
+#    +----------+---------------------------+----------+
