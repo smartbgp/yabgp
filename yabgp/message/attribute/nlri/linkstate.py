@@ -87,6 +87,7 @@ class BGPLS(NLRI):
         #     |      4      | Direct                           |
         #     |      5      | Static configuration             |
         #     |      6      | OSPFv3                           |
+        #     |      7      | BGP                              |
         #     +-------------+----------------------------------+
         #               Table 2: Protocol Identifiers
 
@@ -161,6 +162,8 @@ class BGPLS(NLRI):
         # |        513         | BGP-LS Identifier |        4 |
         # |        514         | OSPF Area-ID      |        4 |
         # |        515         | IGP Router-ID     | Variable |
+        # |        516         | BGP Router-ID     |        4 |
+        # |        517         | Member-ASN        |        4 |
         # +--------------------+-------------------+----------+
         return_data = dict()
         while data:
@@ -201,6 +204,10 @@ class BGPLS(NLRI):
                         "psn": ord(value[6: 7]),
                         "iso_node_id": cls.parse_iso_node_id(value[:6])
                     }
+            elif _type == 516:
+                return_data['bgp_router_id'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value[:4]), 16)))
+            elif _type == 517:
+                return_data['member_as_num'] = int(binascii.b2a_hex(value), 16)
         return return_data
 
     @classmethod

@@ -42,6 +42,9 @@ from .link.protection_type import ProtectionType  # noqa
 from .link.opa_link_attr import OpaLinkAttr  # noqa
 from .link.peer_node_sid import PeerNodeSID   # noqa
 from .link.peer_adj_sid import PeerAdjSID    # noqa
+from .link.unidirect_link_delay import UnidirectLinkDelay    # noqa
+from .link.min_max_link_delay import MinMaxUnidirectLinkDelay    # noqa
+from .link.unidirct_delay_var import UnidirectDelayVar    # noqa
 from .prefix.prefix_metric import PrefixMetric   # noqa
 from .prefix.prefix_sid import PrefixSID  # noqa
 from .prefix.prefix_igp_attr import PrefixIGPAttr  # noqa
