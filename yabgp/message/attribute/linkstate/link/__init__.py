@@ -65,4 +65,11 @@
 #    |          | Link Delay                |          |
 #    |    1116  | Unidirectional Delay      | 4        |
 #    |          | Variation                 |          |
+#    |    1117  | Unidirectional Packet Loss| 4        |
+#    |    1118  | Unidirectional Residual   | 4        |
+#    |          | Bandwidth                 |          |
+#    |    1119  | Unidirectional Available  | 4        |
+#    |          | Bandwidth                 |          |
+#    |    1120  | Unidirectional Bandwidth  | 4        |
+#    |          | Utilization               |          |
 #    +----------+---------------------------+----------+

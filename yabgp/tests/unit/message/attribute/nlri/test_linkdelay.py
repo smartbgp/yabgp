@@ -30,7 +30,9 @@ class TestLinkDelay(unittest.TestCase):
                    b"\x00\x00\x00\x00\x04\x44\x00\x04\x00\x00\x00\x01\x04\x47\x00\x03" \
                    b"\x00\x00\x01\x04\x4b\x00\x07\x60\x00\x00\x00\x00\x5d\xc1\x01\x0b" \
                    b"\x00\x02\x01\x0a\x04\x5a\x00\x04\x00\x0f\x42\x40\x04\x5b\x00\x08" \
-                   b"\x00\x0f\x42\x40\x00\x0f\x42\x40\x04\x5c\x00\x04\x00\x00\x00\x00"
+                   b"\x00\x0f\x42\x40\x00\x0f\x42\x40\x04\x5c\x00\x04\x00\x00\x00\x00" \
+                   b"\x04\x5d\x00\x04\x11\x11\x11\x11\x04\x5e\x00\x04\x11\x11\x11\x11" \
+                   b"\x04\x5f\x00\x04\x11\x11\x11\x11\x04\x60\x00\x04\x11\x11\x11\x11"
 
         data_dict = {29: [{
             "type": "local_router_id",
@@ -84,6 +86,18 @@ class TestLinkDelay(unittest.TestCase):
         }, {
             "type": "unidirect_delay_var",
             "value": 0
+        }, {
+            "type": "unidirect_packet_loss",
+            "value": 286331153
+        }, {
+            "type": "unidirect_residual_bw",
+            "value": 286331153
+        }, {
+            "type": "unidirect_avail_bw",
+            "value": 286331153
+        }, {
+            "type": "unidirect_bw_util",
+            "value": 286331153
         }]}
 
         self.assertEqual(data_dict, LinkState.unpack(data_bin).dict())

@@ -24,9 +24,10 @@ class TestBGPLSEPE(unittest.TestCase):
         self.maxDiff = None
         data_bin = b"\x00\x02\x00\x51\x07\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00" \
                    b"\x18\x02\x00\x00\x04\x00\x00\x00\xc8\x02\x01\x00\x04\x00\x00\x00" \
-                   b"\x00\x02\x04\x00\x04\x03\x03\x03\x03\x01\x01\x00\x18\x02\x00\x00" \
-                   b"\x04\x00\x00\x01\x2c\x02\x01\x00\x04\x00\x00\x00\x00\x02\x04\x00" \
-                   b"\x04\x04\x04\x04\x04\x01\x03\x00\x04\xc0\xa8\x04\x03\x01\x04\x00" \
+                   b"\x00\x02\x05\x00\x04\x00\x00\x00" \
+                   b"\xc8\x01\x01\x00\x18\x02\x00\x00\x04\x00\x00\x01\x2c\x02\x01\x00" \
+                   b"\x04\x00\x00\x00\x00\x02\x05\x00" \
+                   b"\x04\x00\x00\x01\x2c\x01\x03\x00\x04\xc0\xa8\x04\x03\x01\x04\x00" \
                    b"\x04\xc0\xa8\x04\x04"
         data_dict = [
             {
@@ -39,13 +40,15 @@ class TestBGPLSEPE(unittest.TestCase):
                         'value': {
                             'as_num': 200,
                             'bgpls_id': '0.0.0.0',
-                            'bgp_router_id': '3.3.3.3'}},
+                            # 'bgp_router_id': '3.3.3.3',
+                            'member_as_num': 200}},
                     {
                         'type': 'remote_node',
                         'value': {
                             'as_num': 300,
                             'bgpls_id': '0.0.0.0',
-                            'bgp_router_id': '4.4.4.4'}},
+                            # 'bgp_router_id': '4.4.4.4',
+                            'member_as_num': 300}},
                     {
                         'type': 'link_local_ipv4',
                         'value': '192.168.4.3'},
