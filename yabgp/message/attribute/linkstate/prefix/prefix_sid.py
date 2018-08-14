@@ -29,6 +29,25 @@ from ..linkstate import LinkState
 #    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 
+# isis
+#  0 1 2 3 4 5 6 7
+#  +-+-+-+-+-+-+-+-+
+#  |R|N|P|E|V|L|   |
+#  +-+-+-+-+-+-+-+-+
+
+# ospf
+#  0 1  2 3 4 5 6 7
+# +-+--+-+-+-+-+-+-+
+# | |NP|M|E|V|L| | |
+# +-+--+-+-+-+-+-+-+
+
+# ospfv3
+#  0 1  2 3 4 5 6 7
+# +-+--+-+-+-+-+-+-+
+# | |NP|M|E|V|L| | |
+# +-+--+-+-+-+-+-+-+
+
+
 @LinkState.register()
 class PrefixSID(TLV):
     """
@@ -38,6 +57,23 @@ class PrefixSID(TLV):
     TYPE_STR = 'prefix_sid'
 
     @classmethod
-    def unpack(cls, data):
+    def unpack(cls, data, pro_id):
+
+        flags = ord(data[0:1])
+        flag = {}
+        if pro_id in [1, 2]:
+            flag['R'] = flags >> 7
+            flag['N'] = (flags << 1) % 256 >> 7
+            flag['P'] = (flags << 2) % 256 >> 7
+            flag['E'] = (flags << 3) % 256 >> 7
+            flag['V'] = (flags << 4) % 256 >> 7
+            flag['L'] = (flags << 5) % 256 >> 7
+        else:  # 3, 6
+            flag['NP'] = (flags << 1) % 256 >> 7
+            flag['M'] = (flags << 2) % 256 >> 7
+            flag['E'] = (flags << 3) % 256 >> 7
+            flag['V'] = (flags << 4) % 256 >> 7
+            flag['L'] = (flags << 5) % 256 >> 7
+
         algorithm = ord(data[1:2])
-        return cls(value={"algorithm": algorithm, "sid": int(binascii.b2a_hex(data[4:]), 16)})
+        return cls(value={"flags": flag, "algorithm": algorithm, "sid": int(binascii.b2a_hex(data[4:]), 16)})
