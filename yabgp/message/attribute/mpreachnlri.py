@@ -106,7 +106,7 @@ class MpReachNLRI(Attribute):
                 # if nlri length is greater than 240 bytes, it is encoded over 2 bytes
                 nlri_list = []
                 while nlri_bin:
-                    length = ord(nlri_bin[0])
+                    length = ord(nlri_bin[0:1])
                     if length >> 4 == 0xf and len(nlri_bin) > 2:
                         length = struct.unpack('!H', nlri_bin[:2])[0]
                         nlri_tmp = nlri_bin[2: length + 2]
@@ -236,7 +236,7 @@ class MpReachNLRI(Attribute):
                     try:
                         nexthop = netaddr.IPAddress(value['nexthop']).packed
                     except netaddr.core.AddrFormatError:
-                        nexthop = ''
+                        nexthop = b''
                     nlri_hex = b''
                     nlri_hex += IPv4FlowSpec.construct(value=value['nlri'])
                     if nlri_hex:

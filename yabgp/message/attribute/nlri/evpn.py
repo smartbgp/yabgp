@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import division
 import struct
 import binascii
 
@@ -284,7 +285,7 @@ class EthernetSegment(MPLSVPN):
         offset += 1
         # ip address
         if ip_addr_len != 0:
-            route['ip'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value[offset: offset+ip_addr_len / 8]), 16)))
+            route['ip'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value[offset: offset+ip_addr_len // 8]), 16)))
         return route
 
     @classmethod

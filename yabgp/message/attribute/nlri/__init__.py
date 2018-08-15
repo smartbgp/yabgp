@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import division
 import struct
 import binascii
 
@@ -45,7 +46,7 @@ class NLRI(object):
     def construct_prefix_v6(prefix):
         mask = int(prefix.split('/')[1])
         prefix_hex = binascii.unhexlify(hex(netaddr.IPNetwork(prefix).ip)[2:])
-        offset = mask / 8
+        offset = mask // 8
         offset_re = mask % 8
         if offset == 0:
             return prefix_hex[0: 1]

@@ -15,7 +15,6 @@
 
 """BGP Attribute MP_REACH_NLRI
 """
-
 import struct
 
 import netaddr
@@ -82,15 +81,15 @@ class TunnelEncaps(Attribute):
                 struct.pack('!I', segment_list[bgp_cons.BGPSUB_TLV_WEIGHTED])
         seg_hex = b''
         for seg in segment_list[bgp_cons.BGPSUB_TLV_SID]:
-            seg_type = int(seg.keys()[0])
+            seg_type = int(list(seg)[0])
             if seg_type == bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_MPLS:
-                value = seg[seg.keys()[0]]
+                value = seg[list(seg)[0]]
                 sum_value = cls.construct_optional_label_sid(value)
                 seg_hex += struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_MPLS) + struct.pack('!B', 6) + b'\x00\x00' +\
                     struct.pack('!I', sum_value)
             # 3
             elif seg_type == bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_SID:
-                value = seg[seg.keys()[0]]
+                value = seg[list(seg)[0]]
                 ipv4_node = value['node']
                 if "SID" not in value.keys():
                     seg_hex += struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_SID) + struct.pack('!B', 6) + b'\x00\x00' +\
@@ -102,7 +101,7 @@ class TunnelEncaps(Attribute):
                         netaddr.IPAddress(ipv4_node).packed + struct.pack('!I', sum_value)
             # 5
             elif seg_type == bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_INDEX_SID:
-                value = seg[seg.keys()[0]]
+                value = seg[list(seg)[0]]
                 local_int = value['interface']
                 ipv4_node = value['node']
                 if "SID" not in value.keys():
@@ -117,7 +116,7 @@ class TunnelEncaps(Attribute):
                         netaddr.IPAddress(ipv4_node).packed + struct.pack('!I', sum_value)
             # 6
             elif seg_type == bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_ADDR_SID:
-                value = seg[seg.keys()[0]]
+                value = seg[list(seg)[0]]
                 local_ipv4 = value['local']
                 remote_ipv4 = value['remote']
                 if "SID" not in value.keys():
