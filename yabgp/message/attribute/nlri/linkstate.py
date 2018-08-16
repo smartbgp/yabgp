@@ -15,6 +15,7 @@
 """linkstate
 """
 
+from __future__ import division
 import struct
 import binascii
 
@@ -212,6 +213,6 @@ class BGPLS(NLRI):
 
     @classmethod
     def parse_iso_node_id(cls, data):
-        tmp = binascii.b2a_hex(data)
-        chunks, chunk_size = len(tmp), len(tmp)/3
-        return '.'.join([tmp[i:i+chunk_size] for i in range(0, chunks, chunk_size)])
+        tmp = binascii.b2a_hex(data).decode('utf-8')
+        chunks, chunk_size = len(tmp), len(tmp) // 3
+        return '.'.join([str(tmp[i:i+chunk_size]) for i in range(0, chunks, chunk_size)])

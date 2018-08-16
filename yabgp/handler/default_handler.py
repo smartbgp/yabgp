@@ -22,7 +22,7 @@ MSG_PROCESS_OPTS = [
                 default=True,
                 help='Whether the BGP message is written to disk'),
     cfg.StrOpt('write_dir',
-               default=os.path.join(os.environ['HOME'], 'data/bgp/'),
+               default=os.path.join(os.environ.get('HOME') or '.', 'data/bgp/'),
                help='The BGP messages storage path'),
     cfg.IntOpt('write_msg_max_size',
                default=500,

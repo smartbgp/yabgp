@@ -15,6 +15,8 @@
 
 """IPv4 Flowspec NLRI
 """
+from __future__ import division
+from builtins import range
 import binascii
 import math
 import struct
@@ -105,9 +107,12 @@ class IPv4FlowSpec(NLRI):
         Encoding: <prefix-length (1 octet), prefix>
         """
         prefix_len = ord(data[0:1])
-        octet_len = int(math.ceil(prefix_len / 8.0))
+        octet_len = int(math.ceil(prefix_len / 8))
         tmp = data[1:octet_len + 1]
-        prefix_data = [ord(i) for i in tmp]
+        if isinstance(tmp[0], int):
+            prefix_data = [i for i in tmp]
+        else:
+            prefix_data = [ord(i) for i in tmp]
         prefix_data = prefix_data + list(str(0)) * 4
         prefix = "%s.%s.%s.%s" % (tuple(prefix_data[0:4])) + '/' + str(prefix_len)
         return prefix, octet_len + 1
@@ -136,6 +141,7 @@ class IPv4FlowSpec(NLRI):
         parse_operator_list = []
         while data:
             operator = cls.parse_operator_flag(ord(data[0:1]))
+            print(operator)
             offset += 1
             operator_value = int(binascii.b2a_hex(data[1:1 + operator['LEN']]), 16)
             offset += operator['LEN']
@@ -156,7 +162,7 @@ class IPv4FlowSpec(NLRI):
         +---+---+---+---+---+---+---+---+
         """
         bit_list = []
-        for i in xrange(8):
+        for i in range(8):
             bit_list.append((data >> i) & 1)
         bit_list.reverse()
         result = {
@@ -268,12 +274,11 @@ class IPv4FlowSpec(NLRI):
                     flag_dict['GT'] = 1
                 elif '<' in data:
                     off_set = 1
-                    # value_hex = str(bytearray.fromhex(hex(int(data[2:]))[2:]))
                     flag_dict['LT'] = 1
                 hex_str = hex(int(data[off_set:]))[2:]
                 if len(hex_str) % 2 == 1:
                     hex_str = '0' + hex_str
-                value_hex = str(bytearray.fromhex(hex_str))
+                value_hex = bytearray.fromhex(hex_str)
                 flag_dict['LEN'] = len(value_hex)
                 opt_flag_bin = cls.construct_operator_flag(flag_dict)
                 data_bin += struct.pack('!B', opt_flag_bin)

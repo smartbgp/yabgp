@@ -13,8 +13,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import division
 import struct
 import binascii
+
 
 import netaddr
 
@@ -43,12 +45,12 @@ class LabeledUnicast(NLRI):
     def parse(cls, nlri_data):
         nlri_list = []
         while nlri_data:
-            nlri_bit_len = ord(nlri_data[0])
+            nlri_bit_len = ord(nlri_data[0:1])
             # get the byte lenght of label stack + prefix
             if nlri_bit_len % 8 == 0:
-                nlri_byte_len = nlri_bit_len / 8
+                nlri_byte_len = nlri_bit_len // 8
             else:
-                nlri_byte_len = nlri_bit_len / 8 + 1
+                nlri_byte_len = nlri_bit_len // 8 + 1
 
             offset = nlri_byte_len + 1
             label = cls.parse_mpls_label_stack(nlri_data[1:])
@@ -56,10 +58,8 @@ class LabeledUnicast(NLRI):
             prefix_byte_len = nlri_byte_len - label_byte_len
             prefix_mask = nlri_bit_len - label_byte_len * 8
             if cls.AFI == AFNUM_INET:
-                prefix_hex = nlri_data[offset - prefix_byte_len: offset] + (4 - prefix_byte_len) * '\x00'
-                prefix_data = [ord(i) for i in prefix_hex]
-                prefix_data = prefix_data
-                prefix = "%s.%s.%s.%s" % (tuple(prefix_data[0:4])) + '/' + str(prefix_mask)
+                prefix_hex = nlri_data[offset - prefix_byte_len: offset] + (4 - prefix_byte_len) * b'\x00'
+                prefix = str(netaddr.IPAddress(int(binascii.b2a_hex(prefix_hex), 16))) + '/' + str(prefix_mask)
             elif cls.AFI == AFNUM_INET6:  # ipv6
                 prefix_hex = nlri_data[offset - prefix_byte_len: offset]
                 prefix = str(netaddr.IPAddress(int(binascii.b2a_hex(prefix_hex), 16))) + '/' + str(prefix_mask)
