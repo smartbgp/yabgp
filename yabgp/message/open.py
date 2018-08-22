@@ -168,9 +168,18 @@ class Open(object):
                         self.capa_dict['enhanced_route_refresh'] = True
                     # (8) add path
                     elif capability.capa_code == capability.ADD_PATH:
-                        afi, safi, send_rev = struct.unpack('!HBB', capability.capa_value)
-                        self.capa_dict['add_path'] = '%s_%s' % (
-                            bgp_cons.AFI_SAFI_DICT[(afi, safi)], bgp_cons.ADD_PATH_ACT_DICT[send_rev])
+                        # could be more than one add path cap for different afi safi
+                        if 'add_path' not in self.capa_dict:
+                            self.capa_dict['add_path'] = []
+                        while len(capability.capa_value) % 4 == 0 and capability.capa_value:
+                            afi, safi, send_rev = struct.unpack('!HBB', capability.capa_value[:4])
+                            self.capa_dict['add_path'].append(
+                                {
+                                    'afi_safi': bgp_cons.AFI_SAFI_DICT[(afi, safi)],
+                                    'send/receive': bgp_cons.ADD_PATH_ACT_DICT[send_rev]
+                                }
+                            )
+                            capability.capa_value = capability.capa_value[4:]
                     # (9) Long-Lived Graceful Restart (LLGR) Capability
                     elif capability.capa_code == capability.LLGR:
                         self.capa_dict['LLGR'] = []
