@@ -19,6 +19,7 @@
 import struct
 import logging
 import binascii
+from builtins import range
 
 import netaddr
 
@@ -256,7 +257,7 @@ def parse_bit(data):
     +---+---+---+---+---+---+---+---+
     """
     bit_list = []
-    for i in xrange(8):
+    for i in range(8):
         bit_list.append((data >> i) & 1)
     bit_list.reverse()
     result = {

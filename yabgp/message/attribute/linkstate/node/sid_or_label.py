@@ -40,6 +40,6 @@ class SIDorLabel(TLV):
         """
         length = len(value)
         if length == 3:
-            return cls(value={"type": "sid", "value": (struct.unpack('!I', "\x00" + value)[0] << 12) >> 12})
+            return cls(value={"type": "sid", "value": (struct.unpack('!I', b"\x00" + value)[0] << 12) >> 12})
         elif length == 4:
             return cls(value={"type": "label", "value": struct.unpack('!I', value)[0]})

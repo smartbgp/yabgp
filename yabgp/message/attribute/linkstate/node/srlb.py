@@ -50,11 +50,11 @@ class SRLB(TLV):
                 break
             else:
                 tmp = dict()
-                range_size = struct.unpack('!I', "\x00" + value[:3])[0]
+                range_size = struct.unpack('!I', b"\x00" + value[:3])[0]
                 tmp['range_size'] = range_size
                 length = struct.unpack('!H', value[5:7])[0]
                 if length == 3:
-                    data = (struct.unpack('!I', "\x00" + value[7:7 + length])[0] << 12) >> 12
+                    data = (struct.unpack('!I', b"\x00" + value[7:7 + length])[0] << 12) >> 12
                     value = value[7 + length:]
                     tmp['label'] = data
                 elif length == 4:
