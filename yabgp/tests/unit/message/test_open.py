@@ -90,7 +90,7 @@ class TestOpen(unittest.TestCase):
             'capabilities': {
                 'cisco_route_refresh': True,
                 'route_refresh': True,
-                'add_path': 'ipv4_both',
+                'add_path': [{'afi_safi': 'ipv4', 'send/receive': 'both'}],
                 'four_bytes_as': True,
                 'afi_safi': [(1, 1)],
                 'enhanced_route_refresh': True}}
@@ -113,6 +113,27 @@ class TestOpen(unittest.TestCase):
                 'route_refresh': True},
             'hold_time': 180,
             'version': 4}
+        self.assertEqual(results, self.open.parse(msg_hex[HDR_LEN:]))
+
+    def test_parse_add_path_llgr(self):
+        msg_hex = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff' \
+                  b'\x00\x41\x01\x04\xfd\xe9\x00\xb4\x0a\x00\x00\x07\x24\x02\x22\x01' \
+                  b'\x04\x00\x01\x00\x01\x01\x04\x00\x01\x00\x04\x02\x00\x40\x02\x01' \
+                  b'\x2c\x41\x04\x00\x00\xfd\xe9\x45\x08\x00\x01\x01\x01\x00\x01\x04\x01'
+        results = {
+            'asn': 65001,
+            'bgp_id': '10.0.0.7',
+            'capabilities': {
+                'add_path': [
+                    {'afi_safi': 'ipv4', 'send/receive': 'receive'},
+                    {'afi_safi': 'ipv4_lu', 'send/receive': 'receive'}],
+                'afi_safi': [(1, 1), (1, 4)],
+                'four_bytes_as': True,
+                'graceful_restart': True,
+                'route_refresh': True},
+            'hold_time': 180,
+            'version': 4
+        }
         self.assertEqual(results, self.open.parse(msg_hex[HDR_LEN:]))
 
 
