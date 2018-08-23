@@ -17,8 +17,11 @@
 import time
 import logging
 
+from oslo_config import cfg
 from yabgp.core.timer import BGPTimer
 from yabgp.common import constants as bgp_cons
+
+CONF = cfg.CONF
 
 LOG = logging.getLogger(__name__)
 
@@ -46,20 +49,25 @@ class FSM(object):
         # Session attributes required (mandatory) for each connection:
         self.state = bgp_cons.ST_IDLE
         self.connect_retry_counter = 0
-        self.connect_retry_time = bgp_cons.CONNECT_RETRY_TIME
+        # self.connect_retry_time = bgp_cons.CONNECT_RETRY_TIME
+        self.connect_retry_time = CONF.time.connect_retry_time
         self.connect_retry_timer = BGPTimer(self.connect_retry_time_event, 'connect retry timer')
-        self.hold_time = bgp_cons.HOLD_TIME
+        # self.hold_time = bgp_cons.HOLD_TIME
+        self.hold_time = CONF.time.hold_time
 
         self.hold_timer = BGPTimer(self.hold_time_event, 'hold timer')
-        self.keep_alive_time = self.hold_time / 3
+        # self.keep_alive_time = self.hold_time / 3
+        self.keep_alive_time = CONF.time.keep_alive_time
         self.keep_alive_timer = BGPTimer(self.keep_alive_time_event, 'keep alive timer')
 
         self.allow_automatic_start = True
         self.allow_automatic_stop = False
         self.delay_open = False
-        self.delay_open_time = bgp_cons.DELAY_OPEN_TIME
+        # self.delay_open_time = bgp_cons.DELAY_OPEN_TIME
+        self.delay_open_time = CONF.time.delay_open_time
         self.delay_open_timer = BGPTimer(self.delay_open_time_event, 'delay open timer')
-        self.idle_hold_time = bgp_cons.IDLEHOLD_TIME
+        # self.idle_hold_time = bgp_cons.IDLEHOLD_TIME
+        self.idle_hold_time = CONF.time.idle_hold_time
         self.idle_hold_timer = BGPTimer(self.idle_hold_time_event, 'idle hold timer')
 
         self.uptime = None
