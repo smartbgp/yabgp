@@ -75,6 +75,26 @@ BGP_PEER_CONFIG_OPTS = [
 
 CONF.register_cli_opts(BGP_PEER_CONFIG_OPTS, group='bgp')
 
+BGP_PEER_TIME_OPTS = [
+    cfg.IntOpt('connect_retry_time',
+               default=30,
+               help='Connect retry timer'),
+    cfg.IntOpt('hold_time',
+               default=180,
+               help='Hold timer'),
+    cfg.IntOpt('keep_alive_time',
+               default=60,
+               help='Keepalive timer'),
+    cfg.IntOpt('delay_open_time',
+               default=10,
+               help='Delay open timer'),
+    cfg.IntOpt('idle_hold_time',
+               default=30,
+               help='Idle hold timer')
+]
+
+CONF.register_cli_opts(BGP_PEER_TIME_OPTS, group='time')
+
 LOG = logging.getLogger(__name__)
 
 
