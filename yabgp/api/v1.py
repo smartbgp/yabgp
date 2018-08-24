@@ -199,3 +199,26 @@ def send_update_message(peer_ip):
             'status': False,
             'code': 'please check your post data'
         })
+
+
+@blueprint.route('/peer/<peer_ip>/manual-start')
+@auth.login_required
+@api_utils.log_request
+def manual_start(peer_ip):
+    """
+    Try to manual start BGP session
+    """
+    LOG.debug('Try to manual start BGP session %s', peer_ip)
+    return flask.jsonify(api_utils.manual_start(peer_ip))
+
+
+@blueprint.route('/peer/<peer_ip>/manual-stop')
+@auth.login_required
+@api_utils.log_request
+@api_utils.makesure_peer_establish
+def manual_stop(peer_ip):
+    """
+    Try to manual stop BGP session
+    """
+    LOG.debug('Try to manual stop BGP session %s', peer_ip)
+    return flask.jsonify(api_utils.manual_stop(peer_ip))

@@ -112,7 +112,6 @@ class FSM(object):
         """
         LOG.info('Manual stop')
         if self.state != bgp_cons.ST_IDLE:
-
             self.protocol.send_notification(bgp_cons.ERR_CEASE, 0)
             # Stop all timers
             LOG.info('Stop all timers')
@@ -125,6 +124,9 @@ class FSM(object):
             self.connect_retry_counter = 0
             self.allow_automatic_start = False
             self.state = bgp_cons.ST_IDLE
+            return True
+        else:
+            return False
 
     def automatic_start(self, idle_hold=False):
 
