@@ -180,7 +180,7 @@ class BGPPeering(BGPFactory):
         will fire once the connection(s) have closed"""
 
         try:
-            return self.estab_protocol.fsm.manual_stop()
+            return self.fsm.manual_stop()
         except Exception as e:
             LOG.error(e)
 

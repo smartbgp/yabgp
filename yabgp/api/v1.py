@@ -215,7 +215,6 @@ def manual_start(peer_ip):
 @blueprint.route('/peer/<peer_ip>/manual-stop')
 @auth.login_required
 @api_utils.log_request
-@api_utils.makesure_peer_establish
 def manual_stop(peer_ip):
     """
     Try to manual stop BGP session

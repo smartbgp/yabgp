@@ -167,3 +167,40 @@ POST data format for withdraw
     {
         "status": true
     }
+
+Manual start and stop
+~~~~~~~~~~~~~~~~~~~~~
+
+manual start
+++++++++++++
+
+ Try to manual start BGP session
+
+.. code-block:: bash
+
+    GET /v1/peer/<peer_ip_address>/manual-start
+
+**Example response**:
+
+.. code-block:: json
+
+    {
+        "status": true
+    }
+
+manual stop
++++++++++++
+
+ Try to manual start BGP session
+
+.. code-block:: bash
+
+    GET /v1/peer/<peer_ip_address>/manual-stop
+
+**Example response**:
+
+.. code-block:: json
+
+    {
+        "status": true
+    }
