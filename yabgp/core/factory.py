@@ -164,20 +164,22 @@ class BGPPeering(BGPFactory):
                 self.connect()
 
     def manual_start(self, idle_hold=False):
-        if self.fsm.state == bgp_cons.ST_IDLE:
+        if self.fsm.state == bgp_cons.ST_ESTABLISHED:
+            return "EST"
+        elif self.fsm.state == bgp_cons.ST_IDLE:
             if self.fsm.manual_start(idle_hold=idle_hold):
                 self.status = True
                 self.connect()
+                return True
+        else:
+            return False
 
     def manual_stop(self):
 
         """BGP ManualStop event (event 2) Returns a DeferredList that
         will fire once the connection(s) have closed"""
 
-        try:
-            self.estab_protocol.fsm.manual_stop()
-        except Exception as e:
-            LOG.error(e)
+        return self.fsm.manual_stop()
 
     def connection_closed(self, pro, disconnect=False):
         """

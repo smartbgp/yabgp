@@ -138,3 +138,59 @@ def send_update(peer_ip, attr, nlri, withdraw):
             'status': False,
             'code': 'failed when send this message out'
         }
+
+
+def manual_start(peer_ip):
+    '''
+    manual start BGP session
+    :param peer_ip:  peer ip address
+    :return:
+    '''
+    try:
+
+        res = cfg.CONF.bgp.running_config['factory'].manual_start()
+        if res == 'EST':
+            return {
+                'status': False,
+                'code': 'peer already established'
+            }
+        elif res:
+            return {
+                'status': True
+            }
+        else:
+            return {
+                'status': False,
+                'code': 'Idle Hold, please wait'
+            }
+    except Exception as e:
+        LOG.error(e)
+        return {
+            'status': False,
+            'code': 'failed manual start'
+        }
+
+
+def manual_stop(peer_ip):
+    '''
+    manual stop BGP session
+    :param peer_ip:
+    :return:
+    '''
+    try:
+        result = cfg.CONF.bgp.running_config['factory'].manual_stop()
+        if result:
+            return {
+                'status': True
+            }
+        else:
+            return {
+                'status': False,
+                'code': 'failed manual stop'
+            }
+    except Exception as e:
+        LOG.error(e)
+        return {
+            'status': False,
+            'code': 'failed manual stop'
+        }
