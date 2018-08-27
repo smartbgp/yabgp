@@ -179,10 +179,7 @@ class BGPPeering(BGPFactory):
         """BGP ManualStop event (event 2) Returns a DeferredList that
         will fire once the connection(s) have closed"""
 
-        try:
-            return self.fsm.manual_stop()
-        except Exception as e:
-            LOG.error(e)
+        return self.fsm.manual_stop()
 
     def connection_closed(self, pro, disconnect=False):
         """

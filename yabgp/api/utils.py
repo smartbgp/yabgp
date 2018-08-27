@@ -186,7 +186,7 @@ def manual_stop(peer_ip):
         else:
             return {
                 'status': False,
-                'code': 'peer state is idle'
+                'code': 'failed manual stop'
             }
     except Exception as e:
         LOG.error(e)

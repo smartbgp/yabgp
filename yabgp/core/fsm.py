@@ -111,22 +111,20 @@ class FSM(object):
         Status: Mandatory
         """
         LOG.info('Manual stop')
-        if self.state != bgp_cons.ST_IDLE:
+        if self.state == bgp_cons.ST_ESTABLISHED:
             self.protocol.send_notification(bgp_cons.ERR_CEASE, 0)
-            # Stop all timers
-            LOG.info('Stop all timers')
-            for timer in (self.connect_retry_timer, self.hold_timer, self.keep_alive_timer,
-                          self.delay_open_timer, self.idle_hold_timer):
-                if timer.status:
-                    timer.cancel()
-                    LOG.info('-- Stop timer %s', timer.name)
-            self._close_connection()
-            self.connect_retry_counter = 0
-            self.allow_automatic_start = False
-            self.state = bgp_cons.ST_IDLE
-            return True
-        else:
-            return False
+        # Stop all timers
+        LOG.info('Stop all timers')
+        for timer in (self.connect_retry_timer, self.hold_timer, self.keep_alive_timer,
+                      self.delay_open_timer, self.idle_hold_timer):
+            if timer.status:
+                timer.cancel()
+                LOG.info('-- Stop timer %s', timer.name)
+        self._close_connection()
+        self.connect_retry_counter = 0
+        self.allow_automatic_start = False
+        self.state = bgp_cons.ST_IDLE
+        return True
 
     def automatic_start(self, idle_hold=False):
 
