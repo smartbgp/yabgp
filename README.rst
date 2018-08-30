@@ -5,7 +5,8 @@
 YABGP
 =====
 
-|Version| |License| |Build Status| |Code Health| |Documentation Status| |Test Coverage| |Downloads|
+|Docker| |Version| |License| |Build Status| |Code Health| |Documentation Status| |Test Coverage| |Downloads|
+
 
 What is yabgp?
 ~~~~~~~~~~~~~~
@@ -149,3 +150,6 @@ https://github.com/Exa-Networks/exabgp
 
 .. |Downloads| image:: https://img.shields.io/pypi/dm/yabgp.svg?
    :target: https://pypi.python.org/pypi/yabgp
+
+.. |Docker| image:: https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg?style=plastic   
+   :target: https://hub.docker.com/r/smartbgp/yabgp/
