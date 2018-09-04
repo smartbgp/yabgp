@@ -194,3 +194,60 @@ def manual_stop(peer_ip):
             'status': False,
             'code': 'failed manual stop'
         }
+
+
+def save_send_ipv4_policies(attr, nlri, withdraw):
+    if cfg.CONF.bgp.running_config['factory'].fsm.protocol.save_send_ipv4_policies(attr, nlri, withdraw):
+        return {
+            'status': True
+        }
+    else:
+        return {
+            'status': False,
+            'code': 'failed when save this message'
+        }
+
+
+def get_optimal_prefix_ipv4(ip_list, action_type):
+    try:
+        results = cfg.CONF.bgp.running_config['factory'].fsm.protocol.get_optimal_prefix_ipv4(ip_list, action_type)
+        return {
+            'status': True,
+            'data': results
+        }
+    except Exception as e:
+        LOG.error(e)
+        return {
+            'status': False,
+            'code': e.__str__()
+        }
+
+
+def get_attr_by_prefix_ipv4(prefix_list, action_type):
+    try:
+        results = cfg.CONF.bgp.running_config['factory'].fsm.protocol.get_attr_by_prefix_ipv4(prefix_list, action_type)
+        return {
+            'status': True,
+            'data': results
+        }
+    except Exception as e:
+        LOG.error(e)
+        return {
+            'status': False,
+            'code': e.__str__()
+        }
+
+
+def get_prefix_by_attr_ipv4(attr_dict, action_type):
+    try:
+        results = cfg.CONF.bgp.running_config['factory'].fsm.protocol.get_prefix_by_attr_ipv4(attr_dict, action_type)
+        return {
+            'status': True,
+            'data': results
+        }
+    except Exception as e:
+        LOG.error(e)
+        return {
+            'status': False,
+            'code': e.__str__()
+        }

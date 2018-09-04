@@ -189,6 +189,9 @@ def send_update_message(peer_ip):
                             'code': 'unexpected extended community "%s", please check your post data' % key
                         })
             attr[16] = ext_community
+    result = api_utils.save_send_ipv4_policies(attr, nlri, withdraw)
+    if not result.get('status'):
+        return flask.jsonify(result)
     if (attr and nlri) or withdraw:
         return flask.jsonify(api_utils.send_update(peer_ip, attr, nlri, withdraw))
     elif 14 in attr or 15 in attr:
@@ -221,3 +224,42 @@ def manual_stop(peer_ip):
     """
     LOG.debug('Try to manual stop BGP session %s', peer_ip)
     return flask.jsonify(api_utils.manual_stop(peer_ip))
+
+
+@blueprint.route('/peer/<peer_ip>/search/<type>/ipv4-unicast/optimal-prefix', methods=['POST'])
+@auth.login_required
+@api_utils.log_request
+@api_utils.makesure_peer_establish
+def get_optimal_prefix_ipv4(peer_ip, type):
+    json_request = flask.request.get_json()
+    ip_list = json_request.get('ip_list')
+    if type == 'sent':
+        return flask.jsonify(api_utils.get_optimal_prefix_ipv4(ip_list, "sent"))
+    elif type == 'received':
+        return flask.jsonify(api_utils.get_optimal_prefix_ipv4(ip_list, "received"))
+
+
+@blueprint.route('/peer/<peer_ip>/search/<type>/ipv4-unicast/prefix', methods=['POST'])
+@auth.login_required
+@api_utils.log_request
+@api_utils.makesure_peer_establish
+def get_attr_by_prefix_ipv4(peer_ip, type):
+    json_request = flask.request.get_json()
+    prefix_list = json_request.get('prefix_list')
+    if type == 'sent':
+        return flask.jsonify(api_utils.get_attr_by_prefix_ipv4(prefix_list, "sent"))
+    elif type == 'received':
+        return flask.jsonify(api_utils.get_attr_by_prefix_ipv4(prefix_list, "received"))
+
+
+@blueprint.route('/peer/<peer_ip>/search/<type>/ipv4-unicast/attribute', methods=['POST'])
+@auth.login_required
+@api_utils.log_request
+@api_utils.makesure_peer_establish
+def get_prefix_by_attr_ipv4(peer_ip, type):
+    json_request = flask.request.get_json()
+    attr_dict = json_request.get('attrs')
+    if type == 'sent':
+        return flask.jsonify(api_utils.get_prefix_by_attr_ipv4(attr_dict, "sent"))
+    elif type == 'received':
+        return flask.jsonify(api_utils.get_prefix_by_attr_ipv4(attr_dict, "received"))

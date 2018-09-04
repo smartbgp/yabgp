@@ -24,6 +24,7 @@ import netaddr
 from oslo_config import cfg
 from twisted.internet import protocol
 from twisted.internet import reactor
+from SubnetTree import SubnetTree
 
 from yabgp.common import constants as bgp_cons
 from yabgp.message.open import Open
@@ -53,6 +54,10 @@ class BGP(protocol.Protocol):
         self.fourbytesas = False
         self.add_path_ipv4_receive = False
         self.add_path_ipv4_send = False
+        self.send_ipv4_policies = {}
+        self.send_ipv4_prefixes_tree = SubnetTree()
+        self.received_ipv4_policies = {}
+        self.received_ipv4_prefixes_tree = SubnetTree()
 
         # statistic
         self.msg_sent_stat = {
@@ -262,7 +267,9 @@ class BGP(protocol.Protocol):
             'withdraw': result['withdraw'],
             'afi_safi': afi_safi
         }
-
+        if msg.get('afi_safi') == 'ipv4':
+            self.save_received_ipv4_policies(msg.get('attr'), msg.get('nlri'), msg.get('withdraw'))
+        LOG.info(msg)
         self.handler.update_received(self, timestamp, msg)
 
         self.msg_recv_stat['Updates'] += 1
@@ -513,3 +520,177 @@ class BGP(protocol.Protocol):
         LOG.info(
             "[%s]Hold time:%s,Keepalive time:%s", self.factory.peer_addr,
             self.fsm.hold_time, self.fsm.keep_alive_time)
+
+    def save_send_ipv4_policies(self, attr, nlri, withdraw):
+        try:
+            if withdraw:
+                for prefix in withdraw:
+                    if prefix in self.send_ipv4_policies:
+                        self.send_ipv4_policies.pop(prefix)
+                        try:
+                            self.send_ipv4_prefixes_tree.remove(prefix)
+                        except RuntimeError as e:
+                            if e.__str__() == 'patricia_lookup failed.':
+                                pass
+                            else:
+                                return False
+            if attr and nlri and "14" not in attr and "15" not in attr:
+                for prefix in nlri:
+                    self.send_ipv4_policies[prefix] = attr
+                    try:
+                        self.send_ipv4_prefixes_tree.remove(prefix)
+                        LOG.info("remove a repeate key in tree. %s" % prefix)
+                    except RuntimeError as e:
+                        if e.__str__() == 'patricia_lookup failed.':
+                            pass
+                        else:
+                            return False
+                    self.send_ipv4_prefixes_tree[prefix] = prefix
+            return True
+        except Exception as e:
+            LOG.error(e)
+            return False
+
+    def save_received_ipv4_policies(self, attr, nlri, withdraw):
+        try:
+            if withdraw:
+                for prefix in withdraw:
+                    if prefix in self.received_ipv4_policies:
+                        self.received_ipv4_policies.pop(prefix)
+                        try:
+                            self.received_ipv4_prefixes_tree.remove(prefix)
+                        except RuntimeError as e:
+                            if e.__str__() == 'patricia_lookup failed.':
+                                pass
+                            else:
+                                return False
+            if attr and nlri and "14" not in attr and "15" not in attr:
+                for prefix in nlri:
+                    self.received_ipv4_policies[prefix] = attr
+                    try:
+                        self.received_ipv4_prefixes_tree.remove(prefix)
+                        LOG.info("remove a repeate key in tree. %s" % prefix)
+                    except RuntimeError as e:
+                        if e.__str__() == 'patricia_lookup failed.':
+                            pass
+                        else:
+                            return False
+                    self.received_ipv4_prefixes_tree[prefix] = prefix
+            return True
+        except Exception as e:
+            LOG.error(e)
+            return False
+
+    def get_optimal_prefix_ipv4(self, ip_list, action_type):
+        results = []
+        if action_type == 'sent':
+            for target_ip in ip_list:
+                if target_ip in self.send_ipv4_prefixes_tree:
+                    results.append(self.send_ipv4_prefixes_tree[target_ip])
+                else:
+                    results.append(None)
+        else:
+            for target_ip in ip_list:
+                if target_ip in self.received_ipv4_prefixes_tree:
+                    results.append(self.received_ipv4_prefixes_tree[target_ip])
+                else:
+                    results.append(None)
+        return results
+
+    def get_attr_by_prefix_ipv4(self, prefix_list, action_type):
+        results = []
+        if action_type == 'sent':
+            for target_prefix in prefix_list:
+                result = self.send_ipv4_policies.get(target_prefix)
+                results.append(result)
+        else:
+            for target_prefix in prefix_list:
+                result = self.received_ipv4_policies.get(target_prefix)
+                results.append(result)
+        return results
+
+    def get_prefix_by_attr_ipv4(self, attr_dict, action_type):
+        results = []
+        attr_key_dict = {
+            "origin": 1,
+            "nexthop": 3,
+            "local_preference": 5
+        }
+        special_key_list = ["color", "direct_as", "cross_as", "origin_as", "community"]
+        if action_type == 'sent':
+            for prefix in self.send_ipv4_policies:
+                continue_flag = True
+                for attr in attr_dict:
+                    if attr.strip().lower() in attr_key_dict:
+                        if self.send_ipv4_policies[prefix][attr_key_dict[attr]] == attr_dict[attr]:
+                            continue
+                        else:
+                            continue_flag = False
+                            break
+                    elif attr in special_key_list:
+                        if attr.strip().lower() == 'direct_as' and self.send_ipv4_policies[prefix][2] \
+                                and self.send_ipv4_policies[prefix][2][0][1][-1] == int(attr_dict[attr]):
+                            continue
+                        elif attr.strip().lower() == 'origin_as' and self.send_ipv4_policies[prefix][2] \
+                                and self.send_ipv4_policies[prefix][2][0][1][0] == int(attr_dict[attr]):
+                            continue
+                        elif attr.strip().lower() == 'cross_as' and self.send_ipv4_policies[prefix][2] \
+                                and int(attr_dict[attr]) in self.send_ipv4_policies[prefix][2][0][1]:
+                            continue
+                        elif attr.strip().lower() == "color" and self.send_ipv4_policies[prefix].get(16):
+                            ext_comm_match_flag = False
+                            for ext_comm in self.send_ipv4_policies[prefix][16]:
+                                if ext_comm == [bgp_cons.BGP_EXT_COM_DICT.get('color'), str(attr_dict[attr])]:
+                                    ext_comm_match_flag = True
+                                    break
+                            if ext_comm_match_flag:
+                                continue
+                            else:
+                                continue_flag = False
+                                break
+                        else:
+                            continue_flag = False
+                            break
+                    else:
+                        raise ValueError("search attribute may contained nosupport field")
+                if continue_flag:
+                    results.append(prefix)
+        else:
+            for prefix in self.received_ipv4_policies:
+                continue_flag = True
+                for attr in attr_dict:
+                    if attr.strip().lower() in attr_key_dict:
+                        if self.received_ipv4_policies[prefix][attr_key_dict[attr]] == attr_dict[attr]:
+                            continue
+                        else:
+                            continue_flag = False
+                            break
+                    elif attr in special_key_list:
+                        if attr.strip().lower() == 'direct_as' and self.received_ipv4_policies[prefix][2] \
+                                and self.received_ipv4_policies[prefix][2][0][1][-1] == int(attr_dict[attr]):
+                            continue
+                        elif attr.strip().lower() == 'origin_as' and self.received_ipv4_policies[prefix][2] \
+                                and self.received_ipv4_policies[prefix][2][0][1][0] == int(attr_dict[attr]):
+                            continue
+                        elif attr.strip().lower() == 'cross_as' and self.received_ipv4_policies[prefix][2] \
+                                and int(attr_dict[attr]) in self.received_ipv4_policies[prefix][2][0][1]:
+                            continue
+                        elif attr.strip().lower() == "color" and self.received_ipv4_policies[prefix].get(16):
+                            ext_comm_match_flag = False
+                            for ext_comm in self.received_ipv4_policies[prefix][16]:
+                                if ext_comm == [bgp_cons.BGP_EXT_COM_DICT.get('color'), str(attr_dict[attr])]:
+                                    ext_comm_match_flag = True
+                                    break
+                            if ext_comm_match_flag:
+                                continue
+                            else:
+                                continue_flag = False
+                                break
+                        else:
+                            continue_flag = False
+                            break
+                    else:
+                        raise ValueError("search attribute may contained nosupport field")
+                if continue_flag:
+                    results.append(prefix)
+        return results

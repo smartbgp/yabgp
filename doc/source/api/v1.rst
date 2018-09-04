@@ -204,3 +204,146 @@ manual stop
     {
         "status": true
     }
+
+Get attributes by prefixes from sent or received updates(IPv4 Only)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+from sent updates
++++++++++++++++++
+
+.. code-block:: bash
+
+    POST /v1/peer/{{peer}}/search/sent/ipv4-unicast/prefix
+
+from received updates
++++++++++++++++++++++
+
+.. code-block:: bash
+
+    POST /v1/peer/{{peer}}/search/received/ipv4-unicast/prefix
+
+**Example request**:
+
+.. code-block:: json
+
+    {
+	    "prefix_list": ["172.20.1.1/24", "172.20.4.0/24"]
+    }
+
+**Example response**:
+
+.. code-block:: json
+
+    {
+        "data": [
+            null,
+            {
+                "1": 1,
+                "2": [
+                    [
+                        2,
+                        [
+                            1,
+                            2,
+                            3,
+                            4
+                        ]
+                    ]
+                ],
+                "3": "192.0.2.2",
+                "5": 100,
+                "8": [
+                    "NO_ADVERTISE",
+                    "123:457"
+                ],
+                "16": [
+                    [
+                        779,
+                        "30000"
+                    ]
+                ]
+            }
+        ],
+        "status": true
+    }
+
+Get prefixes by attributes from sent or received updates(IPv4 Only)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+from sent updates
++++++++++++++++++
+
+.. code-block:: bash
+
+    POST /v1/peer/{{peer}}/search/sent/ipv4-unicast/attribute
+
+from received updates
++++++++++++++++++++++
+
+.. code-block:: bash
+
+    POST /v1/peer/{{peer}}/search/received/ipv4-unicast/attribute
+
+**Example request**:
+
+.. code-block:: json
+
+    {
+        "attrs": {
+            "nexthop": "192.0.2.2",
+            "origin_as": 1,
+            "direct_as": 4,
+            "cross_as": 2,
+            "color": 30000
+        }
+    }
+
+**Example response**:
+
+.. code-block:: json
+
+    {
+        "data": [
+            "172.20.4.0/24",
+            "172.20.5.0/24",
+            "172.20.6.6/24"
+        ],
+        "status": true
+    }
+
+Get optimal prefix by ip address from sent or received updates(IPv4 Only)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+from sent updates
++++++++++++++++++
+
+.. code-block:: bash
+
+    POST /v1/peer/{{peer}}/search/sent/ipv4-unicast/optimal-prefix
+
+from received updates
++++++++++++++++++++++
+
+.. code-block:: bash
+
+    POST /v1/peer/{{peer}}/search/received/ipv4-unicast/optimal-prefix
+
+**Example request**:
+
+.. code-block:: json
+
+    {
+        "ip_list": ["172.20.4.0", "171.10.0.1"]
+    }
+
+**Example response**:
+
+.. code-block:: json
+
+    {
+        "data": [
+            "172.20.4.0/24",
+            null
+        ],
+        "status": true
+    }
