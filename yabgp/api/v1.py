@@ -19,7 +19,7 @@ import logging
 import time
 
 from flask.ext.httpauth import HTTPBasicAuth
-from flask import Blueprint
+from flask import Blueprint, request
 import flask
 from oslo_config import cfg
 
@@ -107,9 +107,9 @@ def send_update_message(peer_ip):
     """
     LOG.debug('Try to send update message to peer %s', peer_ip)
     json_request = flask.request.get_json()
-    attr = json_request.get('attr')
-    nlri = json_request.get('nlri')
-    withdraw = json_request.get('withdraw')
+    attr = json_request.get('attr') or {}
+    nlri = json_request.get('nlri') or []
+    withdraw = json_request.get('withdraw') or []
     if attr:
         attr = {int(k): v for k, v in attr.items()}
         res = api_utils.get_peer_conf_and_state(peer_ip)
@@ -189,9 +189,16 @@ def send_update_message(peer_ip):
                             'code': 'unexpected extended community "%s", please check your post data' % key
                         })
             attr[16] = ext_community
-    result = api_utils.save_send_ipv4_policies(attr, nlri, withdraw)
-    if not result.get('status'):
-        return flask.jsonify(result)
+    if cfg.CONF.bgp.rib:
+        result = api_utils.save_send_ipv4_policies(
+            msg={
+                'attr': attr,
+                'nlri': nlri,
+                'withdraw': withdraw
+            }
+        )
+        if not result.get('status'):
+            return flask.jsonify(result)
     if (attr and nlri) or withdraw:
         return flask.jsonify(api_utils.send_update(peer_ip, attr, nlri, withdraw))
     elif 14 in attr or 15 in attr:
@@ -226,40 +233,23 @@ def manual_stop(peer_ip):
     return flask.jsonify(api_utils.manual_stop(peer_ip))
 
 
-@blueprint.route('/peer/<peer_ip>/search/<type>/ipv4-unicast/optimal-prefix', methods=['POST'])
+@blueprint.route('/peer/<peer_ip>/adj-rib-in', methods=['POST'])
 @auth.login_required
 @api_utils.log_request
 @api_utils.makesure_peer_establish
-def get_optimal_prefix_ipv4(peer_ip, type):
+def search_adj_rib_in(peer_ip):
     json_request = flask.request.get_json()
-    ip_list = json_request.get('ip_list')
-    if type == 'sent':
-        return flask.jsonify(api_utils.get_optimal_prefix_ipv4(ip_list, "sent"))
-    elif type == 'received':
-        return flask.jsonify(api_utils.get_optimal_prefix_ipv4(ip_list, "received"))
+    prefix_list = json_request.get('data')
+    afi_safi = dict(request.args.items()).get('afi_safi') or 'ipv4'
+    return flask.jsonify(api_utils.get_adj_rib_in(prefix_list, afi_safi))
 
 
-@blueprint.route('/peer/<peer_ip>/search/<type>/ipv4-unicast/prefix', methods=['POST'])
+@blueprint.route('/peer/<peer_ip>/adj-rib-out', methods=['POST'])
 @auth.login_required
 @api_utils.log_request
 @api_utils.makesure_peer_establish
-def get_attr_by_prefix_ipv4(peer_ip, type):
+def search_adj_rib_out(peer_ip):
     json_request = flask.request.get_json()
-    prefix_list = json_request.get('prefix_list')
-    if type == 'sent':
-        return flask.jsonify(api_utils.get_attr_by_prefix_ipv4(prefix_list, "sent"))
-    elif type == 'received':
-        return flask.jsonify(api_utils.get_attr_by_prefix_ipv4(prefix_list, "received"))
-
-
-@blueprint.route('/peer/<peer_ip>/search/<type>/ipv4-unicast/attribute', methods=['POST'])
-@auth.login_required
-@api_utils.log_request
-@api_utils.makesure_peer_establish
-def get_prefix_by_attr_ipv4(peer_ip, type):
-    json_request = flask.request.get_json()
-    attr_dict = json_request.get('attrs')
-    if type == 'sent':
-        return flask.jsonify(api_utils.get_prefix_by_attr_ipv4(attr_dict, "sent"))
-    elif type == 'received':
-        return flask.jsonify(api_utils.get_prefix_by_attr_ipv4(attr_dict, "received"))
+    prefix_list = json_request.get('data')
+    afi_safi = dict(request.args.items()).get('afi_safi') or 'ipv4'
+    return flask.jsonify(api_utils.get_adj_rib_out(prefix_list, afi_safi))

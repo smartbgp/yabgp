@@ -205,145 +205,207 @@ manual stop
         "status": true
     }
 
-Get attributes by prefixes from sent or received updates(IPv4 Only)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Adj Rib In Search
+~~~~~~~~~~~~~~~~~~~
 
-from sent updates
-+++++++++++++++++
+search Adj Rib In (received RIB) based on address family.
 
-.. code-block:: bash
-
-    POST /v1/peer/{{peer}}/search/sent/ipv4-unicast/prefix
-
-from received updates
-+++++++++++++++++++++
+IPv4 unicast
+++++++++++++++
 
 .. code-block:: bash
 
-    POST /v1/peer/{{peer}}/search/received/ipv4-unicast/prefix
+    POST /v1/peer/{{peer}}/adj-rib-in?afi_safi=ipv4
 
-**Example request**:
+POST data format:
 
 .. code-block:: json
 
     {
-	    "prefix_list": ["172.20.1.1/24", "172.20.4.0/24"]
+        "data": ["186.96.174.0","199.36.240.0/22"]
     }
 
-**Example response**:
+``data`` is prefix or IP list, for prefix format, we use exactly match, for IP format, we use prefix longest match
+
+The response example: (each ip/prefix match results with attributes and prefix)
 
 .. code-block:: json
 
     {
-        "data": [
-            null,
-            {
-                "1": 1,
-                "2": [
-                    [
-                        2,
+        "data": {
+            "186.96.174.0": {
+                "attr": {
+                    "1": 0,
+                    "2": [
                         [
-                            1,
                             2,
-                            3,
-                            4
+                            [
+                                27418,
+                                8100,
+                                3491,
+                                3356,
+                                3549,
+                                7049,
+                                11750
+                            ]
                         ]
+                    ],
+                    "3": "10.75.44.254",
+                    "5": 100,
+                    "8": [
+                        "3356:3",
+                        "3356:86",
+                        "3356:575",
+                        "3356:666",
+                        "3356:2003",
+                        "3549:4813",
+                        "3549:34032",
+                        "8100:50",
+                        "29761:50"
+                    ],
+                    "9": "172.17.0.7",
+                    "10": [
+                        "2.2.2.2"
                     ]
-                ],
-                "3": "192.0.2.2",
-                "5": 100,
-                "8": [
-                    "NO_ADVERTISE",
-                    "123:457"
-                ],
-                "16": [
-                    [
-                        779,
-                        "30000"
+                },
+                "prefix": "186.96.174.0/24"
+            },
+            "199.36.240.0/22": {
+                "attr": {
+                    "1": 0,
+                    "2": [
+                        [
+                            2,
+                            [
+                                27418,
+                                8100,
+                                174,
+                                13238
+                            ]
+                        ]
+                    ],
+                    "3": "10.75.44.254",
+                    "5": 100,
+                    "7": [
+                        13238,
+                        "100.43.92.159"
+                    ],
+                    "8": [
+                        "174:21001",
+                        "174:22013",
+                        "8100:50",
+                        "29761:50"
+                    ],
+                    "9": "172.17.0.7",
+                    "10": [
+                        "2.2.2.2"
                     ]
-                ]
+                },
+                "prefix": "199.36.240.0/22"
             }
-        ],
+        },
         "status": true
     }
 
-Get prefixes by attributes from sent or received updates(IPv4 Only)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-from sent updates
-+++++++++++++++++
+Adj Rib out Search
+~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: bash
+search Adj Rib out (sended RIB) based on address family.
 
-    POST /v1/peer/{{peer}}/search/sent/ipv4-unicast/attribute
-
-from received updates
-+++++++++++++++++++++
+IPv4 unicast
+++++++++++++++
 
 .. code-block:: bash
 
-    POST /v1/peer/{{peer}}/search/received/ipv4-unicast/attribute
+    POST /v1/peer/{{peer}}/adj-rib-out?afi_safi=ipv4
 
-**Example request**:
+POST data format:
 
 .. code-block:: json
 
     {
-        "attrs": {
-            "nexthop": "192.0.2.2",
-            "origin_as": 1,
-            "direct_as": 4,
-            "cross_as": 2,
-            "color": 30000
-        }
+        "data": ["186.96.174.0/24","199.36.240.0/22"]
     }
 
-**Example response**:
+``data`` is prefix list.
+
+The response example: (each ip/prefix match results with attributes and prefix)
 
 .. code-block:: json
 
     {
-        "data": [
-            "172.20.4.0/24",
-            "172.20.5.0/24",
-            "172.20.6.6/24"
-        ],
-        "status": true
-    }
-
-Get optimal prefix by ip address from sent or received updates(IPv4 Only)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-from sent updates
-+++++++++++++++++
-
-.. code-block:: bash
-
-    POST /v1/peer/{{peer}}/search/sent/ipv4-unicast/optimal-prefix
-
-from received updates
-+++++++++++++++++++++
-
-.. code-block:: bash
-
-    POST /v1/peer/{{peer}}/search/received/ipv4-unicast/optimal-prefix
-
-**Example request**:
-
-.. code-block:: json
-
-    {
-        "ip_list": ["172.20.4.0", "171.10.0.1"]
-    }
-
-**Example response**:
-
-.. code-block:: json
-
-    {
-        "data": [
-            "172.20.4.0/24",
-            null
-        ],
+        "data": {
+            "186.96.174.0/24": {
+                "attr": {
+                    "1": 0,
+                    "2": [
+                        [
+                            2,
+                            [
+                                27418,
+                                8100,
+                                3491,
+                                3356,
+                                3549,
+                                7049,
+                                11750
+                            ]
+                        ]
+                    ],
+                    "3": "10.75.44.254",
+                    "5": 100,
+                    "8": [
+                        "3356:3",
+                        "3356:86",
+                        "3356:575",
+                        "3356:666",
+                        "3356:2003",
+                        "3549:4813",
+                        "3549:34032",
+                        "8100:50",
+                        "29761:50"
+                    ],
+                    "9": "172.17.0.7",
+                    "10": [
+                        "2.2.2.2"
+                    ]
+                },
+                "prefix": "186.96.174.0/24"
+            },
+            "199.36.240.0/22": {
+                "attr": {
+                    "1": 0,
+                    "2": [
+                        [
+                            2,
+                            [
+                                27418,
+                                8100,
+                                174,
+                                13238
+                            ]
+                        ]
+                    ],
+                    "3": "10.75.44.254",
+                    "5": 100,
+                    "7": [
+                        13238,
+                        "100.43.92.159"
+                    ],
+                    "8": [
+                        "174:21001",
+                        "174:22013",
+                        "8100:50",
+                        "29761:50"
+                    ],
+                    "9": "172.17.0.7",
+                    "10": [
+                        "2.2.2.2"
+                    ]
+                },
+                "prefix": "199.36.240.0/22"
+            }
+        },
         "status": true
     }

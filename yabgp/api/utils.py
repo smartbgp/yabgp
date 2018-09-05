@@ -196,8 +196,8 @@ def manual_stop(peer_ip):
         }
 
 
-def save_send_ipv4_policies(attr, nlri, withdraw):
-    if cfg.CONF.bgp.running_config['factory'].fsm.protocol.save_send_ipv4_policies(attr, nlri, withdraw):
+def save_send_ipv4_policies(msg):
+    if cfg.CONF.bgp.running_config['factory'].fsm.protocol.update_rib_out_ipv4(msg):
         return {
             'status': True
         }
@@ -208,12 +208,16 @@ def save_send_ipv4_policies(attr, nlri, withdraw):
         }
 
 
-def get_optimal_prefix_ipv4(ip_list, action_type):
+def get_adj_rib_in(prefix_list, afi_safi):
     try:
-        results = cfg.CONF.bgp.running_config['factory'].fsm.protocol.get_optimal_prefix_ipv4(ip_list, action_type)
+        if afi_safi == 'ipv4':
+            data = {
+                prefix: cfg.CONF.bgp.running_config['factory'].fsm.protocol.ip_longest_match(prefix)
+                for prefix in prefix_list
+            }
         return {
             'status': True,
-            'data': results
+            'data': data
         }
     except Exception as e:
         LOG.error(e)
@@ -223,27 +227,16 @@ def get_optimal_prefix_ipv4(ip_list, action_type):
         }
 
 
-def get_attr_by_prefix_ipv4(prefix_list, action_type):
+def get_adj_rib_out(prefix_list, afi_safi):
     try:
-        results = cfg.CONF.bgp.running_config['factory'].fsm.protocol.get_attr_by_prefix_ipv4(prefix_list, action_type)
+        if afi_safi == 'ipv4':
+            data = {
+                prefix: cfg.CONF.bgp.running_config['factory'].fsm.protocol.adj_rib_out['ipv4'].get(prefix)
+                for prefix in prefix_list
+            }
         return {
             'status': True,
-            'data': results
-        }
-    except Exception as e:
-        LOG.error(e)
-        return {
-            'status': False,
-            'code': e.__str__()
-        }
-
-
-def get_prefix_by_attr_ipv4(attr_dict, action_type):
-    try:
-        results = cfg.CONF.bgp.running_config['factory'].fsm.protocol.get_prefix_by_attr_ipv4(attr_dict, action_type)
-        return {
-            'status': True,
-            'data': results
+            'data': data
         }
     except Exception as e:
         LOG.error(e)

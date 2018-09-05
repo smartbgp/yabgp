@@ -70,7 +70,12 @@ BGP_PEER_CONFIG_OPTS = [
                secret=True),
     cfg.ListOpt('afi_safi',
                 default=['ipv4'],
-                help='The Global config for address family and sub address family')
+                help='The Global config for address family and sub address family'),
+    cfg.BoolOpt(
+        'rib',
+        default=True,
+        help='maintain rib in or not, default is True'
+    )
 ]
 
 CONF.register_cli_opts(BGP_PEER_CONFIG_OPTS, group='bgp')
