@@ -38,7 +38,9 @@ class AtomicAggregate(Attribute):
         :param value:
         """
         if not value:
-            return value
+            # return value
+            # return str(value, encoding="utf-8")
+            return bytes.decode(value)
         else:
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_OPTIONAL_ATTR,
