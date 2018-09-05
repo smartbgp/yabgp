@@ -189,9 +189,10 @@ def send_update_message(peer_ip):
                             'code': 'unexpected extended community "%s", please check your post data' % key
                         })
             attr[16] = ext_community
-    result = api_utils.save_send_ipv4_policies(attr, nlri, withdraw)
-    if not result.get('status'):
-        return flask.jsonify(result)
+    if cfg.CONF.save_sent_prefix:
+        result = api_utils.save_send_ipv4_policies(attr, nlri, withdraw)
+        if not result.get('status'):
+            return flask.jsonify(result)
     if (attr and nlri) or withdraw:
         return flask.jsonify(api_utils.send_update(peer_ip, attr, nlri, withdraw))
     elif 14 in attr or 15 in attr:

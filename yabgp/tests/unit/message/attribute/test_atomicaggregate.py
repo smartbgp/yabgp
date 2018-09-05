@@ -27,7 +27,7 @@ class TestAtomicAggregate(unittest.TestCase):
     def test_parse(self):
 
         atomicaggregate = AtomicAggregate.parse(value=b'')
-        self.assertEqual(atomicaggregate, b'')
+        self.assertEqual(atomicaggregate, '')
 
         # invalid value
         self.assertRaises(UpdateMessageError, AtomicAggregate.parse,

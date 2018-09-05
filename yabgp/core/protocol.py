@@ -267,9 +267,9 @@ class BGP(protocol.Protocol):
             'withdraw': result['withdraw'],
             'afi_safi': afi_safi
         }
-        if msg.get('afi_safi') == 'ipv4':
+        if msg.get('afi_safi') == 'ipv4' and CONF.save_received_prefix:
             self.save_received_ipv4_policies(msg.get('attr'), msg.get('nlri'), msg.get('withdraw'))
-        LOG.info(msg)
+            # LOG.info(msg)
         self.handler.update_received(self, timestamp, msg)
 
         self.msg_recv_stat['Updates'] += 1
@@ -582,31 +582,31 @@ class BGP(protocol.Protocol):
             return False
 
     def get_optimal_prefix_ipv4(self, ip_list, action_type):
-        results = []
+        results = {}
         if action_type == 'sent':
             for target_ip in ip_list:
                 if target_ip in self.send_ipv4_prefixes_tree:
-                    results.append(self.send_ipv4_prefixes_tree[target_ip])
+                    results[target_ip] = self.send_ipv4_prefixes_tree[target_ip]
                 else:
-                    results.append(None)
+                    results[target_ip] = None
         else:
             for target_ip in ip_list:
                 if target_ip in self.received_ipv4_prefixes_tree:
-                    results.append(self.received_ipv4_prefixes_tree[target_ip])
+                    results[target_ip] = self.send_ipv4_prefixes_tree[target_ip]
                 else:
-                    results.append(None)
+                    results[target_ip] = None
         return results
 
     def get_attr_by_prefix_ipv4(self, prefix_list, action_type):
-        results = []
+        results = {}
         if action_type == 'sent':
             for target_prefix in prefix_list:
                 result = self.send_ipv4_policies.get(target_prefix)
-                results.append(result)
+                results[target_prefix] = result
         else:
             for target_prefix in prefix_list:
                 result = self.received_ipv4_policies.get(target_prefix)
-                results.append(result)
+                results[target_prefix] = result
         return results
 
     def get_prefix_by_attr_ipv4(self, attr_dict, action_type):

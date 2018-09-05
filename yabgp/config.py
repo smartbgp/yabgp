@@ -95,6 +95,17 @@ BGP_PEER_TIME_OPTS = [
 
 CONF.register_cli_opts(BGP_PEER_TIME_OPTS, group='time')
 
+BGP_PREFIX_SAVE_OPTS = [
+    cfg.BoolOpt('save_sent_prefix',
+                default=True,
+                help='save sent prefix in memory.'),
+    cfg.BoolOpt('save_received_prefix',
+                default=True,
+                help='save received prefix in memory.')
+]
+
+CONF.register_cli_opts(BGP_PREFIX_SAVE_OPTS)
+
 LOG = logging.getLogger(__name__)
 
 
