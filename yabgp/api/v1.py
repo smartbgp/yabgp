@@ -62,6 +62,16 @@ def peer(peer_ip):
     return flask.jsonify(api_utils.get_peer_conf_and_state(peer_ip))
 
 
+@blueprint.route('/peer/<peer_ip>/version/<action>')
+@auth.login_required
+@api_utils.log_request
+def get_peer_version(peer_ip, action):
+    """
+    Get one peer's message statistic, include sending and receiving.
+    """
+    return flask.jsonify(api_utils.get_peer_version(action, peer_ip))
+
+
 @blueprint.route('/peer/<peer_ip>/statistic')
 @auth.login_required
 @api_utils.log_request
@@ -200,8 +210,10 @@ def send_update_message(peer_ip):
         if not result.get('status'):
             return flask.jsonify(result)
     if (attr and nlri) or withdraw:
+        # api_utils.update_send_version(peer_ip, attr, nlri, withdraw)
         return flask.jsonify(api_utils.send_update(peer_ip, attr, nlri, withdraw))
     elif 14 in attr or 15 in attr:
+        # api_utils.update_send_version(peer_ip, attr, nlri, withdraw)
         return flask.jsonify(api_utils.send_update(peer_ip, attr, nlri, withdraw))
 
     else:

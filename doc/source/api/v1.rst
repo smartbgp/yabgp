@@ -58,6 +58,29 @@ Get one peer's configuration and running information.
         }
     }
 
+Get send/recieve version
+++++++++++++++++++++++++
+
+Get peer's send/recieve version .
+
+.. code-block:: bash
+
+    GET /v1/peer/<peer_ip_address>/version/<action>
+    action : send, received
+
+**Example response**:
+
+.. code-block:: json
+
+    {
+        "version": {
+            "flowspec": 0,
+            "ipv4": 0,
+            "mpls_vpn": 0,
+            "sr_policy": 0
+        }
+    }
+
 Message Statistic
 +++++++++++++++++
 
