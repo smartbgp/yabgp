@@ -72,6 +72,28 @@ def get_peer_conf_and_state(peer_ip=None):
     return {'peer': one_peer_state}
 
 
+def get_peer_version(action, peer_ip=None):
+    """
+    get version
+    :param peer_ip:ip: peer ip address
+    :param action:
+    :return:
+    """
+    if action == "send":
+        return {
+            'version': cfg.CONF.bgp.running_config['factory'].fsm.protocol.send_version
+        }
+    elif action == "received":
+        return {
+            'version': cfg.CONF.bgp.running_config['factory'].fsm.protocol.receive_version,
+        }
+    else:
+        return {
+            'status': False,
+            'code': ' please check action in url'
+        }
+
+
 def get_peer_msg_statistic(peer_ip=None):
     """
     get peer send and receive message statistic
@@ -244,3 +266,15 @@ def get_adj_rib_out(prefix_list, afi_safi):
             'status': False,
             'code': e.__str__()
         }
+
+
+def update_send_version(peer_ip, attr, nlri, withdraw):
+    """
+    update version when send update message
+    :param peer_ip:
+    :param attr:
+    :param nlri:
+    :param withdraw:
+    :return:
+    """
+    cfg.CONF.bgp.running_config['factory'].fsm.protocol.update_send_verion(peer_ip, attr, nlri, withdraw)
