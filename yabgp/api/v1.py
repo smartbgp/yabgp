@@ -210,10 +210,10 @@ def send_update_message(peer_ip):
         if not result.get('status'):
             return flask.jsonify(result)
     if (attr and nlri) or withdraw:
-        # api_utils.update_send_version(peer_ip, attr, nlri, withdraw)
+        api_utils.update_send_version(peer_ip, attr, nlri, withdraw)
         return flask.jsonify(api_utils.send_update(peer_ip, attr, nlri, withdraw))
     elif 14 in attr or 15 in attr:
-        # api_utils.update_send_version(peer_ip, attr, nlri, withdraw)
+        api_utils.update_send_version(peer_ip, attr, nlri, withdraw)
         return flask.jsonify(api_utils.send_update(peer_ip, attr, nlri, withdraw))
 
     else:

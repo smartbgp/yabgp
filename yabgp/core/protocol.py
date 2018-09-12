@@ -25,7 +25,7 @@ from oslo_config import cfg
 from twisted.internet import protocol
 from twisted.internet import reactor
 from SubnetTree import SubnetTree
-# import copy
+import copy
 
 from yabgp.common import constants as bgp_cons
 from yabgp.message.open import Open
@@ -290,10 +290,14 @@ class BGP(protocol.Protocol):
             'withdraw': result['withdraw'],
             'afi_safi': afi_safi
         }
+
+        self.update_receive_verion(result['attr'], result['nlri'], result['withdraw'])
+
         if CONF.bgp.rib:
             # try to update bgp rib in
             if msg.get('afi_safi') == 'ipv4':
                 self.update_rib_in_ipv4(msg)
+                LOG.info(msg)
         self.handler.update_received(self, timestamp, msg)
 
         self.msg_recv_stat['Updates'] += 1
@@ -617,7 +621,7 @@ class BGP(protocol.Protocol):
             }
         return results
 
-    # def update_send_verion(self, peer_ip, attr, nlri, withdraw):
+    def update_send_verion(self, peer_ip, attr, nlri, withdraw):
         # ipv4 send
         # if (attr and nlri) or withdraw:
         #     if withdraw:
@@ -638,124 +642,124 @@ class BGP(protocol.Protocol):
         #                 else:
         #                     self.send_version['ipv4'] += 1
         #                     self.ipv4_send_dict[prefix] = attr
-        # # flowspec sr mpls send
-        # if 14 in attr:
-        #     if attr[14]['afi_safi'] == [1, 133]:
-        #         LOG.info("send flowspec")
-        #         for prefix in attr[14]['nlri']:
-        #             value = copy.deepcopy(attr)
-        #             value14 = value[14]
-        #             del value14['nlri']
-        #             key = "{"
-        #             for k in sorted(prefix.keys()):
-        #                 key += '"'+k+'"'
-        #                 key += ':'
-        #                 key += '"'+prefix[k]+'"'
-        #                 key += ','
-        #             key = key[:-1]
-        #             key += "}"
-        #             if str(key) not in self.flowspec_send_dict:
-        #                 self.send_version['flowspec'] += 1
-        #                 self.flowspec_send_dict[str(key)] = value
-        #             else:
-        #                 if value == self.flowspec_send_dict[str(key)]:
-        #                     pass
-        #                 else:
-        #                     self.send_version['flowspec'] += 1
-        #                     self.flowspec_send_dict[str(key)] = value
-        #     elif attr[14]['afi_safi'] == [1, 73]:
-        #         LOG.info('send sr')
-        #         key = "{"
-        #         for k in sorted(attr[14]['nlri'].keys()):
-        #             key += '"' + k + '"'
-        #             key += ':'
-        #             key += '"' + str(attr[14]['nlri'][k]) + '"'
-        #             key += ','
-        #         key = key[:-1]
-        #         key += "}"
-        #         if str(key) not in self.sr_send_dict:
-        #             self.send_version['sr_policy'] += 1
-        #             self.sr_send_dict[str(key)] = attr
-        #         else:
-        #             if attr == self.sr_send_dict[str(key)]:
-        #                 pass
-        #             else:
-        #                 self.send_version['sr_policy'] += 1
-        #                 self.sr_send_dict[str(key)] = attr
-        #     elif attr[14]['afi_safi'] == [1, 128]:
-        #         LOG.info("send mpls_vpn")
-        #         for prefix in attr[14]['nlri']:
-        #             value = copy.deepcopy(attr)
-        #             value14 = value[14]
-        #             del value14['nlri']
-        #             key = "{"
-        #             for k in sorted(prefix.keys()):
-        #                 key += '"'+k+'"'
-        #                 key += ':'
-        #                 key += '"'+prefix[k]+'"'
-        #                 key += ','
-        #             key = key[:-1]
-        #             key += "}"
-        #             if str(key) not in self.mpls_vpn_send_dict:
-        #                 self.send_version['mpls_vpn'] += 1
-        #                 self.mpls_vpn_send_dict[str(key)] = value
-        #             else:
-        #                 if value == self.mpls_vpn_send_dict[str(key)]:
-        #                     pass
-        #                 else:
-        #                     self.send_version['mpls_vpn'] += 1
-        #                     self.mpls_vpn_send_dict[str(key)] = value
-        # # flowspec sr mpls_vpn withdraw
-        # if 15 in attr:
-        #     if attr[15]['afi_safi'] == [1, 133]:
-        #         LOG.info("withdraw flowspec")
-        #         for prefix in attr[15]['withdraw']:
-        #             key = "{"
-        #             for k in sorted(prefix.keys()):
-        #                 key += '"' + k + '"'
-        #                 key += ':'
-        #                 key += '"' + prefix[k] + '"'
-        #                 key += ','
-        #             key = key[:-1]
-        #             key += "}"
-        #             if str(key) in self.flowspec_send_dict:
-        #                 self.send_version['flowspec'] += 1
-        #                 del self.flowspec_send_dict[str(key)]
-        #             else:
-        #                 LOG.info("Do not have %s in send flowspec dict" % key)
-        #     elif attr[15]['afi_safi'] == [1, 73]:
-        #         LOG.info('withdraw sr')
-        #         key = "{"
-        #         for k in sorted(attr[15]['nlri'].keys()):
-        #             key += '"' + k + '"'
-        #             key += ':'
-        #             key += '"' + str(attr[15]['nlri'][k]) + '"'
-        #             key += ','
-        #         key = key[:-1]
-        #         key += "}"
-        #         if str(key) in self.sr_send_dict:
-        #             self.send_version['sr_policy'] += 1
-        #             del self.sr_send_dict[str(key)]
-        #         else:
-        #             LOG.info("Do not have %s in send flowspec dict" % key)
-        #     elif attr[15]['afi_safi'] == [1, 128]:
-        #         LOG.info("withdraw mpls_vpn")
-        #         for prefix in attr[15]['withdraw']:
-        #             key = "{"
-        #             for k in sorted(prefix.keys()):
-        #                 key += '"' + k + '"'
-        #                 key += ':'
-        #                 key += '"' + prefix[k] + '"'
-        #                 key += ','
-        #             key = key[:-1]
-        #             key += "}"
-        #             if str(key) in self.mpls_vpn_send_dict:
-        #                 self.send_version['mpls_vpn'] += 1
-        #                 del self.mpls_vpn_send_dict[str(key)]
-        #             else:
-        #                 LOG.info("Do not have %s in send flowspec dict" % key)
+        # flowspec sr mpls send
+        if 14 in attr:
+            if attr[14]['afi_safi'] == [1, 133]:
+                LOG.info("send flowspec")
+                for prefix in attr[14]['nlri']:
+                    value = copy.deepcopy(attr)
+                    value14 = value[14]
+                    del value14['nlri']
+                    key = "{"
+                    for k in sorted(prefix.keys()):
+                        key += '"'+k+'"'
+                        key += ':'
+                        key += '"'+str(prefix[k])+'"'
+                        key += ','
+                    key = key[:-1]
+                    key += "}"
+                    if str(key) not in self.flowspec_send_dict:
+                        self.send_version['flowspec'] += 1
+                        self.flowspec_send_dict[str(key)] = value
+                    else:
+                        if value == self.flowspec_send_dict[str(key)]:
+                            pass
+                        else:
+                            self.send_version['flowspec'] += 1
+                            self.flowspec_send_dict[str(key)] = value
+            elif attr[14]['afi_safi'] == [1, 73]:
+                LOG.info('send sr')
+                key = "{"
+                for k in sorted(attr[14]['nlri'].keys()):
+                    key += '"' + k + '"'
+                    key += ':'
+                    key += '"' + str(attr[14]['nlri'][k]) + '"'
+                    key += ','
+                key = key[:-1]
+                key += "}"
+                if str(key) not in self.sr_send_dict:
+                    self.send_version['sr_policy'] += 1
+                    self.sr_send_dict[str(key)] = attr
+                else:
+                    if attr == self.sr_send_dict[str(key)]:
+                        pass
+                    else:
+                        self.send_version['sr_policy'] += 1
+                        self.sr_send_dict[str(key)] = attr
+            elif attr[14]['afi_safi'] == [1, 128]:
+                LOG.info("send mpls_vpn")
+                for prefix in attr[14]['nlri']:
+                    value = copy.deepcopy(attr)
+                    value14 = value[14]
+                    del value14['nlri']
+                    key = "{"
+                    for k in sorted(prefix.keys()):
+                        key += '"'+k+'"'
+                        key += ':'
+                        key += '"'+str(prefix[k])+'"'
+                        key += ','
+                    key = key[:-1]
+                    key += "}"
+                    if str(key) not in self.mpls_vpn_send_dict:
+                        self.send_version['mpls_vpn'] += 1
+                        self.mpls_vpn_send_dict[str(key)] = value
+                    else:
+                        if value == self.mpls_vpn_send_dict[str(key)]:
+                            pass
+                        else:
+                            self.send_version['mpls_vpn'] += 1
+                            self.mpls_vpn_send_dict[str(key)] = value
+        # flowspec sr mpls_vpn withdraw
+        if 15 in attr:
+            if attr[15]['afi_safi'] == [1, 133]:
+                LOG.info("withdraw flowspec")
+                for prefix in attr[15]['withdraw']:
+                    key = "{"
+                    for k in sorted(prefix.keys()):
+                        key += '"' + k + '"'
+                        key += ':'
+                        key += '"' + str(prefix[k]) + '"'
+                        key += ','
+                    key = key[:-1]
+                    key += "}"
+                    if str(key) in self.flowspec_send_dict:
+                        self.send_version['flowspec'] += 1
+                        del self.flowspec_send_dict[str(key)]
+                    else:
+                        LOG.info("Do not have %s in send flowspec dict" % key)
+            elif attr[15]['afi_safi'] == [1, 73]:
+                LOG.info('withdraw sr')
+                key = "{"
+                for k in sorted(attr[15]['nlri'].keys()):
+                    key += '"' + k + '"'
+                    key += ':'
+                    key += '"' + str(attr[15]['nlri'][k]) + '"'
+                    key += ','
+                key = key[:-1]
+                key += "}"
+                if str(key) in self.sr_send_dict:
+                    self.send_version['sr_policy'] += 1
+                    del self.sr_send_dict[str(key)]
+                else:
+                    LOG.info("Do not have %s in send flowspec dict" % key)
+            elif attr[15]['afi_safi'] == [1, 128]:
+                LOG.info("withdraw mpls_vpn")
+                for prefix in attr[15]['withdraw']:
+                    key = "{"
+                    for k in sorted(prefix.keys()):
+                        key += '"' + k + '"'
+                        key += ':'
+                        key += '"' + str(prefix[k]) + '"'
+                        key += ','
+                    key = key[:-1]
+                    key += "}"
+                    if str(key) in self.mpls_vpn_send_dict:
+                        self.send_version['mpls_vpn'] += 1
+                        del self.mpls_vpn_send_dict[str(key)]
+                    else:
+                        LOG.info("Do not have %s in send flowspec dict" % key)
 
-    # def update_receive_verion(self, attr, nlri, withdraw):
+    def update_receive_verion(self, attr, nlri, withdraw):
         # receive ipv4
         # if (attr and nlri) or withdraw:
         #     if withdraw:
@@ -776,89 +780,89 @@ class BGP(protocol.Protocol):
         #                 else:
         #                     self.receive_version['ipv4'] += 1
         #                     self.ipv4_receive_dict[prefix] = attr
-        # # receive flowspec sr mpls_vpn send
-        # if 14 in attr:
-        #     if attr[14]['afi_safi'] == [1, 133]:
-        #         LOG.info("recieve flowspec send")
-        #         for prefix in attr[14]['nlri']:
-        #             value = copy.deepcopy(attr)
-        #             value14 = value[14]
-        #             del value14['nlri']
-        #             key = "{"
-        #             for k in sorted(prefix.keys()):
-        #                 key += '"' + k + '"'
-        #                 key += ':'
-        #                 key += '"' + prefix[k] + '"'
-        #                 key += ','
-        #             key = key[:-1]
-        #             key += "}"
-        #             if str(key) not in self.flowspec_receive_dict:
-        #                 self.receive_version['flowspec'] += 1
-        #                 self.flowspec_receive_dict[str(key)] = value
-        #             else:
-        #                 if value == self.flowspec_receive_dict[str(key)]:
-        #                     pass
-        #                 else:
-        #                     self.receive_version['flowspec'] += 1
-        #                     self.flowspec_receive_dict[str(key)] = value
-        #     elif attr[14]['afi_safi'] == [1, 73]:
-        #         LOG.info('recieve sr send')
-        #     elif attr[14]['afi_safi'] == [1, 128]:
-        #         LOG.info("receive send mpls_vpn")
-        #         for prefix in attr[14]['nlri']:
-        #             value = copy.deepcopy(attr)
-        #             value14 = value[14]
-        #             del value14['nlri']
-        #             key = "{"
-        #             for k in sorted(prefix.keys()):
-        #                 key += '"'+k+'"'
-        #                 key += ':'
-        #                 key += '"'+prefix[k]+'"'
-        #                 key += ','
-        #             key = key[:-1]
-        #             key += "}"
-        #             if str(key) not in self.mpls_vpn_receive_dict:
-        #                 self.receive_version['mpls_vpn'] += 1
-        #                 self.mpls_vpn_receive_dict[str(key)] = value
-        #             else:
-        #                 if value == self.mpls_vpn_receive_dict[str(key)]:
-        #                     pass
-        #                 else:
-        #                     self.receive_version['mpls_vpn'] += 1
-        #                     self.mpls_vpn_receive_dict[str(key)] = value
-        # # receive flowspec sr mpls withdraw
-        # if 15 in attr:
-        #     if attr[15]['afi_safi'] == [1, 133]:
-        #         LOG.info("recieve flowspec withdraw")
-        #         for prefix in attr[15]['withdraw']:
-        #             key = "{"
-        #             for k in sorted(prefix.keys()):
-        #                 key += '"' + k + '"'
-        #                 key += ':'
-        #                 key += '"' + prefix[k] + '"'
-        #                 key += ','
-        #             key = key[:-1]
-        #             key += "}"
-        #             if str(key) in self.flowspec_receive_dict:
-        #                 self.receive_version['flowspec'] += 1
-        #                 del self.flowspec_receive_dict[str(key)]
-        #             else:
-        #                 LOG.info("Do not have %s in receive flowspec dict" % prefix)
-        #     elif attr[15]['afi_safi'] == [1, 73]:
-        #         LOG.info('recieve sr withdraw')
-        #     elif attr[15]['afi_safi'] == [1, 128]:
-        #         LOG.info("recieve withdraw mpls_vpn")
-        #         for prefix in attr[15]['withdraw']:
-        #             key = "{"
-        #             for k in sorted(prefix.keys()):
-        #                 key += '"' + k + '"'
-        #                 key += ':'
-        #                 key += '"' + prefix[k] + '"'
-        #                 key += ','
-        #             key = key[:-1]
-        #             key += "}"
-        #             if str(key) in self.mpls_vpn_receive_dict:
-        #                 self.receive_version['mpls_vpn'] += 1
-        #                 del self.mpls_vpn_receive_dict[str(key)]
-        #             else:
-        #                 LOG.info("Do not have %s in receive mpls_vpn dict" % key)
+        # receive flowspec sr mpls_vpn send
+        if 14 in attr:
+            if attr[14]['afi_safi'] == [1, 133]:
+                LOG.info("recieve flowspec send")
+                for prefix in attr[14]['nlri']:
+                    value = copy.deepcopy(attr)
+                    value14 = value[14]
+                    del value14['nlri']
+                    key = "{"
+                    for k in sorted(prefix.keys()):
+                        key += '"' + k + '"'
+                        key += ':'
+                        key += '"' + str(prefix[k]) + '"'
+                        key += ','
+                    key = key[:-1]
+                    key += "}"
+                    if str(key) not in self.flowspec_receive_dict:
+                        self.receive_version['flowspec'] += 1
+                        self.flowspec_receive_dict[str(key)] = value
+                    else:
+                        if value == self.flowspec_receive_dict[str(key)]:
+                            pass
+                        else:
+                            self.receive_version['flowspec'] += 1
+                            self.flowspec_receive_dict[str(key)] = value
+            elif attr[14]['afi_safi'] == [1, 73]:
+                LOG.info('recieve sr send')
+            elif attr[14]['afi_safi'] == [1, 128]:
+                LOG.info("receive send mpls_vpn")
+                for prefix in attr[14]['nlri']:
+                    value = copy.deepcopy(attr)
+                    value14 = value[14]
+                    del value14['nlri']
+                    key = "{"
+                    for k in sorted(prefix.keys()):
+                        key += '"'+k+'"'
+                        key += ':'
+                        key += '"' + str(prefix[k]) + '"'
+                        key += ','
+                    key = key[:-1]
+                    key += "}"
+                    if str(key) not in self.mpls_vpn_receive_dict:
+                        self.receive_version['mpls_vpn'] += 1
+                        self.mpls_vpn_receive_dict[str(key)] = value
+                    else:
+                        if value == self.mpls_vpn_receive_dict[str(key)]:
+                            pass
+                        else:
+                            self.receive_version['mpls_vpn'] += 1
+                            self.mpls_vpn_receive_dict[str(key)] = value
+        # receive flowspec sr mpls withdraw
+        if 15 in attr:
+            if attr[15]['afi_safi'] == [1, 133]:
+                LOG.info("recieve flowspec withdraw")
+                for prefix in attr[15]['withdraw']:
+                    key = "{"
+                    for k in sorted(prefix.keys()):
+                        key += '"' + k + '"'
+                        key += ':'
+                        key += '"' + str(prefix[k]) + '"'
+                        key += ','
+                    key = key[:-1]
+                    key += "}"
+                    if str(key) in self.flowspec_receive_dict:
+                        self.receive_version['flowspec'] += 1
+                        del self.flowspec_receive_dict[str(key)]
+                    else:
+                        LOG.info("Do not have %s in receive flowspec dict" % prefix)
+            elif attr[15]['afi_safi'] == [1, 73]:
+                LOG.info('recieve sr withdraw')
+            elif attr[15]['afi_safi'] == [1, 128]:
+                LOG.info("recieve withdraw mpls_vpn")
+                for prefix in attr[15]['withdraw']:
+                    key = "{"
+                    for k in sorted(prefix.keys()):
+                        key += '"' + k + '"'
+                        key += ':'
+                        key += '"' + str(prefix[k]) + '"'
+                        key += ','
+                    key = key[:-1]
+                    key += "}"
+                    if str(key) in self.mpls_vpn_receive_dict:
+                        self.receive_version['mpls_vpn'] += 1
+                        del self.mpls_vpn_receive_dict[str(key)]
+                    else:
+                        LOG.info("Do not have %s in receive mpls_vpn dict" % key)
