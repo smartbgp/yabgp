@@ -18,7 +18,7 @@
 import logging
 import time
 
-from flask.ext.httpauth import HTTPBasicAuth
+from flask_httpauth import HTTPBasicAuth
 from flask import Blueprint, request
 import flask
 from oslo_config import cfg
