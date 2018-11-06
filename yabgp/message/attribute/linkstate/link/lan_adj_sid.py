@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import division
 import binascii
 
 import netaddr
@@ -65,8 +66,8 @@ class LanAdjSegID(TLV):
             flag['L'] = (flags << 3) % 256 >> 7
             flag['S'] = (flags << 4) % 256 >> 7
             flag['P'] = (flags << 5) % 256 >> 7
-            tmp = binascii.b2a_hex(data[4:10])
-            chunks, chunk_size = len(tmp), len(tmp)/3
+            tmp = binascii.b2a_hex(data[4:10]).decode("utf-8")
+            chunks, chunk_size = len(tmp), int(len(tmp)/3)
             nei_or_sys_id = '.'.join([tmp[i:i+chunk_size] for i in range(0, chunks, chunk_size)])
             sid_index_label = int(binascii.b2a_hex(data[10:]), 16)
         else:  # 3, 6
