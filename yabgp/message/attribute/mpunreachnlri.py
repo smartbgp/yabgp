@@ -25,6 +25,7 @@ from yabgp.message.attribute.nlri.ipv4_mpls_vpn import IPv4MPLSVPN
 from yabgp.message.attribute.nlri.ipv6_mpls_vpn import IPv6MPLSVPN
 from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
 from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
+from yabgp.message.attribute.nlri.labeled_unicast.ipv4 import IPv4LabeledUnicast
 from yabgp.message.attribute.nlri.evpn import EVPN
 from yabgp.message.attribute.nlri.linkstate import BGPLS
 from yabgp.message.attribute.nlri.ipv4_srte import IPv4SRTE
@@ -160,6 +161,22 @@ class MpUnReachNLRI(Attribute):
                         return None
                     nlri_hex = b''
                     nlri_hex += IPv4SRTE.construct(data=value['withdraw'])
+                    attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri_hex
+                    return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
+                        + struct.pack('!H', len(attr_value)) + attr_value
+                except Exception:
+                    raise excep.ConstructAttributeFailed(
+                        reason='failed to construct attributes',
+                        data=value
+                    )
+            elif safi == safn.SAFNUM_MPLS_LABEL:
+                try:
+                    nlri_list = value.get('withdraw') or []
+                    if not nlri_list:
+                        return None
+                    nlri_hex = b''
+                    flag = 'withdraw'
+                    nlri_hex += IPv4LabeledUnicast.construct(nlri_list, flag)
                     attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + nlri_hex
                     return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
                         + struct.pack('!H', len(attr_value)) + attr_value
