@@ -161,7 +161,7 @@ class MessageFileOperator(object):
                         try:
                             last_line = lines[-1]
                             last_line = json.loads(last_line)
-                        except Exception, e:
+                        except Exception as e:
                             LOG.exception(e.message)
                             last_line = lines[-2]
                             try:
