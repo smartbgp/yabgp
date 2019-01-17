@@ -68,10 +68,13 @@ class LabeledUnicast(NLRI):
         return nlri_list
 
     @classmethod
-    def construct(cls, nlri_list):
+    def construct(cls, nlri_list, flag='advertise'):
         nlri_list_hex = b''
         for nlri in nlri_list:
-            label_hex = cls.construct_mpls_label_stack(nlri['label'])
+            if flag == 'advertise':
+                label_hex = cls.construct_mpls_label_stack(nlri['label'])
+            else:
+                label_hex = b'\x80\x00\x00'
             if cls.AFI == AFNUM_INET:
                 prefixstr, prefixlen = nlri['prefix'].split('/')
                 prefixlen = int(prefixlen)

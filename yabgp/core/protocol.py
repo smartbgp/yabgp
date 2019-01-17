@@ -730,10 +730,10 @@ class BGP(protocol.Protocol):
             elif attr[15]['afi_safi'] == [1, 73]:
                 LOG.info('withdraw sr')
                 key = "{"
-                for k in sorted(attr[15]['nlri'].keys()):
+                for k in sorted(attr[15]['withdraw'].keys()):
                     key += '"' + k + '"'
                     key += ':'
-                    key += '"' + str(attr[15]['nlri'][k]) + '"'
+                    key += '"' + str(attr[15]['withdraw'][k]) + '"'
                     key += ','
                 key = key[:-1]
                 key += "}"

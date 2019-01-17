@@ -35,7 +35,8 @@ class BGPException(Exception):
                 super(BGPException, self).__init__(self.message)
 
     def __unicode__(self):
-        return unicode(self.msg)
+        return self.msg.decode('utf8', 'ignore')
+        # return unicode(self.msg)
 
 
 class NotificationSent(Exception):
@@ -58,7 +59,8 @@ class NotificationSent(Exception):
                 super(NotificationSent, self).__init__(self.message)
 
     def __unicode__(self):
-        return unicode(self.msg)
+        return self.msg.decode('utf8', 'ignore')
+        # return unicode(self.msg)
 
 
 class MessageHeaderError(NotificationSent):
