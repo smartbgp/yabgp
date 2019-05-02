@@ -2,7 +2,7 @@ FROM python:2.7.14-alpine
 
 LABEL maintainer="Peng Xiao <xiaoquwl@gmail.com>"
 
-RUN apk add --no-cache gcc musl-dev
+RUN apk add --no-cache gcc musl-dev g++
 
 ADD . /yabgp
 
