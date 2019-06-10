@@ -151,6 +151,10 @@ class ExtCommunity(Attribute):
                 ext_community.append([comm_code, flag, label])
             elif comm_code == bgp_cons.BGP_EXT_COM_EVPN_ROUTE_MAC:
                 ext_community.append([comm_code, str(netaddr.EUI(int(binascii.b2a_hex(value_tmp), 16)))])
+            # BGP link bandwith
+            elif comm_code == bgp_cons.BGP_EXT_COM_LINK_BW:
+                asn, an = struct.unpack('!HI', value_tmp)
+                ext_community.append([bgp_cons.BGP_EXT_COM_LINK_BW, '%s:%s' % (asn, an)])
             else:
                 ext_community.append([bgp_cons.BGP_EXT_COM_UNKNOW, repr(value_tmp)])
                 LOG.warn('unknow bgp extended community, type=%s, value=%s', comm_code, repr(value_tmp))
@@ -237,6 +241,10 @@ class ExtCommunity(Attribute):
             elif item[0] == bgp_cons.BGP_EXT_COM_EVPN_ROUTE_MAC:
                 ext_community_hex += struct.pack('!H', item[0]) + \
                     b''.join([struct.pack('!B', (int(i, 16))) for i in item[1].split("-")])
+            # bgp link bandwith
+            elif item[0] == bgp_cons.BGP_EXT_COM_LINK_BW:
+                asn, an = item[1].split(':')
+                ext_community_hex += struct.pack('!HHI', bgp_cons.BGP_EXT_COM_LINK_BW, int(asn), int(an))
             else:
                 LOG.warn('unknow bgp extended community for construct, type=%s, value=%s', item[0], item[1])
 

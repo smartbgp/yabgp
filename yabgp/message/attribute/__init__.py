@@ -109,7 +109,7 @@ class AttributeID(int):
     Tunnel_Encapsulation_Attribute = 0x17  # 23  [RFC5512]
     Traffic_Engineering = 0x18  # 24  [RFC5543]
     IPv6_Address_Specific_Extended_Community = 0x19  # 25  [RFC5701]
-
+    LARGE_COMMUNITY = 0x20  # 32  [8092]
     LINKSTATE = 0x1d
     ATTR_SET = 0x80  # 128 [RFC6368]
 
@@ -149,6 +149,8 @@ class AttributeID(int):
             return "MP_REACH_NLRI"
         if self == 0x0f:
             return "MP_UNREACH_NLRI"
+        if self == 0x20:
+            return "LARGE_COMMUNITY"
         if self == 0xffff:
             return "INTERNAL SPLIT"
         return 'UNKNOWN ATTRIBUTE (%s)' % hex(self)
