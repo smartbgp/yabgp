@@ -141,7 +141,7 @@ class IPv4FlowSpec(NLRI):
         parse_operator_list = []
         while data:
             operator = cls.parse_operator_flag(ord(data[0:1]))
-            print(operator)
+            # print(operator)
             offset += 1
             operator_value = int(binascii.b2a_hex(data[1:1 + operator['LEN']]), 16)
             offset += operator['LEN']

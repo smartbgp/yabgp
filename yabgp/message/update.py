@@ -42,6 +42,7 @@ from yabgp.message.attribute.extcommunity import ExtCommunity
 from yabgp.message.attribute.pmsitunnel import PMSITunnel
 from yabgp.message.attribute.linkstate.linkstate import LinkState
 from yabgp.message.attribute.nlri.evpn import EVPN
+from yabgp.message.attribute.largecommunity import LargeCommunity
 
 LOG = logging.getLogger()
 
@@ -361,6 +362,10 @@ class Update(object):
 
                 decode_value = Aggregator.parse(value=attr_value, asn4=True)
 
+            elif type_code == bgp_cons.BGPTYPE_LARGE_COMMUNITY:
+
+                decode_value = LargeCommunity.parse(value=attr_value)
+
             elif type_code == bgp_cons.BGPTYPE_MP_REACH_NLRI:
                 decode_value = MpReachNLRI.parse(value=attr_value)
                 if decode_value['nlri'][0] and type(decode_value['nlri'][0]) is dict:
@@ -458,6 +463,9 @@ class Update(object):
             elif type_code == bgp_cons.BGPTYPE_TUNNEL_ENCAPS_ATTR:
                 tunnelencap_hex = TunnelEncaps.construct(value=value)
                 attr_raw_hex += tunnelencap_hex
+            elif type_code == bgp_cons.BGPTYPE_LARGE_COMMUNITY:
+                large_community_ext_hex = LargeCommunity.construct(value=value)
+                attr_raw_hex += large_community_ext_hex
 
         return attr_raw_hex
 

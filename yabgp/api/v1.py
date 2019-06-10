@@ -155,6 +155,10 @@ def send_update_message(peer_ip):
                                         'status': False,
                                         'code': 'peer not support as num of greater than 65535'
                                     })
+                elif key.strip().lower() == 'dmzlink-bw':
+                    values = value.strip().split(',')
+                    for vau in values:
+                        ext_community.append([16388, vau.strip()])
                 elif key.strip().lower() == 'route-origin':
                     values = value.strip().split(',')
                     for vau in values:
