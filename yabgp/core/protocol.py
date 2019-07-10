@@ -256,6 +256,9 @@ class BGP(protocol.Protocol):
             self.disconnected = True
 
     def _update_received(self, timestamp, msg):
+        # if self.msg_recv_stat['Updates'] % 1000 == 0:
+        #     LOG.info(self.msg_recv_stat['Updates'])
+        #     LOG.info(time.time())
 
         """Called when a BGP Update message was received."""
         result = Update().parse(
@@ -297,7 +300,7 @@ class BGP(protocol.Protocol):
             # try to update bgp rib in
             if msg.get('afi_safi') == 'ipv4':
                 self.update_rib_in_ipv4(msg)
-                LOG.info(msg)
+                # LOG.info(msg)
         self.handler.update_received(self, timestamp, msg)
 
         self.msg_recv_stat['Updates'] += 1
@@ -622,27 +625,6 @@ class BGP(protocol.Protocol):
         return results
 
     def update_send_verion(self, peer_ip, attr, nlri, withdraw):
-        # ipv4 send
-        # if (attr and nlri) or withdraw:
-        #     if withdraw:
-        #         for prefix in withdraw:
-        #             if prefix in self.ipv4_send_dict:
-        #                 self.send_version['ipv4'] += 1
-        #                 del self.ipv4_send_dict[prefix]
-        #             else:
-        #                 LOG.info("Do not have %s in send ipv4 dict" % prefix)
-        #     if attr and nlri:
-        #         for prefix in nlri:
-        #             if prefix not in self.ipv4_send_dict:
-        #                 self.send_version['ipv4'] += 1
-        #                 self.ipv4_send_dict[prefix] = attr
-        #             else:
-        #                 if attr == self.ipv4_send_dict[prefix]:
-        #                     pass
-        #                 else:
-        #                     self.send_version['ipv4'] += 1
-        #                     self.ipv4_send_dict[prefix] = attr
-        # flowspec sr mpls send
         if 14 in attr:
             if attr[14]['afi_safi'] == [1, 133]:
                 LOG.info("send flowspec")
@@ -760,27 +742,6 @@ class BGP(protocol.Protocol):
                         LOG.info("Do not have %s in send flowspec dict" % key)
 
     def update_receive_verion(self, attr, nlri, withdraw):
-        # receive ipv4
-        # if (attr and nlri) or withdraw:
-        #     if withdraw:
-        #         for prefix in withdraw:
-        #             if prefix in self.ipv4_receive_dict:
-        #                 self.receive_version['ipv4'] += 1
-        #                 del self.ipv4_receive_dict[prefix]
-        #             else:
-        #                 LOG.info("Do not have %s in recieve ipv4 dict" % prefix)
-        #     if attr and nlri:
-        #         for prefix in nlri:
-        #             if prefix not in self.ipv4_receive_dict:
-        #                 self.receive_version['ipv4'] += 1
-        #                 self.ipv4_receive_dict[prefix] = attr
-        #             else:
-        #                 if attr == self.ipv4_receive_dict[prefix]:
-        #                     pass
-        #                 else:
-        #                     self.receive_version['ipv4'] += 1
-        #                     self.ipv4_receive_dict[prefix] = attr
-        # receive flowspec sr mpls_vpn send
         if 14 in attr:
             if attr[14]['afi_safi'] == [1, 133]:
                 LOG.info("recieve flowspec send")

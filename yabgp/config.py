@@ -73,8 +73,8 @@ BGP_PEER_CONFIG_OPTS = [
                 help='The Global config for address family and sub address family'),
     cfg.BoolOpt(
         'rib',
-        default=True,
-        help='maintain rib in or not, default is True'
+        default=False,
+        help='maintain rib in or not, default is False'
     )
 ]
 
