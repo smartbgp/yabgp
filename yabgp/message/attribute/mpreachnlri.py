@@ -35,6 +35,7 @@ from yabgp.message.attribute.nlri.ipv4_srte import IPv4SRTE
 from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
 from yabgp.message.attribute.nlri.labeled_unicast.ipv4 import IPv4LabeledUnicast
 from yabgp.message.attribute.nlri.labeled_unicast.ipv6 import IPv6LabeledUnicast
+from yabgp.message.attribute.nlri.ipv4_unicast import IPv4Unicast
 from yabgp.message.attribute.nlri.evpn import EVPN
 from yabgp.message.attribute.nlri.linkstate import BGPLS
 
@@ -80,6 +81,14 @@ class MpReachNLRI(Attribute):
 
         #  Address Family IPv4
         if afi == afn.AFNUM_INET:
+            if safi == safn.SAFNUM_UNICAST:
+                # ipv4 unicast
+                # parse nexthop
+                nexthop = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin), 16)))
+                # parse nlri
+                nlri = IPv4Unicast.parse(nlri_bin)
+                return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
+
             if safi == safn.SAFNUM_LAB_VPNUNICAST:
                 # MPLS VPN
                 # parse nexthop
