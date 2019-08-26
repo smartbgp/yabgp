@@ -110,7 +110,7 @@ A BGP update generator based on YaBGP https://github.com/trungdtbk/bgp-update-ge
 Support
 ~~~~~~~
 
-Please join our Slack http://smartbgp.slack.com/ for questions, discussion, suggestions, etc
+Please join our Slack_ for questions, discussion, suggestions, etc
 
 Send email to xiaoquwl@gmail.com, or use GitHub issue system.
 
@@ -153,3 +153,5 @@ https://github.com/Exa-Networks/exabgp
 
 .. |Docker| image:: https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg?style=plastic   
    :target: https://hub.docker.com/r/smartbgp/yabgp/
+   
+.. _Slack: https://join.slack.com/t/smartbgp/shared_invite/enQtNzQwNjgzNTA5NjA3LTY3YzFkODMzYWFjODI1ZmE3NDRkMTQwYTY0MWZiMmE3M2NiMzM0ZTI3NjNjY2RkNDAzMmFkZWJkOTE2M2VjOWU
