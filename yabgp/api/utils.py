@@ -277,4 +277,4 @@ def update_send_version(peer_ip, attr, nlri, withdraw):
     :param withdraw:
     :return:
     """
-    cfg.CONF.bgp.running_config['factory'].fsm.protocol.update_send_verion(peer_ip, attr, nlri, withdraw)
+    cfg.CONF.bgp.running_config['factory'].fsm.protocol.update_send_version(peer_ip, attr, nlri, withdraw)

@@ -210,9 +210,9 @@ class TunnelEncaps(Attribute):
                         if bgp_cons.BGPSUB_TLV_PREFERENCE_NEW in items:
                             policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE_NEW) + struct.pack('!B', 6) + \
                                 b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_PREFERENCE_NEW])
-                    else:
-                        policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE_NEW) + struct.pack('!B', 6) + \
-                            b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_PREFERENCE])
+                    # else:
+                        # policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE_NEW) + struct.pack('!B', 6) + \
+                        #     b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_PREFERENCE])
                     # Binding SID Sub-TLV
                     if bgp_cons.BGPSUB_TLV_BINDGINGSID not in items:
                         if bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW not in items:
@@ -224,6 +224,38 @@ class TunnelEncaps(Attribute):
                     else:
                         policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW) + struct.pack('!B', 6) +\
                             b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID] << 12)
+                    # Explicit NULL Label Policy Sub-TLV
+                    if bgp_cons.BGPSUB_TLV_ENLP_NEW in items:
+                            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_ENLP_NEW) + struct.pack('!B', 3) + \
+                                                b'\x00\x00' + struct.pack('!B', data[bgp_cons.BGPSUB_TLV_ENLP_NEW])
+                    # Policy Priority Sub-TLV
+                    if bgp_cons.BGPSUB_TLV_PRIORITY_NEW in items:
+                        policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_PRIORITY_NEW) + struct.pack('!B', 2)+ \
+                                            struct.pack('!B', bgp_cons.BGPSUB_TLV_PRIORITY_NEW) + b'\x00'
+                    # Policy Name Sub-TLV
+                    if bgp_cons.BGPSUB_TLV_POLICYNAME_NEW in items:
+                        length = len(data[bgp_cons.BGPSUB_TLV_POLICYNAME_NEW]) + 1
+                        policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_POLICYNAME_NEW) + struct.pack('!H', length) +\
+                                            b'\x00' + bytes(data[bgp_cons.BGPSUB_TLV_POLICYNAME_NEW], encoding = "utf8")
+                    # 3.1.  The Remote Endpoint Sub-TLV:
+                    if bgp_cons.BGPSUB_TLV_REMOTEENDPOINT_NEW in items:
+                        asn = data[bgp_cons.BGPSUB_TLV_REMOTEENDPOINT_NEW].get('asn')
+                        af = data[bgp_cons.BGPSUB_TLV_REMOTEENDPOINT_NEW].get('afi')
+                        address = data[bgp_cons.BGPSUB_TLV_REMOTEENDPOINT_NEW].get('address')
+                        if af == 'ipv4':
+                            length = 10
+                            af_value = 1
+                        elif af == 'ipv6':
+                            length = 22
+                            af_value = 2
+                        else:
+                            raise excep.ConstructAttributeFailed(
+                                reason='failed to construct attributes: %s' % 'remote endpoint address family is ipv4 or ipv6',
+                                data={}
+                            )
+                        policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_REMOTEENDPOINT_NEW) + struct.pack('!B', length) \
+                                            + struct.pack('!I', asn) + struct.pack('!H', af_value) + netaddr.IPAddress(address).packed
+
                 else:
                     raise excep.ConstructAttributeFailed(
                         reason='failed to construct attributes: %s' % 'TLV encoding must be one value of new or old',
