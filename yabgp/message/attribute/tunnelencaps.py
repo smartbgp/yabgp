@@ -16,7 +16,6 @@
 """BGP Attribute MP_REACH_NLRI
 """
 
-from __future__ import unicode_literals
 import struct
 
 import netaddr
