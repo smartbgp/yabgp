@@ -116,5 +116,47 @@ class TestTunnelEncaps(unittest.TestCase):
                      b'\x00\x00\x7d\x00\xff\x03\x0a\x00\x00\x0a\x01\x01\x01\x00\x7d\x00\xff'
         self.assertTrue(TunnelEncaps.construct(data_dict)[8:] in [data_hex_1, data_hex_2])
 
+    def test_construct_enlp(self):
+        data_dict = {
+            "0": "new",
+            "14": 1
+        }
+        data_hex = b'\x0e\x03\x00\x00\x01'
+        self.assertEqual(data_hex, TunnelEncaps.construct(data_dict)[12:])
+
+    def test_construct_priority(self):
+        data_dict = {
+            "0": "new",
+            "15": 200
+        }
+        data_hex = data_hex = b'\x0f\x02\xc8\x00'
+        self.assertEqual(data_hex, TunnelEncaps.construct(data_dict)[12:])
+
+    def test_construct_policy_name(self):
+        data_dict = {
+            "0": "new",
+            "129": "test"
+        }
+        data_hex = data_hex = b'\x81\x00\x05\x00\x74\x65\x73\x74'
+        self.assertEqual(data_hex, TunnelEncaps.construct(data_dict)[12:])
+
+    def test_construct_remote_endpoint_ipv4(self):
+        data_dict = {
+            "0": "new",
+            "6": {"asn": 300, 'afi': 'ipv4', 'address': '1.1.1.1'}
+        }
+        data_hex = b'\x06\x0a\x00\x00\x01\x2c\x00\x01\x01\x01\x01\x01'
+        self.assertEqual(data_hex, TunnelEncaps.construct(data_dict)[12:])
+
+    def test_construct_remote_endpoint_ipv6(self):
+        data_dict = {
+            "0": "new",
+            "6": {"asn": 300, 'afi': 'ipv6', 'address': 'ABCD:EF01:2345:6789:ABCD:EF01:2345:6789'}
+        }
+        data_hex = b'\x06\x16\x00\x00\x01\x2c\x00\x02\xab\xcd\xef\x01\x23\x45\x67\x89\xab\xcd\xef' \
+                   b'\x01\x23\x45\x67\x89'
+        self.assertEqual(data_hex, TunnelEncaps.construct(data_dict)[12:])
+
+
 if __name__ == '__main__':
     unittest.main()
