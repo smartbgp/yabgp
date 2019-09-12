@@ -446,8 +446,11 @@ IPv4 Sr-policy
             "16": ["route-target:10.75.195.199:00"],
             "23": {
                 "0": "new",
+                "6": {"asn":400,"afi":"ipv4","address": "1.1.1.1"},
                 "12": 100,
                 "13": 25102,
+                "14": 1,
+                "15": 23,
                 "128": [
                     {
                         "9": 10,
@@ -473,7 +476,8 @@ IPv4 Sr-policy
                             }
                         ]
                     }
-                ]
+                ],
+                "129": "policy_test",
             }
         }
     }
@@ -488,8 +492,11 @@ attribute explaination(only for this format):
         "0": if the ios version lower than 6.4.1.14(Cisco facility), the value should be 'old', and in the meantime,
              the key of Preference should be '6', key of Binding SID should be '7', else it should be 'new' and key
              of Preference and Binding SID should be '12' and '13'
+        "6": RemoteEndpoint
         "6"/"12": Preference
         "7"/"13": Binding SID
+        "14": ELNP
+        "15": Priority
         "128": Multiple segement lists
             "9": Weighted
             "1": Segement list
@@ -501,6 +508,7 @@ attribute explaination(only for this format):
                 "3": Segement type 3
                     "node": An Ipv4 Address
                     "SID": Assign Optionally, inner structure similar to Segement type 1
+        "129": Policy name
 
 IPv6 Unicast
 """"""""""""

@@ -624,7 +624,7 @@ class BGP(protocol.Protocol):
             }
         return results
 
-    def update_send_verion(self, peer_ip, attr, nlri, withdraw):
+    def update_send_version(self, peer_ip, attr, nlri, withdraw):
         if 14 in attr:
             if attr[14]['afi_safi'] == [1, 133]:
                 LOG.info("send flowspec")
