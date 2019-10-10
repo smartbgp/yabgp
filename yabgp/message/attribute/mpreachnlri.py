@@ -31,6 +31,7 @@ from yabgp.common import constants as bgp_cons
 from yabgp.message.attribute.nlri.ipv4_mpls_vpn import IPv4MPLSVPN
 from yabgp.message.attribute.nlri.ipv6_mpls_vpn import IPv6MPLSVPN
 from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
+from yabgp.message.attribute.nlri.ipv6_flowspec import IPv6FlowSpec
 from yabgp.message.attribute.nlri.ipv4_srte import IPv4SRTE
 from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
 from yabgp.message.attribute.nlri.labeled_unicast.ipv4 import IPv4LabeledUnicast
@@ -309,7 +310,24 @@ class MpReachNLRI(Attribute):
                     struct.pack('!B', len(nexthop_hex)) + nexthop_hex + b'\x00' + nlri_hex
                 return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
                     + struct.pack('!H', len(attr_value)) + attr_value
-
+            elif safi == safn.SAFNUM_FSPEC_RULE:  # ipv6 Flow spec
+                try:
+                    try:
+                        nexthop = netaddr.IPAddress(value['nexthop']).packed
+                    except netaddr.core.AddrFormatError:
+                        nexthop = b''
+                    nlri_hex = b''
+                    nlri_hex += IPv6FlowSpec.construct(value=value['nlri'])
+                    if nlri_hex:
+                        attr_value = struct.pack('!H', afi) + struct.pack('!B', safi) + \
+                            struct.pack('!B', len(nexthop)) + nexthop + b'\x00' + nlri_hex
+                        return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
+                            + struct.pack('!H', len(attr_value)) + attr_value
+                except Exception as e:
+                    raise excep.ConstructAttributeFailed(
+                        reason='failed to construct attributes: %s' % e,
+                        data=value
+                    )
             elif safi == safn.SAFNUM_UNICAST:
                 nexthop_len = 16
                 nexthop_bin = netaddr.IPAddress(value['nexthop']).packed
@@ -341,6 +359,10 @@ class MpReachNLRI(Attribute):
                         reason='failed to construct attributes: %s' % e,
                         data=value
                     )
+            else:
+                raise excep.ConstructAttributeFailed(
+                    reason='unsupport this sub address family',
+                    data=value)
         # for l2vpn
         elif afi == afn.AFNUM_L2VPN:
             if safi == safn.SAFNUM_EVPN:

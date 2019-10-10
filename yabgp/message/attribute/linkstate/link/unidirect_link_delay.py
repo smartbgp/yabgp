@@ -24,7 +24,7 @@ class UnidirectLinkDelay(TLV):
     """
     link msd
     """
-    # TYPE = 1115  # https://tools.ietf.org/html/draft-ietf-idr-te-pm-bgp-10#section-3.1
+    # TYPE = 1114  # https://tools.ietf.org/html/draft-ietf-idr-te-pm-bgp-10#section-3.1
     TYPE_STR = 'unidirect_link_delay'
 
     @classmethod
