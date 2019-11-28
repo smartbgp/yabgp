@@ -117,8 +117,11 @@ class BGPLS(NLRI):
             elif _type == 257:  # remote node
                 descriptor['type'] = 'remote_node'
                 descriptor['value'] = cls.parse_node_descriptor(value, proto_id)
-            # elif _type == 258:  # link local/remote identifier
-            #     pass
+            elif _type == 258:  # link local/remote identifier
+                local_identifier = struct.unpack('!I', value[:4])[0]
+                remote_identifier = struct.unpack('!I', value[4:])[0]
+                descriptor['type'] = 'link_identifiers'
+                descriptor['value'] = {'local_identifier': local_identifier, 'remote_identifier': remote_identifier}
             elif _type == 259:  # ipv4 interface address
                 ipv4_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
                 descriptor['type'] = 'link_local_ipv4'
