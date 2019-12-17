@@ -219,6 +219,21 @@ BGPNLRI_FSPEC_PCK_LEN = 10  # RFC 5575
 BGPNLRI_FSPEC_DSCP = 11  # RFC 5575
 BGPNLRI_FSPEC_FRAGMENT = 12  # RFC 5575
 
+# NLRI type as define in BGP flow spec RFC
+BGPNLRI_IPV6_FSPEC_DST_PFIX = 1  # draft-ietf-idr-flow-spec-v6-09
+BGPNLRI_IPV6_FSPEC_SRC_PFIX = 2  # draft-ietf-idr-flow-spec-v6-09
+BGPNLRI_IPV6_FSPEC_NEXT_HEADER = 3  # draft-ietf-idr-flow-spec-v6-09
+BGPNLRI_IPV6_FSPEC_PORT = 4  # draft-ietf-idr-flow-spec-v6-09
+BGPNLRI_IPV6_FSPEC_DST_PORT = 5  # draft-ietf-idr-flow-spec-v6-09
+BGPNLRI_IPV6_FSPEC_SRC_PORT = 6  # draft-ietf-idr-flow-spec-v6-09
+BGPNLRI_IPV6_FSPEC_ICMP_TP = 7  # draft-ietf-idr-flow-spec-v6-09
+BGPNLRI_IPV6_FSPEC_ICMP_CD = 8  # draft-ietf-idr-flow-spec-v6-09
+BGPNLRI_IPV6_FSPEC_TCP_FLAGS = 9  # draft-ietf-idr-flow-spec-v6-09
+BGPNLRI_IPV6_FSPEC_PCK_LEN = 10  # draft-ietf-idr-flow-spec-v6-09
+BGPNLRI_IPV6_FSPEC_DSCP = 11  # draft-ietf-idr-flow-spec-v6-09
+BGPNLRI_IPV6_FSPEC_FRAGMENT = 12  # draft-ietf-idr-flow-spec-v6-09
+BGPNLRI_IPV6_FSPEC_FLOW_LABLE = 13  # draft-ietf-idr-flow-spec-v6-09
+
 # Sub-TLVs as defined in SR TE Policy draft
 BGP_BSID_PREFERENCE_OLD_OR_NEW = 0
 BGPSUB_TLV_PREFERENCE = 6
@@ -276,7 +291,8 @@ AFI_SAFI_DICT = {
     (2, 128): 'vpnv6',
     (25, 70): 'evpn',
     (16388, 71): 'bgpls',
-    (1, 73): 'ipv4_srte'
+    (1, 73): 'ipv4_srte',
+    (2, 133): 'ipv6_flowspec'
 }
 AFI_SAFI_STR_DICT = {
     'ipv6': (2, 1),
@@ -288,7 +304,8 @@ AFI_SAFI_STR_DICT = {
     'vpnv6': (2, 128),
     'evpn': (25, 70),
     'bgpls': (16388, 71),
-    'ipv4_srte': (1, 73)
+    'ipv4_srte': (1, 73),
+    'ipv6_flowspec': (2, 133)
 }
 
 ADD_PATH_ACT_DICT = {

@@ -13,7 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""IPv4 Flowspec NLRI
+"""IPv6 Flowspec NLRI
 """
 from __future__ import division
 from builtins import range
@@ -27,14 +27,14 @@ from yabgp.common import constants as bgp_cons
 from yabgp.message.attribute.nlri import NLRI
 
 
-class IPv4FlowSpec(NLRI):
-    """ipv4 flow nlri process
+class IPv6FlowSpec(NLRI):
+    """ipv6 flow nlri process
     """
 
     @classmethod
     def parse(cls, value):
         """
-        parse IPv4 flowspec NLRI
+        parse IPv6 flowspec NLRI
         :param value:
         :return:
         """
@@ -80,13 +80,15 @@ class IPv4FlowSpec(NLRI):
         # there may have many filters in each nlri
         data = dict([(int(l), r) for (l, r) in data.items()])
         nlri_tmp = b''
-        for type_tmp in [bgp_cons.BGPNLRI_FSPEC_DST_PFIX, bgp_cons.BGPNLRI_FSPEC_SRC_PFIX]:
+        for type_tmp in [bgp_cons.BGPNLRI_IPV6_FSPEC_DST_PFIX, bgp_cons.BGPNLRI_IPV6_FSPEC_SRC_PFIX]:
             if data.get(type_tmp):
                 nlri_tmp += struct.pack('!B', type_tmp) + cls.construct_prefix(data[type_tmp])
-        for type_tmp in [bgp_cons.BGPNLRI_FSPEC_IP_PROTO, bgp_cons.BGPNLRI_FSPEC_PORT,
-                         bgp_cons.BGPNLRI_FSPEC_DST_PORT, bgp_cons.BGPNLRI_FSPEC_SRC_PORT,
-                         bgp_cons.BGPNLRI_FSPEC_ICMP_TP, bgp_cons.BGPNLRI_FSPEC_ICMP_CD,
-                         bgp_cons.BGPNLRI_FSPEC_PCK_LEN, bgp_cons.BGPNLRI_FSPEC_DSCP]:
+        for type_tmp in [bgp_cons.BGPNLRI_IPV6_FSPEC_NEXT_HEADER, bgp_cons.BGPNLRI_IPV6_FSPEC_PORT,
+                         bgp_cons.BGPNLRI_IPV6_FSPEC_DST_PORT, bgp_cons.BGPNLRI_IPV6_FSPEC_SRC_PORT,
+                         bgp_cons.BGPNLRI_IPV6_FSPEC_ICMP_TP, bgp_cons.BGPNLRI_IPV6_FSPEC_ICMP_CD,
+                         bgp_cons.BGPNLRI_IPV6_FSPEC_TCP_FLAGS, bgp_cons.BGPNLRI_IPV6_FSPEC_PCK_LEN,
+                         bgp_cons.BGPNLRI_IPV6_FSPEC_DSCP, bgp_cons.BGPNLRI_IPV6_FSPEC_FRAGMENT,
+                         bgp_cons.BGPNLRI_IPV6_FSPEC_FLOW_LABLE]:
             if not data.get(type_tmp):
                 continue
 
@@ -122,18 +124,20 @@ class IPv4FlowSpec(NLRI):
         """
         construct a prefix string from '1.1.1.0/24' to '\x18\x01\x01\x01'
         """
-        ip, masklen = prefix.split('/')
+        prefix_value = prefix.get('prefix')
+        ip, masklen = prefix_value.split('/')
         ip_hex = netaddr.IPAddress(ip).packed
+        offset = prefix.get('offset')
         masklen = int(masklen)
-        if 16 < masklen <= 24:
-            ip_hex = ip_hex[0:3]
-        elif 8 < masklen <= 16:
-            ip_hex = ip_hex[0:2]
-        elif 0 < masklen <= 8:
-            ip_hex = ip_hex[0:1]
-        elif masklen == 0:
-            ip_hex = ''
-        return struct.pack('!B', masklen) + ip_hex
+
+        # lenght
+        ip_hex = ip_hex[: math.ceil(masklen / 8)]
+
+        # offset
+        ip_hex = ip_hex[math.floor(offset / 8):]
+        # ip_hex = ip_hex[]
+
+        return struct.pack('!B', masklen) + struct.pack('!B', offset) + ip_hex
 
     @classmethod
     def parse_operators(cls, data):
