@@ -1,6 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import json
+
+# import json
+# replace with simplejson
+import simplejson as json
+
 import os
 import time
 import logging
