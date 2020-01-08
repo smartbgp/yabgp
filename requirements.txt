@@ -1,6 +1,6 @@
 pbr==2.0.0
 oslo.config==2.1.0
-Twisted==16.0.0
+Twisted==19.7.0
 Flask==1.0
 Flask-HTTPAuth==2.5.0
 netaddr>=0.7.12
