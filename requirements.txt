@@ -6,3 +6,4 @@ Flask-HTTPAuth==2.5.0
 netaddr>=0.7.12
 future>=0.16.0
 pysubnettree==0.26
+simplejson==3.17.0
