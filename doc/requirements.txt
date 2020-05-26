@@ -7,4 +7,4 @@ Flask==1.0
 Flask-HTTPAuth==2.5.0
 netaddr>=0.7.12
 future>=0.16.0
-pysubnettree==0.26
+py-radix==0.10.0
