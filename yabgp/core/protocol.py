@@ -24,7 +24,7 @@ import netaddr
 from oslo_config import cfg
 from twisted.internet import protocol
 from twisted.internet import reactor
-from SubnetTree import SubnetTree
+from radix import Radix
 import copy
 
 from yabgp.common import constants as bgp_cons
@@ -57,7 +57,7 @@ class BGP(protocol.Protocol):
         self.add_path_ipv4_send = False
         self.adj_rib_in = {k: {} for k in CONF.bgp.afi_safi}
         self.adj_rib_out = {k: {} for k in CONF.bgp.afi_safi}
-        self.adj_rib_in_ipv4_tree = SubnetTree()
+        self.adj_rib_in_ipv4_tree = Radix()
 
         # statistic
         self.msg_sent_stat = {
@@ -578,13 +578,8 @@ class BGP(protocol.Protocol):
                 if prefix in self.adj_rib_in['ipv4']:
                     self.receive_version['ipv4'] += 1
                     self.adj_rib_in['ipv4'].pop(prefix)
-                    try:
-                        self.adj_rib_in_ipv4_tree.remove(prefix)
-                    except RuntimeError as e:
-                        if e.__str__() == 'patricia_lookup failed.':
-                            pass
-                        else:
-                            return False
+                    if self.adj_rib_in_ipv4_tree.search_exact(prefix):
+                        self.adj_rib_in_ipv4_tree.delete(prefix)
             for prefix in msg['nlri']:
                 if prefix not in self.adj_rib_in['ipv4'].keys():
                     self.receive_version['ipv4'] += 1
@@ -594,15 +589,7 @@ class BGP(protocol.Protocol):
                     else:
                         self.receive_version['ipv4'] += 1
                 self.adj_rib_in['ipv4'][prefix] = msg['attr']
-                try:
-                    self.adj_rib_in_ipv4_tree.remove(prefix)
-                    LOG.info("remove a repeate key in tree. %s" % prefix)
-                except RuntimeError as e:
-                    if e.__str__() == 'patricia_lookup failed.':
-                        pass
-                    else:
-                        return False
-                self.adj_rib_in_ipv4_tree[prefix] = prefix
+                self.adj_rib_in_ipv4_tree.add(prefix)
             return True
         except Exception as e:
             LOG.error(e)
@@ -612,16 +599,19 @@ class BGP(protocol.Protocol):
     def ip_longest_match(self, prefix_ip):
         results = {}
         if '/' in prefix_ip:
-            return {
-                'prefix': prefix_ip,
-                'attr': self.adj_rib_in['ipv4'].get(prefix_ip)
-            }
+            if self.adj_rib_in['ipv4'].get(prefix_ip):
+                return {
+                    'prefix': prefix_ip,
+                    'attr': self.adj_rib_in['ipv4'].get(prefix_ip)
+                }
         if prefix_ip in self.adj_rib_in_ipv4_tree:
-            prefix = self.adj_rib_in_ipv4_tree[prefix_ip]
-            return {
-                'prefix': prefix,
-                'attr': self.adj_rib_in['ipv4'].get(prefix)
-            }
+            prefix_node = self.adj_rib_in_ipv4_tree.search_best(prefix_ip)
+            if prefix_node:
+                if self.adj_rib_in['ipv4'].get(prefix_node.prefix):
+                    return {
+                        'prefix': prefix_node.prefix,
+                        'attr': self.adj_rib_in['ipv4'].get(prefix_node.prefix)
+                    }
         return results
 
     def update_send_version(self, peer_ip, attr, nlri, withdraw):
