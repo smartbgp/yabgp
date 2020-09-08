@@ -15,8 +15,10 @@
 
 """Blueprint for version 1 of API
 """
+import binascii
 import logging
 import time
+import re
 
 from flask_httpauth import HTTPBasicAuth
 from flask import Blueprint, request
@@ -269,3 +271,158 @@ def search_adj_rib_out(peer_ip):
     prefix_list = json_request.get('data')
     afi_safi = dict(request.args.items()).get('afi_safi') or 'ipv4'
     return flask.jsonify(api_utils.get_adj_rib_out(prefix_list, afi_safi))
+
+
+@blueprint.route('/peer/<peer_ip>/json_to_bin', methods=['POST'])
+@auth.login_required
+@api_utils.log_request
+@api_utils.makesure_peer_establish
+def json_to_bin(peer_ip):
+    json_request = flask.request.get_json()
+    attr = json_request.get('attr') or {}
+    nlri = json_request.get('nlri') or []
+    withdraw = json_request.get('withdraw') or []
+    format = flask.request.args.get('format') or None
+    if attr:
+        attr = {int(k): v for k, v in attr.items()}
+        res = api_utils.get_peer_conf_and_state(peer_ip)
+        if 5 not in attr and res['peer']['remote_as'] == res['peer']['local_as']:
+            # default local preference
+            attr[5] = 100
+        if 16 in attr:
+            # extended community recombine
+            ext_community = []
+            for ext_com in attr[16]:
+                key, value = ext_com.split(':', 1)
+                if key.strip().lower() == 'route-target':
+                    values = value.strip().split(',')
+                    for vau in values:
+                        if '.' in vau.strip().split(':')[0]:
+                            ext_community.append([258, vau.strip()])
+                        else:
+                            nums = vau.strip().split(':', 1)
+                            # check（2:2）whether the last 2(AN) < 65535
+                            if int(nums[1].strip()) <= 65535:
+                                ext_community.append([2, vau.strip()])
+                            else:
+                                # 4 byte， need to check whether four_bytes_as is true in capability
+                                if res['peer']['capability']['remote']:
+                                    four_bytes_as = res['peer']['capability']['remote']['four_bytes_as']
+                                else:
+                                    return flask.jsonify({
+                                        'status': False,
+                                        'code': 'please check peer state'
+                                    })
+                                if int(nums[1].strip()) > 65535 and four_bytes_as:
+                                    ext_community.append([514, vau.strip()])
+                                elif not four_bytes_as and int(nums[0].strip()) > 65535:
+                                    return flask.jsonify({
+                                        'status': False,
+                                        'code': 'peer not support as num of greater than 65535'
+                                    })
+                elif key.strip().lower() == 'dmzlink-bw':
+                    values = value.strip().split(',')
+                    for vau in values:
+                        ext_community.append([16388, vau.strip()])
+                elif key.strip().lower() == 'route-origin':
+                    values = value.strip().split(',')
+                    for vau in values:
+                        if '.' in vau.strip().split(':')[0]:
+                            ext_community.append([259, vau.strip()])
+                        else:
+                            if res['peer']['capability']['remote']:
+                                four_bytes_as = res['peer']['capability']['remote']['four_bytes_as']
+                            else:
+                                return flask.jsonify({
+                                    'status': False,
+                                    'code': 'please check peer state'
+                                })
+                            nums = vau.strip().split(':', 1)
+                            if int(nums[1].strip()) <= 65535 and four_bytes_as:
+                                ext_community.append([515, vau.strip()])
+                            elif not four_bytes_as and int(nums[0].strip()) > 65535:
+                                return flask.jsonify({
+                                    'status': False,
+                                    'code': 'peer not support as num of greater than 65535'
+                                })
+                            else:
+                                ext_community.append([3, vau.strip()])
+                elif key.strip().lower() == 'redirect-nexthop':
+                    ext_community.append([2048, '0.0.0.0', int(value.strip())])
+                elif bgp_cons.BGP_EXT_COM_DICT_1.get(key.strip().lower()):
+                    key_num = bgp_cons.BGP_EXT_COM_DICT_1.get(key.strip().lower())
+                    values = value.strip().split(':', 1)
+                    ext_community.append([key_num, int(values[0]), int(values[1])])
+                else:
+                    key_num = bgp_cons.BGP_EXT_COM_DICT.get(key.strip().lower())
+                    if key_num:
+                        values = value.strip().split(',')
+                        for vau in values:
+                            if key_num == 32777:
+                                ext_community.append([key_num, int(vau.strip())])
+                            else:
+                                ext_community.append([key_num, vau.strip()])
+                    else:
+                        return flask.jsonify({
+                            'status': False,
+                            'code': 'unexpected extended community "%s", please check your post data' % key
+                        })
+            attr[16] = ext_community
+    if (attr and nlri) or withdraw:
+        massage_bin = api_utils.construct_update_to_bin(peer_ip, attr, nlri, withdraw)
+        massage = binascii.b2a_hex(massage_bin).decode('utf-8')
+        if format == 'human':
+            massage_tmp = ' '.join(re.findall('.{2}', massage))
+            massage = re.findall('.{24}', massage_tmp)
+            massage.append(massage_tmp[(len(massage) * 24):])
+        return flask.jsonify({'bin': massage})
+    elif 14 in attr or 15 in attr:
+        massage_bin = api_utils.construct_update_to_bin(peer_ip, attr, nlri, withdraw)
+        LOG.info('massage_bin:' + binascii.b2a_hex(massage_bin).decode('utf-8'))
+        massage = binascii.b2a_hex(massage_bin).decode('utf-8')
+        LOG.info('massage:' + massage)
+        if format == 'human':
+            massage_tmp = ' '.join(re.findall('.{2}', massage))
+            massage = re.findall('.{24}', massage_tmp)
+            massage.append(massage_tmp[(len(massage) * 24):])
+        return flask.jsonify({'bin': massage})
+    else:
+        return flask.jsonify({
+            'status': False,
+            'code': 'please check your post data'
+        })
+
+
+@blueprint.route('/peer/<peer_ip>/send/bin_update', methods=['POST'])
+@auth.login_required
+@api_utils.log_request
+@api_utils.makesure_peer_establish
+def send_bin_update(peer_ip):
+    format = flask.request.args.get('format') or None
+    json_request = flask.request.get_json()
+    bin = json_request.get('binary_data') or None
+    try:
+        if bin:
+            if format == 'human':
+                bin = ''.join(bin).replace(' ', '')
+            elif not isinstance(bin, str):
+                raise TypeError('arg type should be string')
+            massage = binascii.a2b_hex(bin)
+            return flask.jsonify(api_utils.send_bin_update(peer_ip, massage))
+        else:
+            return flask.jsonify({
+                'status': False,
+                'code': 'please input some string'
+            })
+    except binascii.Error as e:
+        LOG.error(e)
+        return flask.jsonify({
+            'status': False,
+            'code': 'please input even length string'
+        })
+    except Exception as e:
+        LOG.error(e)
+        return flask.jsonify({
+            'status': False,
+            'code': 'please check your post data'
+        })

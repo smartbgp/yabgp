@@ -322,6 +322,32 @@ class BGP(protocol.Protocol):
             LOG.error(e)
             return False
 
+    def construct_update_to_bin(self, msg):
+        """
+        construct update message to binary
+        :param msg: message dictionary
+        :return:
+        """
+        try:
+            msg_update = Update().construct(msg, self.fourbytesas, self.add_path_ipv4_send)
+            return msg_update
+        except Exception as e:
+            LOG.error(e)
+            return "construct failed"
+
+    def send_bin_update(self, msg):
+        """
+        send binary update message to the peer
+        :param msg: message dictionary
+        :return:
+        """
+        try:
+            reactor.callFromThread(self.write_tcp_thread, msg)
+            return True
+        except Exception as e:
+            LOG.error(e)
+            return False
+
     def write_tcp_thread(self, msg):
         self.transport.write(msg)
 
@@ -624,9 +650,9 @@ class BGP(protocol.Protocol):
                     del value14['nlri']
                     key = "{"
                     for k in sorted(prefix.keys()):
-                        key += '"'+k+'"'
+                        key += '"' + k + '"'
                         key += ':'
-                        key += '"'+str(prefix[k])+'"'
+                        key += '"' + str(prefix[k]) + '"'
                         key += ','
                     key = key[:-1]
                     key += "}"
@@ -666,9 +692,9 @@ class BGP(protocol.Protocol):
                     del value14['nlri']
                     key = "{"
                     for k in sorted(prefix.keys()):
-                        key += '"'+k+'"'
+                        key += '"' + k + '"'
                         key += ':'
-                        key += '"'+str(prefix[k])+'"'
+                        key += '"' + str(prefix[k]) + '"'
                         key += ','
                     key = key[:-1]
                     key += "}"
@@ -766,7 +792,7 @@ class BGP(protocol.Protocol):
                     del value14['nlri']
                     key = "{"
                     for k in sorted(prefix.keys()):
-                        key += '"'+k+'"'
+                        key += '"' + k + '"'
                         key += ':'
                         key += '"' + str(prefix[k]) + '"'
                         key += ','

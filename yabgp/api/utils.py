@@ -37,6 +37,7 @@ def log_request(f):
             LOG.info('API POST data %s', request.json)
         LOG.debug('API request environ %s', request.environ)
         return f(*args, **kwargs)
+
     return decorated_function
 
 
@@ -51,6 +52,7 @@ def makesure_peer_establish(f):
                 'status': False,
                 'code': "Please check the peer's state"
             })
+
     return decorator
 
 
@@ -151,7 +153,35 @@ def send_update(peer_ip, attr, nlri, withdraw):
     :return:
     """
     if cfg.CONF.bgp.running_config['factory'].fsm.protocol.send_update({
-            'attr': attr, 'nlri': nlri, 'withdraw': withdraw}):
+        'attr': attr, 'nlri': nlri, 'withdraw': withdraw}):
+        return {
+            'status': True
+        }
+    else:
+        return {
+            'status': False,
+            'code': 'failed when send this message out'
+        }
+
+
+def construct_update_to_bin(peer_ip, attr, nlri, withdraw):
+    """
+    send update message to bin
+    :param peer_ip: peer ip address
+    :return:
+    """
+    massage_bin = cfg.CONF.bgp.running_config['factory'].fsm.protocol.construct_update_to_bin({
+        'attr': attr, 'nlri': nlri, 'withdraw': withdraw})
+    return massage_bin
+
+
+def send_bin_update(peer_ip, massage):
+    """
+    send bin update message
+    :param peer_ip: peer ip address
+    :return:
+    """
+    if cfg.CONF.bgp.running_config['factory'].fsm.protocol.send_bin_update(massage):
         return {
             'status': True
         }
