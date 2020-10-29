@@ -42,8 +42,12 @@ class IPv6Unicast(NLRI):
             else:
                 prefix_byte_len = prefix_bit_len / 8 + 1
             offset = int(prefix_byte_len + 1)
-            prefix_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(nlri_data[1:offset]), 16))) \
-                + '/%s' % prefix_bit_len
+            if len(nlri_data[1:offset]) < 16:
+                prefix_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(nlri_data[1:offset]+b'\x00'*(16-len(nlri_data[1:offset]))), 16))) \
+                              + '/%s' % prefix_bit_len
+            else:
+                prefix_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(nlri_data[1:offset]), 16))) \
+                                + '/%s' % prefix_bit_len
             nlri_list.append(prefix_addr)
             nlri_data = nlri_data[int(prefix_byte_len) + 1:]
 
