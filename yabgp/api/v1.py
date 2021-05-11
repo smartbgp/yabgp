@@ -186,6 +186,8 @@ def send_update_message(peer_ip):
                                 ext_community.append([3, vau.strip()])
                 elif key.strip().lower() == 'redirect-nexthop':
                     ext_community.append([2048, '0.0.0.0', int(value.strip())])
+                elif key.strip().lower() == 'redirect-vrf':
+                    ext_community.append([32776, value.strip()])
                 elif bgp_cons.BGP_EXT_COM_DICT_1.get(key.strip().lower()):
                     key_num = bgp_cons.BGP_EXT_COM_DICT_1.get(key.strip().lower())
                     values = value.strip().split(':', 1)
@@ -347,6 +349,8 @@ def json_to_bin(peer_ip):
                                 })
                             else:
                                 ext_community.append([3, vau.strip()])
+                elif key.strip().lower() == 'redirect-vrf':
+                    ext_community.append([32776, value.strip()])
                 elif key.strip().lower() == 'redirect-nexthop':
                     ext_community.append([2048, '0.0.0.0', int(value.strip())])
                 elif bgp_cons.BGP_EXT_COM_DICT_1.get(key.strip().lower()):
