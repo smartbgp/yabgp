@@ -706,20 +706,21 @@ Extended community we supported:
 .. code-block:: Python
 
     #  VPN Route Target  #
-    route-target  # Route Target
+    route-target  # Route Target. eg: route-target:65530:1, route-target:1.1.1.1:1, route-target:1048576:1
 
     # Route Origin (SOO site of Origin)
-    route-origin  # Route Origin
+    route-origin  # Route Origin. eg: route-origin:1048576:1, route-origin:65530:1, route-origin:1.1.1.1:1
 
     # BGP Flow Spec
-    redirect-nexthop  # redirect to ipv4/v6 nexthop
-    traffic-rate  # traffic-rate
-    redirect-vrf  # redirect Route Target
-    traffic-marking-dscp  # traffic-marking DSCP value
+    redirect-nexthop  # redirect to ipv4/v6 nexthop. eg: redirect-nexthop:1.1.1.1:1
+    traffic-rate  # traffic-rate. eg: traffic-rate:65530:1
+    redirect-vrf  # redirect Route Target. eg: redirect-vrf:65530:1
+    traffic-marking-dscp  # traffic-marking DSCP value. eg: traffic-marking-dscp:200,100
+    traffic-ation  # traffic-action bitmask. eg: traffic-action:S:1,T:1
 
     # Transitive Opaque
     color # Color, treated like color-00, leftmost 2 bits of reserved field = 00, CO bits = 00
-    # Color, leftmost 2 bits of reserved field = 00, CO bits = 00
+    # Color, leftmost 2 bits of reserved field = 00, CO bits = 00. eg:color:100
     # srpolicy -> IGP
     color-00
     # Color, leftmost 2 bits of reserved field = 01, CO bits = 01
@@ -731,13 +732,13 @@ Extended community we supported:
     # Color, leftmost 2 bits of reserved field = 11, CO bits = 11
     # treated like color-00
     color-11
-    encapsulation  # encapsulation
+    encapsulation  # encapsulation. eg: encapsulation:1,2
 
     # BGP EVPN
-    mac-mobility  # Mac Mobility
-    esi-label  # ESI MPLS Label
-    es-import  # ES Import
-    router-mac  # EVPN Router MAC
+    mac-mobility  # Mac Mobility. eg: mac-mobility:1:100
+    esi-label  # ESI MPLS Label. eg: esi-label:1:100
+    es-import  # ES Import. eg: es-import:22-22-22-22-22-22
+    router-mac  # EVPN Router MAC. eg: router-mac:22-22-22-22-22-22
 
 
 14. AS4_PATH

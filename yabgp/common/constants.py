@@ -43,7 +43,6 @@ BGP_ATTR_FLAG_TRANSITIVE = 0x40
 BGP_ATTR_FLAG_PARTIAL = 0x20
 BGP_ATTR_FLAG_EXTENDED_LENGTH = 0x10
 
-
 # SSA flags
 BGP_SSA_TRANSITIVE = 0x8000
 BGP_SSA_TYPE = 0x7FFF
@@ -167,6 +166,7 @@ BGP_EXT_COM_DICT = {
     'redirect-vrf': 32776,  # redirect 6-byte Route Target
     'traffic-marking-dscp': 32777,  # traffic-marking DSCP value
     'traffic-rate': 32774,  # traffic-rate 2-byte as#, 4-byte float
+    'traffic-action': 32775,  # traffic-action Sample (bit 46) Terminal Action (bit 47)
     'color': 779,  # Color
     # Color, leftmost 2 bits of reserved field = 00, CO bits = 00,
     # srpolicy -> IGP
@@ -183,6 +183,31 @@ BGP_EXT_COM_DICT = {
     'encapsulation': 780,  # BGP_EXT_COM_ENCAP = 0x030c
     'es-import': 1538,  # ES Import
     'router-mac': 1539  # EVPN Router MAC Extended Community
+}
+
+BGP_EXT_COM_STR_DICT = {
+    258: 'route-target',
+    2: 'route-target',
+    514: 'route-target',
+    779: 'color',
+    16388: 'dmzlink-bw',
+    259: 'route-origin',
+    515: 'route-origin',
+    3: 'route-origin',
+    32776: 'redirect-vrf',
+    2048: 'redirect-nexthop',
+    1537: 'esi-label',
+    1536: 'mac-mobility',
+    32777: 'traffic-marking-dscp',
+    32774: 'traffic-rate',
+    51052544: 'color-00',
+    51068928: 'color-01',
+    51085312: 'color-10',
+    51101696: 'color-11',
+    780: 'encapsulation',
+    1538: 'es-import',
+    1539: 'router-mac',
+    32775: 'traffic-action'
 }
 
 BGP_EXT_COM_DICT_1 = {
@@ -404,8 +429,8 @@ ERR_OUT_OF_RESOURCES = 8
 NOTIFICATION_SUB_ERROR_CODES_DICT = {
     ERR_MSG_HDR: {
         ERR_MSG_HDR_CONN_NOT_SYNC: 'Connection Not Synchronized',  # 1
-        ERR_MSG_HDR_BAD_MSG_LEN: 'Bad Message Length',             # 2
-        ERR_MSG_HDR_BAD_MSG_TYPE: 'Bad Message Type'               # 3
+        ERR_MSG_HDR_BAD_MSG_LEN: 'Bad Message Length',  # 2
+        ERR_MSG_HDR_BAD_MSG_TYPE: 'Bad Message Type'  # 3
     },
     ERR_MSG_OPEN: {
         ERR_MSG_OPEN_UNSUP_VERSION: 'Unsupported Version Number',
@@ -467,7 +492,6 @@ ATTRIBUTE_ID_2_STR = {
 }
 
 ATTRIBUTE_STR_2_ID = dict([(v, k) for (k, v) in ATTRIBUTE_ID_2_STR.items()])
-
 
 WELL_KNOW_COMMUNITY_INT_2_STR = {
     0xFFFF0000: 'PLANNED_SHUT',
