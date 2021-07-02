@@ -50,7 +50,7 @@ from .link.unidirect_packet_loss import UnidirectPacketLoss    # noqa
 from .link.unidirect_residual_bw import UnidirectResidualBw    # noqa
 from .link.unidirect_avail_bw import UnidirectAvailBw    # noqa
 from .link.unidirect_bw_util import UnidirectBwUtil    # noqa
-from .link.extend_admin_group import ExtendedAdminGroup # noqa
+from .link.extend_admin_group import ExtendedAdminGroup  # noqa
 from .prefix.prefix_metric import PrefixMetric   # noqa
 from .prefix.prefix_sid import PrefixSID  # noqa
 from .prefix.prefix_igp_attr import PrefixIGPAttr  # noqa

@@ -152,8 +152,8 @@ def send_update(peer_ip, attr, nlri, withdraw):
     :param peer_ip: peer ip address
     :return:
     """
-    if cfg.CONF.bgp.running_config['factory'].fsm.protocol.send_update({
-        'attr': attr, 'nlri': nlri, 'withdraw': withdraw}):
+    if cfg.CONF.bgp.running_config['factory'].fsm.protocol.send_update(
+            {'attr': attr, 'nlri': nlri, 'withdraw': withdraw}):
         return {
             'status': True
         }

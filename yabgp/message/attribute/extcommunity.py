@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+
 # Copyright 2015-2017 Cisco Systems, Inc.
 # All rights reserved.
 #
@@ -84,77 +87,83 @@ class ExtCommunity(Attribute):
             if comm_code == bgp_cons.BGP_EXT_COM_RT_0:
                 # Route Target, Format AS(2bytes):AN(4bytes)
                 asn, an = struct.unpack('!HI', value_tmp)
-                ext_community.append([bgp_cons.BGP_EXT_COM_RT_0, '%s:%s' % (asn, an)])
+                ext_community.append('%s:%s:%s' % (bgp_cons.BGP_EXT_COM_STR_DICT[comm_code], asn, an))
 
             elif comm_code == bgp_cons.BGP_EXT_COM_RT_1:
                 # Route Target,Format IPv4 address(4bytes):AN(2bytes)
                 ipv4 = str(netaddr.IPAddress(struct.unpack('!I', value_tmp[0:4])[0]))
                 an = struct.unpack('!H', value_tmp[4:])[0]
-                ext_community.append([bgp_cons.BGP_EXT_COM_RT_1, '%s:%s' % (ipv4, an)])
+                ext_community.append('%s:%s:%s' % (bgp_cons.BGP_EXT_COM_STR_DICT[comm_code], ipv4, an))
 
             elif comm_code == bgp_cons.BGP_EXT_COM_RT_2:
                 # Route Target,Format AS(4bytes):AN(2bytes)
                 asn, an = struct.unpack('!IH', value_tmp)
-                ext_community.append([bgp_cons.BGP_EXT_COM_RT_2, '%s:%s' % (asn, an)])
+                ext_community.append('%s:%s:%s' % (bgp_cons.BGP_EXT_COM_STR_DICT[comm_code], asn, an))
 
             # Route Origin
             elif comm_code == bgp_cons.BGP_EXT_COM_RO_0:
                 # Route Origin,Format AS(2bytes):AN(4bytes)
                 asn, an = struct.unpack('!HI', value_tmp)
-                ext_community.append([bgp_cons.BGP_EXT_COM_RO_0, '%s:%s' % (asn, an)])
+                ext_community.append('%s:%s:%s' % (bgp_cons.BGP_EXT_COM_STR_DICT[comm_code], asn, an))
 
             elif comm_code == bgp_cons.BGP_EXT_COM_RO_1:
                 # Route Origin,Format IP address:AN(2bytes)
                 ipv4 = str(netaddr.IPAddress(struct.unpack('!I', value_tmp[0:4])[0]))
                 an = struct.unpack('!H', value_tmp[4:])[0]
-                ext_community.append([bgp_cons.BGP_EXT_COM_RO_1, '%s:%s' % (ipv4, an)])
+                ext_community.append('%s:%s:%s' % (bgp_cons.BGP_EXT_COM_STR_DICT[comm_code], ipv4, an))
 
             elif comm_code == bgp_cons.BGP_EXT_COM_RO_2:
                 # Route Origin,Format AS(2bytes):AN(4bytes)
                 asn, an = struct.unpack('!IH', value_tmp)
-                ext_community.append([bgp_cons.BGP_EXT_COM_RO_2, '%s:%s' % (asn, an)])
+                ext_community.append('%s:%s:%s' % (bgp_cons.BGP_EXT_COM_STR_DICT[comm_code], asn, an))
 
             # BGP Flow spec
             elif comm_code == bgp_cons.BGP_EXT_REDIRECT_NH:
                 ipv4 = str(netaddr.IPAddress(int(binascii.b2a_hex(value_tmp[0:4]), 16)))
                 copy_flag = struct.unpack('!H', value_tmp[4:])[0]
-                ext_community.append([bgp_cons.BGP_EXT_REDIRECT_NH, ipv4, copy_flag])
+                ext_community.append('%s:%s:%s' % (bgp_cons.BGP_EXT_COM_STR_DICT[comm_code], ipv4, copy_flag))
             elif comm_code == bgp_cons.BGP_EXT_TRA_RATE:
                 asn, rate = struct.unpack('!Hf', value_tmp)
-                ext_community.append([bgp_cons.BGP_EXT_TRA_RATE, '%s:%s' % (asn, int(rate))])
+                ext_community.append('%s:%s:%s' % (bgp_cons.BGP_EXT_COM_STR_DICT[comm_code], asn, int(rate)))
 
             elif comm_code == bgp_cons.BGP_EXT_TRA_ACTION:
-                bit_value = parse_bit(value_tmp[-1])
-                ext_community.append([bgp_cons.BGP_EXT_TRA_ACTION, {'S': bit_value['6'], 'T': bit_value['7']}])
+                bit_value = parse_bit(ord(value_tmp[-1]))
+                ext_community.append(
+                    '%s:S:%s,T:%s' % (bgp_cons.BGP_EXT_COM_STR_DICT[comm_code], bit_value['6'], bit_value['7']))
             elif comm_code == bgp_cons.BGP_EXT_REDIRECT_VRF:
                 asn, an = struct.unpack('!HI', value_tmp)
-                ext_community.append([bgp_cons.BGP_EXT_REDIRECT_VRF, '%s:%s' % (asn, an)])
+                ext_community.append('%s:%s:%s' % (bgp_cons.BGP_EXT_COM_STR_DICT[comm_code], asn, an))
             elif comm_code == bgp_cons.BGP_EXT_TRA_MARK:
                 mark = ord(value_tmp[-1:])
-                ext_community.append([bgp_cons.BGP_EXT_TRA_MARK, mark])
+                ext_community.append('%s:%s' % (bgp_cons.BGP_EXT_COM_STR_DICT[comm_code], mark))
 
             # Transitive Opaque
             elif comm_code == bgp_cons.BGP_EXT_COM_ENCAP:
-                ext_community.append([bgp_cons.BGP_EXT_COM_ENCAP, struct.unpack('!I', value_tmp[2:])[0]])
+                ext_community.append(
+                    '%s:%s' % (bgp_cons.BGP_EXT_COM_STR_DICT[comm_code], struct.unpack('!I', value_tmp[2:])[0]))
+            elif comm_code == bgp_cons.BGP_EXT_COM_COLOR:
+                ext_community.append('%s:%s' % (bgp_cons.BGP_EXT_COM_STR_DICT[comm_code],
+                                                struct.unpack('!I', value_tmp[2:])[0]))
             # EVPN
             elif comm_code == bgp_cons.BGP_EXT_COM_EVPN_ES_IMPORT:
                 mac = str(netaddr.EUI(int(binascii.b2a_hex(value_tmp), 16)))
-                ext_community.append([comm_code, mac])
+                ext_community.append('%s:%s' % (bgp_cons.BGP_EXT_COM_STR_DICT[comm_code], mac))
             elif comm_code == bgp_cons.BGP_EXT_COM_EVPN_MAC_MOBIL:
                 flag = ord(value_tmp[0:1])
                 seq = struct.unpack('!I', value_tmp[2:])[0]
-                ext_community.append([comm_code, flag, seq])
+                ext_community.append('%s:%s:%s' % (bgp_cons.BGP_EXT_COM_STR_DICT[comm_code], flag, seq))
             elif comm_code == bgp_cons.BGP_EXT_COM_EVPN_ESI_MPLS_LABEL:
                 flag = ord(value_tmp[0:1])
-                label = struct.unpack('!L', b'\00'+value_tmp[3:])[0]
+                label = struct.unpack('!L', b'\00' + value_tmp[3:])[0]
                 label >>= 4
-                ext_community.append([comm_code, flag, label])
+                ext_community.append('%s:%s:%s' % (bgp_cons.BGP_EXT_COM_STR_DICT[comm_code], flag, label))
             elif comm_code == bgp_cons.BGP_EXT_COM_EVPN_ROUTE_MAC:
-                ext_community.append([comm_code, str(netaddr.EUI(int(binascii.b2a_hex(value_tmp), 16)))])
+                ext_community.append('%s:%s' % (
+                    bgp_cons.BGP_EXT_COM_STR_DICT[comm_code], str(netaddr.EUI(int(binascii.b2a_hex(value_tmp), 16)))))
             # BGP link bandwith
             elif comm_code == bgp_cons.BGP_EXT_COM_LINK_BW:
                 asn, an = struct.unpack('!HI', value_tmp)
-                ext_community.append([bgp_cons.BGP_EXT_COM_LINK_BW, '%s:%s' % (asn, an)])
+                ext_community.append('%s:%s:%s' % (bgp_cons.BGP_EXT_COM_STR_DICT[comm_code], asn, an))
             else:
                 ext_community.append([bgp_cons.BGP_EXT_COM_UNKNOW, repr(value_tmp)])
                 LOG.warn('unknow bgp extended community, type=%s, value=%s', comm_code, repr(value_tmp))
@@ -179,8 +188,8 @@ class ExtCommunity(Attribute):
                 ext_community_hex += struct.pack('!HHI', bgp_cons.BGP_EXT_COM_RT_0, int(asn), int(an))
             elif item[0] == bgp_cons.BGP_EXT_COM_RT_1:
                 ip, an = item[1].split(':')
-                ext_community_hex += struct.pack('!H', bgp_cons.BGP_EXT_COM_RT_1) + netaddr.IPAddress(ip).packed + \
-                    struct.pack('!H', int(an))
+                ext_community_hex += struct.pack(
+                    '!H', bgp_cons.BGP_EXT_COM_RT_1) + netaddr.IPAddress(ip).packed + struct.pack('!H', int(an))
             elif item[0] == bgp_cons.BGP_EXT_COM_RT_2:
                 asn, an = item[1].split(':')
                 ext_community_hex += struct.pack('!HIH', bgp_cons.BGP_EXT_COM_RT_2, int(asn), int(an))
@@ -191,8 +200,8 @@ class ExtCommunity(Attribute):
                 ext_community_hex += struct.pack('!HHI', bgp_cons.BGP_EXT_COM_RO_0, int(asn), int(an))
             elif item[0] == bgp_cons.BGP_EXT_COM_RO_1:
                 ip, an = item[1].split(':')
-                ext_community_hex += struct.pack('!H', bgp_cons.BGP_EXT_COM_RO_1) + netaddr.IPAddress(ip).packed + \
-                    struct.pack('!H', int(an))
+                ext_community_hex += struct.pack('!H', bgp_cons.BGP_EXT_COM_RO_1) + netaddr.IPAddress(
+                    ip).packed + struct.pack('!H', int(an))
             elif item[0] == bgp_cons.BGP_EXT_COM_RO_2:
                 asn, an = item[1].split(':')
                 ext_community_hex += struct.pack('!HIH', bgp_cons.BGP_EXT_COM_RO_2, int(asn), int(an))
@@ -239,18 +248,20 @@ class ExtCommunity(Attribute):
                 seq = struct.pack('!I', item[2])
                 ext_community_hex += struct.pack('!H', item[0]) + flag + b'\x00' + seq
             elif item[0] == bgp_cons.BGP_EXT_COM_EVPN_ROUTE_MAC:
-                ext_community_hex += struct.pack('!H', item[0]) + \
-                    b''.join([struct.pack('!B', (int(i, 16))) for i in item[1].split("-")])
+                ext_community_hex += struct.pack('!H', item[0]) + b''.join(
+                    [struct.pack('!B', (int(i, 16))) for i in item[1].split("-")])
             # bgp link bandwith
             elif item[0] == bgp_cons.BGP_EXT_COM_LINK_BW:
                 asn, an = item[1].split(':')
                 ext_community_hex += struct.pack('!HHI', bgp_cons.BGP_EXT_COM_LINK_BW, int(asn), int(an))
+            elif item[0] == bgp_cons.BGP_EXT_TRA_ACTION:
+                ext_community_hex += struct.pack('!HIBB', item[0], 0, 0, item[1].get('s', 0) * 2 + item[1].get('t', 0))
             else:
                 LOG.warn('unknow bgp extended community for construct, type=%s, value=%s', item[0], item[1])
 
         if ext_community_hex:
-            return struct.pack('!B', cls.FLAG) + struct.pack('!B', cls.ID) \
-                + struct.pack('!B', len(ext_community_hex)) + ext_community_hex
+            return struct.pack('!B', cls.FLAG) + struct.pack(
+                '!B', cls.ID) + struct.pack('!B', len(ext_community_hex)) + ext_community_hex
         else:
             LOG.error('construct error, value=%s' % value)
             return None
