@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+
 # Copyright 2015 Cisco Systems, Inc.
 # All rights reserved.
 #
@@ -140,7 +143,7 @@ def send_update_message(peer_ip):
                             ext_community.append([258, vau.strip()])
                         else:
                             nums = vau.strip().split(':', 1)
-                            if int(nums[1].strip()) <= 65535:
+                            if int(nums[0].strip()) <= 65535:
                                 ext_community.append([2, vau.strip()])
                             else:
                                 if res['peer']['capability']['remote']:
@@ -150,7 +153,7 @@ def send_update_message(peer_ip):
                                         'status': False,
                                         'code': 'please check peer state'
                                     })
-                                if int(nums[1].strip()) > 65535 and four_bytes_as:
+                                if int(nums[0].strip()) > 65535 and four_bytes_as:
                                     ext_community.append([514, vau.strip()])
                                 elif not four_bytes_as and int(nums[0].strip()) > 65535:
                                     return flask.jsonify({
@@ -175,7 +178,7 @@ def send_update_message(peer_ip):
                                     'code': 'please check peer state'
                                 })
                             nums = vau.strip().split(':', 1)
-                            if int(nums[1].strip()) <= 65535 and four_bytes_as:
+                            if int(nums[0].strip()) > 65535 and four_bytes_as:
                                 ext_community.append([515, vau.strip()])
                             elif not four_bytes_as and int(nums[0].strip()) > 65535:
                                 return flask.jsonify({
@@ -185,7 +188,20 @@ def send_update_message(peer_ip):
                             else:
                                 ext_community.append([3, vau.strip()])
                 elif key.strip().lower() == 'redirect-nexthop':
-                    ext_community.append([2048, '0.0.0.0', int(value.strip())])
+                    values = value.strip().split(':', 1)
+                    ext_community.append([2048, values[0], int(values[1])])
+                elif key.strip().lower() == 'redirect-vrf':
+                    ext_community.append([32776, value.strip()])
+                elif key.strip().lower() == 'traffic-action':
+                    values = value.strip().lower().split(',')
+                    vau_dict = {}
+                    for vau in values:
+                        flg, v = vau.strip().split(':', 1)
+                        if flg == 's':
+                            vau_dict.update({'s': int(v)})
+                        elif flg == 't':
+                            vau_dict.update({'t': int(v)})
+                    ext_community.append([32775, vau_dict])
                 elif bgp_cons.BGP_EXT_COM_DICT_1.get(key.strip().lower()):
                     key_num = bgp_cons.BGP_EXT_COM_DICT_1.get(key.strip().lower())
                     values = value.strip().split(':', 1)
@@ -301,11 +317,11 @@ def json_to_bin(peer_ip):
                             ext_community.append([258, vau.strip()])
                         else:
                             nums = vau.strip().split(':', 1)
-                            # check（2:2）whether the last 2(AN) < 65535
-                            if int(nums[1].strip()) <= 65535:
+                            # check(2:2)whether the last 2(AN) < 65535
+                            if int(nums[0].strip()) <= 65535:
                                 ext_community.append([2, vau.strip()])
                             else:
-                                # 4 byte， need to check whether four_bytes_as is true in capability
+                                # 4 byte, need to check whether four_bytes_as is true in capability
                                 if res['peer']['capability']['remote']:
                                     four_bytes_as = res['peer']['capability']['remote']['four_bytes_as']
                                 else:
@@ -313,7 +329,7 @@ def json_to_bin(peer_ip):
                                         'status': False,
                                         'code': 'please check peer state'
                                     })
-                                if int(nums[1].strip()) > 65535 and four_bytes_as:
+                                if int(nums[0].strip()) > 65535 and four_bytes_as:
                                     ext_community.append([514, vau.strip()])
                                 elif not four_bytes_as and int(nums[0].strip()) > 65535:
                                     return flask.jsonify({
@@ -338,7 +354,7 @@ def json_to_bin(peer_ip):
                                     'code': 'please check peer state'
                                 })
                             nums = vau.strip().split(':', 1)
-                            if int(nums[1].strip()) <= 65535 and four_bytes_as:
+                            if int(nums[0].strip()) > 65535 and four_bytes_as:
                                 ext_community.append([515, vau.strip()])
                             elif not four_bytes_as and int(nums[0].strip()) > 65535:
                                 return flask.jsonify({
@@ -347,8 +363,21 @@ def json_to_bin(peer_ip):
                                 })
                             else:
                                 ext_community.append([3, vau.strip()])
+                elif key.strip().lower() == 'redirect-vrf':
+                    ext_community.append([32776, value.strip()])
                 elif key.strip().lower() == 'redirect-nexthop':
-                    ext_community.append([2048, '0.0.0.0', int(value.strip())])
+                    values = value.strip().split(':', 1)
+                    ext_community.append([2048, values[0], int(values[1])])
+                elif key.strip().lower() == 'traffic-action':
+                    values = value.strip().lower().split(',')
+                    vau_dict = {}
+                    for vau in values:
+                        flg, v = vau.strip().split(':', 1)
+                        if flg == 's':
+                            vau_dict.update({'s': int(v)})
+                        elif flg == 't':
+                            vau_dict.update({'t': int(v)})
+                    ext_community.append([32775, vau_dict])
                 elif bgp_cons.BGP_EXT_COM_DICT_1.get(key.strip().lower()):
                     key_num = bgp_cons.BGP_EXT_COM_DICT_1.get(key.strip().lower())
                     values = value.strip().split(':', 1)
