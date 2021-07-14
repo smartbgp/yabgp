@@ -80,6 +80,24 @@ BGP_PEER_CONFIG_OPTS = [
 
 CONF.register_cli_opts(BGP_PEER_CONFIG_OPTS, group='bgp')
 
+TCP_AUTHOPT_OPTS = [
+    cfg.IntOpt('send_id', default=0,
+               help='The remote BGP peer AS number'),
+    cfg.IntOpt('recv_id', default=0,
+               help='The Local BGP AS number'),
+    cfg.StrOpt('key',
+               help='The master key',
+               secret=True),
+    cfg.StrOpt('alg',
+               help='Algorithm (hmac-sha-1-96 or aes-128-cmac-96)',
+               default="hmac-sha-1-96"),
+    cfg.BoolOpt('include-options',
+                default=True,
+                help='include TCP options in MAC'),
+]
+
+CONF.register_cli_opts(TCP_AUTHOPT_OPTS, group='tcp_authopt')
+
 BGP_PEER_TIME_OPTS = [
     cfg.IntOpt('connect_retry_time',
                default=30,
@@ -117,6 +135,7 @@ def get_bgp_config():
             'local_as': CONF.bgp.local_as,
             'local_addr': CONF.bgp.local_addr,
             'md5': CONF.bgp.md5,
+            'tcp_authopt': CONF.tcp_authopt,
             'afi_safi': CONF.bgp.afi_safi,
             'capability': {
                 'local': {

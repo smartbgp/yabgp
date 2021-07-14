@@ -72,7 +72,7 @@ class BGPPeering(BGPFactory):
     """
 
     def __init__(self, myasn=None, myaddr=None, peerasn=None, peeraddr=None,
-                 afisafi=None, md5=None, handler=None):
+                 afisafi=None, md5=None, handler=None, tcp_authopt=None):
         """Initial a BGPPeering instance.
 
         :param myasn: local bgp as number.
@@ -92,6 +92,7 @@ class BGPPeering(BGPFactory):
         self.peer_asn = peerasn
         self.afi_safi = afisafi
         self.md5 = md5
+        self.tcp_authopt = tcp_authopt
 
         self.status = False
         self.fsm = BGPFactory.FSM(self)
@@ -253,6 +254,11 @@ class BGPPeering(BGPFactory):
                         socket.IPPROTO_TCP, bgp_cons.TCP_MD5SIG, md5sig)
                 else:
                     sys.exit()
+            try:
+                self.set_tcp_authopt(connector.transport.getHandle())
+            except:
+                LOG.exception("failed to set tcp authopt")
+                raise
             return True
         else:
             return False
@@ -291,3 +297,63 @@ class BGPPeering(BGPFactory):
         except socket.error as e:
             LOG.error('This linux machine does not support TCP_MD5SIG: (%s)', str(e))
             return None
+
+    def set_tcp_authopt(self, sock: int):
+        if not self.tcp_authopt or not self.tcp_authopt.key:
+            return
+
+        # TCP Authopt support multiple keys but yabgp does not
+        local_id = 1
+        authopt_flags = 0
+        key_flags = 0
+        if not self.tcp_authopt.include_options:
+            key_flags = key_flags | TCP_AUTHOPT_KEY_EXCLUDE_OPTS
+        alg_num = TCP_AUTHOPT_ALG_NAME_TO_NUM.get(self.tcp_authopt.alg)
+        if not alg_num:
+            raise ValueError(f"Bad TCP Authentication Option Algorithm {self.tcp_authopt.alg}")
+
+        set_tcp_authopt(sock, authopt_flags, local_id)
+        set_tcp_authopt_key(
+            sock,
+            key_flags,
+            local_id,
+            send_id=self.tcp_authopt.send_id,
+            recv_id=self.tcp_authopt.recv_id,
+            alg=alg_num,
+            key=self.tcp_authopt.key.encode())
+
+
+TCP_AUTHOPT = 38
+TCP_AUTHOPT_KEY = 39
+
+TCP_AUTHOPT_MAXKEYLEN = 80
+
+TCP_AUTHOPT_ALG_HMAC_SHA_1_96 = 1
+TCP_AUTHOPT_ALG_AES_128_CMAC_96 = 2
+
+# Flags for TCP_AUTHOPT_KEY
+TCP_AUTHOPT_KEY_DEL = (1 << 0)
+TCP_AUTHOPT_KEY_EXCLUDE_OPTS = (1 << 1)
+
+TCP_AUTHOPT_ALG_NAME_TO_NUM = {
+    "hmac-sha-1-96": TCP_AUTHOPT_ALG_HMAC_SHA_1_96,
+    "aes-128-cmac-96": TCP_AUTHOPT_ALG_AES_128_CMAC_96,
+}
+
+
+def set_tcp_authopt(sock, flags: int, send_local_id: int):
+    buf = struct.pack("II", flags, send_local_id)
+    return sock.setsockopt(socket.IPPROTO_TCP, TCP_AUTHOPT, buf)
+
+
+def set_tcp_authopt_key(sock, flags: int, local_id: int, send_id: int, recv_id: int, alg: int, key: bytes):
+    buf = struct.pack(
+        "IIBBBB80s",
+        flags,
+        local_id,
+        send_id,
+        recv_id,
+        alg,
+        len(key),
+        key)
+    return sock.setsockopt(socket.IPPROTO_TCP, TCP_AUTHOPT_KEY, buf)

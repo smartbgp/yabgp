@@ -78,6 +78,7 @@ def prepare_twisted_service(handler, reactor_thread_size=100):
         peeraddr=CONF.bgp.running_config['remote_addr'],
         afisafi=CONF.bgp.running_config['afi_safi'],
         md5=CONF.bgp.running_config['md5'],
+        tcp_authopt=CONF.bgp.running_config['tcp_authopt'],
         handler=handler
     )
     CONF.bgp.running_config['factory'] = bgp_peering
