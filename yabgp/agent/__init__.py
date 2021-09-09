@@ -96,7 +96,7 @@ def prepare_twisted_service(handler, reactor_thread_size=100):
         sys.exit()
 
     LOG.info('Starting BGPPeering twsited instance')
-    reactor.callLater(CONF.time.reset_time, bgp_peering.automatic_start)
+    reactor.callLater(CONF.time.bgp_peer_call_later_time, bgp_peering.automatic_start)
 
     reactor.run()
 
