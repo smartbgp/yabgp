@@ -95,7 +95,10 @@ BGP_PEER_TIME_OPTS = [
                help='Delay open timer'),
     cfg.IntOpt('idle_hold_time',
                default=30,
-               help='Idle hold timer')
+               help='Idle hold timer'),
+    cfg.IntOpt('bgp_peer_call_later_time',
+               default=15,
+               help='The time of delay execute bgp peer starting')
 ]
 
 CONF.register_cli_opts(BGP_PEER_TIME_OPTS, group='time')
