@@ -20,15 +20,35 @@ from ..linkstate import LinkState
 
 
 @LinkState.register(_type=1050)
-@LinkState.register(_type=266)
-class NodeMSD(TLV):
+class NodeMSD_1050(TLV):
     """
-    node msd
+    node msd, type 1050
+    https://tools.ietf.org/html/draft-tantsura-idr-bgp-ls-segment-routing-msd-05#section-3
     """
-    # https://tools.ietf.org/html/draft-tantsura-idr-bgp-ls-segment-routing-msd-05#section-3
+
     TYPE_STR = 'node_msd'
 
     @classmethod
     def unpack(cls, data):
         _type, value = struct.unpack('!BB', data)
         return cls(value={"type": _type, "value": value})
+
+
+@LinkState.register(_type=266)
+class NodeMSD_266(TLV):
+    """
+    node msd, type 266
+    https://tools.ietf.org/html/draft-tantsura-idr-bgp-ls-segment-routing-msd-05#section-3
+    """
+
+    TYPE_STR = 'node_msd'
+
+    @classmethod
+    def unpack(cls, data):
+
+        lst = []
+        for i in range(0, len(data), 2):
+            # byte_type, byte_value = data[i], data[i+1]
+            MSD_Type, MSD_Value = struct.unpack("!BB", data[i:i+2])
+            lst.append({"MSD_Type": MSD_Type, "MSD_Value": MSD_Value})
+        return cls(value=lst)
