@@ -39,6 +39,8 @@ class NodeMSD_266(TLV):
     """
     node msd, type 266
     https://tools.ietf.org/html/draft-tantsura-idr-bgp-ls-segment-routing-msd-05#section-3
+    Node MSD TLV: https://datatracker.ietf.org/doc/html/rfc8814#section-3
+    IGP MSD-Types: https://www.iana.org/assignments/igp-parameters/igp-parameters.xhtml
     """
 
     TYPE_STR = 'node_msd'
@@ -49,6 +51,6 @@ class NodeMSD_266(TLV):
         lst = []
         for i in range(0, len(data), 2):
             # byte_type, byte_value = data[i], data[i+1]
-            MSD_Type, MSD_Value = struct.unpack("!BB", data[i:i+2])
-            lst.append({"MSD_Type": MSD_Type, "MSD_Value": MSD_Value})
+            type, value = struct.unpack("!BB", data[i:i+2])
+            lst.append({"type": type, "value": value})
         return cls(value=lst)
