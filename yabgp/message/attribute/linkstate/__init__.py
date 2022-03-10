@@ -19,7 +19,7 @@ from .node.name import NodeName   # noqa
 from .node.isisarea import ISISArea   # noqa
 from .node.sr_capabilities import SRCapabilities  # noqa
 from .node.sr_algorithm import SRAlgorithm  # noqa
-from .node.node_msd import NodeMSD  # noqa
+from .node.node_msd import NodeMSD_266, NodeMSD_1050  # noqa
 from .node.nodeflags import NodeFlags  # noqa
 from .node.opa_node_attr import OpaNodeAttr  # noqa
 from .node.sid_or_label import SIDorLabel   # noqa
