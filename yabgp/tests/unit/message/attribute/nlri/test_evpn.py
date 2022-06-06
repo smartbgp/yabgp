@@ -29,7 +29,10 @@ class TestEVPN(unittest.TestCase):
                 'rd': '172.17.0.3:2',
                 'mac': '00-11-22-33-44-55',
                 'eth_tag_id': 108,
-                'esi': 0,
+                'esi': {
+                    "type": 0,
+                    "value": 0
+                },
                 'ip': '11.11.11.1',
                 'label': [0]}
         }]
@@ -57,7 +60,10 @@ class TestEVPN(unittest.TestCase):
             'type': bgp_cons.BGPNLRI_EVPN_ETHERNET_AUTO_DISCOVERY,
             'value': {
                 'rd': '1.1.1.1:32867',
-                'esi': 0,
+                'esi': {
+                    "type": 0,
+                    "value": 0
+                },
                 'eth_tag_id': 100,
                 'label': [10]
             }
@@ -109,7 +115,10 @@ class TestEVPN(unittest.TestCase):
             'type': bgp_cons.BGPNLRI_EVPN_ETHERNET_SEGMENT,
             'value': {
                 'rd': '172.16.0.1:5904',
-                'esi': 0,
+                'esi': {
+                    "type": 0,
+                    "value": 0
+                },
                 'ip': '192.168.0.1'
             }
         }]
@@ -134,7 +143,10 @@ class TestEVPN(unittest.TestCase):
         data_list = [{
             'type': 5,
             'value': {
-                'esi': 0,
+                'esi': {
+                    "type": 0,
+                    "value": 0
+                },
                 'eth_tag_id': 1,
                 'gateway': '1.1.1.1',
                 'label': [10],
@@ -169,7 +181,10 @@ class TestEVPN(unittest.TestCase):
         data_list = [{
             'type': 5,
             'value': {
-                'esi': 0,
+                'esi': {
+                    "type": 0,
+                    "value": 0
+                },
                 'eth_tag_id': 1,
                 'gateway': '2001:3232::1',
                 'label': [10],
@@ -197,6 +212,122 @@ class TestEVPN(unittest.TestCase):
                 'prefix': '2001:3232::1/64',
                 'rd': '65536:2'}}]
         self.assertEqual(data_hex, EVPN.construct(data_list))
+
+    def test_parse_ethernet_segment_identifier(self):
+        data_hex = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+        date_list = {
+            "type": 0,
+            "value": 0
+        }
+        self.assertEqual(date_list, EVPN.parse_esi(data_hex))
+
+        data_hex = b'\x01\x4c\x1f\xcc\xec\x17\x73\x0a\x31\x00'
+        date_list = {
+            "type": 1,
+            "value": {
+                'ce_mac_addr': '4C-1F-CC-EC-17-73',
+                'ce_port_key': 2609
+            }
+        }
+        self.assertEqual(date_list, EVPN.parse_esi(data_hex))
+
+        data_hex = b'\x02\x4c\x1f\xcc\xec\x17\x73\x0a\x31\x00'
+        date_list = {
+            "type": 2,
+            "value": {
+                'rb_mac_addr': '4C-1F-CC-EC-17-73',
+                'rb_priority': 2609
+            }
+        }
+        self.assertEqual(date_list, EVPN.parse_esi(data_hex))
+
+        data_hex = b'\x03\x4c\x1f\xcc\xec\x17\x73\x0a\x31\x00'
+        date_list = {
+            "type": 3,
+            "value": {
+                'sys_mac_addr': '4C-1F-CC-EC-17-73',
+                'ld_value': 667904
+            }
+        }
+        self.assertEqual(date_list, EVPN.parse_esi(data_hex))
+
+        data_hex = b'\x04\x4c\x1f\xcc\xec\x17\x73\x0a\x31\x00'
+        date_list = {
+            "type": 4,
+            "value": {
+                'router_id': 1277152492,
+                'ld_value': 393415217
+            }
+        }
+        self.assertEqual(date_list, EVPN.parse_esi(data_hex))
+
+        data_hex = b'\x05\x00\x00\xcc\xec\x17\x73\x0a\x31\x00'
+        date_list = {
+            "type": 5,
+            "value": {
+                'as_num': 52460,
+                'ld_value': 393415217
+            }
+        }
+        self.assertEqual(date_list, EVPN.parse_esi(data_hex))
+
+    def test_construct_ethernet_segment_identifier(self):
+        data_hex = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+        date_list = {
+            "type": 0,
+            "value": 0
+        }
+        self.assertEqual(data_hex, EVPN.construct_esi(date_list))
+
+        data_hex = b'\x01\x4c\x1f\xcc\xec\x17\x73\x0a\x31\x00'
+        date_list = {
+            "type": 1,
+            "value": {
+                'ce_mac_addr': '4C-1F-CC-EC-17-73',
+                'ce_port_key': 2609
+            }
+        }
+        self.assertEqual(data_hex, EVPN.construct_esi(date_list))
+
+        data_hex = b'\x02\x4c\x1f\xcc\xec\x17\x73\x0a\x31\x00'
+        date_list = {
+            "type": 2,
+            "value": {
+                'rb_mac_addr': '4C-1F-CC-EC-17-73',
+                'rb_priority': 2609
+            }
+        }
+        self.assertEqual(data_hex, EVPN.construct_esi(date_list))
+
+        data_hex = b'\x03\x4c\x1f\xcc\xec\x17\x73\x0a\x31\x00'
+        date_list = {
+            "type": 3,
+            "value": {
+                'sys_mac_addr': '4C-1F-CC-EC-17-73',
+                'ld_value': 667904
+            }
+        }
+        self.assertEqual(data_hex, EVPN.construct_esi(date_list))
+
+        data_hex = b'\x04\x4c\x1f\xcc\xec\x17\x73\x0a\x31\x00'
+        date_list = {
+            "type": 4,
+            "value": {
+                'router_id': 1277152492,
+                'ld_value': 393415217
+            }
+        }
+        self.assertEqual(data_hex, EVPN.construct_esi(date_list))
+
+        data_hex = b'\x05\x00\x00\xcc\xec\x17\x73\x0a\x31\x00'
+        date_list = {
+            "type": 5,
+            "value": {
+                'as_num': 52460,
+                'ld_value': 393415217
+            }
+        }
+        self.assertEqual(data_hex, EVPN.construct_esi(date_list))
 
 if __name__ == '__main__':
     unittest.main()
