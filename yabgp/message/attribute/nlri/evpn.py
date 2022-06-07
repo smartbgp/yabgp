@@ -104,8 +104,125 @@ class EVPN(NLRI):
                     evpn_overlay['encap_value'] = int(ec[1])
         return evpn_overlay
 
+    @classmethod
+    def parse_rd(cls, data):
+        """
+        For Cisco: The BGP route distinguisher can be derived automatically
+        from the VNI and BGP router ID of the VTEP switch
+        :param data:
+        :return:
+        """
+        rd_type = struct.unpack('!H', data[0:2])[0]
+        rd_value = data[2:8]
+        if rd_type == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_0:
+            asn, an = struct.unpack('!HI', rd_value)
+            rd = '%s:%s' % (asn, an)
+        elif rd_type == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_1:
+            ip = str(netaddr.IPAddress(struct.unpack('!I', rd_value[0:4])[0]))
+            an = struct.unpack('!H', rd_value[4:6])[0]
+            rd = '%s:%s' % (ip, an)
+        elif rd_type == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_2:
+            asn, an = struct.unpack('!IH', rd_value)
+            rd = '%s:%s' % (asn, an)
+        else:
+            # fixme(by xiaopeng163) for other rd type process
+            rd = str(rd_value)
+        return rd
 
-class EthernetAutoDiscovery(MPLSVPN):
+    @classmethod
+    def construct_rd(cls, data):
+        # fixme(by xiaopeng163) for other rd type process
+        data = data.split(':')
+        if '.' in data[0]:
+            return struct.pack('!H', bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_1) + netaddr.IPAddress(data[0]).packed + \
+                struct.pack('!H', int(data[1]))
+        else:
+            data = [int(x) for x in data]
+            if data[0] <= 0xffff:
+                return struct.pack('!HHI', bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_0, data[0], data[1])
+            else:
+                return struct.pack('!HIH', bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_2, data[0], data[1])
+
+    @classmethod
+    def parse_esi(cls, esi):
+        """
+            The ESI has the following format:
+            +---+---+---+---+---+---+---+---+---+---+
+            | T |           ESI Value               |
+            +---+---+---+---+---+---+---+---+---+---+
+        """
+        esi_type, esi_value = struct.unpack("!B", esi[:1])[0], {}
+        if esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_0:
+            esi_value = int.from_bytes(esi[1:], byteorder='big')
+        elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_1:
+            esi_value = {
+                "ce_mac_addr": str(netaddr.EUI(int(binascii.b2a_hex(esi[1:7]), 16))),
+                "ce_port_key": int.from_bytes(esi[7:9], byteorder='big')
+            }
+        elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_2:
+            esi_value = {
+                "rb_mac_addr": str(netaddr.EUI(int(binascii.b2a_hex(esi[1:7]), 16))),
+                "rb_priority": int.from_bytes(esi[7:9], byteorder='big')
+            }
+        elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_3:
+            esi_value = {
+                "sys_mac_addr": str(netaddr.EUI(int(binascii.b2a_hex(esi[1:7]), 16))),
+                "ld_value": int.from_bytes(esi[7:], byteorder='big')
+            }
+        elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_4:
+            esi_value = {
+                "router_id": int.from_bytes(esi[1:5], byteorder='big'),
+                "ld_value": int.from_bytes(esi[5:9], byteorder='big')
+            }
+        elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_5:
+            esi_value = {
+                "as_num": int.from_bytes(esi[1:5], byteorder='big'),
+                "ld_value": int.from_bytes(esi[5:9], byteorder='big')
+            }
+        return {"type": esi_type, "value": esi_value}
+
+    @classmethod
+    def construct_esi(cls, esi_data):
+        esi_type, esi_value = esi_data["type"], esi_data["value"]
+        esi_data_hex = b''
+        if esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_0:
+            esi_bytes = esi_value.to_bytes(9, byteorder='big')
+            esi_data_hex = b'\x00' + esi_bytes
+
+        elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_1:
+            ce_mac_addr, ce_port_key = esi_value["ce_mac_addr"], esi_value["ce_port_key"]
+            ce_mac_hex = b''.join([struct.pack('!B', (int(i, 16))) for i in ce_mac_addr.split("-")])
+            ce_port_hex = ce_port_key.to_bytes(2, byteorder='big')
+            esi_data_hex = b'\x01' + ce_mac_hex + ce_port_hex + b'\x00'
+
+        elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_2:
+            rb_mac_addr, rb_priority = esi_value["rb_mac_addr"], esi_value["rb_priority"]
+            rb_mac_hex = b''.join([struct.pack('!B', (int(i, 16))) for i in rb_mac_addr.split("-")])
+            rb_priority_hex = rb_priority.to_bytes(2, byteorder='big')
+            esi_data_hex = b'\x02' + rb_mac_hex + rb_priority_hex + b'\x00'
+
+        elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_3:
+            sys_mac_addr, ld_value = esi_value["sys_mac_addr"], esi_value["ld_value"]
+            sys_mac_hex = b''.join([struct.pack('!B', (int(i, 16))) for i in sys_mac_addr.split("-")])
+            ld_value_hex = ld_value.to_bytes(3, byteorder='big')
+            esi_data_hex = b'\x03' + sys_mac_hex + ld_value_hex
+
+        elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_4:
+            router_id, ld_value = esi_value["router_id"], esi_value["ld_value"]
+            router_id_hex = router_id.to_bytes(4, byteorder='big')
+            ld_value_hex = ld_value.to_bytes(4, byteorder='big')
+            esi_data_hex = b'\x04' + router_id_hex + ld_value_hex + b'\x00'
+
+        elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_5:
+            as_num, ld_value = esi_value["as_num"], esi_value["ld_value"]
+            as_num_hex = as_num.to_bytes(4, byteorder='big')
+            ld_value_hex = ld_value.to_bytes(4, byteorder='big')
+            esi_data_hex = b'\x05' + as_num_hex + ld_value_hex + b'\x00'
+
+        return esi_data_hex
+
+
+class EthernetAutoDiscovery(EVPN):
     """
     +---------------------------------------+
     |  Route Distinguisher (RD) (8 octets)  |
@@ -123,28 +240,28 @@ class EthernetAutoDiscovery(MPLSVPN):
         route = dict()
         route['rd'] = cls.parse_rd(value[0:8])
         offset = 8
-        route['esi'] = int(binascii.b2a_hex(value[offset: offset+10]), 16)
+        route['esi'] = cls.parse_esi(value[offset: offset + 10])
         offset += 10
         # ethernet tag id
-        route['eth_tag_id'] = struct.unpack('!I', value[offset: offset+4])[0]
+        route['eth_tag_id'] = struct.unpack('!I', value[offset: offset + 4])[0]
         offset += 4
-        route['label'] = MPLSVPN.parse_mpls_label_stack(value[offset:])
+        route['label'] = cls.parse_mpls_label_stack(value[offset:])
         return route
 
     @classmethod
     def construct(cls, value, iswithdraw=False):
         # rd
         value_hex = b''
-        value_hex += MPLSVPN.construct_rd(value['rd'])
+        value_hex += cls.construct_rd(value['rd'])
         # esi
         value_hex += b'\x00\x00' + struct.pack('!d', value['esi'])
         # ethernet tag
         value_hex += struct.pack('!I', value['eth_tag_id'])
-        value_hex += MPLSVPN.construct_mpls_label_stack(value['label'])
+        value_hex += cls.construct_mpls_label_stack(value['label'])
         return value_hex
 
 
-class MacIPAdvertisment(MPLSVPN):
+class MacIPAdvertisment(EVPN):
     """
     +---------------------------------------+
     |  RD (8 octets)                        |
@@ -174,13 +291,13 @@ class MacIPAdvertisment(MPLSVPN):
         offset = 8
         route['rd'] = cls.parse_rd(value[0:offset])
         # esi
-        route['esi'] = int(binascii.b2a_hex(value[offset: offset+10]), 16)
+        route['esi'] = cls.parse_esi(value[offset: offset + 10])
         offset += 10
         # ethernet tag id
-        route['eth_tag_id'] = struct.unpack('!I', value[offset: offset+4])[0]
+        route['eth_tag_id'] = struct.unpack('!I', value[offset: offset + 4])[0]
         offset += 5
         # mac address
-        route['mac'] = str(netaddr.EUI(int(binascii.b2a_hex(value[offset: offset+6]), 16)))
+        route['mac'] = str(netaddr.EUI(int(binascii.b2a_hex(value[offset: offset + 6]), 16)))
         offset += 6
         ip_addr_len = ord(value[offset: offset + 1])
         offset += 1
@@ -190,14 +307,14 @@ class MacIPAdvertisment(MPLSVPN):
                 int(binascii.b2a_hex(value[offset: offset + int(ip_addr_len / 8)]), 16)))
             offset += int(ip_addr_len / 8)
         # label
-        route['label'] = MPLSVPN.parse_mpls_label_stack(value[offset:])
+        route['label'] = cls.parse_mpls_label_stack(value[offset:])
         return route
 
     @classmethod
     def construct(cls, value, iswithdraw=False):
         # rd
         value_hex = b''
-        value_hex += MPLSVPN.construct_rd(value['rd'])
+        value_hex += cls.construct_rd(value['rd'])
         # esi
         value_hex += b'\x00\x00' + struct.pack('!d', value['esi'])
         # ethernet tag
@@ -212,11 +329,11 @@ class MacIPAdvertisment(MPLSVPN):
         else:
             value_hex += b'\x00'
         if value.get('label'):
-            value_hex += MPLSVPN.construct_mpls_label_stack(value['label'])
+            value_hex += cls.construct_mpls_label_stack(value['label'])
         return value_hex
 
 
-class InclusiveMulticastEthernetTag(MPLSVPN):
+class InclusiveMulticastEthernetTag(EVPN):
     """
    +---------------------------------------+
    |  RD (8 octets)                        |
@@ -234,21 +351,21 @@ class InclusiveMulticastEthernetTag(MPLSVPN):
     def parse(cls, value, iswithdraw=False):
         route = dict()
         offset = 8
-        route['rd'] = MPLSVPN.parse_rd(value[0:offset])
-        route['eth_tag_id'] = struct.unpack('!I', value[offset: offset+4])[0]
+        route['rd'] = cls.parse_rd(value[0:offset])
+        route['eth_tag_id'] = struct.unpack('!I', value[offset: offset + 4])[0]
         offset += 4
         ip_addr_len = ord(value[offset: offset + 1])
         offset += 1
         # ip address
         if ip_addr_len != 0:
-            route['ip'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value[offset: int(offset+ip_addr_len / 8)]), 16)))
+            route['ip'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value[offset: int(offset + ip_addr_len / 8)]), 16)))
         return route
 
     @classmethod
     def construct(cls, value, iswithdraw=False):
         # rd
         value_hex = b''
-        value_hex += MPLSVPN.construct_rd(value['rd'])
+        value_hex += cls.construct_rd(value['rd'])
         value_hex += struct.pack('!I', value['eth_tag_id'])
         # ip address len and address
         if value.get('ip'):
@@ -259,7 +376,7 @@ class InclusiveMulticastEthernetTag(MPLSVPN):
         return value_hex
 
 
-class EthernetSegment(MPLSVPN):
+class EthernetSegment(EVPN):
     """
    +---------------------------------------+
    |  RD (8 octets)                        |
@@ -277,22 +394,22 @@ class EthernetSegment(MPLSVPN):
     def parse(cls, value, iswithdraw=False):
         route = dict()
         offset = 8
-        route['rd'] = MPLSVPN.parse_rd(value[0:offset])
+        route['rd'] = cls.parse_rd(value[0:offset])
         # esi
-        route['esi'] = int(binascii.b2a_hex(value[offset: offset+10]), 16)
+        route['esi'] = cls.parse_esi(value[offset: offset + 10])
         offset += 10
         ip_addr_len = ord(value[offset: offset + 1])
         offset += 1
         # ip address
         if ip_addr_len != 0:
-            route['ip'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value[offset: offset+ip_addr_len // 8]), 16)))
+            route['ip'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value[offset: offset + ip_addr_len // 8]), 16)))
         return route
 
     @classmethod
     def construct(cls, value, iswithdraw=False):
         # rd
         value_hex = b''
-        value_hex += MPLSVPN.construct_rd(value['rd'])
+        value_hex += cls.construct_rd(value['rd'])
         # esi
         value_hex += b'\x00\x00' + struct.pack('!d', value['esi'])
         # ip address len and address
@@ -304,7 +421,7 @@ class EthernetSegment(MPLSVPN):
         return value_hex
 
 
-class IPRoutePrefix(MPLSVPN):
+class IPRoutePrefix(EVPN):
     """
     # http://tools.ietf.org/html/draft-ietf-bess-evpn-prefix-advertisement-01
     +---------------------------------------+
@@ -329,10 +446,10 @@ class IPRoutePrefix(MPLSVPN):
         offset = 8
         route['rd'] = cls.parse_rd(value[0:offset])
         # esi
-        route['esi'] = int(binascii.b2a_hex(value[offset: offset+10]), 16)
+        route['esi'] = cls.parse_esi(value[offset: offset + 10])
         offset += 10
 
-        route['eth_tag_id'] = struct.unpack('!I', value[offset: offset+4])[0]
+        route['eth_tag_id'] = struct.unpack('!I', value[offset: offset + 4])[0]
         offset += 4
 
         ip_addr_len = ord(value[offset: offset + 1])
