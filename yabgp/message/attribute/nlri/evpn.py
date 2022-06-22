@@ -22,7 +22,7 @@ from yabgp.common import afn
 from yabgp.common import safn
 from yabgp.common import constants as bgp_cons
 from yabgp.message.attribute.nlri import NLRI
-from yabgp.message.attribute.nlri.mpls_vpn import MPLSVPN
+# from yabgp.message.attribute.nlri.mpls_vpn import MPLSVPN
 
 
 class EVPN(NLRI):
@@ -358,7 +358,8 @@ class InclusiveMulticastEthernetTag(EVPN):
         offset += 1
         # ip address
         if ip_addr_len != 0:
-            route['ip'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value[offset: int(offset + ip_addr_len / 8)]), 16)))
+            route['ip'] = str(
+                netaddr.IPAddress(int(binascii.b2a_hex(value[offset: int(offset + ip_addr_len / 8)]), 16)))
         return route
 
     @classmethod
