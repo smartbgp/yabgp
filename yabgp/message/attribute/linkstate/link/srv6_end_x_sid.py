@@ -36,7 +36,7 @@ class SRv6EndXSid(TLV):
         flags = ord(data[2:3])
         algorithm = ord(data[3:4])
         weight = ord(data[4:5])
-        reserved = ord(data[5:6])
+        # reserved = ord(data[5:6])
         sid = str(netaddr.IPAddress(int(binascii.b2a_hex(data[6:22]), 16)))
         sub_tlvs_bin_data = data[22:]
 
@@ -60,7 +60,6 @@ class SRv6EndXSid(TLV):
             'flags': flags,
             'algorithm': algorithm,
             'weight': weight,
-            'reserved': reserved,
             'sid': sid,
             'sub_tlvs': sub_tlvs
         })

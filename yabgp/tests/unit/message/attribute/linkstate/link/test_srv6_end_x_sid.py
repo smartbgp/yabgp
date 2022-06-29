@@ -42,7 +42,6 @@ class TestSRv6EndXSid(unittest.TestCase):
                 'flags': 0,
                 'algorithm': 0,
                 'weight': 0,
-                'reserved': 0,
                 'sid': 'a001:0:5:e002::',
                 'sub_tlvs': [
                     {
