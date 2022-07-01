@@ -215,7 +215,7 @@ class TestUpdate(unittest.TestCase):
                 },
                 16: [[1536, 1, 500]]
             }}
-        # TODO: [[1536, 1, 500]] → ['mac-mobility:1:500']
+        # TODO: [[1536, 1, 500]] -> ['mac-mobility:1:500']
         self.assertNotEqual(data_dict['attr'],
                             Update.parse(None, Update.construct(msg_dict=data_dict)[HDR_LEN:])['attr'])
 
@@ -329,8 +329,8 @@ class TestUpdate(unittest.TestCase):
                 }
             }
         }
-        # TODO: [[2, '65527:36802'], [780, 8]] → ['route-target:65527:36802', 'encapsulation:8']
-        # 'mpls_label': [60001] → 'mpls_label': [3750]
+        # TODO: [[2, '65527:36802'], [780, 8]] -> ['route-target:65527:36802', 'encapsulation:8']
+        # 'mpls_label': [60001] -> 'mpls_label': [3750]
         self.assertNotEqual(
             data_dict['attr'],
             Update.parse(None, Update.construct(msg_dict=data_dict)[HDR_LEN:])['attr']
