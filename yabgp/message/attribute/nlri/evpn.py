@@ -153,31 +153,39 @@ class EVPN(NLRI):
         """
         esi_type, esi_value = struct.unpack("!B", esi[:1])[0], {}
         if esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_0:
-            esi_value = int.from_bytes(esi[1:], byteorder='big')
+            # esi_value = int.from_bytes(esi[1:], byteorder='big')
+            esi_value = int(binascii.b2a_hex(esi[1:]), 16)
         elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_1:
             esi_value = {
                 "ce_mac_addr": str(netaddr.EUI(int(binascii.b2a_hex(esi[1:7]), 16))),
-                "ce_port_key": int.from_bytes(esi[7:9], byteorder='big')
+                # "ce_port_key": int.from_bytes(esi[7:9], byteorder='big')
+                "ce_port_key": struct.unpack('!H', esi[7:9])[0]
             }
         elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_2:
             esi_value = {
                 "rb_mac_addr": str(netaddr.EUI(int(binascii.b2a_hex(esi[1:7]), 16))),
-                "rb_priority": int.from_bytes(esi[7:9], byteorder='big')
+                # "rb_priority": int.from_bytes(esi[7:9], byteorder='big')
+                "rb_priority": struct.unpack('!H', esi[7:9])[0]
             }
         elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_3:
             esi_value = {
                 "sys_mac_addr": str(netaddr.EUI(int(binascii.b2a_hex(esi[1:7]), 16))),
-                "ld_value": int.from_bytes(esi[7:], byteorder='big')
+                # "ld_value": int.from_bytes(esi[7:], byteorder='big')
+                "ld_value": int(binascii.b2a_hex(esi[7:]), 16)
             }
         elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_4:
             esi_value = {
-                "router_id": int.from_bytes(esi[1:5], byteorder='big'),
-                "ld_value": int.from_bytes(esi[5:9], byteorder='big')
+                # "router_id": int.from_bytes(esi[1:5], byteorder='big'),
+                "router_id": int(binascii.b2a_hex(esi[1:5]), 16),
+                # "ld_value": int.from_bytes(esi[5:9], byteorder='big')
+                "ld_value": struct.unpack('!I', esi[5:9])[0]
             }
         elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_5:
             esi_value = {
-                "as_num": int.from_bytes(esi[1:5], byteorder='big'),
-                "ld_value": int.from_bytes(esi[5:9], byteorder='big')
+                # "as_num": int.from_bytes(esi[1:5], byteorder='big'),
+                "as_num": int(binascii.b2a_hex(esi[1:5]), 16),
+                # "ld_value": int.from_bytes(esi[5:9], byteorder='big')
+                "ld_value": struct.unpack('!I', esi[5:9])[0]
             }
         return {"type": esi_type, "value": esi_value}
 
@@ -186,37 +194,52 @@ class EVPN(NLRI):
         esi_type, esi_value = esi_data["type"], esi_data["value"]
         esi_data_hex = b''
         if esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_0:
-            esi_bytes = esi_value.to_bytes(9, byteorder='big')
-            esi_data_hex = b'\x00' + esi_bytes
+            # esi_bytes = esi_value.to_bytes(9, byteorder='big')
+            esi_bytes = hex(esi_value).split('0x')[1]
+            len_esi_value = len(esi_bytes)
+            if len_esi_value < 18:
+                esi_bytes = '0' * (18 - len_esi_value) + esi_bytes
+            esi_data_hex = b'\x00' + binascii.a2b_hex(esi_bytes)
 
         elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_1:
             ce_mac_addr, ce_port_key = esi_value["ce_mac_addr"], esi_value["ce_port_key"]
             ce_mac_hex = b''.join([struct.pack('!B', (int(i, 16))) for i in ce_mac_addr.split("-")])
-            ce_port_hex = ce_port_key.to_bytes(2, byteorder='big')
+            # ce_port_hex = ce_port_key.to_bytes(2, byteorder='big')
+            ce_port_hex = struct.pack('!H', ce_port_key)
             esi_data_hex = b'\x01' + ce_mac_hex + ce_port_hex + b'\x00'
 
         elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_2:
             rb_mac_addr, rb_priority = esi_value["rb_mac_addr"], esi_value["rb_priority"]
             rb_mac_hex = b''.join([struct.pack('!B', (int(i, 16))) for i in rb_mac_addr.split("-")])
-            rb_priority_hex = rb_priority.to_bytes(2, byteorder='big')
+            # rb_priority_hex = rb_priority.to_bytes(2, byteorder='big')
+            rb_priority_hex = struct.pack('!H', rb_priority)
             esi_data_hex = b'\x02' + rb_mac_hex + rb_priority_hex + b'\x00'
 
         elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_3:
             sys_mac_addr, ld_value = esi_value["sys_mac_addr"], esi_value["ld_value"]
             sys_mac_hex = b''.join([struct.pack('!B', (int(i, 16))) for i in sys_mac_addr.split("-")])
-            ld_value_hex = ld_value.to_bytes(3, byteorder='big')
+            # ld_value_hex = ld_value.to_bytes(3, byteorder='big')
+            ld_value_hex = hex(ld_value).split('0x')[1]
+            len_ld_value = len(ld_value_hex)
+            if len_ld_value % 2 != 0:
+                ld_value_hex = '0' + ld_value_hex
+            ld_value_hex = binascii.a2b_hex(ld_value_hex)
             esi_data_hex = b'\x03' + sys_mac_hex + ld_value_hex
 
         elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_4:
             router_id, ld_value = esi_value["router_id"], esi_value["ld_value"]
-            router_id_hex = router_id.to_bytes(4, byteorder='big')
-            ld_value_hex = ld_value.to_bytes(4, byteorder='big')
+            # router_id_hex = router_id.to_bytes(4, byteorder='big')
+            router_id_hex = struct.pack('!I', router_id)
+            # ld_value_hex = ld_value.to_bytes(4, byteorder='big')
+            ld_value_hex = struct.pack('!I', ld_value)
             esi_data_hex = b'\x04' + router_id_hex + ld_value_hex + b'\x00'
 
         elif esi_type == bgp_cons.ESI_BGPNLRI_EVPN_TYPE_5:
             as_num, ld_value = esi_value["as_num"], esi_value["ld_value"]
-            as_num_hex = as_num.to_bytes(4, byteorder='big')
-            ld_value_hex = ld_value.to_bytes(4, byteorder='big')
+            # as_num_hex = as_num.to_bytes(4, byteorder='big')
+            as_num_hex = struct.pack('!I', as_num)
+            # ld_value_hex = ld_value.to_bytes(4, byteorder='big')
+            ld_value_hex = struct.pack('!I', ld_value)
             esi_data_hex = b'\x05' + as_num_hex + ld_value_hex + b'\x00'
 
         return esi_data_hex
