@@ -47,7 +47,7 @@ class TestEVPN(unittest.TestCase):
                 'rd': '172.17.0.3:2',
                 'mac': '00-11-22-33-44-55',
                 'eth_tag_id': 108,
-                'esi': 0,
+                'esi': {'type': 0, 'value': 0},
                 'ip': '11.11.11.1',
                 'label': [0]}
         }]
@@ -77,7 +77,7 @@ class TestEVPN(unittest.TestCase):
             'type': bgp_cons.BGPNLRI_EVPN_ETHERNET_AUTO_DISCOVERY,
             'value': {
                 'rd': '1.1.1.1:32867',
-                'esi': 0,
+                'esi': {'type': 0, 'value': 0},
                 'eth_tag_id': 100,
                 'label': [10]
             }
@@ -131,7 +131,7 @@ class TestEVPN(unittest.TestCase):
             'type': bgp_cons.BGPNLRI_EVPN_ETHERNET_SEGMENT,
             'value': {
                 'rd': '172.16.0.1:5904',
-                'esi': 0,
+                'esi': {'type': 0, 'value': 0},
                 'ip': '192.168.0.1'
             }
         }]
