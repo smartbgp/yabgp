@@ -16,6 +16,7 @@
 """ Test Link State attribute"""
 
 import unittest
+
 from yabgp.message.attribute.linkstate.linkstate import LinkState
 
 
@@ -30,4 +31,54 @@ class TestLinkState(unittest.TestCase):
                    b'\x00\x00\x00\x0a\x04\x47\x00\x03\x00\x00\x0a\x04\x4b\x00\x07\x70' \
                    b'\x00\x00\x00\x00\x61\xa8\x04\x4b\x00\x07\x30\x00\x00\x00\x00\x61' \
                    b'\xa9'
-        self.assertEqual(None, LinkState.unpack(data_bin).dict())
+        data_dict = {29: [
+            {
+                'type': 'local_router_id',
+                'value': '2.2.2.2'
+            },
+            {
+                'type': 'remote_router_id',
+                'value': '1.1.1.1'
+            },
+            {
+                'type': 'admin_group',
+                'value': 0
+            },
+            {
+                'type': 'max_bandwidth',
+                'value': 125000000.0
+            },
+            {
+                'type': 'max_rsv_bandwidth',
+                'value': 0.0
+            },
+            {
+                'type': 'unrsv_bandwidth',
+                'value': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+            },
+            {
+                'type': 'te_metric',
+                'value': 10
+            },
+            {
+                'type': 'igp_metric',
+                'value': 10
+            },
+            {
+                'type': 'adj_sid',
+                'value': {
+                    'flags': {'B': 0, 'G': 1, 'L': 1, 'P': 0, 'V': 1},
+                    'value': 25000,
+                    'weight': 0
+                }
+            },
+            {
+                'type': 'adj_sid',
+                'value': {
+                    'flags': {'B': 0, 'G': 1, 'L': 1, 'P': 0, 'V': 0},
+                    'value': 25001,
+                    'weight': 0
+                }
+            }
+        ]}
+        self.assertEqual(data_dict, LinkState.unpack(data_bin).dict())
