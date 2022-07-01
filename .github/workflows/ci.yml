@@ -45,5 +45,5 @@ jobs:
       - name: Run tox
         run: tox -e pep8 -c tox.ini
 
-#      - name: Run unittest
-#        run: python run_test.py
+      - name: Run unittest
+        run: python run_test.py
