@@ -87,7 +87,7 @@ class TestMpUnReachNLRI(unittest.TestCase):
                 "type": 1,
                 "value": {
                     "rd": "1.1.1.1:32867",
-                    "esi": 0,
+                    "esi": {'type': 0, 'value': 0},
                     "eth_tag_id": 100,
                     "label": [10]
                 }
@@ -106,7 +106,7 @@ class TestMpUnReachNLRI(unittest.TestCase):
                         'label': [0],
                         'rd': '172.17.0.3:2',
                         'mac': '00-11-22-33-44-55',
-                        'esi': 0}}]
+                        'esi': {'type': 0, 'value': 0}}}]
         }
         self.assertEqual(data_dict, MpUnReachNLRI.parse(MpUnReachNLRI.construct(data_dict)[4:]))
 
@@ -134,7 +134,7 @@ class TestMpUnReachNLRI(unittest.TestCase):
                     "type": 4,
                     "value": {
                         "rd": "172.16.0.1:8888",
-                        "esi": 0,
+                        "esi": {'type': 0, 'value': 0},
                         "ip": "192.168.0.1"
                     }
                 }

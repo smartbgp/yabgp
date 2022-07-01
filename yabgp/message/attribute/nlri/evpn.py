@@ -254,7 +254,7 @@ class EthernetAutoDiscovery(EVPN):
         value_hex = b''
         value_hex += cls.construct_rd(value['rd'])
         # esi
-        value_hex += b'\x00\x00' + struct.pack('!d', value['esi'])
+        value_hex += cls.construct_esi(value['esi'])
         # ethernet tag
         value_hex += struct.pack('!I', value['eth_tag_id'])
         value_hex += cls.construct_mpls_label_stack(value['label'])
@@ -412,7 +412,7 @@ class EthernetSegment(EVPN):
         value_hex = b''
         value_hex += cls.construct_rd(value['rd'])
         # esi
-        value_hex += b'\x00\x00' + struct.pack('!d', value['esi'])
+        value_hex += cls.construct_esi(value['esi'])
         # ip address len and address
         if value.get('ip'):
             ip_hex = netaddr.IPAddress(value['ip']).packed
