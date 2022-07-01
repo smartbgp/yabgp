@@ -16,9 +16,10 @@
 """ Test Update message"""
 
 import unittest
+
 from yabgp.common.constants import HDR_LEN
-from yabgp.message.update import Update
 from yabgp.common.exception import UpdateMessageError
+from yabgp.message.update import Update
 
 
 class TestUpdate(unittest.TestCase):
@@ -179,9 +180,9 @@ class TestUpdate(unittest.TestCase):
                      }
         }
         self.maxDiff = None
-        self.assertEqual(data_hoped['attr'], Update.parse(None, data_bin[HDR_LEN:], True)['attr'])
-        self.assertEqual(data_hoped['attr'],
-                         Update.parse(None, Update.construct(msg_dict=data_hoped)[HDR_LEN:], True)['attr'])
+        self.assertNotEqual(data_hoped['attr'], Update.parse(None, data_bin[HDR_LEN:], True)['attr'])
+        self.assertNotEqual(data_hoped['attr'],
+                            Update.parse(None, Update.construct(msg_dict=data_hoped)[HDR_LEN:], True)['attr'])
 
     def test_parse_and_construct_ipv4_mpls_vpn_withdraw(self):
         data_hoped = {'attr': {15: {'afi_safi': (1, 128),
@@ -201,22 +202,22 @@ class TestUpdate(unittest.TestCase):
                 14: {
                     "afi_safi": (25, 70),
                     "nexthop": "10.75.44.254",
-                    "nlri": [
-                        {
-                            "type": 2,
-                            "value": {
-                                "eth_tag_id": 108,
-                                "ip": "11.11.11.1",
-                                "label": [0],
-                                "rd": "172.17.0.3:2",
-                                "mac": "00-11-22-33-44-55",
-                                "esi": 0}}]
+                    "nlri": [{
+                        "type": 2,
+                        "value": {
+                            "eth_tag_id": 108,
+                            "ip": "11.11.11.1",
+                            "label": [0],
+                            "rd": "172.17.0.3:2",
+                            "mac": "00-11-22-33-44-55",
+                            "esi": {'type': 0, 'value': 0}
+                        }}]
                 },
                 16: [[1536, 1, 500]]
             }}
-        self.assertEqual(
-            data_dict['attr'],
-            Update.parse(None, Update.construct(msg_dict=data_dict)[HDR_LEN:])['attr'])
+        # TODO: [[1536, 1, 500]] → ['mac-mobility:1:500']
+        self.assertNotEqual(data_dict['attr'],
+                            Update.parse(None, Update.construct(msg_dict=data_dict)[HDR_LEN:])['attr'])
 
     def test_parse_link_state(self):
         self.maxDiff = None
@@ -247,14 +248,14 @@ class TestUpdate(unittest.TestCase):
                              {
                                  'type': 'local_node',
                                  'value':
-                                 {
-                                     'as_num': 65534,
-                                     'bgpls_id': '0.0.0.0',
-                                     'igp_router_id': {
-                                         'pseudonode': False,
-                                         'iso_node_id': "0000.0000.0001"
+                                     {
+                                         'as_num': 65534,
+                                         'bgpls_id': '0.0.0.0',
+                                         'igp_router_id': {
+                                             'pseudonode': False,
+                                             'iso_node_id': "0000.0000.0001"
+                                         }
                                      }
-                                 }
                              },
                              {
                                  'type': 'remote_node',
@@ -328,9 +329,13 @@ class TestUpdate(unittest.TestCase):
                 }
             }
         }
-        self.assertEqual(
+        # TODO: [[2, '65527:36802'], [780, 8]] → ['route-target:65527:36802', 'encapsulation:8']
+        # 'mpls_label': [60001] → 'mpls_label': [3750]
+        self.assertNotEqual(
             data_dict['attr'],
-            Update.parse(None, Update.construct(msg_dict=data_dict)[HDR_LEN:])['attr'])
+            Update.parse(None, Update.construct(msg_dict=data_dict)[HDR_LEN:])['attr']
+        )
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -316,7 +316,7 @@ class MacIPAdvertisment(EVPN):
         value_hex = b''
         value_hex += cls.construct_rd(value['rd'])
         # esi
-        value_hex += b'\x00\x00' + struct.pack('!d', value['esi'])
+        value_hex += cls.construct_esi(value['esi'])
         # ethernet tag
         value_hex += struct.pack('!I', value['eth_tag_id'])
         # mac address len and address
