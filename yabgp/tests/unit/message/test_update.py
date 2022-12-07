@@ -130,7 +130,7 @@ class TestUpdate(unittest.TestCase):
                     'afi_safi': (2, 1),
                     'linklocal_nexthop': 'fe80::c002:bff:fe7e:0',
                     'nexthop': '2001:db8::2',
-                    'nlri': ['::2001:db8:2:2/64', '::2001:db8:2:1/64', '::2001:db8:2:0/64']}
+                    'nlri': ['2001:db8:2:2::/64', '2001:db8:2:1::/64', '2001:db8:2::/64']}
             }}
         self.assertEqual(value_parse['attr'], Update.parse(
             None,
