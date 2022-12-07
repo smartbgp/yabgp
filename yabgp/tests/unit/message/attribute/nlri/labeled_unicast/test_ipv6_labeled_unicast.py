@@ -23,7 +23,7 @@ class TestIPv6LabeledUnicast(unittest.TestCase):
     def test_construct(self):
         nlri_list = [
             {'label': [91], 'prefix': '2001:2121::1/128'},
-            {'label': [92], 'prefix': '::2001:2121:1:0/64'},
+            {'label': [92], 'prefix': '2001:2121:1::/64'},
             {'label': [93], 'prefix': '2001:4837:1821::2/127'}]
         nlri_hex = b'\x98\x00\x05\xb1\x20\x01\x21\x21\x00\x00\x00\x00\x00\x00\x00' \
             b'\x00\x00\x00\x00\x01\x58\x00\x05\xc1\x20\x01\x21\x21\x00\x01' \
@@ -35,7 +35,7 @@ class TestIPv6LabeledUnicast(unittest.TestCase):
     def test_parse(self):
         nlri_list = [
             {'label': [91], 'prefix': '2001:2121::1/128'},
-            {'label': [92], 'prefix': '::2001:2121:1:0/64'},
+            {'label': [92], 'prefix': '2001:2121:1::/64'},
             {'label': [93], 'prefix': '2001:4837:1821::2/127'}]
         nlri_hex = b'\x98\x00\x05\xb1\x20\x01\x21\x21\x00\x00\x00\x00\x00\x00\x00' \
             b'\x00\x00\x00\x00\x01\x58\x00\x05\xc1\x20\x01\x21\x21\x00\x01' \

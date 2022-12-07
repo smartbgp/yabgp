@@ -62,7 +62,7 @@ class TestMpReachNLRI(unittest.TestCase):
         data_hoped = {
             'afi_safi': (2, 1),
             'nexthop': '2001:3232::1',
-            'nlri': ['2001:3232::1/128', '::2001:3232:1:0/64', '2001:4837:1632::2/127']}
+            'nlri': ['2001:3232::1/128', '2001:3232:1::/64', '2001:4837:1632::2/127']}
         self.assertEqual(data_hoped, MpReachNLRI.parse(data_bin))
 
     def test_ipv6_unicast_with_linklocal_nexthop(self):
@@ -74,14 +74,14 @@ class TestMpReachNLRI(unittest.TestCase):
             'afi_safi': (2, 1),
             'linklocal_nexthop': 'fe80::c002:bff:fe7e:0',
             'nexthop': '2001:db8::2',
-            'nlri': ['::2001:db8:2:2/64', '::2001:db8:2:1/64', '::2001:db8:2:0/64']}
+            'nlri': ['2001:db8:2:2::/64', '2001:db8:2:1::/64', '2001:db8:2::/64']}
         self.assertEqual(data_hoped, MpReachNLRI.parse(data_bin))
 
     def test_ipv6_unicast_construct(self):
         data_parsed = {
             'afi_safi': (2, 1),
             'nexthop': '2001:3232::1',
-            'nlri': ['2001:3232::1/128', '::2001:3232:1:0/64', '2001:4837:1632::2/127']}
+            'nlri': ['2001:3232::1/128', '2001:3232:1001::/64', '2001:4837:1632::2/127']}
         self.assertEqual(data_parsed, MpReachNLRI.parse(MpReachNLRI.construct(data_parsed)[4:]))
 
     def test_ipv6_unicast_with_locallink_nexthop_construct(self):
@@ -89,7 +89,7 @@ class TestMpReachNLRI(unittest.TestCase):
             'afi_safi': (2, 1),
             'linklocal_nexthop': 'fe80::c002:bff:fe7e:0',
             'nexthop': '2001:db8::2',
-            'nlri': ['::2001:db8:2:2/64', '::2001:db8:2:1/64', '::2001:db8:2:0/64']}
+            'nlri': ['2001:db8:2:2::/64', '2001:db8:2:1::/64', '2001:db8:2::/64']}
         self.assertEqual(data_hoped, MpReachNLRI.parse(MpReachNLRI.construct(data_hoped)[4:]))
 
     def test_ipv6_mpls_vpn_parse(self):
@@ -256,7 +256,7 @@ class TestMpReachNLRI(unittest.TestCase):
         }
         self.assertEqual(data_dict, MpReachNLRI.parse(MpReachNLRI.construct(data_dict)[4:]))
 
-    def test_linkstate(self):
+    def test_linkstate_link(self):
         self.maxDiff = None
         data = b"\x90\x0e\x00\x62\x40\x04\x47\x04\x0a\x7c\x01\x7e\x00\x00\x02\x00" \
                b"\x55\x02\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x1a\x02\x00" \
@@ -318,6 +318,42 @@ class TestMpReachNLRI(unittest.TestCase):
                       'protocol_id': 3,
                       'type': 'ipv4_topo_prefix'}]}
         self.assertEqual(data_dict, MpReachNLRI.parse(data[4:]))
+
+    def test_linkstate_ipv6_topo_prefix(self):
+        data = b"\x90\x0e\x00\x4f\x40\x04\x47\x04\x0a\x7c\x02\xe8\x00\x00\x04\x00" \
+               b"\x42\x02\x00\x00\x00\x00\x00\x00\xfd\xe8\x01\x00\x00\x1a\x02\x00" \
+               b"\x00\x04\x00\x00\xfd\xe8\x02\x01\x00\x04\x00\x00\x00\x00\x02\x03" \
+               b"\x00\x06\x00\x00\x00\x00\x00\x05\x01\x07\x00\x02\x00\x02\x01\x09" \
+               b"\x00\x11\x80\xfd\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+               b"\x00\x15\x02"
+
+        data_dict = {'afi_safi': (16388, 71),
+                     'nexthop': '10.124.2.232',
+                     'nlri': [{
+                         'type': 'ipv6_topo_prefix',
+                         'protocol_id': 2,
+                         'instances_id': 65000,
+                         'descriptors': [{
+                             'type': 'local_node',
+                             'value': {
+                                 'as_num': 65000,
+                                 'bgpls_id': '0.0.0.0',
+                                 'igp_router_id': {
+                                     'pseudonode': False,
+                                     'iso_node_id': '0000.0000.0005'
+                                 }
+                             }
+                         }, {
+                             'type': 'mt_id',
+                             'value': [2]
+                         }, {
+                             'type': 'prefix',
+                             'value': 'fd00::1502/128'
+                         }]
+                     }]}
+
+        self.assertEqual(data_dict, MpReachNLRI.parse(data[4:]))
+
 
 if __name__ == '__main__':
     unittest.main()

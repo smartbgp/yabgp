@@ -25,29 +25,30 @@ class TestIPv6Unicast(unittest.TestCase):
         nlri_data = b'\x80\x20\x01\x32\x32\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x40\x20\x01\x32' \
                     b'\x32\x00\x01\x00\x00\x7f\x20\x01\x48\x37\x16\x32\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02'
         value_parsed = IPv6Unicast().parse(nlri_data)
-        value_hoped = ['2001:3232::1/128', '::2001:3232:1:0/64', '2001:4837:1632::2/127']
+        value_hoped = ['2001:3232::1/128', '2001:3232:1::/64', '2001:4837:1632::2/127']
         self.assertEqual(value_hoped, value_parsed)
 
     def test_parse_withdraw(self):
         nlri_data = b'\x40\x20\x01\x0d\xb8\x00\x01\x00\x02\x40\x20\x01\x0d\xb8\x00\x01\x00\x01\x40\x20\x01\x0d' \
                     b'\xb8\x00\x01\x00\x00'
         value_parsed = IPv6Unicast.parse(nlri_data)
-        value_hoped = ['::2001:db8:1:2/64', '::2001:db8:1:1/64', '::2001:db8:1:0/64']
+        value_hoped = ['2001:db8:1:2::/64', '2001:db8:1:1::/64', '2001:db8:1::/64']
         self.assertEqual(value_hoped, value_parsed)
 
     def test_construct_nlri(self):
-        nlri_list = ['::2001:db8:1:2/64', '::2001:db8:1:1/64', '::2001:db8:1:0/64']
+        nlri_list = ['2001:db8:1:2::/64', '2001:db8:1:1::/64', '2001:db8:1:3::/64']
         value_hex = IPv6Unicast.construct(nlri_list)
-        value_hoped = b'\x40\x20\x01\x0d\xb8\x00\x01\x00\x02\x40\x20\x01\x0d\xb8\x00\x01\x00\x01\x40\x20\x01\x0d' \
-                      b'\xb8\x00\x01\x00\x00'
+        value_hoped = b'\x40\x20\x01\x0D\xB8\x00\x01\x00\x02\x40\x20\x01\x0D\xB8\x00\x01\x00\x01' \
+                      b'\x40\x20\x01\x0D\xB8\x00\x01\x00\x03'
         self.assertEqual(value_hoped, value_hex)
 
     def test_construct_nlri_2(self):
-        nlri_list = ['2001:3232::1/128', '::2001:3232:1:0/64', '2001:4837:1632::2/127']
+        nlri_list = ['2001:3232::1/128', '2001:3232:1::/64', '2001:4837:1632::2/127']
         value_hex = IPv6Unicast.construct(nlri_list)
         value_hoped = b'\x80\x20\x01\x32\x32\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x40\x20\x01\x32' \
                       b'\x32\x00\x01\x00\x00\x7f\x20\x01\x48\x37\x16\x32\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02'
         self.assertEqual(value_hoped, value_hex)
+
 
 if __name__ == '__main__':
     unittest.main()

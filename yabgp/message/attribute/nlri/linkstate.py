@@ -153,7 +153,10 @@ class BGPLS(NLRI):
                     prefix_value = value[1:] + b'\x00' * (4 - len(value[1:]))
                     ip_str = str(netaddr.IPAddress(int(binascii.b2a_hex(prefix_value), 16)))
                 else:
-                    ip_str = str(netaddr.IPAddress(int(binascii.b2a_hex(value[1:]), 16)))
+                    prefix_bit = value[1:]
+                    for i in range(0, (128 - mask) // 8):
+                        prefix_bit += b'\x00'
+                    ip_str = str(netaddr.IPAddress(int(binascii.b2a_hex(prefix_bit), 16)))
                 descriptor['value'] = "%s/%s" % (ip_str, mask)
             else:
                 descriptor['type'] = _type
