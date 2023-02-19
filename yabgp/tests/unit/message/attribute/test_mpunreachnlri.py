@@ -48,7 +48,7 @@ class TestMpUnReachNLRI(unittest.TestCase):
     def test_ipv6_unicast_construct(self):
         nlri_dict = {
             'afi_safi': (2, 1),
-            'withdraw': ['2001:3232::1/128', '::2001:3232:1:0/64', '2001:4837:1632::2/127']}
+            'withdraw': ['2001:3232::1/128', '2001:3232:1001::/64', '2001:4837:1632::2/127']}
         self.assertEqual(nlri_dict, MpUnReachNLRI.parse(MpUnReachNLRI.construct(nlri_dict)[4:]))
 
     def test_ipv6_mpls_vpn_parse_construct(self):

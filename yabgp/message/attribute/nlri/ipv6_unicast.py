@@ -38,14 +38,19 @@ class IPv6Unicast(NLRI):
             else:
                 prefix_bit_len = ord(nlri_data[0:1])
             if prefix_bit_len % 8 == 0:
-                prefix_byte_len = prefix_bit_len / 8
+                prefix_byte_len = prefix_bit_len // 8
             else:
-                prefix_byte_len = prefix_bit_len / 8 + 1
-            offset = int(prefix_byte_len + 1)
-            prefix_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(nlri_data[1:offset]), 16))) \
-                + '/%s' % prefix_bit_len
+                prefix_byte_len = prefix_bit_len // 8 + 1
+            offset = prefix_byte_len + 1
+            prefix_bit = nlri_data[1:offset]
+            # append zero
+            zero_len = (128 - prefix_bit_len) // 8
+            for i in range(0, zero_len):
+                prefix_bit += b'\x00'
+
+            prefix_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(prefix_bit), 16))) + '/%s' % prefix_bit_len
             nlri_list.append(prefix_addr)
-            nlri_data = nlri_data[int(prefix_byte_len) + 1:]
+            nlri_data = nlri_data[offset:]
 
         return nlri_list
 
@@ -60,5 +65,9 @@ class IPv6Unicast(NLRI):
         for prefix in nlri_list:
             prefix = netaddr.IPNetwork(prefix)
             nlri_hex += struct.pack('!B', prefix.prefixlen)
-            nlri_hex += binascii.unhexlify(hex(prefix.ip)[2:])
+            if prefix.prefixlen % 8 == 0:
+                prefix_byte_len = prefix.prefixlen // 8
+            else:
+                prefix_byte_len = prefix.prefixlen // 8 + 1
+            nlri_hex += prefix.ip.packed[:prefix_byte_len]
         return nlri_hex

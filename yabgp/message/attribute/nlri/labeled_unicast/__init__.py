@@ -62,6 +62,8 @@ class LabeledUnicast(NLRI):
                 prefix = str(netaddr.IPAddress(int(binascii.b2a_hex(prefix_hex), 16))) + '/' + str(prefix_mask)
             elif cls.AFI == AFNUM_INET6:  # ipv6
                 prefix_hex = nlri_data[offset - prefix_byte_len: offset]
+                for i in range(0, (128 - prefix_mask) // 8):
+                    prefix_hex += b'\x00'
                 prefix = str(netaddr.IPAddress(int(binascii.b2a_hex(prefix_hex), 16))) + '/' + str(prefix_mask)
             nlri_data = nlri_data[offset:]
             nlri_list.append({'prefix': prefix, 'label': label})
