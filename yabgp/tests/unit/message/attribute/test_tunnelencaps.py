@@ -129,7 +129,7 @@ class TestTunnelEncaps(unittest.TestCase):
             "0": "new",
             "15": 200
         }
-        data_hex = data_hex = b'\x0f\x02\xc8\x00'
+        data_hex = b'\x0f\x02\xc8\x00'
         self.assertEqual(data_hex, TunnelEncaps.construct(data_dict)[12:])
 
     def test_construct_policy_name(self):
@@ -137,7 +137,7 @@ class TestTunnelEncaps(unittest.TestCase):
             "0": "new",
             "129": "test"
         }
-        data_hex = data_hex = b'\x81\x00\x05\x00\x74\x65\x73\x74'
+        data_hex = b'\x81\x00\x05\x00\x74\x65\x73\x74'
         self.assertEqual(data_hex, TunnelEncaps.construct(data_dict)[12:])
 
     def test_construct_remote_endpoint_ipv4(self):
