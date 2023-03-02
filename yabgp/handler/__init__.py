@@ -41,6 +41,10 @@ class BaseHandler(object):
         raise NotImplemented
 
     @abc.abstractmethod
+    def send_open(self, peer, timestamp, result):
+        raise NotImplemented
+
+    @abc.abstractmethod
     def route_refresh_received(self, peer, msg, msg_type):
         raise NotImplemented
 
