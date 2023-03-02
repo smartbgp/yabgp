@@ -481,6 +481,15 @@ class BGP(protocol.Protocol):
         LOG.info("[%s]Probe's Capabilities:", self.factory.peer_addr)
         for key in cfg.CONF.bgp.running_config['capability']['local']:
             LOG.info("--%s = %s", key, cfg.CONF.bgp.running_config['capability']['local'][key])
+        open_msg_dict = {
+            "version": bgp_cons.VERSION,
+            "asn": self.factory.my_asn,
+            "hold_time": self.fsm.hold_time,
+            "bgp_id": netaddr.IPAddress(self.factory.bgp_id),
+            "capabilities": cfg.CONF.bgp.running_config['capability']['local']
+        }
+        timestamp = time.time()
+        self.handler.send_open(self, timestamp, open_msg_dict)
 
     def _open_received(self, timestamp, msg):
         """
