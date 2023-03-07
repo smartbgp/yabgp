@@ -200,6 +200,15 @@ class DefaultHandler(BaseHandler):
                 msg={"msg": None}
             )
 
+    def send_open(self, peer, timestamp, msg):
+        # write open message has been sent
+        self.write_msg(
+            peer=peer.factory.peer_addr,
+            timestamp=timestamp,
+            msg_type=1,
+            msg={"msg": msg}
+        )
+
     def open_received(self, peer, timestamp, result):
         # write bgp message
         self.write_msg(
