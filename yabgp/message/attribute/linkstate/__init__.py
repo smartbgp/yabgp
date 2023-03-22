@@ -61,3 +61,4 @@ from .prefix.igpflags import IGPFlags  # noqa
 from .prefix.igp_route_tag_list import IGPRouteTagList  # noqa
 from .prefix.ext_igp_route_tag_list import ExtIGPRouteTagList  # noqa
 from .prefix.ospf_forward_addr import OspfForwardingAddr  # noqa
+from .prefix.srv6_locator import SRv6Locator  # noqa

@@ -14,13 +14,14 @@
 #    under the License.
 
 import struct
+
 import binascii
 
 from yabgp.message.attribute import Attribute, AttributeFlag, AttributeID
 
 
 class LinkState(Attribute):
-    """BGP linksate attribute
+    """BGP link-state attribute
     """
     ID = AttributeID.LINKSTATE
     FLAG = AttributeFlag.OPTIONAL
@@ -35,6 +36,7 @@ class LinkState(Attribute):
     def register(cls, _type=None):
         """register tlvs
         """
+
         def decorator(klass):
             """decorator
             """
@@ -43,6 +45,7 @@ class LinkState(Attribute):
                 raise RuntimeError('duplicated attribute type')
             cls.registered_tlvs[_id] = klass
             return klass
+
         return decorator
 
     def dict(self):
@@ -57,8 +60,8 @@ class LinkState(Attribute):
         tlvs = []
         while data:
             type_code, length = struct.unpack('!HH', data[:4])
-            value = data[4: 4+length]
-            if type_code in [1099, 1100, 1158] and type_code in cls.registered_tlvs:
+            value = data[4: 4 + length]
+            if type_code in [1099, 1100, 1158, 1162] and type_code in cls.registered_tlvs:
                 tlvs.append(cls.registered_tlvs[type_code].unpack(value, bgpls_pro_id).dict())
             elif type_code in cls.registered_tlvs:
                 tlvs.append(cls.registered_tlvs[type_code].unpack(value).dict())
@@ -67,9 +70,8 @@ class LinkState(Attribute):
                     {
                         'type': type_code,
                         'value': str(binascii.b2a_hex(value))
-
                     }
                 )
-            data = data[4+length:]
+            data = data[4 + length:]
 
         return cls(value=tlvs)
