@@ -11,4 +11,5 @@
 #    |               | Address              |          |                 |
 #    |      1157     | Opaque Prefix        | variable | Section 3.3.3.6 |
 #    |               | Attribute            |          |                 |
+#    |      1162     | SRv6 Locator         | variable | Section 5.1     |
 #    +---------------+----------------------+----------+-----------------+

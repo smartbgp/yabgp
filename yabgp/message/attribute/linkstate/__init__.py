@@ -24,6 +24,7 @@ from .node.nodeflags import NodeFlags  # noqa
 from .node.opa_node_attr import OpaNodeAttr  # noqa
 from .node.sid_or_label import SIDorLabel  # noqa
 from .node.srlb import SRLB  # noqa
+from .node.srv6_capabilities import SRv6Capabilities  # noqa
 from .link.admingroup import AdminGroup  # noqa
 from .link.remote_router_id import RemoteRouterID  # noqa
 from .link.max_bw import MaxBandwidth  # noqa
@@ -61,3 +62,4 @@ from .prefix.igpflags import IGPFlags  # noqa
 from .prefix.igp_route_tag_list import IGPRouteTagList  # noqa
 from .prefix.ext_igp_route_tag_list import ExtIGPRouteTagList  # noqa
 from .prefix.ospf_forward_addr import OspfForwardingAddr  # noqa
+from .prefix.srv6_locator import SRv6Locator  # noqa

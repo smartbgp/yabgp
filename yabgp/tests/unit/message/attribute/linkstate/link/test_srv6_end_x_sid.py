@@ -58,5 +58,5 @@ class TestSRv6EndXSid(unittest.TestCase):
         }
         # The total of the locator block, locator node, function, and argument lengths MUST be less than or equal to 128
 
-        # Note: data_bin[4:] means does not contains "type_code" & "length"
+        # Note: data_bin[4:] means does not contain "type_code" & "length"
         self.assertEqual(data_dict, SRv6EndXSid.unpack(data_bin[4:]).dict())
