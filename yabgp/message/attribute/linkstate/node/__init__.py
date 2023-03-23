@@ -29,4 +29,5 @@
 # |      1035      | SR Algorithm    | variable | Section 2.1.2 |
 # |      1036      | SR Local Block  | variable | Section 2.1.3 |
 # |      1037      | SRMS Preference | variable | Section 2.1.4 |
+# |      1038      | SRv6 Capabilities |      4 | Section 3.1   |
 # +----------------+-----------------+----------+---------------+
