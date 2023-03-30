@@ -64,3 +64,4 @@ from .prefix.ext_igp_route_tag_list import ExtIGPRouteTagList  # noqa
 from .prefix.ospf_forward_addr import OspfForwardingAddr  # noqa
 from .prefix.srv6_locator import SRv6Locator  # noqa
 from .srv6_sid.srv6_endpoint_behavior import SRv6EndpointBehavior  # noqa
+from .srv6_sid.srv6_bgp_peer_node_sid import SRv6BGPPeerNodeSID  # noqa

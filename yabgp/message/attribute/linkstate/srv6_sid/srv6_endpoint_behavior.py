@@ -28,14 +28,13 @@ class SRv6EndpointBehavior(TLV):
     TYPE_STR = 'srv6_endpoint_behavior'
 
     @classmethod
-    def unpack(cls, data, bgpls_pro_id):
+    def unpack(cls, data):
         """
 
         :param data:
-        :param bgpls_pro_id:
         :return:
         """
-        endpoint_behavior = struct.unpack('!H', data[0:2])[0]  # TODO
+        endpoint_behavior = struct.unpack('!H', data[0:2])[0]
         flags = ord(data[2:3])
         algorithm = ord(data[3:4])
 

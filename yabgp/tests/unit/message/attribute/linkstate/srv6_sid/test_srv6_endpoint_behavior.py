@@ -35,5 +35,4 @@ class TestSRv6EndpointBehavior(unittest.TestCase):
                 'algorithm': 0
             }
         }
-        for bgpls_pro_id in (1, 2, 3, 6):
-            self.assertEqual(data_dict, SRv6EndpointBehavior.unpack(data=data_bin, bgpls_pro_id=bgpls_pro_id).dict())
+        self.assertEqual(data_dict, SRv6EndpointBehavior.unpack(data=data_bin).dict())

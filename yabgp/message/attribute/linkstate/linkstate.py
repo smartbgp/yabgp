@@ -61,7 +61,7 @@ class LinkState(Attribute):
         while data:
             type_code, length = struct.unpack('!HH', data[:4])
             value = data[4: 4 + length]
-            if type_code in [1099, 1100, 1158, 1162, 1038, 1250] and type_code in cls.registered_tlvs:
+            if type_code in [1099, 1100, 1158, 1162, 1038] and type_code in cls.registered_tlvs:
                 tlvs.append(cls.registered_tlvs[type_code].unpack(value, bgpls_pro_id).dict())
             elif type_code in cls.registered_tlvs:
                 tlvs.append(cls.registered_tlvs[type_code].unpack(value).dict())

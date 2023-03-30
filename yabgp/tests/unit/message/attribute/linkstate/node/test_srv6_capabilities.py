@@ -32,7 +32,7 @@ class TestSRv6Capabilities(unittest.TestCase):
             'type': 'srv6_capabilities',
             'value': {
                 'flags': {
-                    'O-flag': 0
+                    'O': 0
                 }
             }}
         for bgpls_pro_id in (1, 2, 3, 6):

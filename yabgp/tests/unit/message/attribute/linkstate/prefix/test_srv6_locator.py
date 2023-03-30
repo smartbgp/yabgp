@@ -32,7 +32,7 @@ class TestSRv6Locator(unittest.TestCase):
             'type': 'srv6_locator',
             'value': {
                 'flags': {
-                    'D-flag': 0
+                    'D': 0
                 },
                 'algorithm': 0,
                 'metric': 0,
