@@ -26,11 +26,14 @@ from yabgp.message.attribute.nlri import NLRI
 
 class BGPLS(NLRI):
     """BGPLS
+
+    Refer: https://datatracker.ietf.org/doc/html/rfc7752#section-3.2
     """
     NODE_NLRI = 1
     LINK_NLRI = 2
     IPv4_TOPO_PREFIX_NLRI = 3
     IPv6_TOPO_PREFIX_NLRI = 4
+    SRv6_SID_NLRI = 6  # https://datatracker.ietf.org/doc/html/draft-ietf-idr-bgpls-srv6-ext-14#section-6
 
     @classmethod
     def parse(cls, nlri_data):
@@ -38,7 +41,7 @@ class BGPLS(NLRI):
         while nlri_data:
             _type, length = struct.unpack('!HH', nlri_data[0:4])
             value = nlri_data[4: 4 + length]
-            nlri_data = nlri_data[4+length:]
+            nlri_data = nlri_data[4 + length:]
             nlri = dict()
             if _type == cls.LINK_NLRI:
                 nlri['type'] = 'link'
@@ -48,6 +51,8 @@ class BGPLS(NLRI):
                 nlri['type'] = 'ipv4_topo_prefix'
             elif _type == cls.IPv6_TOPO_PREFIX_NLRI:
                 nlri['type'] = 'ipv6_topo_prefix'
+            elif _type == cls.SRv6_SID_NLRI:
+                nlri['type'] = 'srv6_sid'
             else:
                 nlri['type'] = 'unknown'
                 continue
@@ -60,7 +65,7 @@ class BGPLS(NLRI):
 
     @classmethod
     def parse_nlri(cls, data, nlri_type):
-        """parse nlri: node, link, prefix
+        """parse nlri: node, link, prefix, srv6_sid
         """
         #      0                   1                   2                   3
         #      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -75,6 +80,8 @@ class BGPLS(NLRI):
         #     //               Remote Node Descriptors (variable)            //
         #     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
         #     //                  Link Descriptors (variable)                //
+        #     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        #     //               SRv6 SID Descriptors (variable)               //
         #     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
         #                     Figure 8: The Link NLRI format
 
@@ -107,8 +114,8 @@ class BGPLS(NLRI):
         descriptors = data[9:]
         while descriptors:
             _type, length = struct.unpack('!HH', descriptors[0:4])
-            value = descriptors[4: 4+length]
-            descriptors = descriptors[4+length:]
+            value = descriptors[4: 4 + length]
+            descriptors = descriptors[4 + length:]
             descriptor = dict()
             if _type == 256:  # local node
                 descriptor['type'] = 'local_node'
@@ -146,7 +153,7 @@ class BGPLS(NLRI):
             elif _type == 264:  # OSPF Route Type
                 descriptor['type'] = 'prefix_ospf_route_type'
                 descriptor['value'] = ord(value[0:1])
-            elif _type == 265:   # IP Reachability Information
+            elif _type == 265:  # IP Reachability Information
                 descriptor['type'] = 'prefix'
                 mask = ord(value[0:1])
                 if nlri_type == cls.IPv4_TOPO_PREFIX_NLRI:
@@ -158,6 +165,17 @@ class BGPLS(NLRI):
                         prefix_bit += b'\x00'
                     ip_str = str(netaddr.IPAddress(int(binascii.b2a_hex(prefix_bit), 16)))
                 descriptor['value'] = "%s/%s" % (ip_str, mask)
+            elif _type == 518:  # SRv6 SID Information
+                # Refer: https://datatracker.ietf.org/doc/html/draft-ietf-idr-bgpls-srv6-ext-14#section-6.1
+                descriptor['type'] = 'srv6_sid_information'
+                descriptor['value'] = []
+                while value:
+                    descriptor['value'].append(str(netaddr.IPAddress(int(binascii.b2a_hex(value[:16]), 16))))
+                    value = value[16:]
+
+                # This field MUST contain a single SRv6 SID Information TLV (Section 6.1) and
+                # MAY contain the Multi-Topology Identifier TLV [RFC7752].
+                # descriptor['value'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
             else:
                 descriptor['type'] = _type
                 descriptor['value'] = binascii.b2a_hex(value)
@@ -180,8 +198,8 @@ class BGPLS(NLRI):
         return_data = dict()
         while data:
             _type, length = struct.unpack('!HH', data[0: 4])
-            value = data[4: 4+length]
-            data = data[4+length:]
+            value = data[4: 4 + length]
+            data = data[4 + length:]
             if _type == 512:
                 return_data['as_num'] = int(binascii.b2a_hex(value), 16)
             elif _type == 513:
@@ -226,4 +244,4 @@ class BGPLS(NLRI):
     def parse_iso_node_id(cls, data):
         tmp = binascii.b2a_hex(data).decode('utf-8')
         chunks, chunk_size = len(tmp), len(tmp) // 3
-        return '.'.join([str(tmp[i:i+chunk_size]) for i in range(0, chunks, chunk_size)])
+        return '.'.join([str(tmp[i:i + chunk_size]) for i in range(0, chunks, chunk_size)])

@@ -20,33 +20,26 @@ from ..linkstate import LinkState
 
 
 @LinkState.register()
-class SRv6Capabilities(TLV):
+class SRv6EndpointBehavior(TLV):
     """
-    SRv6 Capabilities TLV
+    SRv6 Endpoint Behavior
     """
-    TYPE = 1038  # https://datatracker.ietf.org/doc/html/draft-ietf-idr-bgpls-srv6-ext-14#section-3.1
-    TYPE_STR = 'srv6_capabilities'
+    TYPE = 1250  # https://datatracker.ietf.org/doc/html/draft-ietf-idr-bgpls-srv6-ext-14#section-7.1
+    TYPE_STR = 'srv6_endpoint_behavior'
 
     @classmethod
-    def unpack(cls, data, bgpls_pro_id):
+    def unpack(cls, data):
         """
 
         :param data:
-        :param bgpls_pro_id:
         :return:
         """
-        flags = struct.unpack('!H', data[:2])[0]
-        flag = {}
-        if bgpls_pro_id in (1, 2):
-            # https://datatracker.ietf.org/doc/html/rfc9352#name-srv6-capabilities-sub-tlv
-            flag['O'] = (flags << 1) % 256 >> 15
-        elif bgpls_pro_id in (3, 6):
-            # https://datatracker.ietf.org/doc/html/draft-ietf-lsr-ospfv3-srv6-extensions-09#section-2
-            flag['O'] = (flags << 1) % 256 >> 15
-        else:
-            flag = flags
-        # reserved = struct.unpack('!H', data[2:4])[0]
+        endpoint_behavior = struct.unpack('!H', data[0:2])[0]
+        flags = ord(data[2:3])
+        algorithm = ord(data[3:4])
 
         return cls(value={
-            'flags': flag
+            'endpoint_behavior': endpoint_behavior,
+            'flags': flags,
+            'algorithm': algorithm
         })

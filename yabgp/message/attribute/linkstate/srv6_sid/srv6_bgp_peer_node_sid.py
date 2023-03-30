@@ -20,33 +20,34 @@ from ..linkstate import LinkState
 
 
 @LinkState.register()
-class SRv6Capabilities(TLV):
+class SRv6BGPPeerNodeSID(TLV):
     """
-    SRv6 Capabilities TLV
+    SRv6 BGP Peer Node SID
     """
-    TYPE = 1038  # https://datatracker.ietf.org/doc/html/draft-ietf-idr-bgpls-srv6-ext-14#section-3.1
-    TYPE_STR = 'srv6_capabilities'
+    TYPE = 1251  # https://datatracker.ietf.org/doc/html/draft-ietf-idr-bgpls-srv6-ext-14#section-7.2
+    TYPE_STR = 'srv6_bgp_peer_node_sid'
 
     @classmethod
-    def unpack(cls, data, bgpls_pro_id):
+    def unpack(cls, data):
         """
 
         :param data:
-        :param bgpls_pro_id:
         :return:
         """
-        flags = struct.unpack('!H', data[:2])[0]
+        flags = ord(data[0:1])
         flag = {}
-        if bgpls_pro_id in (1, 2):
-            # https://datatracker.ietf.org/doc/html/rfc9352#name-srv6-capabilities-sub-tlv
-            flag['O'] = (flags << 1) % 256 >> 15
-        elif bgpls_pro_id in (3, 6):
-            # https://datatracker.ietf.org/doc/html/draft-ietf-lsr-ospfv3-srv6-extensions-09#section-2
-            flag['O'] = (flags << 1) % 256 >> 15
-        else:
-            flag = flags
+        flag['B'] = flags >> 7
+        flag['S'] = (flags << 1) % 256 >> 7
+        flag['P'] = (flags << 2) % 256 >> 7
+        weight = ord(data[1:2])
         # reserved = struct.unpack('!H', data[2:4])[0]
+        peer_as_number = '{0}.{1}'.format(struct.unpack('!H', data[4:6])[0], struct.unpack('!H', data[6:8])[0])
+        peer_bgp_identifier = struct.unpack('!HH', data[8:12])[0]
 
         return cls(value={
-            'flags': flag
+            'flags': flag,
+            'weight': weight,
+            # 'reserved': reserved,
+            'peer_as_number': peer_as_number,
+            'peer_bgp_identifier': peer_bgp_identifier
         })

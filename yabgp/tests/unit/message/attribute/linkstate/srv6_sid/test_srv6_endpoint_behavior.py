@@ -13,27 +13,26 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-""" Test SRv6 Capabilities TLV """
+""" Test SRv6 Endpoint Behavior TLV """
 
 import unittest
 
-from yabgp.message.attribute.linkstate.node.srv6_capabilities import SRv6Capabilities
+from yabgp.message.attribute.linkstate.srv6_sid.srv6_endpoint_behavior import SRv6EndpointBehavior
 
 
-class TestSRv6Capabilities(unittest.TestCase):
+class TestSRv6EndpointBehavior(unittest.TestCase):
 
     def test_unpack(self):
-        data_bin = b'\x00' \
-                   b'\x00' \
+        data_bin = b'\x00\x30' \
                    b'\x00' \
                    b'\x00'
 
         data_dict = {
-            'type': 'srv6_capabilities',
+            'type': 'srv6_endpoint_behavior',
             'value': {
-                'flags': {
-                    'O': 0
-                }
-            }}
-        for bgpls_pro_id in (1, 2, 3, 6):
-            self.assertEqual(data_dict, SRv6Capabilities.unpack(data=data_bin, bgpls_pro_id=bgpls_pro_id).dict())
+                'endpoint_behavior': 48,
+                'flags': 0,
+                'algorithm': 0
+            }
+        }
+        self.assertEqual(data_dict, SRv6EndpointBehavior.unpack(data=data_bin).dict())

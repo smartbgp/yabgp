@@ -41,7 +41,7 @@ class SRv6Locator(TLV):
         flag = {}
         if bgpls_pro_id in (1, 2):  # IS-IS
             # https://datatracker.ietf.org/doc/html/rfc9352#section-7.1
-            flag['D-flag'] = flags >> 7
+            flag['D'] = flags >> 7
         else:
             flag = flags  # TODO (OSPFv3 SRv6)
         algorithm = ord(data[1:2])
