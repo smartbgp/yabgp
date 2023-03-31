@@ -53,6 +53,7 @@ from .link.unidirect_avail_bw import UnidirectAvailBw  # noqa
 from .link.unidirect_bw_util import UnidirectBwUtil  # noqa
 from .link.extend_admin_group import ExtendedAdminGroup  # noqa
 from .link.srv6_end_x_sid import SRv6EndXSid  # noqa
+from .link.srv6_lan_end_x_sid import SRv6LANEndXSid  # noqa
 from .link.srv6_sid import SRv6SID  # noqa
 from .prefix.prefix_metric import PrefixMetric  # noqa
 from .prefix.prefix_sid import PrefixSID  # noqa

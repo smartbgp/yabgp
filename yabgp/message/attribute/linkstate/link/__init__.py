@@ -55,6 +55,8 @@
 #    |    1103  | Peer Set Segment          | variable |
 #    |          | Identifier (Peer-Set-SID) |          |
 #    |    1106  | SRv6 End.X SID            | variable |
+#    |    1107  | SRv6 LAN End.X SID        | variable |
+#    |    1108  | SRv6 LAN End.X SID        | variable |
 #    +----------+---------------------------+----------+
 
 #    +----------+---------------------------+----------+

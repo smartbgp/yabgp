@@ -41,8 +41,8 @@ class SRv6BGPPeerNodeSID(TLV):
         flag['P'] = (flags << 2) % 256 >> 7
         weight = ord(data[1:2])
         # reserved = struct.unpack('!H', data[2:4])[0]
-        peer_as_number = '{0}.{1}'.format(struct.unpack('!H', data[4:6])[0], struct.unpack('!H', data[6:8])[0])
-        peer_bgp_identifier = struct.unpack('!HH', data[8:12])[0]
+        peer_as_number = '.'.join([str(each) for each in struct.unpack('!HH', data[4:8])])
+        peer_bgp_identifier = struct.unpack('!I', data[8:12])[0]
 
         return cls(value={
             'flags': flag,
