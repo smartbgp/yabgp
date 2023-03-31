@@ -46,7 +46,7 @@ class SRv6Locator(TLV):
             flag = flags  # TODO (OSPFv3 SRv6)
         algorithm = ord(data[1:2])
         # reserved = struct.unpack('!H', data[2:4])[0]
-        metric = struct.unpack('!HH', data[4:8])[0]
+        metric = struct.unpack('!I', data[4:8])[0]
         sub_tlvs_bin_data = data[8:]
 
         sub_tlvs = []
