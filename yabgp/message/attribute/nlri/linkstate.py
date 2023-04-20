@@ -168,14 +168,14 @@ class BGPLS(NLRI):
             elif _type == 518:  # SRv6 SID Information
                 # Refer: https://datatracker.ietf.org/doc/html/draft-ietf-idr-bgpls-srv6-ext-14#section-6.1
                 descriptor['type'] = 'srv6_sid_information'
-                descriptor['value'] = []
-                while value:
-                    descriptor['value'].append(str(netaddr.IPAddress(int(binascii.b2a_hex(value[:16]), 16))))
-                    value = value[16:]
+                # descriptor['value'] = []
+                # while value:
+                #     descriptor['value'].append(str(netaddr.IPAddress(int(binascii.b2a_hex(value[:16]), 16))))
+                #     value = value[16:]
 
                 # This field MUST contain a single SRv6 SID Information TLV (Section 6.1) and
                 # MAY contain the Multi-Topology Identifier TLV [RFC7752].
-                # descriptor['value'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
+                descriptor['value'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
             else:
                 descriptor['type'] = _type
                 descriptor['value'] = binascii.b2a_hex(value)
