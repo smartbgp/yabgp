@@ -34,6 +34,15 @@ class SRv6EndXSid(TLV):
     def unpack(cls, data):
         endpoint_behavior = struct.unpack('!H', data[:2])[0]
         flags = ord(data[2:3])
+
+        # Use the same unpacking method for IS-IS or OSPFv3
+        # IS-IS: https://datatracker.ietf.org/doc/html/rfc9352#name-srv6-endx-sid-sub-tlv
+        # OSPFv3: https://datatracker.ietf.org/doc/html/draft-ietf-lsr-ospfv3-srv6-extensions-09#section-9.1
+        flag = {}
+        flag['B'] = flags >> 7
+        flag['S'] = (flags << 1) % 256 >> 7
+        flag['P'] = (flags << 2) % 256 >> 7
+
         algorithm = ord(data[3:4])
         weight = ord(data[4:5])
         # reserved = ord(data[5:6])
@@ -57,7 +66,7 @@ class SRv6EndXSid(TLV):
 
         return cls(value={
             'endpoint_behavior': endpoint_behavior,
-            'flags': flags,
+            'flags': flag,
             'algorithm': algorithm,
             'weight': weight,
             'sid': sid,

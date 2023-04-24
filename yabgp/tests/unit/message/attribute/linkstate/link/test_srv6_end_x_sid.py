@@ -39,7 +39,11 @@ class TestSRv6EndXSid(unittest.TestCase):
             'type': 'srv6_end_x_sid',
             'value': {
                 'endpoint_behavior': 57,
-                'flags': 0,
+                'flags': {
+                    'B': 0,
+                    'S': 0,
+                    'P': 0
+                },
                 'algorithm': 0,
                 'weight': 0,
                 'sid': 'a001:0:5:e002::',
