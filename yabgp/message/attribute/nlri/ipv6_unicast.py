@@ -33,6 +33,10 @@ class IPv6Unicast(NLRI):
         """
         nlri_list = []
         while nlri_data:
+            if nlri_data == b'\x00\x00':
+                # Note: Fix wrong decoding to ["0.0.0.0/0", "0.0.0.0/0"]
+                nlri_data = nlri_data[2:]
+                continue
             if isinstance(nlri_data[0], int):
                 prefix_bit_len = int(nlri_data[0])
             else:
