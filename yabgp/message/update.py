@@ -194,8 +194,8 @@ class Update(object):
             LOG.error(e)
             error_str = traceback.format_exc()
             LOG.debug(error_str)
-            results['sub_error'] = e
-            results['err_data'] = e
+            results['sub_error'] = str(e)
+            results['err_data'] = str(e)
 
         return results
 
@@ -387,7 +387,7 @@ class Update(object):
                     bgpls_attr = attr_value
                 continue
             else:
-                decode_value = binascii.b2a_hex(attr_value)
+                decode_value = binascii.b2a_hex(attr_value).decode('utf-8')
             attributes[type_code] = decode_value
         if bgpls_attr:
             attributes.update(LinkState.unpack(bgpls_pro_id=bgpls_pro_id, data=bgpls_attr).dict())
