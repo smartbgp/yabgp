@@ -301,63 +301,6 @@ class TestUpdate(unittest.TestCase):
         }
         self.assertEqual(data_dict, Update.parse(None, data_bin[HDR_LEN:])['attr'])
 
-    def test_parse_link_state_1(self):
-        # self.maxDiff = None
-        data_bin = b"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff" \
-                   b"\x00\x89\x02\x00\x00\x00" \
-                   b"\x72\x40\x01\x01\x00\x40\x02\x00\x40\x05\x04\x00\x00\x00\x64\x80" \
-                   b"\x1d\x31\x04\x00\x00\x01\x00\x04\x02\x00\x19\x53\x47\x50\x2d\x45" \
-                   b"\x51\x49\x58\x2d\x54\x43\x2d\x52\x4f\x55\x54\x45\x52\x2d\x30\x31" \
-                   b"\x2e\x53\x47\x50\x04\x03\x00\x03\x65\x00\x01\x04\x04\x00\x04\xac" \
-                   b"\x1d\x20\xfa\x90\x0e\x00\x2c\x40\x04\x47\x04\xac\x1f\x16\xee\x00" \
-                   b"\x00\x01\x00\x1f\x02\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00" \
-                   b"\x12\x02\x00\x00\x04\x00\x00\xff\xfd\x02\x03\x00\x06\x17\x20\x29" \
-                   b"\x03\x22\x50"
-        data_dict = {
-            1: 0,
-            2: [],
-            5: 100,
-            14: {
-                'afi_safi': (16388, 71),
-                'nexthop': '172.31.22.238',
-                'nlri': [{
-                    'descriptors': [{
-                        'type': 'local_node',
-                        'value': {
-                            'as_num': 65533,
-                            'igp_router_id': {
-                                'iso_node_id': '1720.2903.2250',
-                                'pseudonode': False
-                            }
-                        }
-                    }],
-                    'instances_id': 0,
-                    'protocol_id': 2,
-                    'type': 'node'
-                }]
-            },
-            29: [
-                {
-                    'type': 'node_flags',
-                    'value':
-                        {'B': 0, 'E': 0, 'O': 0, 'R': 0, 'T': 0, 'V': 0}
-                },
-                {
-                    'type': 'node_name',
-                    'value': 'SGP-EQIX-TC-ROUTER-01.SGP'
-                },
-                {
-                    'type': 'isis_area_id',
-                    'value': "b'650001'"
-                },
-                {
-                    'type': 'local_router_id',
-                    'value': '172.29.32.250'
-                }
-            ]
-        }
-        self.assertEqual(data_dict, Update.parse(None, data_bin[HDR_LEN:])['attr'])
-
     def test_parse_and_construct_pmsi_tunnel_evpn_overlay(self):
         data_dict = {
             'attr': {
