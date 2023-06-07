@@ -298,14 +298,14 @@ class Update(object):
                 if flags & AttributeFlag.EXTENDED_LENGTH:
                     attr_len = struct.unpack('!H', postfix[2:4])[0]
                     attr_value = postfix[4:4 + attr_len]
-                    postfix = postfix[4 + attr_len:]    # Next attribute
-                else:    # standard 1-octet length
+                    postfix = postfix[4 + attr_len:]  # Next attribute
+                else:  # standard 1-octet length
                     if isinstance(postfix[2], int):
                         attr_len = postfix[2]
                     else:
                         attr_len = ord(postfix[2])
                     attr_value = postfix[3:3 + attr_len]
-                    postfix = postfix[3 + attr_len:]    # Next attribute
+                    postfix = postfix[3 + attr_len:]  # Next attribute
             except Exception as e:
                 LOG.error(e)
                 error_str = traceback.format_exc()
@@ -390,7 +390,7 @@ class Update(object):
                 decode_value = binascii.b2a_hex(attr_value)
             attributes[type_code] = decode_value
         if bgpls_attr:
-            attributes.update(LinkState.unpack(bgpls_pro_id=bgpls_pro_id, data=attr_value).dict())
+            attributes.update(LinkState.unpack(bgpls_pro_id=bgpls_pro_id, data=bgpls_attr).dict())
         evpn_overlay = EVPN.signal_evpn_overlay(attributes)
         if evpn_overlay['evpn'] and evpn_overlay['encap_ec']:
             if bgp_cons.BGPTYPE_PMSI_TUNNEL in attributes:
@@ -481,7 +481,7 @@ class Update(object):
         # ---------------+--------+---------+------+
         #    Maker      | Length |  Type   |  msg |
         # ---------------+--------+---------+------+
-        return b'\xff'*16 + struct.pack('!HB', len(msg) + 19, 2) + msg
+        return b'\xff' * 16 + struct.pack('!HB', len(msg) + 19, 2) + msg
 
     @staticmethod
     def construct_prefix_v4(prefix_list, add_path=False):
