@@ -29,4 +29,4 @@ class ISISArea(TLV):
 
     @classmethod
     def unpack(cls, data):
-        return cls(value=binascii.b2a_hex(data).decode())
+        return cls(value=binascii.b2a_hex(data).decode('utf-8'))
