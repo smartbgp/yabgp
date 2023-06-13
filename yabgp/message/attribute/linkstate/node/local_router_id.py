@@ -13,21 +13,32 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from yabgp.tlv import TLV
 from yabgp.net import IPAddress
+from yabgp.tlv import TLV
 from ..linkstate import LinkState
 
 
 @LinkState.register(_type=1028)
-@LinkState.register(_type=1029)
 class LocalRouterID(TLV):
     """
-    local ipv4 or ipv6 router id
+    local ipv4 router id
     """
     TYPE_STR = 'local_router_id'
 
     @classmethod
     def unpack(cls, data):
+        router_id = IPAddress.unpack(data)
+        return cls(value=router_id)
 
+
+@LinkState.register(_type=1029)
+class LocalRouterIDIPv6(TLV):
+    """
+    local ipv6 router id
+    """
+    TYPE_STR = 'local_router_id_ipv6'
+
+    @classmethod
+    def unpack(cls, data):
         router_id = IPAddress.unpack(data)
         return cls(value=router_id)
