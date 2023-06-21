@@ -14,10 +14,13 @@
 #    under the License.
 
 import struct
+
+import binascii
 import netaddr
 
 from yabgp.tlv import TLV
 from ..linkstate import LinkState
+
 
 #     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 #    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -40,4 +43,4 @@ class SrcRouterID(TLV):
         if len(data) == 4:
             return cls(value=str(netaddr.IPAddress(struct.unpack('!I', data)[0])))
         elif len(data) == 16:
-            return cls(value=str(netaddr.IPAddress(struct.unpack('!I', data)[0], 6)))
+            return cls(value=str(netaddr.IPAddress(int(binascii.b2a_hex(data), 16))))
