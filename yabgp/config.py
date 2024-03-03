@@ -53,7 +53,7 @@ BGP_CONFIG_OPTS = [
     cfg.DictOpt('running_config',
                 default={},
                 help='The running configuration for BGP'),
-    cfg.DictOpt('ext_nexthop',
+    cfg.ListOpt('ext_nexthop',
                 default=[['ipv4', 'ipv6'], ['ipv4_mcast', 'ipv6'], ['vpnv4', 'ipv6']],
                 help='The ext_nexthop for BGP')
 ]
