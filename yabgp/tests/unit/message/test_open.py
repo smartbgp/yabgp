@@ -136,6 +136,70 @@ class TestOpen(unittest.TestCase):
         }
         self.assertEqual(results, self.open.parse(msg_hex[HDR_LEN:]))
 
+    def test_parse_ext_nexthop(self):
+        """
+
+        :return:
+        """
+        real_msg_hex = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00S\x01' \
+                       b'\x04\xfd\xe8\x00\xb4\x01\x01\x01\x016\x02\x06\x01\x04\x00\x01\x00\x01\x02' \
+                       b'\x06\x01\x04\x00\x01\x00\x85\x02\x02\x80\x00\x02\x02\x02\x00\x02\x06A\x04' \
+                       b'\x00\x00\xfd\xe8\x02\x14\x05\x12\x00\x01\x00\x01\x00\x02\x00\x01\x00\x02' \
+                       b'\x00\x02\x00\x01\x00\x80\x00\x02'
+        open_msg = self.open.parse(real_msg_hex[HDR_LEN:])
+        results = {
+            'version': 4,
+            'asn': 65000,
+            'hold_time': 180,
+            'bgp_id': '1.1.1.1',
+            'capabilities': {
+                'afi_safi': [
+                    (1, 1),
+                    (1, 133)
+                ],
+                'cisco_route_refresh': True,
+                'route_refresh': True,
+                'four_bytes_as': True,
+                'ext_nexthop': [
+                    {'afi_safi': [1, 1], 'nexthop_afi': 2},
+                    {'afi_safi': [1, 2], 'nexthop_afi': 2},
+                    {'afi_safi': [1, 128], 'nexthop_afi': 2}
+                ]
+            }
+        }
+        self.assertEqual(results, open_msg)
+
+    def test_construct_ext_nexthop(self):
+        """
+
+        :return:
+        """
+        self.open.version = VERSION
+        self.open.asn = 65000
+        self.open.hold_time = 180
+        self.open.bgp_id = int(netaddr.IPAddress('1.1.1.1'))
+        my_capabilities = {
+            'afi_safi': [
+                (1, 1),
+                (1, 133)
+            ],
+            'cisco_route_refresh': True,
+            'route_refresh': True,
+            'four_bytes_as': True,
+            'ext_nexthop': [
+                {'afi_safi': [1, 1], 'nexthop_afi': 2},
+                {'afi_safi': [1, 2], 'nexthop_afi': 2},
+                {'afi_safi': [1, 128], 'nexthop_afi': 2}
+            ]
+        }
+        msg_hex = self.open.construct(my_capabilities)
+        hope_hex = b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00S\x01' \
+                   b'\x04\xfd\xe8\x00\xb4\x01\x01\x01\x016\x02\x06\x01\x04\x00\x01\x00\x01\x02' \
+                   b'\x06\x01\x04\x00\x01\x00\x85\x02\x02\x80\x00\x02\x02\x02\x00\x02\x06A\x04' \
+                   b'\x00\x00\xfd\xe8\x02\x14\x05\x12\x00\x01\x00\x01\x00\x02\x00\x01\x00\x02' \
+                   b'\x00\x02\x00\x01\x00\x80\x00\x02'
+        self.assertEqual(hope_hex, msg_hex)
+
 
 if __name__ == '__main__':
     unittest.main()

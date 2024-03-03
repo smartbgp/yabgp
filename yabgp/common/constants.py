@@ -312,10 +312,20 @@ CISCO_ROUTE_REFRESH = False
 NEW_ROUTE_REFRESH = False
 GRACEFUL_RESTART = False
 
-# AFI_SAFI mapping
+# AFI mapping
+AFI_DICT = {
+    1: 'ipv4',
+    2: 'ipv6'
+}
+AFI_STR_DICT = {
+    'ipv4': 1,
+    'ipv6': 2
+}
 
+# AFI_SAFI mapping
 AFI_SAFI_DICT = {
     (1, 1): 'ipv4',
+    (1, 2): 'ipv4_mcast',
     (2, 1): 'ipv6',
     (1, 4): 'ipv4_lu',
     (2, 4): 'ipv6_lu',
@@ -328,8 +338,9 @@ AFI_SAFI_DICT = {
     (2, 133): 'ipv6_flowspec'
 }
 AFI_SAFI_STR_DICT = {
-    'ipv6': (2, 1),
     'ipv4': (1, 1),
+    'ipv4_mcast': (1, 2),
+    'ipv6': (2, 1),
     'ipv4_lu': (1, 4),
     'ipv6_lu': (2, 4),
     'flowspec': (1, 133),

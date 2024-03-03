@@ -166,6 +166,7 @@ class Open(object):
                     # (7) enhanced route refresh
                     elif capability.capa_code == capability.ENHANCED_ROUTE_REFRESH:
                         self.capa_dict['enhanced_route_refresh'] = True
+
                     # (8) add path
                     elif capability.capa_code == capability.ADD_PATH:
                         # could be more than one add path cap for different afi safi
@@ -180,6 +181,7 @@ class Open(object):
                                 }
                             )
                             capability.capa_value = capability.capa_value[4:]
+
                     # (9) Long-Lived Graceful Restart (LLGR) Capability
                     elif capability.capa_code == capability.LLGR:
                         self.capa_dict['LLGR'] = []
@@ -191,6 +193,8 @@ class Open(object):
                                 'time': time
                             })
                             capability.capa_value = capability.capa_value[7:]
+
+                    # (10) Extended Next Hop Encoding Capability
                     elif capability.capa_code == capability.EXTENDED_NEXT_HOP:
                         self.capa_dict['ext_nexthop'] = []
                         while len(capability.capa_value) > 0:
@@ -225,9 +229,7 @@ class Open(object):
         #    Maker      | Length |  Type   |  msg |
         #---------------+--------+---------+------+
         """
-        return b'\xff'*16 + struct.pack('!HB',
-                                        len(msg) + 19,
-                                        1) + msg
+        return b'\xff' * 16 + struct.pack('!HB', len(msg) + 19, 1) + msg
 
     def construct(self, my_capability):
 
@@ -252,6 +254,11 @@ class Open(object):
         else:
             if my_capability.get('four_bytes_as'):
                 capas += Capability(capa_code=65, capa_length=4, capa_value=self.asn).construct(my_capability)
+
+        if 'ext_nexthop' in my_capability:
+            # Extended Next Hop Encoding Capability
+            capas += Capability(capa_code=5, capa_length=0).construct(my_capability)
+
         # for add path
         if my_capability.get('add_path'):
             capas += Capability(capa_code=69, capa_length=4, capa_value=my_capability['add_path']).construct()
@@ -345,7 +352,7 @@ class Capability(object):
     MULTISESSION_BGP = 0x44  # [Appanna]
     ADD_PATH = 0x45  # [draft-ietf-idr-add-paths]
     ENHANCED_ROUTE_REFRESH = 0x46
-    LLGR = 0x47   # [draft-uttaro-idr-bgp-persistence]
+    LLGR = 0x47  # [draft-uttaro-idr-bgp-persistence]
     # 70-127    Unassigned
     CISCO_ROUTE_REFRESH = 0x80  # I Can only find reference to this in the router logs
     # 128-255   Reserved for Private Use [RFC5492]
@@ -417,6 +424,22 @@ class Capability(object):
             add_path = struct.pack(
                 '!BBBBHBB', 2, 6, self.ADD_PATH, self.capa_length, afi_safi[0], afi_safi[1], value)
             return add_path
+
+        # (10) Extended Next Hop Encoding Capability
+        elif self.capa_code == self.EXTENDED_NEXT_HOP:
+            ext_nexthop_value = b''
+            # 1. Value
+            for each_ext_nexthop in my_capability['ext_nexthop']:
+                afi, safi = each_ext_nexthop['afi_safi']
+                nhafi = each_ext_nexthop['nexthop_afi']
+                ext_nexthop_value += struct.pack('!HHH', afi, safi, nhafi)
+
+            # 2. Header
+            ext_nexthop_value_length = len(ext_nexthop_value)
+            capability_and_ext_nexthtop_header = struct.pack('!BBBB', 2, ext_nexthop_value_length + 1 + 1,
+                                                             self.EXTENDED_NEXT_HOP, ext_nexthop_value_length)
+            ext_nexthop = capability_and_ext_nexthtop_header + ext_nexthop_value
+            return ext_nexthop
 
         elif self.capa_code == self.ENHANCED_ROUTE_REFRESH:
             return struct.pack('!BBBB', 2, 2, self.ENHANCED_ROUTE_REFRESH, 0)

@@ -20,8 +20,10 @@ import sys
 
 from oslo_config import cfg
 
-CONF = cfg.CONF
+from yabgp.common.constants import AFI_SAFI_STR_DICT
+from yabgp.common.constants import AFI_STR_DICT
 
+CONF = cfg.CONF
 
 BGP_CONFIG_OPTS = [
     cfg.IntOpt('peer_start_interval',
@@ -50,7 +52,10 @@ BGP_CONFIG_OPTS = [
                 help='if support cisco multi session'),
     cfg.DictOpt('running_config',
                 default={},
-                help='The running configuration for BGP')
+                help='The running configuration for BGP'),
+    cfg.ListOpt('ext_nexthop',
+                default=[['ipv4', 'ipv6'], ['ipv4_mcast', 'ipv6'], ['vpnv4', 'ipv6']],
+                help='The ext_nexthop for BGP')
 ]
 
 CONF.register_opts(BGP_CONFIG_OPTS, group='bgp')
@@ -129,10 +134,21 @@ def get_bgp_config():
                     'enhanced_route_refresh': CONF.bgp.enhanced_route_refresh,
                     'graceful_restart': CONF.bgp.graceful_restart,
                     'cisco_multi_session': CONF.bgp.cisco_multi_session,
-                    'add_path': CONF.bgp.add_path},
+                    'add_path': CONF.bgp.add_path
+                },
                 'remote': {}
             }
         }
+        if ('vpnv4' in CONF.bgp.afi_safi) or ('vpnv6' in CONF.bgp.afi_safi):
+            ext_nexthop_from_cli = CONF.bgp.ext_nexthop
+            ext_nexthop = []
+            for each in ext_nexthop_from_cli:
+                afi_safi, nexthop_afi = each
+                ext_nexthop.append({
+                    'afi_safi': AFI_SAFI_STR_DICT[afi_safi],
+                    'nexthop_afi': AFI_STR_DICT[nexthop_afi]
+                })
+            CONF.bgp.running_config['capability']['local']['ext_nexthop'] = ext_nexthop
     else:
         LOG.error('Please provide enough parameters!')
         sys.exit()
