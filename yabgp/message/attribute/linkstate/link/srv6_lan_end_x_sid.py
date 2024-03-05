@@ -25,7 +25,7 @@ from ..linkstate import LinkState
 
 @LinkState.register(_type=1107)  # IS-IS
 @LinkState.register(_type=1108)  # OSPFv3
-class SRv6LANEndXSid(TLV):
+class SRv6LANEndXSID(TLV):
     """
     SRv6 LAN End.X SID
 

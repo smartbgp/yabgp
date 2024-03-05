@@ -17,10 +17,10 @@
 
 import unittest
 
-from yabgp.message.attribute.linkstate.link.srv6_end_x_sid import SRv6EndXSid
+from yabgp.message.attribute.linkstate.link.srv6_end_x_sid import SRv6EndXSID
 
 
-class TestSRv6EndXSid(unittest.TestCase):
+class TestSRv6EndXSID(unittest.TestCase):
 
     def test_unpack(self):
         data_bin = b'\x04\x52' \
@@ -63,4 +63,4 @@ class TestSRv6EndXSid(unittest.TestCase):
         # The total of the locator block, locator node, function, and argument lengths MUST be less than or equal to 128
 
         # Note: data_bin[4:] means does not contain "type_code" & "length"
-        self.assertEqual(data_dict, SRv6EndXSid.unpack(data_bin[4:]).dict())
+        self.assertEqual(data_dict, SRv6EndXSID.unpack(data_bin[4:]).dict())
