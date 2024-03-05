@@ -37,6 +37,7 @@ from yabgp.message.attribute.originatorid import OriginatorID
 from yabgp.message.attribute.clusterlist import ClusterList
 from yabgp.message.attribute.mpreachnlri import MpReachNLRI
 from yabgp.message.attribute.mpunreachnlri import MpUnReachNLRI
+from yabgp.message.attribute.sr.bgpprefixsid import BGPPrefixSID
 from yabgp.message.attribute.tunnelencaps import TunnelEncaps
 from yabgp.message.attribute.extcommunity import ExtCommunity
 from yabgp.message.attribute.pmsitunnel import PMSITunnel
@@ -377,20 +378,28 @@ class Update(object):
 
             elif type_code == bgp_cons.BGPTYPE_EXTENDED_COMMUNITY:
                 decode_value = ExtCommunity.parse(value=attr_value)
+
             elif type_code == bgp_cons.BGPTYPE_PMSI_TUNNEL:
                 decode_value = PMSITunnel.parse(value=attr_value)
                 pmsi_hex = attr_value
+
             elif type_code == bgp_cons.BGPTYPE_LINK_STATE:
                 if bgpls_pro_id:
                     attributes.update(LinkState.unpack(bgpls_pro_id=bgpls_pro_id, data=attr_value).dict())
                 else:
                     bgpls_attr = attr_value
                 continue
+
+            elif type_code == bgp_cons.BGPTYPE_BGP_PREFIX_SID:
+                decode_value = BGPPrefixSID.unpack(data=attr_value).dict()
+
             else:
                 decode_value = binascii.b2a_hex(attr_value).decode('utf-8')
             attributes[type_code] = decode_value
+
         if bgpls_attr:
             attributes.update(LinkState.unpack(bgpls_pro_id=bgpls_pro_id, data=bgpls_attr).dict())
+
         evpn_overlay = EVPN.signal_evpn_overlay(attributes)
         if evpn_overlay['evpn'] and evpn_overlay['encap_ec']:
             if bgp_cons.BGPTYPE_PMSI_TUNNEL in attributes:
