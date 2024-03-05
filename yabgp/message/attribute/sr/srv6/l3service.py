@@ -83,7 +83,7 @@ class SRv6L3Service(TLV):
             value = data[3: 3 + srv6_service_sub_tlv_length]
 
             if srv6_service_sub_tlv_type_code in cls.registered_tlvs:
-                tlvs.append(cls.registered_tlvs[srv6_service_sub_tlv_type_code].unpack(value).dict())
+                tlvs.append(cls.registered_tlvs[srv6_service_sub_tlv_type_code].unpack(value))
             else:
                 tlvs.append({
                     'type': srv6_service_sub_tlv_type_code,
@@ -93,4 +93,4 @@ class SRv6L3Service(TLV):
         value = {
             'srv6_service_sub_tlvs': tlvs
         }
-        return cls(value=value)
+        return {cls.TYPE_STR: value}

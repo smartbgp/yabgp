@@ -59,13 +59,6 @@ class BGPPrefixSID(Attribute):
 
         return decorator
 
-    def dict(self):
-        """
-
-        :return:
-        """
-        return {self.ID: self.value}
-
     @classmethod
     def unpack(cls, data):
         """
@@ -80,11 +73,11 @@ class BGPPrefixSID(Attribute):
             value = data[3: 3 + length]
 
             if type_code in cls.registered_tlvs:
-                tlvs.append(cls.registered_tlvs[type_code].unpack(value).dict())
+                tlvs.append(cls.registered_tlvs[type_code].unpack(value))
             else:
                 tlvs.append({
                     'type': type_code,
                     'value': str(binascii.b2a_hex(value))
                 })
             data = data[3 + length:]
-        return cls(value=tlvs)
+        return tlvs

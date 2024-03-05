@@ -391,7 +391,7 @@ class Update(object):
                 continue
 
             elif type_code == bgp_cons.BGPTYPE_BGP_PREFIX_SID:
-                decode_value = BGPPrefixSID.unpack(data=attr_value).dict()
+                decode_value = BGPPrefixSID.unpack(data=attr_value)
 
             else:
                 decode_value = binascii.b2a_hex(attr_value).decode('utf-8')

@@ -51,12 +51,12 @@ class SRv6SIDStructure(TLV):
         :param data:
         :return:
         """
-        locator_block_length = ord(data[0])
-        locator_node_length = ord(data[1])
-        function_length = ord(data[2])
-        argument_length = ord(data[3])
-        transposition_length = ord(data[4])
-        transposition_offset = ord(data[5])
+        locator_block_length = data[0]
+        locator_node_length = data[1]
+        function_length = data[2]
+        argument_length = data[3]
+        transposition_length = data[4]
+        transposition_offset = data[5]
         value = {
             'locator_block_length': locator_block_length,
             'locator_node_length': locator_node_length,
@@ -65,4 +65,4 @@ class SRv6SIDStructure(TLV):
             'transposition_length': transposition_length,
             'transposition_offset': transposition_offset
         }
-        return cls(value=value)
+        return {cls.TYPE_STR: value}
