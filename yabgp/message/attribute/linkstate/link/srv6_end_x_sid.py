@@ -23,7 +23,7 @@ from ..linkstate import LinkState
 
 
 @LinkState.register()
-class SRv6EndXSid(TLV):
+class SRv6EndXSID(TLV):
     """
     SRv6 End.X SID
     """

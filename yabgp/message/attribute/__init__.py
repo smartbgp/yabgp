@@ -46,6 +46,7 @@ class AttributeFlag(int):
     PARTIAL = 0x20  # 32  RFC 4271
     TRANSITIVE = 0x40  # 64  RFC 4271
     OPTIONAL = 0x80  # 128 RFC 4271
+
     # OPTIONAL_TRANSITIVE = 0xc0  # 192 RFC 4271
 
     def __str_(self):
@@ -110,6 +111,7 @@ class AttributeID(int):
     Traffic_Engineering = 0x18  # 24  [RFC5543]
     IPv6_Address_Specific_Extended_Community = 0x19  # 25  [RFC5701]
     LARGE_COMMUNITY = 0x20  # 32  [8092]
+    BGP_PREFIX_SID = 0x28  # 40 [RFC8669 & RFC9252]
     LINKSTATE = 0x1d
     ATTR_SET = 0x80  # 128 [RFC6368]
 
