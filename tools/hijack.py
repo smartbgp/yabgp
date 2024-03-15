@@ -77,7 +77,7 @@ bgp_config_ops = [
     cfg.BoolOpt('hijack',
                 default=True,
                 help='hijack'),
-    cfg.IntOpt('num',default=10,
+    cfg.IntOpt('num', default=10,
                help='new next hop address'),
 ]
 
@@ -167,7 +167,7 @@ def send_update():
                 message_count -= 1
                 continue
 
-            if message_count>= start_number and message_count < start_number+ 100:
+            if message_count >= start_number and message_count < start_number + CONF.attribute.num:
 
                 message = message_json['msg']
 
