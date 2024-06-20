@@ -97,16 +97,30 @@ class DefaultHandler(BaseHandler):
         file_list.sort()
         msg_file_name = file_list[-1]
         try:
-            with open(msg_path + msg_file_name, 'r') as fh:
-                line = None
-                for line in fh:
-                    pass
-                last = line
-                if line:
-                    if last.startswith('['):
-                        last_seq = eval(last)[1]
-                    elif last.startswith('{'):
-                        last_seq = json.loads(last)['seq']
+            with open(msg_path + msg_file_name, 'rb') as fh:
+                offset = -500
+                break_flag = False
+                while True:
+                    fh.seek(offset, 2)
+                    lines = fh.readlines()
+                    if len(lines) >= 5:
+                        for i in range(len(lines)-1, 0, -1):
+                            last = lines[i]
+                            try:
+                                if last.startswith('['):
+                                    last_seq = eval(last)[1]
+                                    break_flag = True
+                                    break
+                                elif last.startswith('{'):
+                                    last_seq = json.loads(last)['seq']
+                                    break_flag = True
+                                    break
+                            except Exception as e:
+                                LOG.error(e)
+                                LOG.error(last)
+                    if break_flag:
+                        break
+                    offset *= 2
         except OSError:
             LOG.error('Error when reading bgp message files')
         except Exception as e:
