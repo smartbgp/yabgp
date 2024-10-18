@@ -395,7 +395,8 @@ class Update(object):
             evpn_overlay = EVPN.signal_evpn_overlay(attributes)
             if evpn_overlay['evpn'] and evpn_overlay['encap_ec']:
                 if bgp_cons.BGPTYPE_PMSI_TUNNEL in attributes:
-                    attributes[bgp_cons.BGPTYPE_PMSI_TUNNEL] = PMSITunnel.parse(value=pmsi_hex, evpn_overlay=evpn_overlay)
+                    attributes[bgp_cons.BGPTYPE_PMSI_TUNNEL] = PMSITunnel.parse(value=pmsi_hex,
+                                                                                evpn_overlay=evpn_overlay)
         except excep.UpdateMessageError as e:
             raise excep.UpdateMessageError(
                 sub_error=e.sub_error,
