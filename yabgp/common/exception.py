@@ -47,10 +47,10 @@ class NotificationSent(Exception):
 
     def __init__(self, sub_error, data=''):
         try:
-            super(NotificationSent, self).__init__()
             self.msg = self.message % {'sub_error': sub_error, 'data': data}
             self.sub_error = sub_error
             self.data = data
+            super(NotificationSent, self).__init__(self.msg)
         except Exception:
             if _FATAL_EXCEPTION_FORMAT_ERRORS:
                 raise
@@ -76,6 +76,10 @@ class OpenMessageError(NotificationSent):
 class UpdateMessageError(NotificationSent):
     error = 3
     message = "BGP Update Message Error, sub error:%(sub_error)s, data:%(data)s"
+
+    def __init__(self, sub_error, data='', sub_results=None):
+        super(UpdateMessageError, self).__init__(sub_error, data)
+        self.sub_results = sub_results
 
 
 class HoldTimerExpiredError(NotificationSent):

@@ -15,13 +15,11 @@
 
 """BGP Update Message"""
 
+import binascii
+import logging
+import netaddr
 import struct
 import traceback
-import logging
-import binascii
-
-import netaddr
-
 from yabgp.common import exception as excep
 from yabgp.common import constants as bgp_cons
 from yabgp.message.attribute import AttributeFlag
@@ -191,6 +189,7 @@ class Update(object):
             LOG.error(e)
             results['sub_error'] = e.sub_error
             results['err_data'] = e.data
+            results['attr'] = e.sub_results
         except Exception as e:
             LOG.error(e)
             error_str = traceback.format_exc()
@@ -291,9 +290,9 @@ class Update(object):
         postfix = data
         bgpls_pro_id = None
         bgpls_attr = None
-        while len(postfix) > 0:
 
-            try:
+        try:
+            while len(postfix) > 0:
                 flags, type_code = struct.unpack('!BB', postfix[:2])
 
                 if flags & AttributeFlag.EXTENDED_LENGTH:
@@ -307,103 +306,109 @@ class Update(object):
                         attr_len = ord(postfix[2])
                     attr_value = postfix[3:3 + attr_len]
                     postfix = postfix[3 + attr_len:]  # Next attribute
-            except Exception as e:
-                LOG.error(e)
-                error_str = traceback.format_exc()
-                LOG.debug(error_str)
-                raise excep.UpdateMessageError(
-                    sub_error=bgp_cons.ERR_MSG_UPDATE_MALFORMED_ATTR_LIST,
-                    data='')
 
-            if type_code == bgp_cons.BGPTYPE_ORIGIN:
+                if type_code == bgp_cons.BGPTYPE_ORIGIN:
 
-                decode_value = Origin.parse(value=attr_value)
+                    decode_value = Origin.parse(value=attr_value)
 
-            elif type_code == bgp_cons.BGPTYPE_AS_PATH:
+                elif type_code == bgp_cons.BGPTYPE_AS_PATH:
 
-                decode_value = ASPath.parse(value=attr_value, asn4=asn4)
+                    decode_value = ASPath.parse(value=attr_value, asn4=asn4)
 
-            elif type_code == bgp_cons.BGPTYPE_NEXT_HOP:
+                elif type_code == bgp_cons.BGPTYPE_NEXT_HOP:
 
-                decode_value = NextHop.parse(value=attr_value)
+                    decode_value = NextHop.parse(value=attr_value)
 
-            elif type_code == bgp_cons.BGPTYPE_MULTI_EXIT_DISC:
+                elif type_code == bgp_cons.BGPTYPE_MULTI_EXIT_DISC:
 
-                decode_value = MED.parse(value=attr_value)
+                    decode_value = MED.parse(value=attr_value)
 
-            elif type_code == bgp_cons.BGPTYPE_LOCAL_PREF:
+                elif type_code == bgp_cons.BGPTYPE_LOCAL_PREF:
 
-                decode_value = LocalPreference.parse(value=attr_value)
+                    decode_value = LocalPreference.parse(value=attr_value)
 
-            elif type_code == bgp_cons.BGPTYPE_ATOMIC_AGGREGATE:
+                elif type_code == bgp_cons.BGPTYPE_ATOMIC_AGGREGATE:
 
-                decode_value = AtomicAggregate.parse(value=attr_value)
+                    decode_value = AtomicAggregate.parse(value=attr_value)
 
-            elif type_code == bgp_cons.BGPTYPE_AGGREGATOR:
+                elif type_code == bgp_cons.BGPTYPE_AGGREGATOR:
 
-                decode_value = Aggregator.parse(value=attr_value, asn4=asn4)
+                    decode_value = Aggregator.parse(value=attr_value, asn4=asn4)
 
-            elif type_code == bgp_cons.BGPTYPE_COMMUNITIES:
+                elif type_code == bgp_cons.BGPTYPE_COMMUNITIES:
 
-                decode_value = Community.parse(value=attr_value)
+                    decode_value = Community.parse(value=attr_value)
 
-            elif type_code == bgp_cons.BGPTYPE_ORIGINATOR_ID:
+                elif type_code == bgp_cons.BGPTYPE_ORIGINATOR_ID:
 
-                decode_value = OriginatorID.parse(value=attr_value)
+                    decode_value = OriginatorID.parse(value=attr_value)
 
-            elif type_code == bgp_cons.BGPTYPE_CLUSTER_LIST:
+                elif type_code == bgp_cons.BGPTYPE_CLUSTER_LIST:
 
-                decode_value = ClusterList.parse(value=attr_value)
+                    decode_value = ClusterList.parse(value=attr_value)
 
-            elif type_code == bgp_cons.BGPTYPE_NEW_AS_PATH:
+                elif type_code == bgp_cons.BGPTYPE_NEW_AS_PATH:
 
-                decode_value = ASPath.parse(value=attr_value, asn4=True)
+                    decode_value = ASPath.parse(value=attr_value, asn4=True)
 
-            elif type_code == bgp_cons.BGPTYPE_NEW_AGGREGATOR:
+                elif type_code == bgp_cons.BGPTYPE_NEW_AGGREGATOR:
 
-                decode_value = Aggregator.parse(value=attr_value, asn4=True)
+                    decode_value = Aggregator.parse(value=attr_value, asn4=True)
 
-            elif type_code == bgp_cons.BGPTYPE_LARGE_COMMUNITY:
+                elif type_code == bgp_cons.BGPTYPE_LARGE_COMMUNITY:
 
-                decode_value = LargeCommunity.parse(value=attr_value)
+                    decode_value = LargeCommunity.parse(value=attr_value)
 
-            elif type_code == bgp_cons.BGPTYPE_MP_REACH_NLRI:
-                decode_value = MpReachNLRI.parse(value=attr_value)
-                if decode_value['nlri'][0] and type(decode_value['nlri'][0]) is dict:
-                    if decode_value['nlri'][0].get("protocol_id"):
-                        bgpls_pro_id = decode_value['nlri'][0]["protocol_id"]
+                elif type_code == bgp_cons.BGPTYPE_MP_REACH_NLRI:
+                    decode_value = MpReachNLRI.parse(value=attr_value)
+                    if decode_value['nlri'][0] and type(decode_value['nlri'][0]) is dict:
+                        if decode_value['nlri'][0].get("protocol_id"):
+                            bgpls_pro_id = decode_value['nlri'][0]["protocol_id"]
 
-            elif type_code == bgp_cons.BGPTYPE_MP_UNREACH_NLRI:
-                decode_value = MpUnReachNLRI.parse(value=attr_value)
+                elif type_code == bgp_cons.BGPTYPE_MP_UNREACH_NLRI:
+                    decode_value = MpUnReachNLRI.parse(value=attr_value)
 
-            elif type_code == bgp_cons.BGPTYPE_EXTENDED_COMMUNITY:
-                decode_value = ExtCommunity.parse(value=attr_value)
+                elif type_code == bgp_cons.BGPTYPE_EXTENDED_COMMUNITY:
+                    decode_value = ExtCommunity.parse(value=attr_value)
 
-            elif type_code == bgp_cons.BGPTYPE_PMSI_TUNNEL:
-                decode_value = PMSITunnel.parse(value=attr_value)
-                pmsi_hex = attr_value
+                elif type_code == bgp_cons.BGPTYPE_PMSI_TUNNEL:
+                    decode_value = PMSITunnel.parse(value=attr_value)
+                    pmsi_hex = attr_value
 
-            elif type_code == bgp_cons.BGPTYPE_LINK_STATE:
-                if bgpls_pro_id:
-                    attributes.update(LinkState.unpack(bgpls_pro_id=bgpls_pro_id, data=attr_value).dict())
+                elif type_code == bgp_cons.BGPTYPE_LINK_STATE:
+                    if bgpls_pro_id:
+                        attributes.update(LinkState.unpack(bgpls_pro_id=bgpls_pro_id, data=attr_value).dict())
+                    else:
+                        bgpls_attr = attr_value
+                    continue
+
+                elif type_code == bgp_cons.BGPTYPE_BGP_PREFIX_SID:
+                    decode_value = BGPPrefixSID.unpack(data=attr_value)
+
                 else:
-                    bgpls_attr = attr_value
-                continue
+                    decode_value = binascii.b2a_hex(attr_value).decode('utf-8')
+                attributes[type_code] = decode_value
 
-            elif type_code == bgp_cons.BGPTYPE_BGP_PREFIX_SID:
-                decode_value = BGPPrefixSID.unpack(data=attr_value)
+            if bgpls_attr:
+                attributes.update(LinkState.unpack(bgpls_pro_id=bgpls_pro_id, data=bgpls_attr).dict())
 
-            else:
-                decode_value = binascii.b2a_hex(attr_value).decode('utf-8')
-            attributes[type_code] = decode_value
-
-        if bgpls_attr:
-            attributes.update(LinkState.unpack(bgpls_pro_id=bgpls_pro_id, data=bgpls_attr).dict())
-
-        evpn_overlay = EVPN.signal_evpn_overlay(attributes)
-        if evpn_overlay['evpn'] and evpn_overlay['encap_ec']:
-            if bgp_cons.BGPTYPE_PMSI_TUNNEL in attributes:
-                attributes[bgp_cons.BGPTYPE_PMSI_TUNNEL] = PMSITunnel.parse(value=pmsi_hex, evpn_overlay=evpn_overlay)
+            evpn_overlay = EVPN.signal_evpn_overlay(attributes)
+            if evpn_overlay['evpn'] and evpn_overlay['encap_ec']:
+                if bgp_cons.BGPTYPE_PMSI_TUNNEL in attributes:
+                    attributes[bgp_cons.BGPTYPE_PMSI_TUNNEL] = PMSITunnel.parse(value=pmsi_hex, evpn_overlay=evpn_overlay)
+        except excep.UpdateMessageError as e:
+            raise excep.UpdateMessageError(
+                sub_error=e.sub_error,
+                data=e.data,
+                sub_results=attributes)
+        except Exception as e:
+            LOG.error(e)
+            error_str = traceback.format_exc()
+            LOG.debug(error_str)
+            raise excep.UpdateMessageError(
+                sub_error=bgp_cons.ERR_MSG_UPDATE_MALFORMED_ATTR_LIST,
+                data='',
+                sub_results=attributes)
         return attributes
 
     @staticmethod
