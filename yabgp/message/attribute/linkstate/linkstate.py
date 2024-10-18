@@ -12,12 +12,16 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
+import logging
 import struct
 
 import binascii
-
+import traceback
+from yabgp.common import constants as bgp_cons
+from yabgp.common import exception as excep
 from yabgp.message.attribute import Attribute, AttributeFlag, AttributeID
+
+LOG = logging.getLogger()
 
 
 class LinkState(Attribute):
@@ -61,17 +65,27 @@ class LinkState(Attribute):
         while data:
             type_code, length = struct.unpack('!HH', data[:4])
             value = data[4: 4 + length]
-            if type_code in [1099, 1100, 1158, 1162, 1038] and type_code in cls.registered_tlvs:
-                tlvs.append(cls.registered_tlvs[type_code].unpack(value, bgpls_pro_id).dict())
-            elif type_code in cls.registered_tlvs:
-                tlvs.append(cls.registered_tlvs[type_code].unpack(value).dict())
-            else:
-                tlvs.append(
-                    {
-                        'type': type_code,
-                        'value': str(binascii.b2a_hex(value))
-                    }
-                )
+            try:
+                if type_code in [1099, 1100, 1158, 1162, 1038] and type_code in cls.registered_tlvs:
+                    tlvs.append(cls.registered_tlvs[type_code].unpack(value, bgpls_pro_id).dict())
+                elif type_code in cls.registered_tlvs:
+                    tlvs.append(cls.registered_tlvs[type_code].unpack(value).dict())
+                else:
+                    tlvs.append(
+                        {
+                            'type': type_code,
+                            'value': str(binascii.b2a_hex(value))
+                        }
+                    )
+            except Exception as e:
+                LOG.error(e)
+                error_str = traceback.format_exc()
+                LOG.debug(error_str)
+                raise excep.UpdateMessageError(
+                    sub_error=bgp_cons.ERR_MSG_UPDATE_MALFORMED_ATTR_LIST,
+                    data=value,
+                    sub_results=cls(value=tlvs))
+
             data = data[4 + length:]
 
         return cls(value=tlvs)
