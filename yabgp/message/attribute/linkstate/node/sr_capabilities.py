@@ -44,11 +44,8 @@ class SRCapabilities(TLV):
         """
         """
         flags = ord(value[0:1])
-        F = flags >> 7
-        M = (flags << 1) % 256 >> 7
-        S = (flags << 2) % 256 >> 7
-        D = (flags << 3) % 256 >> 7
-        A = (flags << 4) % 256 >> 7
+        I = flags >> 7
+        V = (flags << 1) % 256 >> 7
         value = value[2:]
         results = []
         while True:
@@ -68,4 +65,4 @@ class SRCapabilities(TLV):
                     value = value[7 + length:]
                     tmp['sid'] = data
                 results.append(tmp)
-        return cls(value={"flag": {"F": F, "M": M, "S": S, "D": D, "A": A}, "value": results})
+        return cls(value={"flag": {"I": I, "V": V}, "value": results})
