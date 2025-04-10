@@ -52,6 +52,5 @@ class TestIPv6LabeledUnicast(unittest.TestCase):
         self.assertEqual(nlri_list, IPv6LabeledUnicast.parse(nlri_hex, addpath=True))
 
 
-
 if __name__ == '__main__':
     unittest.main()

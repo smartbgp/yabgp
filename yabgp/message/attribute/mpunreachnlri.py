@@ -102,7 +102,8 @@ class MpUnReachNLRI(Attribute):
             if safi == safn.SAFNUM_UNICAST:
                 return dict(afi_safi=(afi, safi), withdraw=IPv6Unicast.parse(nlri_data=nlri_bin, addpath=add_path))
             elif safi == safn.SAFNUM_LAB_VPNUNICAST:
-                return dict(afi_safi=(afi, safi), withdraw=IPv6MPLSVPN.parse(value=nlri_bin, iswithdraw=True, addpath=add_path))
+                return dict(afi_safi=(afi, safi), withdraw=IPv6MPLSVPN.parse(value=nlri_bin, iswithdraw=True,
+                                                                             addpath=add_path))
             else:
                 return dict(afi_safi=(afi, safi), withdraw=repr(nlri_bin))
         # for l2vpn
