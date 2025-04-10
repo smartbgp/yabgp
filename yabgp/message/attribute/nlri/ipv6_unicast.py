@@ -25,7 +25,7 @@ from yabgp.message.attribute.nlri import NLRI
 class IPv6Unicast(NLRI):
 
     @classmethod
-    def parse(cls, nlri_data):
+    def parse(cls, nlri_data, addpath=False):
         """
         decode IPv6 NLRI data
         :param nlri_data: NLRI raw hex data
@@ -37,6 +37,10 @@ class IPv6Unicast(NLRI):
                 # Note: Fix wrong decoding to ["0.0.0.0/0", "0.0.0.0/0"]
                 nlri_data = nlri_data[2:]
                 continue
+            path_id = None
+            if addpath:
+                path_id = struct.unpack("!I", nlri_data[:4])[0]
+                nlri_data = nlri_data[4:]
             if isinstance(nlri_data[0], int):
                 prefix_bit_len = int(nlri_data[0])
             else:
@@ -53,7 +57,10 @@ class IPv6Unicast(NLRI):
                 prefix_bit += b'\x00'
 
             prefix_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(prefix_bit), 16))) + '/%s' % prefix_bit_len
-            nlri_list.append(prefix_addr)
+            if addpath:
+                nlri_list.append({'prefix': prefix_addr, 'path_id': path_id})
+            else:
+                nlri_list.append(prefix_addr)
             nlri_data = nlri_data[offset:]
 
         return nlri_list

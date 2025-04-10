@@ -44,6 +44,14 @@ class TestIPv6LabeledUnicast(unittest.TestCase):
 
         self.assertEqual(nlri_list, IPv6LabeledUnicast.parse(nlri_hex))
 
+    def test_parse_enable_add_path(self):
+        nlri_list = [
+            {'path_id': 3, 'label': [2], 'prefix': '5::5/128'}
+        ]
+        nlri_hex = b'\x00\x00\x00\x03\x98\x00\x00\x21\x00\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x05'
+        self.assertEqual(nlri_list, IPv6LabeledUnicast.parse(nlri_hex, addpath=True))
+
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -34,6 +34,12 @@ class TestIPv6Unicast(unittest.TestCase):
         value_hoped = ['326c:ce92:25ea:365e:4d71:5945:2200:0/112']
         self.assertEqual(value_hoped, value_parsed)
 
+    def test_parse_3(self):
+        nlri_data = b'\x00\x00\x03\xe9\x40\x20\x01\x0d\xb8\x00\x00\x00\x00'
+        value_parsed = IPv6Unicast().parse(nlri_data, addpath=True)
+        value_hoped = [{'path_id': 1001, 'prefix': '2001:db8::/64'}]
+        self.assertEqual(value_hoped, value_parsed)
+
     def test_parse_withdraw(self):
         nlri_data = b'\x40\x20\x01\x0d\xb8\x00\x01\x00\x02\x40\x20\x01\x0d\xb8\x00\x01\x00\x01\x40\x20\x01\x0d' \
                     b'\xb8\x00\x01\x00\x00'

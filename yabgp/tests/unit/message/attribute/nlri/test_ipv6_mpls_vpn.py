@@ -31,6 +31,11 @@ class TestIPv6MPLSVPN(unittest.TestCase):
         ]
         self.assertEqual(nlri_list, IPv6MPLSVPN.parse(value=nlri_hex))
 
+    def test_update_parse_enable_add_path(self):
+        nlri_hex = b'\x00\x00\x00\x64\x98\x00\x03\x61\x00\x00\x00\x64\x00\x00\x00\x0c\x20\x10\x00\x00\x00\x12\x00\x04'
+        nlri_list = [{'path_id': 100, 'label': [54], 'rd': '100:12', 'prefix': '2010:0:12:4::/64'}]
+        self.assertEqual(nlri_list, IPv6MPLSVPN.parse(value=nlri_hex, addpath=True))
+
     def test_update_construct(self):
         nlri_hex = b'\x98\x00\x03\x61\x00\x00\x00\x64\x00\x00\x00\x0c\x20\x10\x00\x00\x00\x12\x00\x04' \
                    b'\x98\x00\x03\x71\x00\x00\x00\x64\x00\x00\x00\x0c\x20\x10\x00\x01\x00\x12\x00\x00'

@@ -67,7 +67,7 @@ class MpReachNLRI(Attribute):
     FLAG = AttributeFlag.OPTIONAL + AttributeFlag.EXTENDED_LENGTH
 
     @classmethod
-    def parse(cls, value):
+    def parse(cls, value, add_path=False):
         """parse
         """
         try:
@@ -87,30 +87,25 @@ class MpReachNLRI(Attribute):
                 # parse nexthop
                 nexthop = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin), 16)))
                 # parse nlri
-                nlri = IPv4Unicast.parse(nlri_bin)
+                nlri = IPv4Unicast.parse(nlri_bin, addpath=add_path)
                 return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
 
             if safi == safn.SAFNUM_LAB_VPNUNICAST:
                 # MPLS VPN
                 # parse nexthop
                 rd_bin = nexthop_bin[0:8]
-                rd_type = struct.unpack('!H', rd_bin[0:2])[0]
-                rd_value_bin = rd_bin[2:]
-                if rd_type == 0:
-                    asn, an = struct.unpack('!HI', rd_value_bin)
-                    ipv4 = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin[8:]), 16)))
-                    nexthop = {'rd': '%s:%s' % (asn, an), 'str': ipv4}
-                else:
-                    nexthop = binascii.b2a_hex((nexthop_bin[8:]))
+                nexthop_rd = IPv4MPLSVPN.parse_rd(rd_bin)
+                ipv4 = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin[8:]), 16)))
+                nexthop = {'rd': nexthop_rd, 'str': ipv4}
                 # parse nlri
-                nlri = IPv4MPLSVPN.parse(nlri_bin)
+                nlri = IPv4MPLSVPN.parse(nlri_bin, addpath=add_path)
                 return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
             elif safi == safn.SAFNUM_MPLS_LABEL:
                 if nexthop_bin:
                     nexthop = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin), 16)))
                 else:
                     nexthop = ''
-                nlri = IPv4LabeledUnicast.parse(nlri_bin)
+                nlri = IPv4LabeledUnicast.parse(nlri_bin, addpath=add_path)
                 return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
             elif safi == safn.SAFNUM_FSPEC_RULE:
                 # if nlri length is greater than 240 bytes, it is encoded over 2 bytes
@@ -157,7 +152,7 @@ class MpReachNLRI(Attribute):
                     # has link local address
                     has_link_local = True
                     linklocal_nexthop = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin[nexthop_addrlen:]), 16)))
-                nlri = IPv6Unicast.parse(nlri_bin)
+                nlri = IPv6Unicast.parse(nlri_bin, addpath=add_path)
                 if has_link_local:
                     return dict(afi_safi=(afi, safi), nexthop=nexthop, linklocal_nexthop=linklocal_nexthop, nlri=nlri)
                 else:
@@ -166,24 +161,18 @@ class MpReachNLRI(Attribute):
                 # IPv6 MPLS VPN
                 # parse nexthop
                 rd_bin = nexthop_bin[0:8]
-                rd_type = struct.unpack('!H', rd_bin[0:2])[0]
-                rd_value_bin = rd_bin[2:]
-                if rd_type == 0:
-                    asn, an = struct.unpack('!HI', rd_value_bin)
-                    ipv6 = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin[8:]), 16)))
-                    nexthop = {'rd': '%s:%s' % (asn, an), 'str': ipv6}
-                # TODO(xiaoquwl) for other RD type decoding
-                else:
-                    nexthop = binascii.b2a_hex(nexthop_bin[8:])
+                nexthop_rd = IPv6MPLSVPN.parse_rd(rd_bin)
+                ipv6 = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin[8:]), 16)))
+                nexthop = {'rd': nexthop_rd, 'str': ipv6}
                 # parse nlri
-                nlri = IPv6MPLSVPN.parse(nlri_bin)
+                nlri = IPv6MPLSVPN.parse(nlri_bin, addpath=add_path)
                 return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
             elif safi == safn.SAFNUM_MPLS_LABEL:
                 if nexthop_bin:
                     nexthop = str(netaddr.IPAddress(int(binascii.b2a_hex(nexthop_bin), 16)))
                 else:
                     nexthop = ''
-                nlri = IPv6LabeledUnicast.parse(nlri_bin)
+                nlri = IPv6LabeledUnicast.parse(nlri_bin, addpath=add_path)
                 return dict(afi_safi=(afi, safi), nexthop=nexthop, nlri=nlri)
             else:
                 return dict(afi_safi=(afi, safi), nexthop=nexthop_bin, nlri=nlri_bin)
