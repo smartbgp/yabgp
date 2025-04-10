@@ -52,6 +52,13 @@ class TestIPv4LabeledUnicast(unittest.TestCase):
         nlri_hex = b'\x48\x00\x14\x10\x00\x14\x21\x22\x01\x29\x48\x00\x14\x10\x00\x14\x21\x22\x01\x2a'
         self.assertEqual(nlri_list, IPv4LabeledUnicast.parse(nlri_hex))
 
+    def test_parse_enable_add_path(self):
+        nlri_list = [
+            {'path_id': 1, 'prefix': '5.5.5.5/32', 'label': [3]}
+        ]
+        nlri_hex = b'\x00\x00\x00\x01\x38\x00\x00\x31\x05\x05\x05\x05'
+        self.assertEqual(nlri_list, IPv4LabeledUnicast.parse(nlri_hex, addpath=True))
+
 
 if __name__ == '__main__':
     unittest.main()

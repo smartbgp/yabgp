@@ -22,6 +22,7 @@ from yabgp.message.attribute import Attribute
 from yabgp.message.attribute import AttributeFlag
 from yabgp.message.attribute import AttributeID
 from yabgp.message.attribute.nlri.ipv4_mpls_vpn import IPv4MPLSVPN
+from yabgp.message.attribute.nlri.ipv4_unicast import IPv4Unicast
 from yabgp.message.attribute.nlri.ipv6_mpls_vpn import IPv6MPLSVPN
 from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
 from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
@@ -57,7 +58,7 @@ class MpUnReachNLRI(Attribute):
     FLAG = AttributeFlag.OPTIONAL + AttributeFlag.EXTENDED_LENGTH
 
     @classmethod
-    def parse(cls, value):
+    def parse(cls, value, add_path=False):
         try:
             afi, safi = struct.unpack('!HB', value[0:3])
         except Exception:
@@ -68,10 +69,12 @@ class MpUnReachNLRI(Attribute):
 
         # for IPv4
         if afi == afn.AFNUM_INET:
+            if safi == safn.SAFNUM_UNICAST:
+                return dict(afi_safi=(afi, safi), withdraw=IPv4Unicast.parse(nlri_bin, addpath=add_path))
 
             # VPNv4
-            if safi == safn.SAFNUM_LAB_VPNUNICAST:
-                nlri = IPv4MPLSVPN.parse(nlri_bin, iswithdraw=True)
+            elif safi == safn.SAFNUM_LAB_VPNUNICAST:
+                nlri = IPv4MPLSVPN.parse(nlri_bin, iswithdraw=True, addpath=add_path)
                 return dict(afi_safi=(afi, safi), withdraw=nlri)
             # BGP flow spec
             elif safi == safn.SAFNUM_FSPEC_RULE:
@@ -97,9 +100,10 @@ class MpUnReachNLRI(Attribute):
         elif afi == afn.AFNUM_INET6:
             # for ipv6 unicast
             if safi == safn.SAFNUM_UNICAST:
-                return dict(afi_safi=(afi, safi), withdraw=IPv6Unicast.parse(nlri_data=nlri_bin))
+                return dict(afi_safi=(afi, safi), withdraw=IPv6Unicast.parse(nlri_data=nlri_bin, addpath=add_path))
             elif safi == safn.SAFNUM_LAB_VPNUNICAST:
-                return dict(afi_safi=(afi, safi), withdraw=IPv6MPLSVPN.parse(value=nlri_bin, iswithdraw=True))
+                return dict(afi_safi=(afi, safi), withdraw=IPv6MPLSVPN.parse(value=nlri_bin, iswithdraw=True,
+                                                                             addpath=add_path))
             else:
                 return dict(afi_safi=(afi, safi), withdraw=repr(nlri_bin))
         # for l2vpn

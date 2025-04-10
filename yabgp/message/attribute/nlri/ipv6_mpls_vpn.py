@@ -26,8 +26,8 @@ class IPv6MPLSVPN(MPLSVPN):
     SAFI = SAFNUM_LAB_VPNUNICAST
 
     @classmethod
-    def parse(cls, value, iswithdraw=False):
-        return super(IPv6MPLSVPN, cls).parse(value, iswithdraw=iswithdraw)
+    def parse(cls, value, iswithdraw=False, addpath=False):
+        return super(IPv6MPLSVPN, cls).parse(value, iswithdraw=iswithdraw, addpath=addpath)
 
     @classmethod
     def construct(cls, value, iswithdraw=False):

@@ -27,6 +27,12 @@ class TestIPv4MPLSVPN(unittest.TestCase):
         self.assertEqual(
             [{'label': [25], 'rd': '100:100', 'prefix': '170.0.0.0/32'}], IPv4MPLSVPN.parse(nlri_hex))
 
+    def test_parse_1(self):
+        nlri_hex = b'\x00\x00\x00\x64\x78\x00\x01\x91\x00\x00\x00\x64\x00\x00\x00\x64\xaa\x00\x00\x00'
+        self.assertEqual(
+            [{'path_id': 100, 'label': [25], 'rd': '100:100', 'prefix': '170.0.0.0/32'}],
+            IPv4MPLSVPN.parse(nlri_hex, addpath=True))
+
     def test_construct_1(self):
         nlri_hex = b'\x76\x00\x01\x41\x00\x00\xfd\xea\x00\x00\x00\x01\x17\x00\x00\x00'
         nlri_list = [{'label': [20], 'rd': '65002:1', 'prefix': '23.0.0.0/30'}]

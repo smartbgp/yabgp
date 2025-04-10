@@ -53,7 +53,7 @@ class MPLSVPN(NLRI):
     SAFI = None
 
     @classmethod
-    def parse(cls, value, iswithdraw=False):
+    def parse(cls, value, iswithdraw=False, addpath=False):
         """
         parse nlri
         :param value: the raw hex nlri value
@@ -63,6 +63,12 @@ class MPLSVPN(NLRI):
         nlri_list = []
         while value:
             nlri_dict = {}
+            path_id = None
+            if addpath:
+                path_id = struct.unpack('!I', value[:4])[0]
+                value = value[4:]
+                nlri_dict['path_id'] = path_id
+
             # for python2 and python3
             if isinstance(value[0], int):
                 prefix_bit_len = value[0]

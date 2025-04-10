@@ -42,9 +42,14 @@ class LabeledUnicast(NLRI):
     SAFI = SAFNUM_MPLS_LABEL
 
     @classmethod
-    def parse(cls, nlri_data):
+    def parse(cls, nlri_data, addpath=False):
         nlri_list = []
         while nlri_data:
+            path_id = None
+            if addpath:
+                path_id = struct.unpack("!I", nlri_data[0:4])[0]
+                nlri_data = nlri_data[4:]
+
             nlri_bit_len = ord(nlri_data[0:1])
             # get the byte lenght of label stack + prefix
             if nlri_bit_len % 8 == 0:
@@ -66,7 +71,10 @@ class LabeledUnicast(NLRI):
                     prefix_hex += b'\x00'
                 prefix = str(netaddr.IPAddress(int(binascii.b2a_hex(prefix_hex), 16))) + '/' + str(prefix_mask)
             nlri_data = nlri_data[offset:]
-            nlri_list.append({'prefix': prefix, 'label': label})
+            if addpath:
+                nlri_list.append({'path_id': path_id, 'prefix': prefix, 'label': label})
+            else:
+                nlri_list.append({'prefix': prefix, 'label': label})
         return nlri_list
 
     @classmethod
