@@ -144,15 +144,14 @@ class Update(object):
         """
 
     @classmethod
-    def parse(cls, t, msg_hex, asn4=False, add_path_remote=False, add_path_local=False):
+    def parse(cls, t, msg_hex, asn4=False, afi_add_path=None):
 
         """
         Parse BGP Update message
         :param t: timestamp
         :param msg_hex: raw message
         :param asn4: support 4 bytes AS or not
-        :param add_path_remote: if the remote peer can send add path NLRI
-        :param add_path_local: if the local can send add path NLRI
+        :param afi_add_path: support add-path or not in each afi/safi
         :return: message after parsing.
         """
         results = {
@@ -171,11 +170,13 @@ class Update(object):
         attribute_data = msg_hex[withdraw_len + 4:withdraw_len + 4 + attr_len]
         nlri_data = msg_hex[withdraw_len + 4 + attr_len:]
         try:
+            add_path = afi_add_path.get('ipv4', False) if afi_add_path else False
+
             # parse withdraw prefixes
-            results['withdraw'] = cls.parse_prefix_list(withdraw_prefix_data, add_path_remote)
+            results['withdraw'] = cls.parse_prefix_list(withdraw_prefix_data, add_path)
 
             # parse nlri
-            results['nlri'] = cls.parse_prefix_list(nlri_data, add_path_remote)
+            results['nlri'] = cls.parse_prefix_list(nlri_data, add_path)
         except Exception as e:
             LOG.error(e)
             error_str = traceback.format_exc()
@@ -184,7 +185,7 @@ class Update(object):
             results['err_data'] = ''
         try:
             # parse attributes
-            results['attr'] = cls.parse_attributes(attribute_data, asn4, add_path_remote)
+            results['attr'] = cls.parse_attributes(attribute_data, asn4, afi_add_path)
         except excep.UpdateMessageError as e:
             LOG.error(e)
             results['sub_error'] = e.sub_error
@@ -278,13 +279,13 @@ class Update(object):
         return prefixes
 
     @staticmethod
-    def parse_attributes(data, asn4=False, add_path=False):
+    def parse_attributes(data, asn4=False, afi_add_path=None):
         """
         Parses an RFC4271 encoded blob of BGP attributes into a list
 
         :param data:
         :param asn4: support 4 bytes asn or not
-        :param add_path: support add_path or not
+        :param afi_add_path: support add path or not in afi/safi
         :return:
         """
         attributes = {}
@@ -361,13 +362,13 @@ class Update(object):
                     decode_value = LargeCommunity.parse(value=attr_value)
 
                 elif type_code == bgp_cons.BGPTYPE_MP_REACH_NLRI:
-                    decode_value = MpReachNLRI.parse(value=attr_value, add_path=add_path)
+                    decode_value = MpReachNLRI.parse(value=attr_value, afi_add_path=afi_add_path)
                     if decode_value['nlri'][0] and type(decode_value['nlri'][0]) is dict:
                         if decode_value['nlri'][0].get("protocol_id"):
                             bgpls_pro_id = decode_value['nlri'][0]["protocol_id"]
 
                 elif type_code == bgp_cons.BGPTYPE_MP_UNREACH_NLRI:
-                    decode_value = MpUnReachNLRI.parse(value=attr_value, add_path=add_path)
+                    decode_value = MpUnReachNLRI.parse(value=attr_value, afi_add_path=afi_add_path)
 
                 elif type_code == bgp_cons.BGPTYPE_EXTENDED_COMMUNITY:
                     decode_value = ExtCommunity.parse(value=attr_value)

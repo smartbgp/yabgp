@@ -58,9 +58,13 @@ class MpUnReachNLRI(Attribute):
     FLAG = AttributeFlag.OPTIONAL + AttributeFlag.EXTENDED_LENGTH
 
     @classmethod
-    def parse(cls, value, add_path=False):
+    def parse(cls, value, afi_add_path=None):
         try:
             afi, safi = struct.unpack('!HB', value[0:3])
+            if afi_add_path:
+                add_path = afi_add_path.get(bgp_cons.AFI_SAFI_DICT.get((afi, safi)), False)
+            else:
+                add_path = False
         except Exception:
             raise excep.UpdateMessageError(sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                                            data='')

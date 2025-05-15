@@ -107,7 +107,7 @@ class TestUpdate(unittest.TestCase):
                   b'\x01\x80\x04\x04\x00\x00\x00\x00\x40\x05\x04\x00\x00\x00\x64\x80\x0a\x04\x0a\x00\x22' \
                   b'\x04\x80\x09\x04\x0a\x00\x0f\x01\x00\x00\x00\x01\x20\x05\x05\x05\x05\x00\x00\x00\x01' \
                   b'\x20\xc0\xa8\x01\x05'
-        update = Update.parse(None, msg_hex, True, True)
+        update = Update.parse(None, msg_hex, True, {'ipv4': True})
         attributes = {1: 0, 2: [(2, [64511])], 3: '10.0.14.1', 4: 0, 5: 100, 9: '10.0.15.1', 10: ['10.0.34.4']}
         self.assertEqual(attributes, update['attr'])
         self.assertEqual([], update['withdraw'])
@@ -117,7 +117,7 @@ class TestUpdate(unittest.TestCase):
 
     def test_parse_ipv4_addpath_withdraw(self):
         msg_hex = b'\x00\x09\x00\x00\x00\x01\x20\x63\x63\x63\x63\x00\x00'
-        update = Update.parse(None, msg_hex, True, True)
+        update = Update.parse(None, msg_hex, True, {'ipv4': True})
         self.assertEqual([{'path_id': 1, 'prefix': '99.99.99.99/32'}], update['withdraw'])
 
     def test_parse_and_construct_ipv6_unicast_update(self):
