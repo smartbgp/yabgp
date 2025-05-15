@@ -67,11 +67,15 @@ class MpReachNLRI(Attribute):
     FLAG = AttributeFlag.OPTIONAL + AttributeFlag.EXTENDED_LENGTH
 
     @classmethod
-    def parse(cls, value, add_path=False):
+    def parse(cls, value, afi_add_path=None):
         """parse
         """
         try:
             afi, safi, nexthop_length = struct.unpack('!HBB', value[0:4])
+            if afi_add_path:
+                add_path = afi_add_path.get(bgp_cons.AFI_SAFI_DICT.get((afi, safi)), False)
+            else:
+                add_path = False
             nexthop_bin = value[4:4 + nexthop_length]
             nlri_bin = value[5 + nexthop_length:]
         except Exception:

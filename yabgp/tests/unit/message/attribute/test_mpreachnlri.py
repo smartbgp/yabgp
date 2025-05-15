@@ -23,6 +23,11 @@ class TestMpReachNLRI(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
 
+    def test_ipv4_unicast_path_id_parse(self):
+        data_bin = b'\x00\x01\x01\x04\n\x18%7\x00\x00\x00\x00\x02 \x05\x05\x05\x05'
+        data_hoped = {'afi_safi': (1, 1), 'nexthop': '10.24.37.55', 'nlri': [{'prefix': '5.5.5.5/32', 'path_id': 2}]}
+        self.assertEqual(data_hoped, MpReachNLRI.parse(data_bin, {'ipv4': True}))
+
     def test_ipv4_mpls_vpn_parse(self):
         data_bin = b'\x80\x0e\x21\x00\x01\x80\x0c\x00\x00\x00\x00\x00\x00\x00\x00\x02\x02\x02\x02' \
                    b'\x00\x78\x00\x01\x91\x00\x00\x00\x64\x00\x00\x00\x64\xaa\x00\x00\x00'

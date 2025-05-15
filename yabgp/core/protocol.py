@@ -261,8 +261,9 @@ class BGP(protocol.Protocol):
         #     LOG.info(time.time())
 
         """Called when a BGP Update message was received."""
-        result = Update().parse(
-            timestamp, msg, self.fourbytesas, self.add_path_ipv4_receive, self.add_path_ipv4_send)
+        # TODO: Need to convert `self.add_path_ipv4_receive` and `self.add_path_ipv4_send` into a unified
+        #  `afi_add_path` format.
+        result = Update().parse(timestamp, msg, self.fourbytesas, afi_add_path={})
         if result['sub_error']:
             msg = {
                 'attr': result['attr'],

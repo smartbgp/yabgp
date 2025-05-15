@@ -23,6 +23,11 @@ class TestMpUnReachNLRI(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
 
+    def test_ipv4_unicast_path_id_parse(self):
+        data_bin = b'\x00\x01\x01\x00\x00\x00\x02 \x05\x05\x05\x05'
+        data_hoped = {'afi_safi': (1, 1), 'withdraw': [{'prefix': '5.5.5.5/32', 'path_id': 2}]}
+        self.assertEqual(data_hoped, MpUnReachNLRI.parse(data_bin, {'ipv4': True}))
+
     def test_ipv4_mpls_vpn_parse(self):
         data_bin = b'\x80\x0f\x12\x00\x01\x80\x70\x80\x00\x00\x00\x00\x00\x02\x00\x00\x00\x02\xc0\xa8\xc9'
         data_hoped = {'afi_safi': (1, 128),
