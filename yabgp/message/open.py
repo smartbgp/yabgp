@@ -20,6 +20,7 @@ import netaddr
 
 from yabgp.common import exception as excp
 from yabgp.common import constants as bgp_cons
+from yabgp.common.constants import AFI_SAFI_STR_DICT
 
 
 class Open(object):
@@ -420,9 +421,12 @@ class Capability(object):
             return afisafi
         # for add path
         elif self.capa_code == self.ADD_PATH:
-            afi_safi, value = convert_addpath_str_to_int(self.capa_value)
+            addpath_int_list = convert_addpath_str_to_int(self.capa_value)
             add_path = struct.pack(
-                '!BBBBHBB', 2, 6, self.ADD_PATH, self.capa_length, afi_safi[0], afi_safi[1], value)
+                '!BBBB', 2, 6, self.ADD_PATH, len(addpath_int_list) * 4)
+            for (afi_safi, value) in addpath_int_list:
+                afi, safi = afi_safi
+                add_path += struct.pack('!HBB', afi, safi, value)
             return add_path
 
         # (10) Extended Next Hop Encoding Capability
@@ -445,10 +449,14 @@ class Capability(object):
             return struct.pack('!BBBB', 2, 2, self.ENHANCED_ROUTE_REFRESH, 0)
 
 
-def convert_addpath_str_to_int(addpath_str):
-    addpath_dict = {
-        'ipv4_receive': [(1, 1), 1],
-        'ipv4_send': [(1, 1), 2],
-        'ipv4_both': [(1, 1), 3]
+def convert_addpath_str_to_int(addpath_list):
+    addpath_int_list = []
+    send_receive_dict = {
+        'receive': 1,
+        'send': 2,
+        'both': 3
     }
-    return addpath_dict[addpath_str]
+    for addpath in addpath_list:
+        addpath_int_list.append([AFI_SAFI_STR_DICT[addpath['afi_safi']], send_receive_dict[addpath['send/receive']]])
+
+    return addpath_int_list
