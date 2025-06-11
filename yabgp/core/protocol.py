@@ -58,6 +58,7 @@ class BGP(protocol.Protocol):
         self.adj_rib_in = {k: {} for k in CONF.bgp.afi_safi}
         self.adj_rib_out = {k: {} for k in CONF.bgp.afi_safi}
         self.adj_rib_in_ipv4_tree = Radix()
+        self.afi_add_path = None
 
         # statistic
         self.msg_sent_stat = {
@@ -263,7 +264,7 @@ class BGP(protocol.Protocol):
         """Called when a BGP Update message was received."""
         # TODO: Need to convert `self.add_path_ipv4_receive` and `self.add_path_ipv4_send` into a unified
         #  `afi_add_path` format.
-        result = Update().parse(timestamp, msg, self.fourbytesas, afi_add_path={})
+        result = Update().parse(timestamp, msg, self.fourbytesas, afi_add_path=self.afi_add_path)
         if result['sub_error']:
             msg = {
                 'attr': result['attr'],
@@ -470,11 +471,8 @@ class BGP(protocol.Protocol):
             # check add path feature, send add path condition:
             # local support send or both
             # remote support receive or both
-            if cfg.CONF.bgp.running_config['capability']['local']['add_path'] in \
-                    ['ipv4_send', 'ipv4_both']:
-                if cfg.CONF.bgp.running_config['capability']['remote'].get('add_path') in \
-                        ['ipv4_receive', 'ipv4_both']:
-                    self.add_path_ipv4_send = True
+            self.afi_add_path = self.compare_add_path(cfg.CONF.bgp.running_config['capability']['local']['add_path'],
+                                                      cfg.CONF.bgp.running_config['capability']['remote'].get('add_path'))
         # send message
         self.transport.write(open_msg)
         self.msg_sent_stat['Opens'] += 1
@@ -519,11 +517,9 @@ class BGP(protocol.Protocol):
             if key == 'four_bytes_as':
                 self.fourbytesas = True
             elif key == 'add_path':
-                if cfg.CONF.bgp.running_config['capability']['remote']['add_path'] in \
-                        ['ipv4_send', 'ipv4_both']:
-                    if cfg.CONF.bgp.running_config['capability']['local']['add_path'] in \
-                            ['ipv4_receive', 'ipv4_both']:
-                        self.add_path_ipv4_receive = True
+                self.afi_add_path = self.compare_add_path(
+                    cfg.CONF.bgp.running_config['capability']['local']['add_path'],
+                    cfg.CONF.bgp.running_config['capability']['remote'].get('add_path'))
 
             LOG.info("--%s = %s", key, cfg.CONF.bgp.running_config['capability']['remote'][key])
 
@@ -853,3 +849,18 @@ class BGP(protocol.Protocol):
                         del self.mpls_vpn_receive_dict[str(key)]
                     else:
                         LOG.info("Do not have %s in receive mpls_vpn dict" % key)
+
+    def compare_add_path(self, local_add_path, remote_add_path):
+        if not local_add_path or not remote_add_path:
+            return None
+
+        afi_add_path = {}
+        for local in local_add_path:
+            for remote in remote_add_path:
+                if local.get('afi_safi') == remote.get('afi_safi'):
+                    if local.get('send/receive') in ['receive', 'both'] and remote.get('send/receive') in ['send', 'both']:
+                        afi_add_path[local.get('afi_safi')] = True
+                    else:
+                        afi_add_path[local.get('afi_safi')] = False
+
+        return afi_add_path

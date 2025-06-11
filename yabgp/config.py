@@ -41,9 +41,6 @@ BGP_CONFIG_OPTS = [
     cfg.BoolOpt('enhanced_route_refresh',
                 default=True,
                 help='If support enhanced route refresh'),
-    cfg.StrOpt('add_path',
-               choices=['ipv4_send', 'ipv4_receive', 'ipv4_both'],
-               help='BGP additional path feature and supported address family'),
     cfg.BoolOpt('graceful_restart',
                 default=True,
                 help='if support graceful restart'),
@@ -80,7 +77,10 @@ BGP_PEER_CONFIG_OPTS = [
         'rib',
         default=False,
         help='maintain rib in or not, default is False'
-    )
+    ),
+    cfg.ListOpt('local_add_path',
+                default=['ipv4_both'],
+                help='The Local BGP add path configuration')
 ]
 
 CONF.register_cli_opts(BGP_PEER_CONFIG_OPTS, group='bgp')
@@ -134,7 +134,7 @@ def get_bgp_config():
                     'enhanced_route_refresh': CONF.bgp.enhanced_route_refresh,
                     'graceful_restart': CONF.bgp.graceful_restart,
                     'cisco_multi_session': CONF.bgp.cisco_multi_session,
-                    'add_path': CONF.bgp.add_path
+                    'add_path': [{'afi_safi': item.rsplit('_', 1)[0], 'send/receive': item.rsplit('_', 1)[1]} for item in CONF.bgp.local_add_path]
                 },
                 'remote': {}
             }
