@@ -16,6 +16,7 @@
 from .linkstate import LinkState  # noqa
 from .node.local_router_id import LocalRouterID  # noqa
 from .node.name import NodeName  # noqa
+from .node.flex_algo_define import FlexAlgorithmDefine  # noqa
 from .node.isisarea import ISISArea  # noqa
 from .node.sr_capabilities import SRCapabilities  # noqa
 from .node.sr_algorithm import SRAlgorithm  # noqa
@@ -26,6 +27,7 @@ from .node.sid_or_label import SIDorLabel  # noqa
 from .node.srlb import SRLB  # noqa
 from .node.srv6_capabilities import SRv6Capabilities  # noqa
 from .link.admingroup import AdminGroup  # noqa
+from .link.app_spec_link_attr import AppSpecLinkAttr  # noqa
 from .link.remote_router_id import RemoteRouterID  # noqa
 from .link.max_bw import MaxBandwidth  # noqa
 from .link.max_rsv_bw import MaxResvBandwidth  # noqa
