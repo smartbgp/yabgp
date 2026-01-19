@@ -15,6 +15,7 @@
 
 from .linkstate import LinkState  # noqa
 from .node.local_router_id import LocalRouterID  # noqa
+from .node.mt_id import MultiTopologyIdentifier  # noqa
 from .node.name import NodeName  # noqa
 from .node.flex_algo_define import FlexAlgorithmDefine  # noqa
 from .node.isisarea import ISISArea  # noqa

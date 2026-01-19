@@ -21,6 +21,7 @@ import binascii
 
 import netaddr
 
+from yabgp.message.attribute.linkstate.node.mt_id import MultiTopologyIdentifier
 from yabgp.message.attribute.nlri import NLRI
 
 
@@ -144,12 +145,8 @@ class BGPLS(NLRI):
                 ipv6_neighbor_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(value), 16)))
                 descriptor['type'] = 'link_remote_ipv6'
                 descriptor['value'] = ipv6_neighbor_addr
-            elif _type == 263:  # Multi-Topology Identifier
-                descriptor['type'] = 'mt_id'
-                descriptor['value'] = []
-                while value:
-                    descriptor['value'].append(struct.unpack('!H', value[:2])[0])
-                    value = value[2:]
+            elif _type == MultiTopologyIdentifier.TYPE:  # Multi-Topology Identifier
+                descriptor = MultiTopologyIdentifier.unpack(value).dict()
             elif _type == 264:  # OSPF Route Type
                 descriptor['type'] = 'prefix_ospf_route_type'
                 descriptor['value'] = ord(value[0:1])
