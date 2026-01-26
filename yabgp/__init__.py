@@ -15,5 +15,4 @@
 
 """version information"""
 
-version_info = (0, 8, 3)
-version = '.'.join(map(str, version_info))
+version = '0.9.0.dev0'
