@@ -48,10 +48,10 @@ class NodeFlags(TLV):
         """
         """
         valueByte = ord(value[0:1])
-        O = valueByte >> 7
+        overload = valueByte >> 7
         T = (valueByte << 1) % 256 >> 7
         E = (valueByte << 2) % 256 >> 7
         B = (valueByte << 3) % 256 >> 7
         R = (valueByte << 4) % 256 >> 7
         V = (valueByte << 5) % 256 >> 7
-        return cls(value={"O": O, "T": T, "E": E, "B": B, "R": R, "V": V})
+        return cls(value={"O": overload, "T": T, "E": E, "B": B, "R": R, "V": V})

@@ -17,36 +17,38 @@
 
 import binascii
 import logging
-import netaddr
 import struct
 import traceback
-from yabgp.common import exception as excep
+
+import netaddr
+
 from yabgp.common import constants as bgp_cons
+from yabgp.common import exception as excep
 from yabgp.message.attribute import AttributeFlag
-from yabgp.message.attribute.origin import Origin
-from yabgp.message.attribute.aspath import ASPath
-from yabgp.message.attribute.nexthop import NextHop
-from yabgp.message.attribute.med import MED
-from yabgp.message.attribute.localpref import LocalPreference
-from yabgp.message.attribute.atomicaggregate import AtomicAggregate
 from yabgp.message.attribute.aggregator import Aggregator
-from yabgp.message.attribute.community import Community
-from yabgp.message.attribute.originatorid import OriginatorID
+from yabgp.message.attribute.aspath import ASPath
+from yabgp.message.attribute.atomicaggregate import AtomicAggregate
 from yabgp.message.attribute.clusterlist import ClusterList
+from yabgp.message.attribute.community import Community
+from yabgp.message.attribute.extcommunity import ExtCommunity
+from yabgp.message.attribute.largecommunity import LargeCommunity
+from yabgp.message.attribute.linkstate.linkstate import LinkState
+from yabgp.message.attribute.localpref import LocalPreference
+from yabgp.message.attribute.med import MED
 from yabgp.message.attribute.mpreachnlri import MpReachNLRI
 from yabgp.message.attribute.mpunreachnlri import MpUnReachNLRI
+from yabgp.message.attribute.nexthop import NextHop
+from yabgp.message.attribute.nlri.evpn import EVPN
+from yabgp.message.attribute.origin import Origin
+from yabgp.message.attribute.originatorid import OriginatorID
+from yabgp.message.attribute.pmsitunnel import PMSITunnel
 from yabgp.message.attribute.sr.bgpprefixsid import BGPPrefixSID
 from yabgp.message.attribute.tunnelencaps import TunnelEncaps
-from yabgp.message.attribute.extcommunity import ExtCommunity
-from yabgp.message.attribute.pmsitunnel import PMSITunnel
-from yabgp.message.attribute.linkstate.linkstate import LinkState
-from yabgp.message.attribute.nlri.evpn import EVPN
-from yabgp.message.attribute.largecommunity import LargeCommunity
 
 LOG = logging.getLogger()
 
 
-class Update(object):
+class Update:
     """
     An UPDATE message is used to advertise feasible routes that share
     common path attributes to a peer, or to withdraw multiple unfeasible
@@ -268,7 +270,7 @@ class Update(object):
             if remainder > 0:
                 prefix_data[-1] &= 255 << (8 - remainder)
             prefix_data = prefix_data + list(str(0)) * 4
-            prefix = "%s.%s.%s.%s" % (tuple(prefix_data[0:4])) + '/' + str(prefix_len)
+            prefix = "{}.{}.{}.{}".format(*tuple(prefix_data[0:4])) + '/' + str(prefix_len)
             if not addpath:
                 prefixes.append(prefix)
             else:

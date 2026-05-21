@@ -15,4 +15,5 @@
 
 """version information"""
 
-version = '0.9.0.dev0'
+__version__ = '1.0'
+version = __version__

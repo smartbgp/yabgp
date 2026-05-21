@@ -13,8 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import struct
 import binascii
+import struct
 
 from yabgp.message.attribute.linkstate.linkstate import LinkState
 from yabgp.tlv import TLV

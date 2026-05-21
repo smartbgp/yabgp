@@ -16,6 +16,7 @@
 """ Unittest for MPUnReach NLRI"""
 
 import unittest
+
 from yabgp.message.attribute.mpunreachnlri import MpUnReachNLRI
 
 

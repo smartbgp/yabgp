@@ -15,11 +15,9 @@
 
 import struct
 
-from yabgp.message.attribute import Attribute
-from yabgp.message.attribute import AttributeID
-from yabgp.message.attribute import AttributeFlag
 from yabgp.common import constants as bgp_cons
 from yabgp.common import exception as excep
+from yabgp.message.attribute import Attribute, AttributeFlag, AttributeID
 
 
 class MED(Attribute):
@@ -43,7 +41,7 @@ class MED(Attribute):
         """
         try:
             return struct.unpack('!I', value)[0]
-        except:
+        except struct.error:
             raise excep.UpdateMessageError(
                 sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                 data=value)

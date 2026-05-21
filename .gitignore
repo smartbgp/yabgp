@@ -36,9 +36,13 @@ pip-delete-this-directory.txt
 # Unit test / coverage reports
 htmlcov/
 .tox/
+.venv/
+.ruff_cache/
+.pyright/
 .coverage
 .coverage.*
 .cache
+.pytest_cache/
 nosetests.xml
 coverage.xml
 *,cover
@@ -70,3 +74,5 @@ covhtml/
 doc/build
 *.DS_Store
 .vscode/settings.json
+mac-venv/
+.claude/

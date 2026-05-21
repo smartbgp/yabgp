@@ -1,4 +1,5 @@
 import unittest
+
 from yabgp.message.attribute.linkstate.node.node_msd import NodeMSD_266
 
 

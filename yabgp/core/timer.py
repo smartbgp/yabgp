@@ -15,10 +15,10 @@
 """ BGP Timer"""
 
 # Twisted modules
-from twisted.internet import reactor, error
+from twisted.internet import error, reactor
 
 
-class BGPTimer(object):
+class BGPTimer:
     """
     Timer class with a slightly different Timer interface than the
     Twisted DelayedCall interface

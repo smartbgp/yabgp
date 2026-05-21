@@ -15,7 +15,6 @@ please reference the ``DefaultHandler``.
     #!/usr/bin/python
     # -*- coding: utf-8 -*-
 
-    from __future__ import print_function
     import sys
 
     from yabgp.agent import prepare_service
@@ -72,7 +71,7 @@ How to run it? very simple! let's call this file as ``my_bgpd.py``, and you can 
 
 .. note::
 
-    Please make sure you have install yabgp for requirements, you can do that through ``pip install yabgp``
+    Please make sure you have installed yabgp: ``pip install yabgp`` or ``uv sync``
 
 
 .. code:: bash

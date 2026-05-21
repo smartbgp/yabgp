@@ -13,14 +13,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import binascii
 import struct
 
-import binascii
 import netaddr
 
 from yabgp.tlv import TLV
-from .l3service import SRv6L3Service
 
+from .l3service import SRv6L3Service
 
 # 3.1.  SRv6 SID Information Sub-TLV
 #

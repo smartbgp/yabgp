@@ -15,10 +15,10 @@
 
 import binascii
 
-from yabgp.message.attribute.linkstate.linkstate import LinkState
-from yabgp.common.tlv import TLV
-
 import netaddr
+
+from yabgp.common.tlv import TLV
+from yabgp.message.attribute.linkstate.linkstate import LinkState
 
 
 @LinkState.register()

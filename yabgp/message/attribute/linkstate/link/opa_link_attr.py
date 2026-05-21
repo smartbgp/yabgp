@@ -14,6 +14,7 @@
 #    under the License.
 
 import struct
+
 from yabgp.message.attribute.linkstate.linkstate import LinkState
 from yabgp.tlv import TLV
 
@@ -36,4 +37,4 @@ class OpaLinkAttr(TLV):
     def unpack(cls, value):
         """
         """
-        return cls(value=struct.unpack("!%ds" % len(value), value)[0])
+        return cls(value=struct.unpack(f"!{len(value)}s", value)[0])

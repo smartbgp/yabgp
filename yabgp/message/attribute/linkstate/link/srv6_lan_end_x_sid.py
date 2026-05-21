@@ -13,13 +13,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import binascii
 import struct
 
-import binascii
 import netaddr
 
 from yabgp.net import IPAddress
 from yabgp.tlv import TLV
+
 from ..linkstate import LinkState
 
 
@@ -63,7 +64,7 @@ class SRv6LANEndXSID(TLV):
             n_id_unpack_end_position = 6 + 4
             neighbor_id = IPAddress.unpack(data[6:n_id_unpack_end_position])
         else:
-            raise Exception('Unknown bgpls_pro_id {0}'.format(bgpls_pro_id))
+            raise Exception(f'Unknown bgpls_pro_id {bgpls_pro_id}')
 
         sid = str(
             netaddr.IPAddress(int(binascii.b2a_hex(data[n_id_unpack_end_position:n_id_unpack_end_position + 16]), 16))

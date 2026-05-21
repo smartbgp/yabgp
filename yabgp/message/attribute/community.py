@@ -15,11 +15,9 @@
 
 import struct
 
-from yabgp.message.attribute import Attribute
-from yabgp.message.attribute import AttributeID
-from yabgp.message.attribute import AttributeFlag
-from yabgp.common import exception as excep
 from yabgp.common import constants as bgp_cons
+from yabgp.common import exception as excep
+from yabgp.message.attribute import Attribute, AttributeFlag, AttributeID
 
 
 class Community(Attribute):
@@ -45,14 +43,14 @@ class Community(Attribute):
         community = []
         if value:
             try:
-                length = len(value) / 2
-                value_list = list(struct.unpack('!%dH' % length, value))
+                length = len(value) // 2
+                value_list = list(struct.unpack(f'!{length}H', value))
                 while value_list:
                     value_type = value_list[0] * 16 * 16 * 16 * 16 + value_list[1]
                     if value_type in bgp_cons.WELL_KNOW_COMMUNITY_INT_2_STR:
                         community.append(bgp_cons.WELL_KNOW_COMMUNITY_INT_2_STR[value_type])
                     else:
-                        community.append("%s:%s" % (value_list[0], value_list[1]))
+                        community.append(f"{value_list[0]}:{value_list[1]}")
                     value_list = value_list[2:]
             except Exception:
                 raise excep.UpdateMessageError(

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding:utf-8 -*-
 
 # Copyright 2015 Cisco Systems, Inc.
 # All rights reserved.
@@ -20,12 +19,12 @@
 """
 import binascii
 import logging
-import time
 import re
+import time
 
-from flask_httpauth import HTTPBasicAuth
-from flask import Blueprint, request
 import flask
+from flask import Blueprint, request
+from flask_httpauth import HTTPBasicAuth
 from oslo_config import cfg
 
 from yabgp.api import utils as api_utils
@@ -218,7 +217,7 @@ def send_update_message(peer_ip):
                     else:
                         return flask.jsonify({
                             'status': False,
-                            'code': 'unexpected extended community "%s", please check your post data' % key
+                            'code': f'unexpected extended community "{key}", please check your post data'
                         })
             attr[16] = ext_community
     if cfg.CONF.bgp.rib:
@@ -394,7 +393,7 @@ def json_to_bin(peer_ip):
                     else:
                         return flask.jsonify({
                             'status': False,
-                            'code': 'unexpected extended community "%s", please check your post data' % key
+                            'code': f'unexpected extended community "{key}", please check your post data'
                         })
             attr[16] = ext_community
     if (attr and nlri) or withdraw:

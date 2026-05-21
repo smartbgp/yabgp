@@ -16,20 +16,15 @@
 """ logging handler. Reference from https://github.com/osrg/ryu/blob/master/ryu/log.py
 """
 
-from __future__ import print_function
 import inspect
 import logging
 import logging.config
 import logging.handlers
 import os
 import sys
-if sys.version_info[0] == 2:
-    import ConfigParser
-elif sys.version_info[0] == 3:
-    from configparser import ConfigParser
+from configparser import ConfigParser
 
 from oslo_config import cfg
-
 
 CONF = cfg.CONF
 
@@ -93,7 +88,7 @@ def init_log():
                 for handler in log.handlers:
                     handler.setFormatter(logging.Formatter(DEBUG_LOG_FORMAT))
         except ConfigParser.Error as e:
-            print('Failed to parse %s: %s' % (CONF.log_config_file, e),
+            print(f'Failed to parse {CONF.log_config_file}: {e}',
                   file=sys.stderr)
             sys.exit(2)
         return

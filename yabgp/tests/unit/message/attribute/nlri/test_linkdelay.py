@@ -16,6 +16,7 @@
 """ Test Link State attribute"""
 
 import unittest
+
 from yabgp.message.attribute.linkstate.linkstate import LinkState
 
 

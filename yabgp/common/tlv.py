@@ -16,7 +16,7 @@
 import binascii
 
 
-class TLV(object):
+class TLV:
     """TLV basic class
     """
     TYPE = -1
@@ -26,7 +26,7 @@ class TLV(object):
         self.value = value
 
     def __str__(self):
-        return '%s: %s' % (self.TYPE_STR, self.value)
+        return f'{self.TYPE_STR}: {self.value}'
 
     @classmethod
     def parse(cls, value, typecode=-1):

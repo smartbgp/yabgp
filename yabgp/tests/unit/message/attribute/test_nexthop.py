@@ -18,9 +18,8 @@
 
 import unittest
 
+from yabgp.common.constants import ERR_MSG_UPDATE_ATTR_LEN, ERR_MSG_UPDATE_INVALID_NEXTHOP
 from yabgp.common.exception import UpdateMessageError
-from yabgp.common.constants import ERR_MSG_UPDATE_ATTR_LEN
-from yabgp.common.constants import ERR_MSG_UPDATE_INVALID_NEXTHOP
 from yabgp.message.attribute.nexthop import NextHop
 
 

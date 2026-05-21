@@ -14,19 +14,20 @@
 
 """BGP FMS Implementation"""
 
-import time
 import logging
+import time
 
 from oslo_config import cfg
-from yabgp.core.timer import BGPTimer
+
 from yabgp.common import constants as bgp_cons
+from yabgp.core.timer import BGPTimer
 
 CONF = cfg.CONF
 
 LOG = logging.getLogger(__name__)
 
 
-class FSM(object):
+class FSM:
 
     """
     Implements BGP Events described in section 8.1 of RFC 4271
@@ -79,7 +80,7 @@ class FSM(object):
             if value == bgp_cons.ST_ESTABLISHED:
                 self.uptime = time.time()
                 self.bgp_peering.handler.on_established(peer=self.bgp_peering.peer_addr, msg=self.uptime)
-        super(FSM, self).__setattr__(name, value)
+        super().__setattr__(name, value)
 
     def manual_start(self, idle_hold=False):
 

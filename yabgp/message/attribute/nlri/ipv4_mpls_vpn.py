@@ -1,4 +1,3 @@
-# coding=utf-8
 # Copyright 2015 Cisco Systems, Inc.
 # All rights reserved.
 #
@@ -14,9 +13,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from yabgp.message.attribute.nlri.mpls_vpn import MPLSVPN
 from yabgp.common.afn import AFNUM_INET
 from yabgp.common.safn import SAFNUM_LAB_VPNUNICAST
+from yabgp.message.attribute.nlri.mpls_vpn import MPLSVPN
 
 
 class IPv4MPLSVPN(MPLSVPN):
@@ -29,8 +28,8 @@ class IPv4MPLSVPN(MPLSVPN):
 
     @classmethod
     def parse(cls, value, iswithdraw=False, addpath=False):
-        return super(IPv4MPLSVPN, cls).parse(value, iswithdraw=iswithdraw, addpath=addpath)
+        return super().parse(value, iswithdraw=iswithdraw, addpath=addpath)
 
     @classmethod
     def construct(cls, value, iswithdraw=False):
-        return super(IPv4MPLSVPN, cls).construct(value, iswithdraw=iswithdraw)
+        return super().construct(value, iswithdraw=iswithdraw)

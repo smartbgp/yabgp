@@ -13,9 +13,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from yabgp.message.attribute.nlri.mpls_vpn import MPLSVPN
 from yabgp.common.afn import AFNUM_INET6
 from yabgp.common.safn import SAFNUM_LAB_VPNUNICAST
+from yabgp.message.attribute.nlri.mpls_vpn import MPLSVPN
 
 
 class IPv6MPLSVPN(MPLSVPN):
@@ -27,8 +27,8 @@ class IPv6MPLSVPN(MPLSVPN):
 
     @classmethod
     def parse(cls, value, iswithdraw=False, addpath=False):
-        return super(IPv6MPLSVPN, cls).parse(value, iswithdraw=iswithdraw, addpath=addpath)
+        return super().parse(value, iswithdraw=iswithdraw, addpath=addpath)
 
     @classmethod
     def construct(cls, value, iswithdraw=False):
-        return super(IPv6MPLSVPN, cls).construct(value, iswithdraw=iswithdraw)
+        return super().construct(value, iswithdraw=iswithdraw)

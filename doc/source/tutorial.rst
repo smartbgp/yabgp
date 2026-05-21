@@ -19,9 +19,10 @@ The simple way to start a yabgp agent is (There are four mandatory parameters):
 
 The default address family will be IPv4 unicast. If you need support other address family, you can use something like:
 
-```
-$ yabgpd --bgp-local_addr=10.75.44.122 --bgp-local_as=100 --bgp-remote_addr=10.75.195.199 --bgp-remote_as=100 --bgp-afi_safi=ipv4_srte,flowspec,ipv4,bgpls
-```
+.. code:: bash
+
+    $ yabgpd --bgp-local_addr=10.75.44.122 --bgp-local_as=100 --bgp-remote_addr=10.75.195.199 \
+             --bgp-remote_as=100 --bgp-afi_safi=ipv4_srte,flowspec,ipv4,bgpls
 
 that session will suport: IPv4 Unicast, IPv4 Flowspec, IPv4 SR TE and BGP linkstate.
 

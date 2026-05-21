@@ -16,9 +16,9 @@
 """ Test Route Refresh message"""
 
 import unittest
+
+from yabgp.common.constants import MSG_CISCOROUTEREFRESH, MSG_ROUTEREFRESH
 from yabgp.message.route_refresh import RouteRefresh
-from yabgp.common.constants import MSG_CISCOROUTEREFRESH
-from yabgp.common.constants import MSG_ROUTEREFRESH
 
 
 class TestRouteRefresh(unittest.TestCase):

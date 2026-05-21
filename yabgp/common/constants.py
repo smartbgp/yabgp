@@ -528,7 +528,7 @@ WELL_KNOW_COMMUNITY_INT_2_STR = {
 }
 
 WELL_KNOW_COMMUNITY_STR_2_INT = dict(
-    [(r, l) for (l, r) in WELL_KNOW_COMMUNITY_INT_2_STR.items()])
+    [(r, label) for (label, r) in WELL_KNOW_COMMUNITY_INT_2_STR.items()])
 
 TCP_MD5SIG_MAXKEYLEN = 80
 SS_PADSIZE_IPV4 = 120

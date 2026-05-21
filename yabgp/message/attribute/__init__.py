@@ -68,7 +68,7 @@ class AttributeFlag(int):
             r.append("OPTIONAL_TRANSITIVE")
             v -= 0xc0
         if v:
-            r.append("UNKNOWN %s" % hex(v))
+            r.append(f"UNKNOWN {hex(v)}")
         return " ".join(r)
 
 
@@ -155,10 +155,10 @@ class AttributeID(int):
             return "LARGE_COMMUNITY"
         if self == 0xffff:
             return "INTERNAL SPLIT"
-        return 'UNKNOWN ATTRIBUTE (%s)' % hex(self)
+        return f'UNKNOWN ATTRIBUTE ({hex(self)})'
 
 
-class Attribute(object):
+class Attribute:
     """
     Base class for all BGP attribute classes
     Attribute instances are (meant to be) immutable once initialized
@@ -177,7 +177,7 @@ class Attribute(object):
             len_value = pack('!H', length)[0]
         else:
             len_value = chr(length)
-        return "%s%s%s%s" % (chr(flag), chr(self.ID), len_value, value)
+        return f"{chr(flag)}{chr(self.ID)}{len_value}{value}"
 
     def __eq__(self, other):
         return self.ID == other.ID

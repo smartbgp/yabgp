@@ -13,9 +13,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import sys
-import os
 import logging
+import os
+import sys
 import traceback
 
 from oslo_config import cfg
@@ -23,13 +23,12 @@ from twisted.internet import reactor
 from twisted.web.server import Site
 from twisted.web.wsgi import WSGIResource
 
-from yabgp import version, log
-from yabgp.core.factory import BGPPeering
-from yabgp.config import get_bgp_config
-from yabgp.common import constants as bgp_cons
+from yabgp import log, version
 from yabgp.api.app import app
+from yabgp.common import constants as bgp_cons
+from yabgp.config import get_bgp_config
+from yabgp.core.factory import BGPPeering
 from yabgp.handler.default_handler import DefaultHandler
-
 
 log.early_init_log(logging.DEBUG)
 

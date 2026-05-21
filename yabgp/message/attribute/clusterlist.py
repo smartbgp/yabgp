@@ -17,11 +17,9 @@ import struct
 
 import netaddr
 
-from yabgp.message.attribute import Attribute
-from yabgp.message.attribute import AttributeID
-from yabgp.message.attribute import AttributeFlag
 from yabgp.common import constants as bgp_cons
 from yabgp.common import exception as excep
+from yabgp.message.attribute import Attribute, AttributeFlag, AttributeID
 
 
 class ClusterList(Attribute):

@@ -14,6 +14,7 @@
 #    under the License.
 
 import struct
+
 from yabgp.message.attribute.linkstate.linkstate import LinkState
 from yabgp.tlv import TLV
 

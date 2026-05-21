@@ -15,7 +15,6 @@
 
 """start service"""
 
-from __future__ import print_function
 from yabgp.agent import prepare_service
 
 

@@ -16,6 +16,7 @@
 """Test app"""
 
 import unittest
+
 from yabgp.api.app import app
 
 

@@ -13,13 +13,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import struct
 import binascii
+import struct
 
 import netaddr
 
-from yabgp.common import afn
-from yabgp.common import safn
+from yabgp.common import afn, safn
 from yabgp.common import constants as bgp_cons
 from yabgp.message.attribute.nlri import NLRI
 
@@ -159,14 +158,14 @@ class MPLSVPN(NLRI):
         rd_value = data[2:8]
         if rd_type == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_0:
             asn, an = struct.unpack('!HI', rd_value)
-            rd = '%s:%s' % (asn, an)
+            rd = f'{asn}:{an}'
         elif rd_type == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_1:
             ip = str(netaddr.IPAddress(struct.unpack('!I', rd_value[0:4])[0]))
             an = struct.unpack('!H', rd_value[4:6])[0]
-            rd = '%s:%s' % (ip, an)
+            rd = f'{ip}:{an}'
         elif rd_type == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_2:
             asn, an = struct.unpack('!IH', rd_value)
-            rd = '%s:%s' % (asn, an)
+            rd = f'{asn}:{an}'
         else:
             # fixme(by xiaopeng163) for other rd type process
             rd = str(rd_value)

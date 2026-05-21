@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+mac-venv/
+mac-venv-py313/
+
+# uv cache
+.uv/
+
+# Distribution / build
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Testing / coverage
+.tox/
+htmlcov/
+.coverage
+.coverage.*
+.pytest_cache/
+.ruff_cache/
+.pyright/
+coverage.xml
+
+# Version control
+.git/
+.gitignore
+
+# IDE / editor
+.idea/
+.vscode/
+*.DS_Store
+
+# Documentation build output
+doc/build/
+
+# Secrets / local config
+etc/yabgp/yabgp.ini
+
+# CI
+.github/
+
+# Cursor AI
+.claude/
+.cursor/
+
+# Development-only directories (not needed in production image)
+tools/
+doc/
+example/
+bin/
+yabgp/tests/
+
+# Documentation files
+*.rst
+*.md
+.mailmap

@@ -12,21 +12,22 @@ YABGP是另一种BGP协议的Python实现。它可以和各种路由器（包括
 
 我们严格遵循RFCs文档的约定开发此项目。
 
-此软件可应用于Linux/Unix，Mac OS和windows系统。
+此软件可应用于Linux/Unix、Mac OS和Windows系统。需要 Python >= 3.13。
+TCP MD5认证仅支持Linux。
 
 功能
 ~~~~~~~~
 
 -  它可以通过IPv4地址以主动模式（作为TCP客户端）建立BGP会话连接。
 
--  支持TCP的MD5认证（只有IPv4并且不支持windows系统）
+-  支持TCP的MD5认证（只有IPv4）
 
 -  BGP capabilities支持：4字节的ASN，Route Refresh(Cisco Route Refresh)，添加发送/接收路径；
 
 -  地址族支持：
 
    - IPv4/IPv6 Unicast
-   
+
    - IPv4/IPv6 Labeled Unicast
 
    - IPv4 Flowspec(有限支持)
@@ -36,7 +37,7 @@ YABGP是另一种BGP协议的Python实现。它可以和各种路由器（包括
    - IPv4/IPv6 MPLSVPN
 
    - EVPN (部分支持)
-   
+
 -  解析所有BGP messages为json格式并写入本地文件（可配置）；
 
 -  支持通过基本的RESTFUL API获取对等体运行信息或者发送BGP messages。
@@ -44,32 +45,29 @@ YABGP是另一种BGP协议的Python实现。它可以和各种路由器（包括
 快速开始
 ~~~~~~~~~~~
 
-我们推荐在python的虚拟环境中运行``yabgp``，可以通过源码或者pip工具安装
-
-源码安装：
+**使用 uv（推荐）：**
 
 .. code:: bash
 
-    $ virtualenv yabgp-virl
-    $ source yabgp-virl/bin/activate
     $ git clone https://github.com/smartbgp/yabgp
     $ cd yabgp
-    $ pip install -r requirements.txt
-    $ cd bin
-    $ python yabgpd -h
+    $ uv sync
+    $ uv run yabgpd -h
 
-pip安装：
+**使用 pip：**
 
 .. code:: bash
 
-    $ virtualenv yabgp-virl
-    $ source yabgp-virl/bin/activate
     $ pip install yabgp
-    $ which yabgpd
-    /home/yabgp/yabgp-virl/bin/yabgpd
     $ yabgpd -h
 
-例如：
+**使用 Docker：**
+
+.. code:: bash
+
+    $ docker run -it smartbgp/yabgp:latest --bgp-afi_safi=ipv4 --bgp-local_as=65022 --bgp-remote_addr=10.75.44.219 --bgp-remote_as=65022
+
+**例如：**
 
 .. code:: bash
 
@@ -89,8 +87,6 @@ pip安装：
 
 支持
 ~~~~~~~
-
-加入Slack，欢迎问题与建议，我们一起讨论。http://smartbgp.slack.com/
 
 可以发送email到xiaoquwl@gmail.com，或者在GitHub上提issue。
 

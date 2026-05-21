@@ -15,25 +15,24 @@
 
 """BGP Protocol"""
 
+import copy
 import logging
-import traceback
 import struct
 import time
+import traceback
 
 import netaddr
 from oslo_config import cfg
-from twisted.internet import protocol
-from twisted.internet import reactor
 from radix import Radix
-import copy
+from twisted.internet import protocol, reactor
 
 from yabgp.common import constants as bgp_cons
-from yabgp.message.open import Open
-from yabgp.message.keepalive import KeepAlive
-from yabgp.message.update import Update
-from yabgp.message.notification import Notification
-from yabgp.message.route_refresh import RouteRefresh
 from yabgp.common import exception as excep
+from yabgp.message.keepalive import KeepAlive
+from yabgp.message.notification import Notification
+from yabgp.message.open import Open
+from yabgp.message.route_refresh import RouteRefresh
+from yabgp.message.update import Update
 
 LOG = logging.getLogger(__name__)
 
@@ -44,7 +43,6 @@ class BGP(protocol.Protocol):
     """Protocol class for BGP 4"""
 
     def __init__(self):
-
         """Create a BGP protocol.
         """
         self.fsm = None
@@ -105,7 +103,6 @@ class BGP(protocol.Protocol):
         self.adj_rib_out = {k: {} for k in CONF.bgp.afi_safi}
 
     def connectionMade(self):
-
         """
         Starts the initial negotiation of the protocol
         """
@@ -260,7 +257,6 @@ class BGP(protocol.Protocol):
         # if self.msg_recv_stat['Updates'] % 1000 == 0:
         #     LOG.info(self.msg_recv_stat['Updates'])
         #     LOG.info(time.time())
-
         """Called when a BGP Update message was received."""
         # TODO: Need to convert `self.add_path_ipv4_receive` and `self.add_path_ipv4_send` into a unified
         #  `afi_add_path` format.
@@ -573,7 +569,6 @@ class BGP(protocol.Protocol):
         self.handler.route_refresh_received(self, nofi_msg, msg_type)
 
     def negotiate_hold_time(self, hold_time):
-
         """Negotiates the hold time"""
 
         self.fsm.hold_time = min(self.fsm.hold_time, hold_time)
@@ -731,7 +726,7 @@ class BGP(protocol.Protocol):
                         self.send_version['flowspec'] += 1
                         del self.flowspec_send_dict[str(key)]
                     else:
-                        LOG.info("Do not have %s in send flowspec dict" % key)
+                        LOG.info(f"Do not have {key} in send flowspec dict")
             elif attr[15]['afi_safi'] == [1, 73]:
                 LOG.info('withdraw sr')
                 key = "{"
@@ -746,7 +741,7 @@ class BGP(protocol.Protocol):
                     self.send_version['sr_policy'] += 1
                     del self.sr_send_dict[str(key)]
                 else:
-                    LOG.info("Do not have %s in send flowspec dict" % key)
+                    LOG.info(f"Do not have {key} in send flowspec dict")
             elif attr[15]['afi_safi'] == [1, 128]:
                 LOG.info("withdraw mpls_vpn")
                 for prefix in attr[15]['withdraw']:
@@ -762,7 +757,7 @@ class BGP(protocol.Protocol):
                         self.send_version['mpls_vpn'] += 1
                         del self.mpls_vpn_send_dict[str(key)]
                     else:
-                        LOG.info("Do not have %s in send flowspec dict" % key)
+                        LOG.info(f"Do not have {key} in send flowspec dict")
 
     def update_receive_verion(self, attr, nlri, withdraw):
         if 14 in attr:
@@ -831,7 +826,7 @@ class BGP(protocol.Protocol):
                         self.receive_version['flowspec'] += 1
                         del self.flowspec_receive_dict[str(key)]
                     else:
-                        LOG.info("Do not have %s in receive flowspec dict" % prefix)
+                        LOG.info(f"Do not have {prefix} in receive flowspec dict")
             elif attr[15]['afi_safi'] == [1, 73]:
                 LOG.info('recieve sr withdraw')
             elif attr[15]['afi_safi'] == [1, 128]:
@@ -849,7 +844,7 @@ class BGP(protocol.Protocol):
                         self.receive_version['mpls_vpn'] += 1
                         del self.mpls_vpn_receive_dict[str(key)]
                     else:
-                        LOG.info("Do not have %s in receive mpls_vpn dict" % key)
+                        LOG.info(f"Do not have {key} in receive mpls_vpn dict")
 
     def compare_add_path(self, local_add_path, remote_add_path):
         if not local_add_path or not remote_add_path:

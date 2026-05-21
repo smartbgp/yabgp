@@ -17,11 +17,11 @@
 
 import struct
 
-from yabgp.common.exception import MessageHeaderError
 from yabgp.common.constants import ERR_MSG_HDR_BAD_MSG_LEN
+from yabgp.common.exception import MessageHeaderError
 
 
-class KeepAlive(object):
+class KeepAlive:
 
     """
     KEEPALIVE messages are exchanged between peers often

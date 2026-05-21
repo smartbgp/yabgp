@@ -15,11 +15,9 @@
 
 import struct
 
-from yabgp.message.attribute import Attribute
-from yabgp.message.attribute import AttributeID
-from yabgp.message.attribute import AttributeFlag
-from yabgp.common import exception as excep
 from yabgp.common import constants as bgp_cons
+from yabgp.common import exception as excep
+from yabgp.message.attribute import Attribute, AttributeFlag, AttributeID
 
 
 class LargeCommunity(Attribute):
@@ -45,10 +43,10 @@ class LargeCommunity(Attribute):
         large_community = []
         if value:
             try:
-                length = len(value) / 4
-                value_list = list(struct.unpack('!%di' % length, value))
+                length = len(value) // 4
+                value_list = list(struct.unpack(f'!{length}i', value))
                 while value_list:
-                    large_community.append("%s:%s:%s" % (value_list[0], value_list[1], value_list[2]))
+                    large_community.append(f"{value_list[0]}:{value_list[1]}:{value_list[2]}")
                     value_list = value_list[3:]
             except Exception:
                 raise excep.UpdateMessageError(

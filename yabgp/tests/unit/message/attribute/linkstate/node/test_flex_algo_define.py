@@ -18,12 +18,12 @@
 import unittest
 
 from yabgp.message.attribute.linkstate.node.flex_algo_define import (
-    FlexAlgorithmDefine,
-    FlexAlgoExcludeAdminGroup,
-    FlexAlgoIncludeAnyAdminGroup,
-    FlexAlgoIncludeAllAdminGroup,
     FlexAlgoDefinitionFlags,
-    FlexAlgoExcludeSRLG
+    FlexAlgoExcludeAdminGroup,
+    FlexAlgoExcludeSRLG,
+    FlexAlgoIncludeAllAdminGroup,
+    FlexAlgoIncludeAnyAdminGroup,
+    FlexAlgorithmDefine,
 )
 
 

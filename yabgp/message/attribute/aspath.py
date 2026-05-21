@@ -15,11 +15,9 @@
 
 import struct
 
-from yabgp.message.attribute import Attribute
-from yabgp.message.attribute import AttributeID
-from yabgp.message.attribute import AttributeFlag
-from yabgp.common import exception as excep
 from yabgp.common import constants as bgp_cons
+from yabgp.common import exception as excep
+from yabgp.message.attribute import Attribute, AttributeFlag, AttributeID
 
 
 class ASPath(Attribute):
@@ -58,11 +56,10 @@ class ASPath(Attribute):
 
     @classmethod
     def parse(cls, value, asn4=False):
-
         """
         Parse AS PATH attributes.
         :param asn4: 4 bytes asn or not
-        :param value: raw binary balue
+        :param value: raw binary value
         """
         aspath = []
         offset = 0
@@ -101,7 +98,7 @@ class ASPath(Attribute):
                     sub_error=bgp_cons.ERR_MSG_UPDATE_ATTR_LEN,
                     data='')
 
-            fmt = '!%d%s' % (num_ases, asn_fmt_char)
+            fmt = f'!{num_ases}{asn_fmt_char}'
             segment = list(struct.unpack_from(fmt, value, offset))
 
             aspath.append((seg_type, segment))
@@ -111,7 +108,6 @@ class ASPath(Attribute):
 
     @classmethod
     def construct(cls, value, asn4=False):
-
         """
         Construct AS PATH.
         :param asn4: 4byte asn

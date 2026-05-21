@@ -12,7 +12,7 @@ simulators like GNS3) and receive/parse BGP messages for
 future analysis.
 
 Support sending BGP messages(route refresh/update) to the peer through RESTful API. YABGP can't send any BGP update messages
-by itself, it's just a agent, so there can be many agents and they can be controlled by a contoller.
+by itself, it's just an agent, so there can be many agents and they can be controlled by a controller.
 
 
 Table of Contents

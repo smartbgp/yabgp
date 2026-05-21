@@ -1,15 +1,12 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
 import abc
 import logging
 from queue import Queue
 
-
 LOG = logging.getLogger(__name__)
 
 
-class BaseHandler(object):
-    __metaclass__ = abc.ABCMeta
+class BaseHandler(metaclass=abc.ABCMeta):
 
     def __init__(self):
         """
@@ -22,44 +19,44 @@ class BaseHandler(object):
 
     @abc.abstractmethod
     def init(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abc.abstractmethod
     def on_update_error(self, peer, timestamp, msg):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abc.abstractmethod
     def update_received(self, peer, timestamp, msg):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abc.abstractmethod
     def keepalive_received(self, peer, timestamp):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abc.abstractmethod
     def open_received(self, peer, timestamp, result):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abc.abstractmethod
     def send_open(self, peer, timestamp, result):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abc.abstractmethod
     def route_refresh_received(self, peer, msg, msg_type):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abc.abstractmethod
     def notification_received(self, peer, msg):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abc.abstractmethod
     def on_connection_lost(self, peer):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abc.abstractmethod
     def on_connection_failed(self, peer, msg):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abc.abstractmethod
     def on_established(self, peer, msg):
-        raise NotImplemented
+        raise NotImplementedError

@@ -16,10 +16,11 @@
 """ Test Open message"""
 
 import unittest
+
 import netaddr
+
+from yabgp.common.constants import HDR_LEN, VERSION
 from yabgp.message.open import Open
-from yabgp.common.constants import VERSION
-from yabgp.common.constants import HDR_LEN
 
 
 class TestOpen(unittest.TestCase):

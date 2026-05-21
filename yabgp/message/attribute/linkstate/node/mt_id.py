@@ -14,7 +14,9 @@
 #    under the License.
 
 import struct
+
 from yabgp.tlv import TLV
+
 from ..linkstate import LinkState
 
 

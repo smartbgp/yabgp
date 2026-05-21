@@ -32,7 +32,7 @@ class TestTunnelEncaps(unittest.TestCase):
 
     def test_construct_weight(self):
         data_dict = {"9": 10, "1": []}
-        segment_list = dict([(int(l), r) for (l, r) in data_dict.items()])
+        segment_list = dict([(int(k), r) for (k, r) in data_dict.items()])
         weight_hex = b'\x09\x06\x00\x00\x00\x00\x00\x0a'
         sid_hex = b''
         self.assertEqual((weight_hex, sid_hex), TunnelEncaps.construct_weight_and_seg(segment_list))
@@ -58,7 +58,7 @@ class TestTunnelEncaps(unittest.TestCase):
                 }
             ]
         }
-        segment_list = dict([(int(l), r) for (l, r) in data_dict.items()])
+        segment_list = dict([(int(k), r) for (k, r) in data_dict.items()])
         weight_hex = b''
         sid_hex = b'\x01\x06\x00\x00\x00\x7d\x00\xff\x03\x0a\x00\x00\x0a\x01\x01\x01\x00\x7d\x00\xff'
         self.assertEqual((weight_hex, sid_hex), TunnelEncaps.construct_weight_and_seg(segment_list))

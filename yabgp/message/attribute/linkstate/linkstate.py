@@ -12,11 +12,11 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import binascii
 import logging
 import struct
-
-import binascii
 import traceback
+
 from yabgp.common import constants as bgp_cons
 from yabgp.common import exception as excep
 from yabgp.message.attribute import Attribute, AttributeFlag, AttributeID

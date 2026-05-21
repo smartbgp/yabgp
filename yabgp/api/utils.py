@@ -13,13 +13,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import time
 import logging
+import time
 from functools import wraps
 
-from oslo_config import cfg
-from flask import request
 import flask
+from flask import request
+from oslo_config import cfg
 
 from yabgp.common import constants as common_cons
 
@@ -136,7 +136,7 @@ def send_route_refresh(peer_ip, afi, safi, res):
         else:
             return {
                 'status': False,
-                'code': 'address family unsupported, afi=%s,safi=%s' % (afi, safi)
+                'code': f'address family unsupported, afi={afi},safi={safi}'
             }
     except Exception as e:
         LOG.error(e)

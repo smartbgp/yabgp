@@ -16,6 +16,7 @@
 """Test Add Path Capability"""
 
 import unittest
+
 from yabgp.message.open import convert_addpath_str_to_int
 
 

@@ -18,7 +18,7 @@
 import struct
 
 
-class Notification(object):
+class Notification:
 
     """
     notification

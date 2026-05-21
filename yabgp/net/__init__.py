@@ -16,7 +16,7 @@
 import socket
 
 
-class IPAddress(object):
+class IPAddress:
 
     @staticmethod
     def unpack(data):
@@ -27,5 +27,5 @@ class IPAddress(object):
         return socket.inet_pton(socket.AF_INET if len(data.split('.')) == 4 else socket.AF_INET6, data)
 
 
-class IPNetwork(object):
+class IPNetwork:
     pass

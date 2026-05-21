@@ -1,19 +1,25 @@
-FROM python:2.7.14-alpine
+FROM python:3.13-alpine
 
 LABEL maintainer="Peng Xiao <xiaoquwl@gmail.com>"
 
+# Install uv binary from official image
+COPY --from=ghcr.io/astral-sh/uv:0.9.15 /uv /bin/uv
+
 RUN apk add --no-cache gcc musl-dev g++
 
-ADD . /yabgp
+COPY . /yabgp
 
 WORKDIR /yabgp
 
-RUN pip install -r requirements.txt && python setup.py install
+ENV UV_LINK_MODE=copy
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked --no-dev
 
 EXPOSE 8801
 
 VOLUME ["~/data"]
 
-ENTRYPOINT ["/usr/local/bin/yabgpd"]
+ENTRYPOINT ["/yabgp/.venv/bin/yabgpd"]
 
 CMD []

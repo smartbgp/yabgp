@@ -13,8 +13,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import struct
 import binascii
+import struct
+
 from yabgp.message.attribute.linkstate.linkstate import LinkState
 from yabgp.tlv import TLV
 
@@ -70,10 +71,10 @@ class AppSpecLinkAttr(TLV):
             sabm_bytes = data[offset:offset + sabm_len]
             if sabm_len == 4:
                 sabm_int = struct.unpack('!I', sabm_bytes)[0]
-                sabm = '0x{:08x}'.format(sabm_int)
+                sabm = f'0x{sabm_int:08x}'
             elif sabm_len == 8:
                 sabm_int = struct.unpack('!Q', sabm_bytes)[0]
-                sabm = '0x{:016x}'.format(sabm_int)
+                sabm = f'0x{sabm_int:016x}'
             else:
                 sabm = '0x' + binascii.b2a_hex(sabm_bytes).decode('ascii')
             offset += sabm_len
@@ -84,10 +85,10 @@ class AppSpecLinkAttr(TLV):
             udabm_bytes = data[offset:offset + udabm_len]
             if udabm_len == 4:
                 udabm_int = struct.unpack('!I', udabm_bytes)[0]
-                udabm = '0x{:08x}'.format(udabm_int)
+                udabm = f'0x{udabm_int:08x}'
             elif udabm_len == 8:
                 udabm_int = struct.unpack('!Q', udabm_bytes)[0]
-                udabm = '0x{:016x}'.format(udabm_int)
+                udabm = f'0x{udabm_int:016x}'
             else:
                 udabm = '0x' + binascii.b2a_hex(udabm_bytes).decode('ascii')
             offset += udabm_len

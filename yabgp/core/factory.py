@@ -17,20 +17,19 @@ Twisted Factory, BGP implementation.
 """
 
 import logging
-import socket
 import platform
+import socket
 import struct
 import sys
 
 import netaddr
-from twisted.internet import protocol
-from twisted.internet import reactor
 from oslo_config import cfg
+from twisted.internet import protocol, reactor
 
-from yabgp.core.protocol import BGP
-from yabgp.core.fsm import FSM
 from yabgp.common import constants as bgp_cons
 from yabgp.common.afn import AFNUM_INET
+from yabgp.core.fsm import FSM
+from yabgp.core.protocol import BGP
 
 LOG = logging.getLogger(__name__)
 
@@ -101,7 +100,6 @@ class BGPPeering(BGPFactory):
         self.estab_protocol = None
 
     def buildProtocol(self, addr):
-
         """Builds a BGP protocol instance
 
         :param addr: IP address used for building protocol.
@@ -115,7 +113,6 @@ class BGPPeering(BGPFactory):
         return p
 
     def _initProtocol(self, protocol, addr):
-
         """Initializes a BGPProtocol instance
 
         :param protocol: twisted Protocol
@@ -134,14 +131,13 @@ class BGPPeering(BGPFactory):
             protocol.fsm.state = bgp_cons.ST_ACTIVE
 
     def clientConnectionFailed(self, connector, reason):
-
         """Called when the outgoing connection failed.
 
         :param connector: Twisted connector
         :param reason: connection failed reason
         """
 
-        error_msg = "[%s]Client connection failed: %s" % (self.peer_addr, reason.getErrorMessage())
+        error_msg = f"[{self.peer_addr}]Client connection failed: {reason.getErrorMessage()}"
         self.handler.on_connection_failed(self.peer_addr, reason.getErrorMessage())
         LOG.info(error_msg)
         # There is no protocol instance yet at this point.
@@ -152,7 +148,6 @@ class BGPPeering(BGPFactory):
             LOG.info("[%s]Client connection failed: %s", self.peer_addr, e)
 
     def automatic_start(self, idle_hold=False):
-
         """BGP AutomaticStart event (event 3)
 
         :param idle_hold: flag represents used Idle Hold
@@ -175,7 +170,6 @@ class BGPPeering(BGPFactory):
             return False
 
     def manual_stop(self):
-
         """BGP ManualStop event (event 2) Returns a DeferredList that
         will fire once the connection(s) have closed"""
 
@@ -202,7 +196,6 @@ class BGPPeering(BGPFactory):
             self.automatic_start(idle_hold=True)
 
     def connect_retry(self):
-
         """Called by FSM when we should reattempt to connect.
         """
         try:
@@ -231,7 +224,6 @@ class BGPPeering(BGPFactory):
             self.peer_id = None
 
     def connect(self):
-
         """Initiates a TCP client connection to the peer. Should only be called from
         BGPPeering or FSM, otherwise use manualStart() instead.
         """
@@ -281,13 +273,12 @@ class BGPPeering(BGPFactory):
             n_port = socket.htons(port)
             if afi == AFNUM_INET:
                 n_addr = socket.inet_pton(socket.AF_INET, host)
-                tcp_md5sig = 'HH4s%dx2xH4x%ds' % (
-                    bgp_cons.SS_PADSIZE_IPV4, bgp_cons.TCP_MD5SIG_MAXKEYLEN)
+                tcp_md5sig = f'HH4s{bgp_cons.SS_PADSIZE_IPV4}x2xH4x{bgp_cons.TCP_MD5SIG_MAXKEYLEN}s'
                 md5sig = struct.pack(
                     tcp_md5sig, socket.AF_INET, n_port, n_addr, len(md5_str), md5_str.encode())
                 return md5sig
             else:
                 return None
-        except socket.error as e:
+        except OSError as e:
             LOG.error('This linux machine does not support TCP_MD5SIG: (%s)', str(e))
             return None

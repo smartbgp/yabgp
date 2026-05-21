@@ -13,16 +13,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from __future__ import division
-import struct
 import binascii
-
+import struct
 
 import netaddr
 
-from yabgp.message.attribute.nlri import NLRI
-from yabgp.common.afn import AFNUM_INET6, AFNUM_INET
+from yabgp.common.afn import AFNUM_INET, AFNUM_INET6
 from yabgp.common.safn import SAFNUM_MPLS_LABEL
+from yabgp.message.attribute.nlri import NLRI
 
 
 class LabeledUnicast(NLRI):

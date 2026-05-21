@@ -17,7 +17,6 @@
 
 import unittest
 
-
 from yabgp.message.notification import Notification
 
 

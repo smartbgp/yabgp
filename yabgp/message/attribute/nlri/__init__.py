@@ -13,14 +13,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from __future__ import division
-import struct
 import binascii
+import struct
 
 import netaddr
 
 
-class NLRI(object):
+class NLRI:
 
     @classmethod
     def parse(cls, *args):

@@ -17,8 +17,8 @@
 
 import unittest
 
-from yabgp.common.exception import UpdateMessageError
 from yabgp.common.constants import ERR_MSG_UPDATE_OPTIONAL_ATTR
+from yabgp.common.exception import UpdateMessageError
 from yabgp.message.attribute.atomicaggregate import AtomicAggregate
 
 

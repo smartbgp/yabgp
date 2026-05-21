@@ -18,7 +18,7 @@
 import struct
 
 
-class RouteRefresh(object):
+class RouteRefresh:
 
     """
     Route Refresh message

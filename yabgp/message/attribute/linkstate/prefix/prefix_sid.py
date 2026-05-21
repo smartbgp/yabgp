@@ -16,6 +16,7 @@
 import binascii
 
 from yabgp.tlv import TLV
+
 from ..linkstate import LinkState
 
 # https://datatracker.ietf.org/doc/draft-ietf-idr-bgp-ls-segment-routing-ext/?include_text=1

@@ -15,9 +15,8 @@
 """linkstate
 """
 
-from __future__ import division
-import struct
 import binascii
+import struct
 
 import netaddr
 
@@ -161,7 +160,7 @@ class BGPLS(NLRI):
                     for i in range(0, (128 - mask) // 8):
                         prefix_bit += b'\x00'
                     ip_str = str(netaddr.IPAddress(int(binascii.b2a_hex(prefix_bit), 16)))
-                descriptor['value'] = "%s/%s" % (ip_str, mask)
+                descriptor['value'] = f"{ip_str}/{mask}"
             elif _type == 518:  # SRv6 SID Information
                 # Refer: https://datatracker.ietf.org/doc/html/draft-ietf-idr-bgpls-srv6-ext-14#section-6.1
                 descriptor['type'] = 'srv6_sid_information'

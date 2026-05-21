@@ -18,22 +18,19 @@
 
 import struct
 
-from yabgp.message.attribute import Attribute
-from yabgp.message.attribute import AttributeFlag
-from yabgp.message.attribute import AttributeID
+from yabgp.common import afn, safn
+from yabgp.common import constants as bgp_cons
+from yabgp.common import exception as excep
+from yabgp.message.attribute import Attribute, AttributeFlag, AttributeID
+from yabgp.message.attribute.nlri.evpn import EVPN
+from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
 from yabgp.message.attribute.nlri.ipv4_mpls_vpn import IPv4MPLSVPN
+from yabgp.message.attribute.nlri.ipv4_srte import IPv4SRTE
 from yabgp.message.attribute.nlri.ipv4_unicast import IPv4Unicast
 from yabgp.message.attribute.nlri.ipv6_mpls_vpn import IPv6MPLSVPN
-from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
 from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
 from yabgp.message.attribute.nlri.labeled_unicast.ipv4 import IPv4LabeledUnicast
-from yabgp.message.attribute.nlri.evpn import EVPN
 from yabgp.message.attribute.nlri.linkstate import BGPLS
-from yabgp.message.attribute.nlri.ipv4_srte import IPv4SRTE
-from yabgp.common import afn
-from yabgp.common import safn
-from yabgp.common import exception as excep
-from yabgp.common import constants as bgp_cons
 
 
 class MpUnReachNLRI(Attribute):

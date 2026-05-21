@@ -18,8 +18,8 @@
 
 import unittest
 
-from yabgp.common.exception import UpdateMessageError
 from yabgp.common.constants import ERR_MSG_UPDATE_ATTR_LEN
+from yabgp.common.exception import UpdateMessageError
 from yabgp.message.attribute.localpref import LocalPreference
 
 

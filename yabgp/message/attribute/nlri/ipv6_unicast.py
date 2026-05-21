@@ -15,8 +15,9 @@
 
 """ IPv6 Unicast """
 
-import struct
 import binascii
+import struct
+
 import netaddr
 
 from yabgp.message.attribute.nlri import NLRI
@@ -56,7 +57,7 @@ class IPv6Unicast(NLRI):
             for i in range(0, zero_len):
                 prefix_bit += b'\x00'
 
-            prefix_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(prefix_bit), 16))) + '/%s' % prefix_bit_len
+            prefix_addr = str(netaddr.IPAddress(int(binascii.b2a_hex(prefix_bit), 16))) + f'/{prefix_bit_len}'
             if addpath:
                 nlri_list.append({'prefix': prefix_addr, 'path_id': path_id})
             else:

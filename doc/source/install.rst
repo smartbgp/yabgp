@@ -1,40 +1,30 @@
 Installation
 ============
 
-We recommend run ``yabgp`` through python virtual-env from source
-code or pip install
+Python >= 3.13 is required.
 
-From source code
-~~~~~~~~~~~~~~~~
-
-Use yabgp from source code:
+From source (using uv)
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: bash
 
-    $ virtualenv yabgp-virl
-    $ source yabgp-virl/bin/activate
     $ git clone https://github.com/smartbgp/yabgp
     $ cd yabgp
-    $ pip install -r requirements.txt
-    $ cd bin
-    $ python yabgpd -h
+    $ uv sync
+    $ uv run yabgpd -h
 
 From pip
 ~~~~~~~~
 
-Use pip install
+.. code:: bash
+
+    $ pip install yabgp
+    $ yabgpd -h
+
+Using Docker
+~~~~~~~~~~~~
 
 .. code:: bash
 
-    $ virtualenv yabgp-virl
-    $ source yabgp-virl/bin/activate
-    $ pip install yabgp
-    $ which yabgpd
-    /home/yabgp/yabgp-virl/bin/yabgpd
-    $ yabgpd -h
-
-.. note::
-
-    For ``virtualenv``, you can install it from pip. And make sure you have installed ``python-dev`` based on
-    your operation system, for example Ubuntu, you can install it from ``apt-get install python-dev``.
-    otherwise, you may get error when install requirement from requirements.txt
+    $ docker run -it smartbgp/yabgp:latest --bgp-afi_safi=ipv4 \
+        --bgp-local_as=65022 --bgp-remote_addr=10.75.44.219 --bgp-remote_as=65022

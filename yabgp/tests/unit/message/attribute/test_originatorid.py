@@ -18,8 +18,8 @@
 
 import unittest
 
-from yabgp.common.constants import ERR_MSG_UPDATE_ATTR_LEN
 from yabgp.common import exception as excep
+from yabgp.common.constants import ERR_MSG_UPDATE_ATTR_LEN
 from yabgp.message.attribute.originatorid import OriginatorID
 
 

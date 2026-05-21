@@ -16,6 +16,7 @@
 """IPv4 SR TE Policy NLRI
 """
 import struct
+
 import netaddr
 
 from yabgp.message.attribute.nlri import NLRI

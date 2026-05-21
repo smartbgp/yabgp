@@ -16,28 +16,25 @@
 """BGP Attribute MP_REACH_NLRI
 """
 
-import struct
 import binascii
+import struct
 
 import netaddr
 
-from yabgp.message.attribute import Attribute
-from yabgp.message.attribute import AttributeFlag
-from yabgp.message.attribute import AttributeID
-from yabgp.common import afn
-from yabgp.common import safn
-from yabgp.common import exception as excep
+from yabgp.common import afn, safn
 from yabgp.common import constants as bgp_cons
-from yabgp.message.attribute.nlri.ipv4_mpls_vpn import IPv4MPLSVPN
-from yabgp.message.attribute.nlri.ipv6_mpls_vpn import IPv6MPLSVPN
+from yabgp.common import exception as excep
+from yabgp.message.attribute import Attribute, AttributeFlag, AttributeID
+from yabgp.message.attribute.nlri.evpn import EVPN
 from yabgp.message.attribute.nlri.ipv4_flowspec import IPv4FlowSpec
-from yabgp.message.attribute.nlri.ipv6_flowspec import IPv6FlowSpec
+from yabgp.message.attribute.nlri.ipv4_mpls_vpn import IPv4MPLSVPN
 from yabgp.message.attribute.nlri.ipv4_srte import IPv4SRTE
+from yabgp.message.attribute.nlri.ipv4_unicast import IPv4Unicast
+from yabgp.message.attribute.nlri.ipv6_flowspec import IPv6FlowSpec
+from yabgp.message.attribute.nlri.ipv6_mpls_vpn import IPv6MPLSVPN
 from yabgp.message.attribute.nlri.ipv6_unicast import IPv6Unicast
 from yabgp.message.attribute.nlri.labeled_unicast.ipv4 import IPv4LabeledUnicast
 from yabgp.message.attribute.nlri.labeled_unicast.ipv6 import IPv6LabeledUnicast
-from yabgp.message.attribute.nlri.ipv4_unicast import IPv4Unicast
-from yabgp.message.attribute.nlri.evpn import EVPN
 from yabgp.message.attribute.nlri.linkstate import BGPLS
 
 
@@ -249,7 +246,7 @@ class MpReachNLRI(Attribute):
                             + struct.pack('!H', len(attr_value)) + attr_value
                 except Exception as e:
                     raise excep.ConstructAttributeFailed(
-                        reason='failed to construct attributes: %s' % e,
+                        reason=f'failed to construct attributes: {e}',
                         data=value
                     )
             elif safi == safn.SAFNUM_SRTE:  # BGP SR TE Policy
@@ -267,7 +264,7 @@ class MpReachNLRI(Attribute):
                             + struct.pack('!H', len(attr_value)) + attr_value
                 except Exception as e:
                     raise excep.ConstructAttributeFailed(
-                        reason='failed to construct attributes: %s' % e,
+                        reason=f'failed to construct attributes: {e}',
                         data=value
                     )
             elif safi == safn.SAFNUM_MPLS_LABEL:
@@ -285,7 +282,7 @@ class MpReachNLRI(Attribute):
                             + struct.pack('!H', len(attr_value)) + attr_value
                 except Exception as e:
                     raise excep.ConstructAttributeFailed(
-                        reason='failed to construct attributes: %s' % e,
+                        reason=f'failed to construct attributes: {e}',
                         data=value
                     )
             else:
@@ -318,7 +315,7 @@ class MpReachNLRI(Attribute):
                             + struct.pack('!H', len(attr_value)) + attr_value
                 except Exception as e:
                     raise excep.ConstructAttributeFailed(
-                        reason='failed to construct attributes: %s' % e,
+                        reason=f'failed to construct attributes: {e}',
                         data=value
                     )
             elif safi == safn.SAFNUM_UNICAST:
@@ -349,7 +346,7 @@ class MpReachNLRI(Attribute):
                             + struct.pack('!H', len(attr_value)) + attr_value
                 except Exception as e:
                     raise excep.ConstructAttributeFailed(
-                        reason='failed to construct attributes: %s' % e,
+                        reason=f'failed to construct attributes: {e}',
                         data=value
                     )
             else:

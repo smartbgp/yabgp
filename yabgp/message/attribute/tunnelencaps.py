@@ -20,11 +20,9 @@ import struct
 
 import netaddr
 
-from yabgp.message.attribute import Attribute
-from yabgp.message.attribute import AttributeFlag
-from yabgp.message.attribute import AttributeID
 from yabgp.common import constants as bgp_cons
 from yabgp.common import exception as excep
+from yabgp.message.attribute import Attribute, AttributeFlag, AttributeID
 
 
 class TunnelEncaps(Attribute):
@@ -86,20 +84,24 @@ class TunnelEncaps(Attribute):
             if seg_type == bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_MPLS:
                 value = seg[list(seg)[0]]
                 sum_value = cls.construct_optional_label_sid(value)
-                seg_hex += struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_MPLS) + struct.pack('!B', 6) + b'\x00\x00' +\
-                    struct.pack('!I', sum_value)
+                seg_hex += (struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_MPLS)
+                            + struct.pack('!B', 6) + b'\x00\x00'
+                            + struct.pack('!I', sum_value))
             # 3
             elif seg_type == bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_SID:
                 value = seg[list(seg)[0]]
                 ipv4_node = value['node']
                 if "SID" not in value.keys():
-                    seg_hex += struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_SID) + struct.pack('!B', 6) + b'\x00\x00' +\
-                        netaddr.IPAddress(ipv4_node).packed
+                    seg_hex += (struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_SID)
+                                + struct.pack('!B', 6) + b'\x00\x00'
+                                + netaddr.IPAddress(ipv4_node).packed)
                 else:
                     opt_sid = value['SID']
                     sum_value = cls.construct_optional_label_sid(opt_sid)
-                    seg_hex += struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_SID) + struct.pack('!B', 10) + b'\x00\x00' +\
-                        netaddr.IPAddress(ipv4_node).packed + struct.pack('!I', sum_value)
+                    seg_hex += (struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_SID)
+                                + struct.pack('!B', 10) + b'\x00\x00'
+                                + netaddr.IPAddress(ipv4_node).packed
+                                + struct.pack('!I', sum_value))
             # 5
             elif seg_type == bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_INDEX_SID:
                 value = seg[list(seg)[0]]
@@ -121,19 +123,22 @@ class TunnelEncaps(Attribute):
                 local_ipv4 = value['local']
                 remote_ipv4 = value['remote']
                 if "SID" not in value.keys():
-                    seg_hex += struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_ADDR_SID) + struct.pack('!B', 10) +\
-                        b'\x00\x00' + netaddr.IPAddress(local_ipv4).packed + netaddr.IPAddress(remote_ipv4).packed
+                    seg_hex += (struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_ADDR_SID)
+                                + struct.pack('!B', 10) + b'\x00\x00'
+                                + netaddr.IPAddress(local_ipv4).packed
+                                + netaddr.IPAddress(remote_ipv4).packed)
                 else:
                     opt_sid = value['SID']
                     sum_value = cls.construct_optional_label_sid(opt_sid)
-                    seg_hex += struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_ADDR_SID) + struct.pack('!B', 14) +\
-                        b'\x00\x00' + netaddr.IPAddress(local_ipv4).packed + netaddr.IPAddress(remote_ipv4).packed +\
-                        struct.pack('!I', sum_value)
+                    seg_hex += (struct.pack('!B', bgp_cons.BGP_SRTE_SEGMENT_SUBTLV_IPV4_ADDR_SID)
+                                + struct.pack('!B', 14) + b'\x00\x00'
+                                + netaddr.IPAddress(local_ipv4).packed
+                                + netaddr.IPAddress(remote_ipv4).packed
+                                + struct.pack('!I', sum_value))
         return weight_hex, seg_hex
 
     @classmethod
     def construct(cls, value):
-
         """Construct a attribute
 
         :param value: python dictionary
@@ -168,12 +173,12 @@ class TunnelEncaps(Attribute):
         """
         policy_hex = b''
         policy = value
-        data = dict([(int(l), r) for (l, r) in policy.items()])
+        data = dict([(int(k), r) for (k, r) in policy.items()])
         policy_value_hex = b''
         items = data.keys()
         if bgp_cons.BGP_BSID_PREFERENCE_OLD_OR_NEW not in items:
             raise excep.ConstructAttributeFailed(
-                reason='failed to construct attributes: %s' % 'please provide the value of TLV encoding',
+                reason='failed to construct attributes: {}'.format('please provide the value of TLV encoding'),
                 data={}
             )
         for type_tmp in items:
@@ -188,29 +193,34 @@ class TunnelEncaps(Attribute):
                     # Preference Sub-TLV
                     if bgp_cons.BGPSUB_TLV_PREFERENCE not in items:
                         if bgp_cons.BGPSUB_TLV_PREFERENCE_NEW in items:
-                            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE) + struct.pack('!B', 6) + \
-                                b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_PREFERENCE_NEW])
+                            policy_value_hex += (struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE)
+                                                 + struct.pack('!B', 6) + b'\x00\x00'
+                                                 + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_PREFERENCE_NEW]))
                     else:
-                        policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE) + struct.pack('!B', 6) + \
-                            b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_PREFERENCE])
+                        policy_value_hex += (struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE)
+                                             + struct.pack('!B', 6) + b'\x00\x00'
+                                             + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_PREFERENCE]))
                     # Binding SID Sub-TLV
                     if bgp_cons.BGPSUB_TLV_BINDGINGSID not in items:
                         if bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW not in items:
-                            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID) + struct.pack('!B', 2) +\
-                                b'\x00\x00'
+                            policy_value_hex += (struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID)
+                                                 + struct.pack('!B', 2) + b'\x00\x00')
                         else:
-                            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID) + struct.pack('!B', 6) +\
-                                b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW] << 12)
+                            policy_value_hex += (struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID)
+                                                 + struct.pack('!B', 6) + b'\x00\x00'
+                                                 + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW] << 12))
                     else:
-                        policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID) + struct.pack('!B', 6) +\
-                            b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID] << 12)
+                        policy_value_hex += (struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID)
+                                             + struct.pack('!B', 6) + b'\x00\x00'
+                                             + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID] << 12))
                 # new ios
                 elif data[type_tmp] == 'new':
                     # Preference Sub-TLV
                     if bgp_cons.BGPSUB_TLV_PREFERENCE not in items:
                         if bgp_cons.BGPSUB_TLV_PREFERENCE_NEW in items:
-                            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE_NEW) + struct.pack('!B', 6) + \
-                                b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_PREFERENCE_NEW])
+                            policy_value_hex += (struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE_NEW)
+                                                 + struct.pack('!B', 6) + b'\x00\x00'
+                                                 + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_PREFERENCE_NEW]))
                     # else:
                     #     policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_PREFERENCE_NEW) + \
                     #         struct.pack('!B', 6) + b'\x00\x00' \
@@ -218,27 +228,33 @@ class TunnelEncaps(Attribute):
                     # Binding SID Sub-TLV
                     if bgp_cons.BGPSUB_TLV_BINDGINGSID not in items:
                         if bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW not in items:
-                            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW) + struct.pack('!B', 2) +\
-                                b'\x00\x00'
+                            policy_value_hex += (struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW)
+                                                 + struct.pack('!B', 2) + b'\x00\x00')
                         else:
-                            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW) + struct.pack('!B', 6) +\
-                                b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW] << 12)
+                            policy_value_hex += (struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW)
+                                                 + struct.pack('!B', 6) + b'\x00\x00'
+                                                 + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW] << 12))
                     else:
-                        policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW) + struct.pack('!B', 6) +\
-                            b'\x00\x00' + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID] << 12)
+                        policy_value_hex += (struct.pack('!B', bgp_cons.BGPSUB_TLV_BINDGINGSID_NEW)
+                                             + struct.pack('!B', 6) + b'\x00\x00'
+                                             + struct.pack('!I', data[bgp_cons.BGPSUB_TLV_BINDGINGSID] << 12))
                     # Explicit NULL Label Policy Sub-TLV
                     if bgp_cons.BGPSUB_TLV_ENLP_NEW in items:
-                            policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_ENLP_NEW) + struct.pack('!B', 3) + \
-                                b'\x00\x00' + struct.pack('!B', data[bgp_cons.BGPSUB_TLV_ENLP_NEW])
+                        policy_value_hex += (struct.pack('!B', bgp_cons.BGPSUB_TLV_ENLP_NEW)
+                                             + struct.pack('!B', 3) + b'\x00\x00'
+                                             + struct.pack('!B', data[bgp_cons.BGPSUB_TLV_ENLP_NEW]))
                     # Policy Priority Sub-TLV
                     if bgp_cons.BGPSUB_TLV_PRIORITY_NEW in items:
-                        policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_PRIORITY_NEW) + struct.pack('!B', 2) + \
-                            struct.pack('!B', data[bgp_cons.BGPSUB_TLV_PRIORITY_NEW]) + b'\x00'
+                        policy_value_hex += (struct.pack('!B', bgp_cons.BGPSUB_TLV_PRIORITY_NEW)
+                                             + struct.pack('!B', 2)
+                                             + struct.pack('!B', data[bgp_cons.BGPSUB_TLV_PRIORITY_NEW])
+                                             + b'\x00')
                     # Policy Name Sub-TLV
                     if bgp_cons.BGPSUB_TLV_POLICYNAME_NEW in items:
                         length = len(data[bgp_cons.BGPSUB_TLV_POLICYNAME_NEW]) + 1
-                        policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_POLICYNAME_NEW) + struct.pack('!H', length) + \
-                            b'\x00' + str(data[bgp_cons.BGPSUB_TLV_POLICYNAME_NEW]).encode('ascii')
+                        policy_value_hex += (struct.pack('!B', bgp_cons.BGPSUB_TLV_POLICYNAME_NEW)
+                                             + struct.pack('!H', length) + b'\x00'
+                                             + str(data[bgp_cons.BGPSUB_TLV_POLICYNAME_NEW]).encode('ascii'))
                     # 3.1.  The Remote Endpoint Sub-TLV:
                     if bgp_cons.BGPSUB_TLV_REMOTEENDPOINT_NEW in items:
                         asn = data[bgp_cons.BGPSUB_TLV_REMOTEENDPOINT_NEW].get('asn')
@@ -252,26 +268,31 @@ class TunnelEncaps(Attribute):
                             af_value = 2
                         else:
                             raise excep.ConstructAttributeFailed(
-                                reason='failed to construct attributes: %s' % 'remote endpoint address family'
-                                                                              ' is ipv4 or ipv6',
+                                reason='failed to construct attributes: {}'.format('remote endpoint address family'
+                                                                                   ' is ipv4 or ipv6'),
                                 data={}
                             )
-                        policy_value_hex += struct.pack('!B', bgp_cons.BGPSUB_TLV_REMOTEENDPOINT_NEW) + struct.pack('!B', length) \
-                            + struct.pack('!I', asn) + struct.pack('!H', af_value) + netaddr.IPAddress(address).packed
+                        policy_value_hex += (struct.pack('!B', bgp_cons.BGPSUB_TLV_REMOTEENDPOINT_NEW)
+                                             + struct.pack('!B', length)
+                                             + struct.pack('!I', asn)
+                                             + struct.pack('!H', af_value)
+                                             + netaddr.IPAddress(address).packed)
 
                 else:
                     raise excep.ConstructAttributeFailed(
-                        reason='failed to construct attributes: %s' % 'TLV encoding must be one value of new or old',
+                        reason='failed to construct attributes: {}'.format(
+                            'TLV encoding must be one value of new or old'),
                         data={}
                     )
             if type_tmp == bgp_cons.BGPSUB_TLV_SIDLIST:
                 # Sub_TLV segment list
                 seg_list_hex = b''
                 for seg_list in data[type_tmp]:
-                    segment_list = dict([(int(l), r) for (l, r) in seg_list.items()])
+                    segment_list = dict([(int(k), r) for (k, r) in seg_list.items()])
                     weight_hex, seg_hex = cls.construct_weight_and_seg(segment_list)
-                    seg_list_hex += struct.pack('!B', type_tmp) + struct.pack('!H', len(weight_hex) + len(seg_hex) + 1) +\
-                        b'\x00' + weight_hex + seg_hex
+                    seg_list_hex += (struct.pack('!B', type_tmp)
+                                     + struct.pack('!H', len(weight_hex) + len(seg_hex) + 1)
+                                     + b'\x00' + weight_hex + seg_hex)
                 policy_value_hex += seg_list_hex
         policy_hex += struct.pack('!H', bgp_cons.BGP_TUNNEL_ENCAPS_SR_TE_POLICY_TYPE) +\
             struct.pack('!H', len(policy_value_hex)) + policy_value_hex

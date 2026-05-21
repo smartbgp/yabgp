@@ -16,14 +16,15 @@
 """ BGP Open message"""
 
 import struct
+
 import netaddr
 
-from yabgp.common import exception as excp
 from yabgp.common import constants as bgp_cons
+from yabgp.common import exception as excp
 from yabgp.common.constants import AFI_SAFI_STR_DICT
 
 
-class Open(object):
+class Open:
     """
     After a TCP connection is established, the first message sent by each
     side is an OPEN message. If the OPEN message is acceptable, a
@@ -32,7 +33,6 @@ class Open(object):
 
     def __init__(self, version=None, asn=None, hold_time=None,
                  bgp_id=None, opt_para_len=None, opt_paras=None):
-
         """
         :param version: BGP Protocol version.
         :param asn: AS number.
@@ -67,14 +67,13 @@ class Open(object):
         # used to store Capabilities {code: value}
 
     def parse(self, message):
-
         """Parses a BGP Open message"""
 
         try:
             self.version, self.asn, self.hold_time, \
                 self.bgp_id, self.opt_para_len = struct.unpack('!BHHIB', message[:10])
 
-        except:
+        except struct.error:
             raise excp.MessageHeaderError(
                 sub_error=bgp_cons.ERR_MSG_HDR_BAD_MSG_LEN,
                 data=message[:10])
@@ -223,7 +222,6 @@ class Open(object):
 
     @staticmethod
     def construct_header(msg):
-
         """Prepends the mandatory header to a constructed BGP message
         # 16-octet     2-octet  1-octet
         #---------------+--------+---------+------+
@@ -233,7 +231,6 @@ class Open(object):
         return b'\xff' * 16 + struct.pack('!HB', len(msg) + 19, 1) + msg
 
     def construct(self, my_capability):
-
         """ Construct a BGP Open message """
         capas = b''
         # Construct Capabilities Optional Parameter (Parameter Type 2)
@@ -275,7 +272,7 @@ class Open(object):
 
 # ========================================================================== Optional Parameters
 
-class Capability(object):
+class Capability:
     """
        The parameter contains one or more triples <Capability Code,
        Capability Length, Capability Value>, where each triple is encoded as
@@ -364,7 +361,6 @@ class Capability(object):
     reserved = range(128, 256)
 
     def __init__(self, capa_code=None, capa_length=None, capa_value=None):
-
         """
           +------------------------------+
           | Capability Code (1 octet)    |
@@ -380,20 +376,18 @@ class Capability(object):
         self.capa_value = capa_value
 
     def parse(self, message):
-
         """
         Partition Capabilities message one by one
         """
         try:
             self.capa_code, self.capa_length = struct.unpack('!BB', message[:2])
-        except:
+        except struct.error:
             raise excp.OpenMessageError(
                 sub_error=bgp_cons.ERR_MSG_HDR_BAD_MSG_LEN,
                 data=message[:2])
         self.capa_value = message[2:self.capa_length + 2]
 
     def construct(self, my_capability=None):
-
         """ Construct a capability PDU """
 
         # for 4 bytes as

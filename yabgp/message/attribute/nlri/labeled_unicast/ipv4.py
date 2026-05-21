@@ -13,8 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from yabgp.message.attribute.nlri.labeled_unicast import LabeledUnicast
 from yabgp.common.afn import AFNUM_INET
+from yabgp.message.attribute.nlri.labeled_unicast import LabeledUnicast
 
 
 class IPv4LabeledUnicast(LabeledUnicast):

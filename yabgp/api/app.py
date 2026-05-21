@@ -17,10 +17,9 @@
 """
 
 import flask
-
-from yabgp.api import v1
-from yabgp.api import config
 from oslo_config import cfg
+
+from yabgp.api import config, v1
 
 app = flask.Flask('yabgp.api')
 app.config['SECRET_KEY'] = 'cisco123'
@@ -81,4 +80,4 @@ def version_descriptor(base_url, version):
 
 
 def version_url(base_url, version_number):
-    return '%s/%s' % (base_url, version_number)
+    return f'{base_url}/{version_number}'

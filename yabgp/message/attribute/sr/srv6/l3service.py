@@ -13,13 +13,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import binascii
 import struct
 
-import binascii
-
 from yabgp.tlv import TLV
-from ..bgpprefixsid import BGPPrefixSID
 
+from ..bgpprefixsid import BGPPrefixSID
 
 # 2.  SRv6 Services TLVs
 #

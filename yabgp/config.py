@@ -20,8 +20,7 @@ import sys
 
 from oslo_config import cfg
 
-from yabgp.common.constants import AFI_SAFI_STR_DICT
-from yabgp.common.constants import AFI_STR_DICT
+from yabgp.common.constants import AFI_SAFI_STR_DICT, AFI_STR_DICT
 
 CONF = cfg.CONF
 

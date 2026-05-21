@@ -15,8 +15,6 @@
 
 """IPv6 Flowspec NLRI
 """
-from __future__ import division
-from builtins import range
 import binascii
 import math
 import struct
@@ -78,7 +76,7 @@ class IPv6FlowSpec(NLRI):
     def construct_nlri(cls, data):
         """ Construct NLRI """
         # there may have many filters in each nlri
-        data = dict([(int(l), r) for (l, r) in data.items()])
+        data = dict([(int(k), r) for (k, r) in data.items()])
         nlri_tmp = b''
         for type_tmp in [bgp_cons.BGPNLRI_IPV6_FSPEC_DST_PFIX, bgp_cons.BGPNLRI_IPV6_FSPEC_SRC_PFIX]:
             if data.get(type_tmp):
@@ -116,7 +114,7 @@ class IPv6FlowSpec(NLRI):
         else:
             prefix_data = [ord(i) for i in tmp]
         prefix_data = prefix_data + list(str(0)) * 4
-        prefix = "%s.%s.%s.%s" % (tuple(prefix_data[0:4])) + '/' + str(prefix_len)
+        prefix = "{}.{}.{}.{}".format(*tuple(prefix_data[0:4])) + '/' + str(prefix_len)
         return prefix, octet_len + 1
 
     @classmethod

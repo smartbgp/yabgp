@@ -14,8 +14,8 @@
 #    under the License.
 
 from yabgp.tlv import TLV
-from .sidinformation import SRv6SIDInformation
 
+from .sidinformation import SRv6SIDInformation
 
 # 3.2.1.  SRv6 SID Structure Sub-Sub-TLV
 #

@@ -15,19 +15,29 @@ Step 3: Read on
 Running Tests
 -------------
 
-Run tox
+Using uv + pytest (recommended):
 
 .. code:: bash
-  
+
   $ cd yabgp
-  $ tox
+  $ uv sync --group test --group dev
+  $ uv run pytest yabgp/tests/unit/ -v
+
+Running Lint / Type Check
+-------------------------
+
+.. code:: bash
+
+  $ cd yabgp
+  $ uv run ruff check yabgp/ --exclude yabgp/tests
+  $ uv run pyright
+
 
 Building Docs
 -------------
 
-Run tox
-
 .. code:: bash
-  
+
   $ cd yabgp
-  $ tox
+  $ uv sync --group docs
+  $ uv run sphinx-build -b html doc/source doc/build

@@ -1,0 +1,14 @@
+{
+  "include": [
+    "yabgp"
+  ],
+  "typeCheckingMode": "off",
+  "reportDeprecated": "error",
+  "exclude": [
+    ".venv",
+    ".git",
+    "build",
+    "dist",
+    "doc"
+  ]
+}

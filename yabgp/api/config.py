@@ -15,7 +15,6 @@
 
 from oslo_config import cfg
 
-
 CONF = cfg.CONF
 
 rest_server_ops = [

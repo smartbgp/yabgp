@@ -1,16 +1,14 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
 
 # import json
 # replace with simplejson
-import simplejson as json
-
-import os
-import time
 import logging
-import traceback
+import os
 import sys
+import time
+import traceback
 
+import simplejson as json
 from oslo_config import cfg
 
 from yabgp.common import constants as bgp_cons
@@ -41,7 +39,7 @@ CONF.register_opts(MSG_PROCESS_OPTS, group='message')
 
 class DefaultHandler(BaseHandler):
     def __init__(self):
-        super(DefaultHandler, self).__init__()
+        super().__init__()
         '''
             {<peer>: (<path>, <current file>)}
         '''
@@ -74,7 +72,7 @@ class DefaultHandler(BaseHandler):
             last_msg_seq, msg_file_name = DefaultHandler.get_last_seq_and_file(msg_path)
 
             if not msg_file_name:
-                msg_file_name = "%s.msg" % time.time()
+                msg_file_name = f"{time.time()}.msg"
             # store the message sequence
             self.msg_sequence[peer_addr] = last_msg_seq + 1
             msg_file = open(os.path.join(msg_path, msg_file_name), 'a')
@@ -97,7 +95,7 @@ class DefaultHandler(BaseHandler):
         file_list.sort()
         msg_file_name = file_list[-1]
         try:
-            with open(msg_path + msg_file_name, 'r') as fh:
+            with open(msg_path + msg_file_name) as fh:
                 line = None
                 for line in fh:
                     pass
@@ -154,7 +152,7 @@ class DefaultHandler(BaseHandler):
         if msg_path:
             if os.path.getsize(cur_file.name) >= CONF.message.write_msg_max_size:
                 cur_file.close()
-                msg_file_name = "%s.msg" % time.time()
+                msg_file_name = f"{time.time()}.msg"
                 LOG.info('Open a new message file %s', msg_file_name)
                 msg_file = open(os.path.join(msg_path + msg_file_name), 'a')
                 self.peer_files[peer.lower()] = (msg_path, msg_file)

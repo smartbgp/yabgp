@@ -13,8 +13,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from yabgp.tlv import TLV
 from yabgp.net import IPAddress
+from yabgp.tlv import TLV
+
 from ..linkstate import LinkState
 
 

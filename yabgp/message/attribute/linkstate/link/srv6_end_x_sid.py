@@ -19,6 +19,7 @@ import struct
 import netaddr
 
 from yabgp.tlv import TLV
+
 from ..linkstate import LinkState
 
 

@@ -17,8 +17,8 @@
 
 import unittest
 
-from yabgp.message.keepalive import KeepAlive
 from yabgp.common.exception import MessageHeaderError
+from yabgp.message.keepalive import KeepAlive
 
 
 class TestKeepAlive(unittest.TestCase):

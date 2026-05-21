@@ -1,5 +1,4 @@
 # !/usr/bin/env python
-# -*- coding:utf-8 -*-
 """
 dalian-stc-dev@cisco.com
 Copyright 2019 Cisco Systems, Inc.
@@ -20,15 +19,15 @@ All rights reserved.
 
 """ IPv4 Unicast """
 
-import struct
 import binascii
 import logging
+import struct
+
 import netaddr
 
-from yabgp.message.attribute.nlri import NLRI
-from yabgp.common import exception as excep
 from yabgp.common import constants as bgp_cons
-
+from yabgp.common import exception as excep
+from yabgp.message.attribute.nlri import NLRI
 
 LOG = logging.getLogger()
 
@@ -76,7 +75,7 @@ class IPv4Unicast(NLRI):
             if remainder > 0:
                 prefix_data[-1] &= 255 << (8 - remainder)
             prefix_data = prefix_data + list(str(0)) * 4
-            prefix = "%s.%s.%s.%s" % (tuple(prefix_data[0:4])) + '/' + str(prefix_len)
+            prefix = "{}.{}.{}.{}".format(*tuple(prefix_data[0:4])) + '/' + str(prefix_len)
             if not addpath:
                 prefixes.append(prefix)
             else:

@@ -4,8 +4,7 @@ Features
 -  It can establish BGP session based on IPv4 address (TCP Layer) in
    active mode(as TCP client);
 
--  Support TCP MD5 authentication(IPv4 and does not support Windows
-   now);
+-  Support TCP MD5 authentication(IPv4 only, Linux only);
 
 -  BGP capabilities support: 4 Bytes ASN, Route Refresh(Cisco Route Refresh), Add Path send/receive;
 
@@ -25,7 +24,8 @@ Features
 
 -  Support basic RESTFUL API for getting running information and sending BGP messages.
 
--  Platform support:  Linux/Unix(recommended), Mac OS and Windows.
+-  Platform support: Linux/Unix (recommended), Mac OS, Windows.
+   TCP MD5 authentication is only supported on Linux.
 
 .. note::
 

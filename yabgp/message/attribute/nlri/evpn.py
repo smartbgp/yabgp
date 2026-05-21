@@ -13,15 +13,15 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from __future__ import division
-import struct
 import binascii
+import struct
 
 import netaddr
-from yabgp.common import afn
-from yabgp.common import safn
+
+from yabgp.common import afn, safn
 from yabgp.common import constants as bgp_cons
 from yabgp.message.attribute.nlri import NLRI
+
 # from yabgp.message.attribute.nlri.mpls_vpn import MPLSVPN
 
 
@@ -93,7 +93,7 @@ class EVPN(NLRI):
         try:
             afi_safi = tuple(attr_dict.get(bgp_cons.BGPTYPE_MP_REACH_NLRI).get('afi_safi'))
             community_ext = attr_dict.get(bgp_cons.BGPTYPE_EXTENDED_COMMUNITY)
-        except:
+        except Exception:
             return evpn_overlay
         if afi_safi == (afn.AFNUM_L2VPN, safn.SAFNUM_EVPN):
             evpn_overlay['evpn'] = True
@@ -116,14 +116,14 @@ class EVPN(NLRI):
         rd_value = data[2:8]
         if rd_type == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_0:
             asn, an = struct.unpack('!HI', rd_value)
-            rd = '%s:%s' % (asn, an)
+            rd = f'{asn}:{an}'
         elif rd_type == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_1:
             ip = str(netaddr.IPAddress(struct.unpack('!I', rd_value[0:4])[0]))
             an = struct.unpack('!H', rd_value[4:6])[0]
-            rd = '%s:%s' % (ip, an)
+            rd = f'{ip}:{an}'
         elif rd_type == bgp_cons.BGP_ROUTE_DISTINGUISHER_TYPE_2:
             asn, an = struct.unpack('!IH', rd_value)
-            rd = '%s:%s' % (asn, an)
+            rd = f'{asn}:{an}'
         else:
             # fixme(by xiaopeng163) for other rd type process
             rd = str(rd_value)
@@ -492,7 +492,7 @@ class IPRoutePrefix(EVPN):
             # ipv6
             offset = 16
 
-        route['prefix'] = '%s/%s' % (str(netaddr.IPAddress(int(binascii.b2a_hex(value[0: offset]), 16))), ip_addr_len)
+        route['prefix'] = f'{str(netaddr.IPAddress(int(binascii.b2a_hex(value[0: offset]), 16)))}/{ip_addr_len}'
         value = value[offset:]
         route['gateway'] = str(netaddr.IPAddress(int(binascii.b2a_hex(value[0: offset]), 16)))
         value = value[offset:]
